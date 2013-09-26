@@ -6,7 +6,10 @@
   "scripts": {
     "test": "mocha"
   },
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/auth0/auth0.js"
+  },
   "author": "",
   "license": "BSD",
   "dependencies": {

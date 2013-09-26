@@ -7,11 +7,11 @@ function Auth0 (options) {
   }
 
   assert_required(options, 'clientID');
-  assert_required(options, 'redirect_uri');
+  assert_required(options, 'callbackURL');
   assert_required(options, 'domain');
 
   this._clientID = options.clientID;
-  this._redirect_uri = options.redirect_uri;
+  this._callbackURL = options.callbackURL;
   this._domain = options.domain;
 
 }
@@ -25,7 +25,7 @@ Auth0.prototype.login = function (options) {
     response_type: 'token',
     client_id:     this._clientID,
     connection:    options.connection,
-    redirect_uri:  this._redirect_uri,
+    redirect_uri:  this._callbackURL,
     scope:         'openid profile'
   });
 
