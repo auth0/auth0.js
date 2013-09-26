@@ -61,7 +61,6 @@ Auth0.prototype.login = function (options) {
         var div = document.createElement('div');
         div.innerHTML = resp;
         var form = document.body.appendChild(div).children[0];
-
         form.submit();
       }
     }).fail(function (err) {
