@@ -1,0 +1,21 @@
+{
+  "name": "auth0-js",
+  "version": "0.0.1",
+  "description": "Auth0 headless browser sdk",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": "",
+  "author": "",
+  "license": "BSD",
+  "dependencies": {
+    "browser-request": "~0.2.1"
+  },
+  "devDependencies": {
+    "chai": "~1.8.0",
+    "mocha": "~1.13.0",
+    "browserify": "~2.33.0",
+    "uglify-js": "~2.4.0"
+  }
+}
