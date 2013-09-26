@@ -1,6 +1,7 @@
-var assert_required = require('./lib/assert_required');
+var assert_required   = require('./lib/assert_required');
 var base64_url_decode = require('./lib/base64_url_decode');
-var qs = require('qs');
+var qs                = require('qs');
+var reqwest           = require('reqwest');
 
 function Auth0 (options) {
   if (!(this instanceof Auth0)) {
@@ -22,6 +23,7 @@ function Auth0 (options) {
     var prof = JSON.parse(base64_url_decode(encoded));
     options.success(prof, id_token, parsed_qs.access_token, parsed_qs.state);
   }
+  this._failure = options._failure;
 }
 
 Auth0.prototype._redirect = function (url) {
@@ -29,6 +31,8 @@ Auth0.prototype._redirect = function (url) {
 };
 
 Auth0.prototype.login = function (options) {
+  var self = this;
+  
   var query = {
     response_type: 'token',
     client_id:     this._clientID,
@@ -41,7 +45,30 @@ Auth0.prototype.login = function (options) {
     query.state = options.state;
   }
 
-  this._redirect('https://' + this._domain + '/authorize?' + qs.stringify(query));
+  if ('username' in options && 'password' in options) {
+    query.username = options.username;
+    query.password = options.password;
+    
+    query.tenant = this._domain.split('.')[0];
+
+    reqwest({
+      url:     'https://' + this._domain + '/dbconnections/login',
+      method:  'post',
+      type:    'html',
+      data:    query,
+      success: function (resp) {
+        var div = document.createElement('div');
+        div.innerHTML = resp;
+        var form = document.body.appendChild(div).children[0];
+        form.submit();
+      }
+    }).fail(function (err) {
+      if (self._failure) self._failure(err); 
+    });
+
+  } else {
+    this._redirect('https://' + this._domain + '/authorize?' + qs.stringify(query));
+  }
 };
 
 if (global.window) {

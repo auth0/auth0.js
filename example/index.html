@@ -5,6 +5,13 @@
 <body>
     <a href="#login" class='login-google'>login with google</a>
 
+    <hr>
+
+
+    <input class="login-username" value="johnfoo@gmail.com" />
+    <input type="password" class="login-password" value="1234" />
+    <input type="button" class="login-db" value="login"></input>
+
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="/auth0.js"></script>
     <script type="text/javascript">
@@ -22,6 +29,14 @@
                 connection: 'google-oauth2'
             });
         });
+        $('.login-db').click(function (e) {
+            e.preventDefault();
+            auth0.login({
+                connection: 'tests',
+                username: $('.login-username').val(),
+                password: $('.login-password').val()
+            });
+        })
     </script>
 </body>
 </html>

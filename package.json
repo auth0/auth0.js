@@ -13,9 +13,9 @@
   "author": "",
   "license": "BSD",
   "dependencies": {
-    "browser-request": "~0.2.1",
     "qs": "~0.6.5",
-    "Base64": "~0.1.3"
+    "Base64": "~0.1.3",
+    "reqwest": "~0.9.0"
   },
   "testling": {
     "browsers": [
