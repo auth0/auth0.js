@@ -9,4 +9,7 @@ clean:
 test: 
 	@npm test
 
+test-interactive:
+	@node_modules/.bin/serve example
+
 .PHONY: all test clean

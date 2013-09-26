@@ -1,6 +1,6 @@
-var assert_required = require('./assert_required');
+var assert_required = require('./lib/assert_required');
+var base64_url_decode = require('./lib/base64_url_decode');
 var qs = require('qs');
-var Base64 = require('Base64');
 
 function Auth0 (options) {
   if (!(this instanceof Auth0)) {
@@ -19,7 +19,7 @@ function Auth0 (options) {
     var parsed_qs = qs.parse(window.location.hash);
     var id_token = parsed_qs.id_token;
     var encoded = id_token.split('.')[1];
-    var prof = JSON.parse(Base64.atob(encoded));
+    var prof = JSON.parse(base64_url_decode(encoded));
     options.success(prof, id_token, parsed_qs.access_token, parsed_qs.state);
   }
 }

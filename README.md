@@ -8,7 +8,10 @@
 	var auth0 = new Auth0({
 		domain:       'mine.auth0.com',
 		clientID:     'dsa7d77dsa7d7',
-		redirect_uri  'http://my-app.com/callback'
+		redirect_uri  'http://my-app.com/callback',
+		success: function (profile, access_token, id_token, state) { 
+			//optional login callback
+		}
 	});
 
 	$('.login-google').click(function () {
@@ -17,6 +20,14 @@
 		});
 	});
 </script>
+~~~
+
+## Run the example
+
+run `make test-interactive` and open http://localhost:3000:
+
+~~~
+make test-interactive
 ~~~
 
 ## License 
