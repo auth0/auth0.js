@@ -12,6 +12,14 @@
   "dependencies": {
     "browser-request": "~0.2.1"
   },
+  "testling": {
+    "browsers": [
+        "ie7", "ie8", "ie9",
+        "firefox/15", "chrome/22", "opera/12", "safari/5.1"
+    ],
+    "harness" : "mocha",
+    "files":    "test/*.js"
+  },
   "devDependencies": {
     "chai": "~1.8.0",
     "mocha": "~1.13.0",
