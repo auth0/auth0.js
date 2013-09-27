@@ -5,6 +5,7 @@ var qs                = require('qs');
 var reqwest           = require('reqwest');
 
 var use_jsonp         = require('./lib/use_jsonp');
+var LoginError        = require('./lib/LoginError');
 
 function Auth0 (options) {
   if (!(this instanceof Auth0)) {
@@ -26,7 +27,7 @@ function Auth0 (options) {
     var prof = JSON.parse(base64_url_decode(encoded));
     options.success(prof, id_token, parsed_qs.access_token, parsed_qs.state);
   }
-  this._failure = options._failure;
+  this._failure = options.failure;
 }
 
 Auth0.prototype._redirect = function (url) {
@@ -40,7 +41,7 @@ Auth0.prototype._renderAndSubmitWSFedForm = function (formHtml) {
   form.submit();
 };
 
-Auth0.prototype.login = function (options) {
+Auth0.prototype.login = function (options, callback) {
   var self = this;
   
   var query = {
@@ -61,7 +62,7 @@ Auth0.prototype.login = function (options) {
     
     query.tenant = this._domain.split('.')[0];
 
-    if (true || use_jsonp()) {
+    if (use_jsonp()) {
       return reqwest({
         url:     'https://' + this._domain + '/dbconnections/login',
         type:    'jsonp',
@@ -82,10 +83,12 @@ Auth0.prototype.login = function (options) {
       type:    'html',
       data:    query,
       success: function (resp) {
-        self._renderAndSubmitWSFedForm(resp.form);
+        self._renderAndSubmitWSFedForm(resp);
       }
     }).fail(function (err) {
-      if (self._failure) self._failure(err); 
+      var error = new LoginError(err.status, err.responseText);
+      if (callback)      return callback(error);
+      if (self._failure) return self._failure(error); 
     });
 
   } else {
@@ -95,17 +98,33 @@ Auth0.prototype.login = function (options) {
 
 if (global.window) {
   global.window.Auth0 = Auth0;
-} else {
-  module.exports = Auth0;
+}
+module.exports = Auth0;
+},{"./lib/LoginError":2,"./lib/assert_required":3,"./lib/base64_url_decode":4,"./lib/use_jsonp":5,"qs":7,"reqwest":8}],2:[function(require,module,exports){
+function LoginError(status, details) {
+  var obj = JSON.parse(details);
+  var err = Error.call(this, obj.description);
+  
+  err.status = status;
+  err.name = obj.code;
+  err.code = obj.code;
+  err.details = obj;
+  
+  return err;
 }
 
-},{"./lib/assert_required":2,"./lib/base64_url_decode":3,"./lib/use_jsonp":4,"qs":6,"reqwest":7}],2:[function(require,module,exports){
+LoginError.prototype = Object.create(Error.prototype, { 
+  constructor: { value: LoginError } 
+});
+
+module.exports = LoginError;
+},{}],3:[function(require,module,exports){
 module.exports = function (obj, prop) {
   if (!obj[prop]) {
     throw new Error(prop + ' is required.');
   }
 };
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var Base64 = require('Base64');
 
 module.exports = function(str) {
@@ -124,11 +143,11 @@ module.exports = function(str) {
   }
   return Base64.atob(output);
 };
-},{"Base64":5}],4:[function(require,module,exports){
+},{"Base64":6}],5:[function(require,module,exports){
 module.exports = function () {
   return 'XDomainRequest' in window && window.location.protocol === 'http:';
 };
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 ;(function () {
 
   var
@@ -185,7 +204,7 @@ module.exports = function () {
 
 }());
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
  * Object#toString() ref for stringify().
  */
@@ -574,7 +593,7 @@ function decode(str) {
   }
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*!
   * Reqwest! A general purpose XHR connection manager
   * (c) Dustin Diaz 2013
