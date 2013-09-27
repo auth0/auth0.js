@@ -46,6 +46,25 @@ describe('Auth0 - User And Passwords', function () {
     });
   });
 
+
+  it('should call the callback with err when the connection doesn\'t exists', function (done) {
+    var auth0 = new Auth0({
+      domain:      'mdocs.auth0.com',
+      callbackURL: 'http://localhost:3000/',
+      clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+    });
+
+    auth0.login({
+      connection: 'testsw3eeasdsadsa',
+      username: 'testttt@wrong.com',
+      password: '12345'
+    }, function (err) {
+      expect(err.status).to.equal(404);
+      expect(err.message).to.match(/connection not found/ig);
+      done();
+    });
+  });
+
   it('should render wsfed form after successfull authentication', function (done) {
     var auth0 = new Auth0({
       domain:      'mdocs.auth0.com',
