@@ -4,7 +4,7 @@
   "description": "Auth0 headless browser sdk",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --timeout 50000"
+    "test": "mocha --timeout 5000"
   },
   "repository": {
     "type": "git",

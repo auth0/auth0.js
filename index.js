@@ -40,6 +40,60 @@ Auth0.prototype._renderAndSubmitWSFedForm = function (formHtml) {
   form.submit();
 };
 
+Auth0.prototype.signup = function (options, callback) {
+  var self = this;
+  
+  var query = {
+    response_type: 'token',
+    client_id:     this._clientID,
+    connection:    options.connection,
+    redirect_uri:  this._callbackURL,
+    scope:         'openid profile'
+  };
+
+  if (options.state) {
+    query.state = options.state;
+  }
+
+  query.email = options.username || options.email;
+  query.password = options.password;
+  
+  query.tenant = this._domain.split('.')[0];
+
+  // if (use_jsonp()) {
+  //   return reqwest({
+  //     url:     'https://' + this._domain + '/dbconnections/login',
+  //     type:    'jsonp',
+  //     data:    query,
+  //     jsonpCallback: 'cbx',
+  //     success: function (resp) {
+  //       if('error' in resp) {
+  //         return self._failure(resp);
+  //       }
+  //       self._renderAndSubmitWSFedForm(resp.form);
+  //     }
+  //   });
+  // }
+
+  reqwest({
+    url:     'https://' + this._domain + '/dbconnections/signup',
+    method:  'post',
+    type:    'html',
+    data:    query,
+    success: function (resp) {
+      if ('auto_login' in options && !options.auto_login) {
+        if (callback) callback(null, resp.responseText);
+        return;
+      }
+      self.login(options, callback);
+    }
+  }).fail(function (err) {
+    var error = new LoginError(err.status, err.responseText);
+    if (callback)      return callback(error);
+    if (self._failure) return self._failure(error); 
+  });
+};
+
 Auth0.prototype.login = function (options, callback) {
   var self = this;
   
@@ -56,7 +110,7 @@ Auth0.prototype.login = function (options, callback) {
   }
 
   if ('username' in options && 'password' in options) {
-    query.username = options.username;
+    query.username = options.username || options.email;
     query.password = options.password;
     
     query.tenant = this._domain.split('.')[0];
