@@ -2,6 +2,8 @@
 
 ## Usage
 
+Login:
+
 ~~~html
 <script src="auth0.min.js"></script>
 <script type="text/javascript">
@@ -20,6 +22,46 @@
 		});
 	});
 </script>
+~~~
+
+### Sign up (database connections):
+
+~~~html
+<script src="auth0.min.js"></script>
+<script type="text/javascript">
+	var auth0 = new Auth0({
+		domain:       'mine.auth0.com',
+		clientID:     'dsa7d77dsa7d7',
+		redirect_uri  'http://my-app.com/callback',
+		success: function (profile, access_token, id_token, state) { 
+			//optional login callback
+		}
+	});
+
+	$('.login-google').click(function () {
+		auth0.signup({
+			connection: 'google-oauth2',
+			username:   'foo@bar.com',
+			password:   'blabla'
+		}, function (err) {
+			console.log(err.message); ///this could be something like "email is required"
+		});
+	});
+</script>
+~~~
+
+After a succesful login it will auto login the user. If you do not want to automatically login the user use
+
+~~~js
+auth0.signup({
+	connection: 'google-oauth2',
+	username:   'foo@bar.com',
+	password:   'blabla',
+	auto_login: false
+}, function (err) {
+	if (err) return alert('something went wrong: ' + err.message);
+	alert('congrats!')
+});
 ~~~
 
 ## Run the example
