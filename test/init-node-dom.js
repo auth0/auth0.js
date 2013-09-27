@@ -7,7 +7,8 @@ before(function (done) {
   jsdom.env(html, ["http://code.jquery.com/jquery.js"], function (errors, window) {
     global.window = window;
     global.window.XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-    
+    global.window.JSON = JSON;
+
     global.document = window.document;
     global.XMLHttpRequest = global.window.XMLHttpRequest;
 

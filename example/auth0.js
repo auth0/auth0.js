@@ -6,6 +6,7 @@ var reqwest           = require('reqwest');
 
 var use_jsonp         = require('./lib/use_jsonp');
 var LoginError        = require('./lib/LoginError');
+var json_parse        = require('./lib/json_parse');
 
 function Auth0 (options) {
   if (!(this instanceof Auth0)) {
@@ -21,10 +22,11 @@ function Auth0 (options) {
   this._domain = options.domain;
 
   if (options.success && window.location.hash.match(/access_token/)) {
-    var parsed_qs = qs.parse(window.location.hash);
+    var hash = window.location.hash.substr(1);
+    var parsed_qs = qs.parse(hash);
     var id_token = parsed_qs.id_token;
     var encoded = id_token.split('.')[1];
-    var prof = JSON.parse(base64_url_decode(encoded));
+    var prof = json_parse(base64_url_decode(encoded));
     options.success(prof, id_token, parsed_qs.access_token, parsed_qs.state);
   }
   this._failure = options.failure;
@@ -159,12 +161,14 @@ if (global.window) {
   global.window.Auth0 = Auth0;
 }
 module.exports = Auth0;
-},{"./lib/LoginError":2,"./lib/assert_required":3,"./lib/base64_url_decode":4,"./lib/use_jsonp":5,"qs":7,"reqwest":8}],2:[function(require,module,exports){
+},{"./lib/LoginError":2,"./lib/assert_required":3,"./lib/base64_url_decode":4,"./lib/json_parse":5,"./lib/use_jsonp":6,"qs":8,"reqwest":9}],2:[function(require,module,exports){
+var json_parse = require('./json_parse');
+
 function LoginError(status, details) {
   var obj;
 
   if (typeof details == 'string') {
-   obj = JSON ? JSON.parse(details) : eval('(' + r + ')');
+    obj = json_parse(details);
   } else {
     obj = details;
   }
@@ -186,7 +190,7 @@ if (Object && Object.create) {
 }
 
 module.exports = LoginError;
-},{}],3:[function(require,module,exports){
+},{"./json_parse":5}],3:[function(require,module,exports){
 module.exports = function (obj, prop) {
   if (!obj[prop]) {
     throw new Error(prop + ' is required.');
@@ -211,11 +215,15 @@ module.exports = function(str) {
   }
   return Base64.atob(output);
 };
-},{"Base64":6}],5:[function(require,module,exports){
+},{"Base64":7}],5:[function(require,module,exports){
+module.exports = function (str) {
+  return window.JSON ? window.JSON.parse(str) : eval('(' + str + ')');
+};
+},{}],6:[function(require,module,exports){
 module.exports = function () {
   return 'XDomainRequest' in window && window.location.protocol === 'http:';
 };
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 ;(function () {
 
   var
@@ -272,7 +280,7 @@ module.exports = function () {
 
 }());
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * Object#toString() ref for stringify().
  */
@@ -292,6 +300,9 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
 var indexOf = typeof Array.prototype.indexOf === 'function'
   ? function(arr, el) { return arr.indexOf(el); }
   : function(arr, el) {
+      if (typeof arr == 'string' && typeof "a"[0] == 'undefined') {
+        arr = arr.split('');
+      }
       for (var i = 0; i < arr.length; i++) {
         if (arr[i] === el) return i;
       }
@@ -661,7 +672,7 @@ function decode(str) {
   }
 }
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /*!
   * Reqwest! A general purpose XHR connection manager
   * (c) Dustin Diaz 2013
