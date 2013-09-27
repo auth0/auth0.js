@@ -4,6 +4,8 @@ var base64_url_decode = require('./lib/base64_url_decode');
 var qs                = require('qs');
 var reqwest           = require('reqwest');
 
+var use_jsonp         = require('./lib/use_jsonp');
+
 function Auth0 (options) {
   if (!(this instanceof Auth0)) {
     return new Auth0(options);
@@ -31,6 +33,13 @@ Auth0.prototype._redirect = function (url) {
   global.window.location = url;
 };
 
+Auth0.prototype._renderAndSubmitWSFedForm = function (formHtml) {
+  var div = document.createElement('div');
+  div.innerHTML = formHtml;
+  var form = document.body.appendChild(div).children[0];
+  form.submit();
+};
+
 Auth0.prototype.login = function (options) {
   var self = this;
   
@@ -52,16 +61,28 @@ Auth0.prototype.login = function (options) {
     
     query.tenant = this._domain.split('.')[0];
 
+    if (true || use_jsonp()) {
+      return reqwest({
+        url:     'https://' + this._domain + '/dbconnections/login',
+        type:    'jsonp',
+        data:    query,
+        jsonpCallback: 'cbx',
+        success: function (resp) {
+          if('error' in resp) {
+            return self._failure(resp);
+          }
+          self._renderAndSubmitWSFedForm(resp.form);
+        }
+      });
+    }
+
     reqwest({
       url:     'https://' + this._domain + '/dbconnections/login',
       method:  'post',
       type:    'html',
       data:    query,
       success: function (resp) {
-        var div = document.createElement('div');
-        div.innerHTML = resp;
-        var form = document.body.appendChild(div).children[0];
-        form.submit();
+        self._renderAndSubmitWSFedForm(resp.form);
       }
     }).fail(function (err) {
       if (self._failure) self._failure(err); 
@@ -78,7 +99,7 @@ if (global.window) {
   module.exports = Auth0;
 }
 
-},{"./lib/assert_required":2,"./lib/base64_url_decode":3,"qs":5,"reqwest":6}],2:[function(require,module,exports){
+},{"./lib/assert_required":2,"./lib/base64_url_decode":3,"./lib/use_jsonp":4,"qs":6,"reqwest":7}],2:[function(require,module,exports){
 module.exports = function (obj, prop) {
   if (!obj[prop]) {
     throw new Error(prop + ' is required.');
@@ -103,7 +124,11 @@ module.exports = function(str) {
   }
   return Base64.atob(output);
 };
-},{"Base64":4}],4:[function(require,module,exports){
+},{"Base64":5}],4:[function(require,module,exports){
+module.exports = function () {
+  return 'XDomainRequest' in window && window.location.protocol === 'http:';
+};
+},{}],5:[function(require,module,exports){
 ;(function () {
 
   var
@@ -160,7 +185,7 @@ module.exports = function(str) {
 
 }());
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
  * Object#toString() ref for stringify().
  */
@@ -549,7 +574,7 @@ function decode(str) {
   }
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /*!
   * Reqwest! A general purpose XHR connection manager
   * (c) Dustin Diaz 2013

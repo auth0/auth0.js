@@ -3,6 +3,9 @@ var base64_url_decode = require('./lib/base64_url_decode');
 var qs                = require('qs');
 var reqwest           = require('reqwest');
 
+var use_jsonp         = require('./lib/use_jsonp');
+var LoginError        = require('./lib/LoginError');
+
 function Auth0 (options) {
   if (!(this instanceof Auth0)) {
     return new Auth0(options);
@@ -23,14 +26,21 @@ function Auth0 (options) {
     var prof = JSON.parse(base64_url_decode(encoded));
     options.success(prof, id_token, parsed_qs.access_token, parsed_qs.state);
   }
-  this._failure = options._failure;
+  this._failure = options.failure;
 }
 
 Auth0.prototype._redirect = function (url) {
   global.window.location = url;
 };
 
-Auth0.prototype.login = function (options) {
+Auth0.prototype._renderAndSubmitWSFedForm = function (formHtml) {
+  var div = document.createElement('div');
+  div.innerHTML = formHtml;
+  var form = document.body.appendChild(div).children[0];
+  form.submit();
+};
+
+Auth0.prototype.login = function (options, callback) {
   var self = this;
   
   var query = {
@@ -51,19 +61,33 @@ Auth0.prototype.login = function (options) {
     
     query.tenant = this._domain.split('.')[0];
 
+    if (use_jsonp()) {
+      return reqwest({
+        url:     'https://' + this._domain + '/dbconnections/login',
+        type:    'jsonp',
+        data:    query,
+        jsonpCallback: 'cbx',
+        success: function (resp) {
+          if('error' in resp) {
+            return self._failure(resp);
+          }
+          self._renderAndSubmitWSFedForm(resp.form);
+        }
+      });
+    }
+
     reqwest({
       url:     'https://' + this._domain + '/dbconnections/login',
       method:  'post',
       type:    'html',
       data:    query,
       success: function (resp) {
-        var div = document.createElement('div');
-        div.innerHTML = resp;
-        var form = document.body.appendChild(div).children[0];
-        form.submit();
+        self._renderAndSubmitWSFedForm(resp);
       }
     }).fail(function (err) {
-      if (self._failure) self._failure(err); 
+      var error = new LoginError(err.status, err.responseText);
+      if (callback)      return callback(error);
+      if (self._failure) return self._failure(error); 
     });
 
   } else {
@@ -73,6 +97,5 @@ Auth0.prototype.login = function (options) {
 
 if (global.window) {
   global.window.Auth0 = Auth0;
-} else {
-  module.exports = Auth0;
 }
+module.exports = Auth0;
