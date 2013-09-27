@@ -124,7 +124,7 @@ Auth0.prototype.login = function (options, callback) {
         jsonpCallback: 'cbx',
         success: function (resp) {
           if('error' in resp) {
-            return self._failure(resp);
+            return self._failure(resp.status, resp.error);
           }
           self._renderAndSubmitWSFedForm(resp.form);
         }
@@ -156,7 +156,13 @@ if (global.window) {
 module.exports = Auth0;
 },{"./lib/LoginError":2,"./lib/assert_required":3,"./lib/base64_url_decode":4,"./lib/use_jsonp":5,"qs":7,"reqwest":8}],2:[function(require,module,exports){
 function LoginError(status, details) {
-  var obj = JSON ? JSON.parse(details) : eval('(' + r + ')');
+  var obj;
+
+  if (typeof details == 'string') {
+   obj = JSON ? JSON.parse(details) : eval('(' + r + ')');
+  } else {
+    obj = details;
+  }
 
   var err = Error.call(this, obj.description || obj.message || obj.error);
 

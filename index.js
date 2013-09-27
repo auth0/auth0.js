@@ -123,7 +123,7 @@ Auth0.prototype.login = function (options, callback) {
         jsonpCallback: 'cbx',
         success: function (resp) {
           if('error' in resp) {
-            return self._failure(resp);
+            return self._failure(resp.status, resp.error);
           }
           self._renderAndSubmitWSFedForm(resp.form);
         }

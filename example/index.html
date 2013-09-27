@@ -35,6 +35,8 @@
                 connection: 'tests',
                 username: $('.login-username').val(),
                 password: $('.login-password').val()
+            }, function (err) {
+                if (err) alert('Something went wrong: ' + err.message);
             });
         })
     </script>
