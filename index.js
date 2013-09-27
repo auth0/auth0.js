@@ -109,6 +109,11 @@ Auth0.prototype.login = function (options, callback) {
     query.state = options.state;
   }
 
+  function return_error (error) {
+    if (callback)      return callback(error);
+    if (self._failure) return self._failure(error); 
+  }
+
   if ('username' in options && 'password' in options) {
     query.username = options.username || options.email;
     query.password = options.password;
@@ -123,7 +128,8 @@ Auth0.prototype.login = function (options, callback) {
         jsonpCallback: 'cbx',
         success: function (resp) {
           if('error' in resp) {
-            return self._failure(resp.status, resp.error);
+            var error = new LoginError(resp.status, resp.error);
+            return return_error(error);
           }
           self._renderAndSubmitWSFedForm(resp.form);
         }
@@ -140,8 +146,7 @@ Auth0.prototype.login = function (options, callback) {
       }
     }).fail(function (err) {
       var error = new LoginError(err.status, err.responseText);
-      if (callback)      return callback(error);
-      if (self._failure) return self._failure(error); 
+      return return_error(error);
     });
 
   } else {
