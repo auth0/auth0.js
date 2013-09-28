@@ -1,0 +1,8 @@
+{
+  "name": "sinon-chai",
+  "version": "2.3.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/domenic/sinon-chai.git"
+  }
+}

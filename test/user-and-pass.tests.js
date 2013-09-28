@@ -1,11 +1,4 @@
-var expect = require('chai').expect;
-
 describe('Auth0 - User And Passwords', function () {
-  var Auth0;
-  
-  before(function () {
-    Auth0 = require('../index');
-  });
 
   it('should call the failure callback when user/pass is wrong', function (done) {
     var auth0 = new Auth0({
