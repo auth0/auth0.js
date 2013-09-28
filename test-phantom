@@ -10,6 +10,9 @@ serve.stdout.pipe(process.stdout);
 serve.stderr.pipe(process.stderr);
 
 var run_tests = exec('mocha-phantomjs --timeout 7000 http://localhost:9009', function () {
+  setTimeout(function() {
+    process.exit(0);
+  }, 2000);
   serve.kill();
 });
 
