@@ -3,14 +3,22 @@
     <title>Test auth0</title>
 </head>
 <body>
+    <h2>Login with Social Connection</h2>
     <a href="#login" class='login-google'>login with google</a>
 
     <hr>
 
-
+    <h2>Login with Database Connection</h2>
     <input class="login-username" value="johnfoo@gmail.com" />
     <input type="password" class="login-password" value="1234" />
     <input type="button" class="login-db" value="login"></input>
+
+    <hr>
+
+    <h2>Signup Database Connection</h2>
+    <input class="signup-username" value="johnfoo@gmail.com" />
+    <input type="password" class="signup-password" value="1234" />
+    <input type="button" class="signup-db" value="signup"></input>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="/auth0.js"></script>
@@ -38,7 +46,17 @@
             }, function (err) {
                 if (err) alert('Something went wrong: ' + err.message);
             });
-        })
+        });
+        $('.signup-db').click(function (e) {
+            e.preventDefault();
+            auth0.signup({
+                connection: 'tests',
+                username: $('.signup-username').val(),
+                password: $('.signup-password').val()
+            }, function (err) {
+                if (err) alert('Something went wrong: ' + err.message);
+            });
+        });
     </script>
 </body>
 </html>

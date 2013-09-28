@@ -63,37 +63,42 @@ Auth0.prototype.signup = function (options, callback) {
   
   query.tenant = this._domain.split('.')[0];
 
-  // if (use_jsonp()) {
-  //   return reqwest({
-  //     url:     'https://' + this._domain + '/dbconnections/login',
-  //     type:    'jsonp',
-  //     data:    query,
-  //     jsonpCallback: 'cbx',
-  //     success: function (resp) {
-  //       if('error' in resp) {
-  //         return self._failure(resp);
-  //       }
-  //       self._renderAndSubmitWSFedForm(resp.form);
-  //     }
-  //   });
-  // }
+  function success () {
+    if ('auto_login' in options && !options.auto_login) {
+      if (callback) callback();
+      return;
+    }
+    self.login(options, callback);
+  }
+
+  function fail (status, resp) {
+    var error = new LoginError(status, resp);
+    if (callback)      return callback(error);
+    if (self._failure) return self._failure(error); 
+  }
+
+  if (use_jsonp()) {
+    return reqwest({
+      url:     'https://' + this._domain + '/dbconnections/signup',
+      type:    'jsonp',
+      data:    query,
+      jsonpCallback: 'cbx',
+      success: function (resp) {
+        return resp.status == 200 ? 
+                success() :
+                fail(resp.status, resp.err);
+      }
+    });
+  }
 
   reqwest({
     url:     'https://' + this._domain + '/dbconnections/signup',
     method:  'post',
     type:    'html',
     data:    query,
-    success: function (resp) {
-      if ('auto_login' in options && !options.auto_login) {
-        if (callback) callback(null, resp.responseText);
-        return;
-      }
-      self.login(options, callback);
-    }
+    success: success
   }).fail(function (err) {
-    var error = new LoginError(err.status, err.responseText);
-    if (callback)      return callback(error);
-    if (self._failure) return self._failure(error); 
+    fail(err.status, err.responseText);
   });
 };
 
@@ -168,7 +173,11 @@ function LoginError(status, details) {
   var obj;
 
   if (typeof details == 'string') {
-    obj = json_parse(details);
+    try {
+      obj = json_parse(details);
+    } catch (er) {
+      obj = {message: details};      
+    }
   } else {
     obj = details;
   }
@@ -294,15 +303,26 @@ var toString = Object.prototype.toString;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 /**
+ * see issue #70
+ */
+var isRestorableProto = (function () {
+  var o;
+
+  if (!Object.create) return false;
+
+  o = Object.create(null);
+  o.__proto__ = Object.prototype;
+
+  return o.hasOwnProperty === hasOwnProperty;
+})();
+
+/**
  * Array#indexOf shim.
  */
 
 var indexOf = typeof Array.prototype.indexOf === 'function'
   ? function(arr, el) { return arr.indexOf(el); }
   : function(arr, el) {
-      if (typeof arr == 'string' && typeof "a"[0] == 'undefined') {
-        arr = arr.split('');
-      }
       for (var i = 0; i < arr.length; i++) {
         if (arr[i] === el) return i;
       }
@@ -323,7 +343,11 @@ var isArray = Array.isArray || function(arr) {
 
 var objectKeys = Object.keys || function(obj) {
   var ret = [];
-  for (var key in obj) ret.push(key);
+  for (var key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      ret.push(key);
+    }
+  }
   return ret;
 };
 
@@ -353,7 +377,7 @@ var reduce = function(arr, fn, initial) {
  */
 
 function createObject() {
-  return Object.create
+  return isRestorableProto
     ? Object.create(null)
     : {};
 }
@@ -468,7 +492,7 @@ function compact(obj) {
  */
 
 function restoreProto(obj) {
-  if (!Object.create) return obj;
+  if (!isRestorableProto) return obj;
   if (isArray(obj)) return obj;
   if (obj && 'object' != typeof obj) return obj;
 
