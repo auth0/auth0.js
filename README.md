@@ -1,4 +1,4 @@
-[![browser support](https://ci.testling.com/auth0/auth0.js.png)](https://ci.testling.com/auth0/auth0.js)
+[![Build Status](https://travis-ci.org/auth0/auth0.js.png)](https://travis-ci.org/auth0/auth0.js)
 
 ## Usage
 
