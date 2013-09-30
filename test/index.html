@@ -25,10 +25,12 @@
   <script src="/user-and-pass.tests.js"></script>
   
   <script>
-    mocha.checkLeaks();
-    mocha.globals(['Auth0', 'expect']);
-    if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
-    else { mocha.run(); }
+    mocha.globals(['Auth0', 'expect', 'reqwest_*']);
+    if (window.mochaPhantomJS) { 
+        mochaPhantomJS.run(); 
+    } else { 
+        mocha.run(); 
+    }
   </script>
 </body>
 </html>
