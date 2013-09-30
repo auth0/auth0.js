@@ -7,19 +7,19 @@ describe('Auth0', function () {
   it('should fail to construct without a clientID', function () {
     expect(function () {
       new Auth0({});
-    }).to.throw('clientID is required');
+    }).to.throwError('clientID is required');
   });
 
   it('should fail to construct without a callbackURL', function () {
     expect(function () {
       new Auth0({clientID: '1123sadsd'});
-    }).to.throw('callbackURL is required');
+    }).to.throwError('callbackURL is required');
   });
 
   it('should fail to construct without a domain', function () {
     expect(function () {
       new Auth0({clientID: '1123sadsd', callbackURL: 'aaaa'});
-    }).to.throw('domain is required');
+    }).to.throwError('domain is required');
   });
 
   it('should force constructor', function () {
@@ -30,7 +30,7 @@ describe('Auth0', function () {
     });
 
     expect(initialized_without_new)
-      .to.be.instanceOf(Auth0);
+      .to.be.an(Auth0);
   });
 
   it('should redirect to /authorize with google', function (done) {
@@ -42,7 +42,7 @@ describe('Auth0', function () {
 
     auth0._redirect = function (the_url) {
       expect(the_url.split('?')[0])
-        .to.include('https://aaa.auth0.com/authorize');
+        .to.contain('https://aaa.auth0.com/authorize');
 
       var parsed = {};
       the_url.split('?')[1].replace(

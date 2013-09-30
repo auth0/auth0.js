@@ -6,26 +6,42 @@
 </head>
 <body>
   <div id="mocha"></div>
+
+  <script type="text/javascript">
+    if (!Object.create) {
+        Object.create = (function(){
+            function F(){}
+
+            return function(o){
+                if (arguments.length != 1) {
+                    throw new Error('Object.create implementation only accepts one parameter.');
+                }
+                F.prototype = o
+                return new F()
+            }
+        })()
+    }
+  </script>
+
   <script src="/vendor/mocha/mocha.js"></script>
 
   <script src="/vendor/sinon-1.7.3.js"></script>
-  <script src="/vendor/chai/chai.js"></script>
-  <script src="/vendor/sinon-chai/lib/sinon-chai.js"></script>
+  <script src="/vendor/expect.js"></script>
   
   <script src="/auth0.js"></script>
   
   <script>
-    window.expect = chai.expect;
     mocha.timeout(7000);
     mocha.ui('bdd');
     mocha.reporter('html');
+    mocha.setup({ignoreLeaks: true});
   </script>
   
   <script src="/tests.js"></script>
   <script src="/user-and-pass.tests.js"></script>
   
   <script>
-    mocha.globals(['Auth0', 'expect', 'reqwest_*']);
+    // mocha.globals(['Auth0', 'expect', 'reqwest_*']);
     if (window.mochaPhantomJS) { 
         mochaPhantomJS.run(); 
     } else { 
