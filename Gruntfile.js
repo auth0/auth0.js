@@ -89,7 +89,12 @@ module.exports = function(grunt) {
     clean: {
       build: ["build/", "example/auth0.js"],
     },
-    watch: {}
+    watch: {
+      another: {
+        files: ['node_modules', 'index.js', 'lib/*.js'],
+        tasks: ['build']
+      }
+    }
   });
 
   // Loading dependencies

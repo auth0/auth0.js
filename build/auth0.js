@@ -4,6 +4,8 @@ var base64_url_decode = require('./lib/base64_url_decode');
 var qs                = require('qs');
 var reqwest           = require('reqwest');
 
+var jsonp             = require('jsonp');
+
 var use_jsonp         = require('./lib/use_jsonp');
 var LoginError        = require('./lib/LoginError');
 var json_parse        = require('./lib/json_parse');
@@ -78,16 +80,16 @@ Auth0.prototype.signup = function (options, callback) {
   }
 
   if (use_jsonp()) {
-    return reqwest({
-      url:     'https://' + this._domain + '/dbconnections/signup',
-      type:    'jsonp',
-      data:    query,
-      jsonpCallback: 'cbx',
-      success: function (resp) {
-        return resp.status == 200 ? 
-                success() :
-                fail(resp.status, resp.err);
+    return jsonp('https://' + this._domain + '/dbconnections/signup?' + qs.stringify(query), {
+      param: 'cbx',
+      timeout: 15000
+    }, function (err, resp) {
+      if (err) {
+        return fail(0, err);
       }
+      return resp.status == 200 ? 
+              success() :
+              fail(resp.status, resp.err);
     });
   }
 
@@ -129,18 +131,18 @@ Auth0.prototype.login = function (options, callback) {
     query.tenant = this._domain.split('.')[0];
 
     if (use_jsonp()) {
-      return reqwest({
-        url:     'https://' + this._domain + '/dbconnections/login',
-        type:    'jsonp',
-        data:    query,
-        jsonpCallback: 'cbx',
-        success: function (resp) {
-          if('error' in resp) {
-            var error = new LoginError(resp.status, resp.error);
-            return return_error(error);
-          }
-          self._renderAndSubmitWSFedForm(resp.form);
+      return jsonp('https://' + this._domain + '/dbconnections/login?' + qs.stringify(query), {
+        param: 'cbx',
+        timeout: 15000
+      }, function (err, resp) {
+        if (err) {
+          return return_error(err);
         }
+        if('error' in resp) {
+          var error = new LoginError(resp.status, resp.error);
+          return return_error(error);
+        }
+        self._renderAndSubmitWSFedForm(resp.form);
       });
     }
 
@@ -166,7 +168,7 @@ if (global.window) {
   global.window.Auth0 = Auth0;
 }
 module.exports = Auth0;
-},{"./lib/LoginError":2,"./lib/assert_required":3,"./lib/base64_url_decode":4,"./lib/json_parse":5,"./lib/use_jsonp":6,"qs":8,"reqwest":9}],2:[function(require,module,exports){
+},{"./lib/LoginError":2,"./lib/assert_required":3,"./lib/base64_url_decode":4,"./lib/json_parse":5,"./lib/use_jsonp":6,"jsonp":8,"qs":10,"reqwest":11}],2:[function(require,module,exports){
 var json_parse = require('./json_parse');
 
 function LoginError(status, details) {
@@ -296,6 +298,218 @@ module.exports = function () {
 }());
 
 },{}],8:[function(require,module,exports){
+
+/**
+ * Module dependencies
+ */
+
+var debug = require('debug')('jsonp');
+
+/**
+ * Module exports.
+ */
+
+module.exports = jsonp;
+
+/**
+ * Callback index.
+ */
+
+var count = 0;
+
+/**
+ * Noop function.
+ */
+
+function noop(){};
+
+/**
+ * JSONP handler
+ *
+ * Options:
+ *  - param {String} qs parameter (`callback`)
+ *  - timeout {Number} how long after a timeout error is emitted (`60000`)
+ *
+ * @param {String} url
+ * @param {Object|Function} optional options / callback
+ * @param {Function} optional callback
+ */
+
+function jsonp(url, opts, fn){
+  if ('function' == typeof opts) {
+    fn = opts;
+    opts = {};
+  }
+
+  var opts = opts || {};
+  var param = opts.param || 'callback';
+  var timeout = null != opts.timeout ? opts.timeout : 60000;
+  var enc = encodeURIComponent;
+  var target = document.getElementsByTagName('script')[0];
+  var script;
+  var timer;
+
+  // generate a unique id for this request
+  var id = count++;
+
+  if (timeout) {
+    timer = setTimeout(function(){
+      cleanup();
+      fn && fn(new Error('Timeout'));
+    }, timeout);
+  }
+
+  function cleanup(){
+    target.parentNode.removeChild(script);
+    window['__jp' + id] = noop;
+  }
+
+  window['__jp' + id] = function(data){
+    debug('jsonp got', data);
+    if (timer) clearTimeout(timer);
+    cleanup();
+    fn && fn(null, data);
+  };
+
+  // add qs component
+  url += (~url.indexOf('?') ? '&' : '?') + param + '=' + enc('__jp' + id + '');
+  url = url.replace('?&', '?');
+
+  debug('jsonp req "%s"', url);
+
+  // create script
+  script = document.createElement('script');
+  script.src = url;
+  target.parentNode.insertBefore(script, target);
+};
+
+},{"debug":9}],9:[function(require,module,exports){
+
+/**
+ * Expose `debug()` as the module.
+ */
+
+module.exports = debug;
+
+/**
+ * Create a debugger with the given `name`.
+ *
+ * @param {String} name
+ * @return {Type}
+ * @api public
+ */
+
+function debug(name) {
+  if (!debug.enabled(name)) return function(){};
+
+  return function(fmt){
+    var curr = new Date;
+    var ms = curr - (debug[name] || curr);
+    debug[name] = curr;
+
+    fmt = name
+      + ' '
+      + fmt
+      + ' +' + debug.humanize(ms);
+
+    // This hackery is required for IE8
+    // where `console.log` doesn't have 'apply'
+    window.console
+      && console.log
+      && Function.prototype.apply.call(console.log, console, arguments);
+  }
+}
+
+/**
+ * The currently active debug mode names.
+ */
+
+debug.names = [];
+debug.skips = [];
+
+/**
+ * Enables a debug mode by name. This can include modes
+ * separated by a colon and wildcards.
+ *
+ * @param {String} name
+ * @api public
+ */
+
+debug.enable = function(name) {
+  try {
+    localStorage.debug = name;
+  } catch(e){}
+
+  var split = (name || '').split(/[\s,]+/)
+    , len = split.length;
+
+  for (var i = 0; i < len; i++) {
+    name = split[i].replace('*', '.*?');
+    if (name[0] === '-') {
+      debug.skips.push(new RegExp('^' + name.substr(1) + '$'));
+    }
+    else {
+      debug.names.push(new RegExp('^' + name + '$'));
+    }
+  }
+};
+
+/**
+ * Disable debug output.
+ *
+ * @api public
+ */
+
+debug.disable = function(){
+  debug.enable('');
+};
+
+/**
+ * Humanize the given `ms`.
+ *
+ * @param {Number} m
+ * @return {String}
+ * @api private
+ */
+
+debug.humanize = function(ms) {
+  var sec = 1000
+    , min = 60 * 1000
+    , hour = 60 * min;
+
+  if (ms >= hour) return (ms / hour).toFixed(1) + 'h';
+  if (ms >= min) return (ms / min).toFixed(1) + 'm';
+  if (ms >= sec) return (ms / sec | 0) + 's';
+  return ms + 'ms';
+};
+
+/**
+ * Returns true if the given mode name is enabled, false otherwise.
+ *
+ * @param {String} name
+ * @return {Boolean}
+ * @api public
+ */
+
+debug.enabled = function(name) {
+  for (var i = 0, len = debug.skips.length; i < len; i++) {
+    if (debug.skips[i].test(name)) {
+      return false;
+    }
+  }
+  for (var i = 0, len = debug.names.length; i < len; i++) {
+    if (debug.names[i].test(name)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+// persist
+
+if (window.localStorage) debug.enable(localStorage.debug);
+
+},{}],10:[function(require,module,exports){
 /**
  * Object#toString() ref for stringify().
  */
@@ -705,7 +919,7 @@ function decode(str) {
   }
 }
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /*!
   * Reqwest! A general purpose XHR connection manager
   * (c) Dustin Diaz 2013

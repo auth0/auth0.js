@@ -18,7 +18,8 @@
   "dependencies": {
     "qs": "git+https://github.com/jfromaniello/node-querystring.git",
     "Base64": "~0.1.3",
-    "reqwest": "~0.9.0"
+    "reqwest": "~0.9.0",
+    "jsonp": "0.0.3"
   },
   "devDependencies": {
     "browserify": "~2.33.0",

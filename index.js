@@ -3,6 +3,8 @@ var base64_url_decode = require('./lib/base64_url_decode');
 var qs                = require('qs');
 var reqwest           = require('reqwest');
 
+var jsonp             = require('jsonp');
+
 var use_jsonp         = require('./lib/use_jsonp');
 var LoginError        = require('./lib/LoginError');
 var json_parse        = require('./lib/json_parse');
@@ -77,16 +79,16 @@ Auth0.prototype.signup = function (options, callback) {
   }
 
   if (use_jsonp()) {
-    return reqwest({
-      url:     'https://' + this._domain + '/dbconnections/signup',
-      type:    'jsonp',
-      data:    query,
-      jsonpCallback: 'cbx',
-      success: function (resp) {
-        return resp.status == 200 ? 
-                success() :
-                fail(resp.status, resp.err);
+    return jsonp('https://' + this._domain + '/dbconnections/signup?' + qs.stringify(query), {
+      param: 'cbx',
+      timeout: 15000
+    }, function (err, resp) {
+      if (err) {
+        return fail(0, err);
       }
+      return resp.status == 200 ? 
+              success() :
+              fail(resp.status, resp.err);
     });
   }
 
@@ -128,18 +130,18 @@ Auth0.prototype.login = function (options, callback) {
     query.tenant = this._domain.split('.')[0];
 
     if (use_jsonp()) {
-      return reqwest({
-        url:     'https://' + this._domain + '/dbconnections/login',
-        type:    'jsonp',
-        data:    query,
-        jsonpCallback: 'cbx',
-        success: function (resp) {
-          if('error' in resp) {
-            var error = new LoginError(resp.status, resp.error);
-            return return_error(error);
-          }
-          self._renderAndSubmitWSFedForm(resp.form);
+      return jsonp('https://' + this._domain + '/dbconnections/login?' + qs.stringify(query), {
+        param: 'cbx',
+        timeout: 15000
+      }, function (err, resp) {
+        if (err) {
+          return return_error(err);
         }
+        if('error' in resp) {
+          var error = new LoginError(resp.status, resp.error);
+          return return_error(error);
+        }
+        self._renderAndSubmitWSFedForm(resp.form);
       });
     }
 
