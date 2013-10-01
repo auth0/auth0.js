@@ -15,20 +15,39 @@ module.exports = function(grunt) {
       version: "10"
   }, {
       browserName: "internet explorer",
-      platform: "VISTA",
+      platform: "Windows 7",
       version: "9"
   }, {
       browserName: "internet explorer",
       platform: "XP",
       version: "8"
+  }, {
+      browserName: "safari",
+      platform: "OS X 10.8",
+      version: "6"
+  }, {
+      browserName: "android",
+      platform: "Linux",
+      version: "4.0"
+  }, {
+      browserName: "iphone",
+      platform: "OS X 10.8",
+      version: "6"
   }];
 
   grunt.initConfig({
     connect: {
-      server: {
+      test: {
         options: {
           base: "test",
+          hostname: '0.0.0.0',
           port: 9999
+        }
+      },
+      example: {
+        options: {
+          base: "example",
+          port: 3000
         }
       }
     },
@@ -45,6 +64,31 @@ module.exports = function(grunt) {
             }
         }
     },
+    browserify: {
+      dist: {
+        files: {
+          'build/auth0.js': ['index.js'],
+        }
+      }
+    },
+    uglify: {
+      min: {
+        files: {
+          'build/auth0.min.js': ['build/auth0.js']
+        }
+      }
+    },
+    copy: {
+      example: {
+        files: {
+          'example/auth0.js': 'build/auth0.js',
+          'test/auth0.js': 'build/auth0.js'
+        }
+      }
+    },
+    clean: {
+      build: ["build/", "example/auth0.js"],
+    },
     watch: {}
   });
 
@@ -53,6 +97,8 @@ module.exports = function(grunt) {
     if (key !== "grunt" && key.indexOf("grunt") === 0) grunt.loadNpmTasks(key);
   }
 
-  grunt.registerTask("dev", ["connect", "watch"]);
-  grunt.registerTask("test", ["connect", "saucelabs-mocha"]);
+  grunt.registerTask("build",   ["clean", "browserify:dist", "uglify:min", "copy:example"]);
+  grunt.registerTask("example", ["connect:example", "watch"]);
+  grunt.registerTask("dev",     ["connect:test", "watch"]);
+  grunt.registerTask("test",    ["connect", "saucelabs-mocha"]);
 };

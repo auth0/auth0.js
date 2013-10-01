@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - 0.8
-before_script:
-  - "export DISPLAY=:99.0" 
-  - "sh -e /etc/init.d/xvfb start"
-script: ./test-phantom
+- 0.8
+env:
+  global:
+  - secure: GpGp/Z+DsaFwkEaXGEeFW2pvcdcg+zWaXnGX1SBP55g7E7zqc16kX59f0el62cCGBefK4MPX6CSGZZhdTwXo3wF0S7eJ2IrcmHhSamn8TYw7CPZvYEBrbtdssqjhBVFVyNBnm8GJOqo4JXq2u2JYPN3JjndmkLS5dzBHk6CucvY=
+  - secure: n9tyQ/xEyg4QL1j1UPJ4LyrYeqx6lG/hPi/zqSZELSUAejpKRv+TQEl06S879RUMMB2uZyFdOXO/8/MxGlr0p+lKfzp4NQlGNLj1Xu61dQ+T7IlfXYm2rMkIy/9k3wNHwjH5Jr61Y3Vt5sA8VLCrIHPWsPHkaod2bOAfeU2b5r0=

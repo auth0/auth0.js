@@ -329,6 +329,9 @@ var isRestorableProto = (function () {
 var indexOf = typeof Array.prototype.indexOf === 'function'
   ? function(arr, el) { return arr.indexOf(el); }
   : function(arr, el) {
+      if (typeof arr == 'string' && typeof "a"[0] == 'undefined') {
+        arr = arr.split('');
+      }
       for (var i = 0; i < arr.length; i++) {
         if (arr[i] === el) return i;
       }
