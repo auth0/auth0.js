@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/auth0/auth0.js.png)](https://travis-ci.org/auth0/auth0.js)
 
+[![Selenium Test Status](https://saucelabs.com/browser-matrix/jfromaniello.svg)](https://saucelabs.com/u/jfromaniello)
+
 ## Usage
 
 ### Login:
