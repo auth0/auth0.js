@@ -191,6 +191,11 @@ function LoginError(status, details) {
   err.code = obj.code;
   err.details = obj;
   
+  if (status === 0) {
+    err.code = "Unknown";
+    err.message = "Unknown error.";
+  }
+
   return err;
 }
 
