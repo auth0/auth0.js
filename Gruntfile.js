@@ -31,6 +31,13 @@ module.exports = function(grunt) {
       version: "6"
   }];
 
+// saucelabs android is not working for me but works in other emulators.
+// , {
+//       browserName: "android",
+//       platform: "Linux",
+//       version: "4.0"
+//   }
+
   grunt.initConfig({
     connect: {
       test: {
