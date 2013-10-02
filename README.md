@@ -14,25 +14,30 @@ The example directory has a ready-to-go app. If you want to run it, you need [no
 
 ## Usage
 
+Take `auth0.js` or `auth0.min.js` from the `build` directory and import it to your page.
+
 > Note: I use jQuery in these examples but auth0.js doesn't need jquery and you can use anything.
 
 ### Initialize:
 
 Construct a new instance of the Auth0 client as follows:
 
-~~~javascript
+~~~html
+<script src="auth0.min.js"></script>
+<script type="text/javascript">
   var auth0 = new Auth0({
     domain:       'mine.auth0.com',
     clientID:     'dsa7d77dsa7d7',
     callbackURL:  'http://my-app.com/callback',
   });
+  
+  //...
+</script>
 ~~~
 
 ### Login:
 
-~~~html
-<script src="auth0.min.js"></script>
-<script type="text/javascript">
+~~~js
   //trigger login with google
   $('.login-google').click(function () {
     auth0.login({
@@ -62,14 +67,13 @@ Construct a new instance of the Auth0 client as follows:
       password:   $('.password').val(),
     });
   });
-</script>
 ~~~
 
 ### Parsing JWT profile
 
 Once you have succesfully authenticated, auth0 will redirect to your `callbackURL` with a hash containing an access_token and the jwt. You can parse the hash as follows:
 
-~~~javascript
+~~~js
   $(function () {
     auth0.parseHash(function (profile, id_token, access_token, state) {
       alert('hello ' + profile.name);
@@ -82,10 +86,8 @@ If there is no hash or the hash doesn't contain the jwt the callback function wi
 
 ### Sign up (database connections):
 
-~~~html
-<script src="auth0.min.js"></script>
-<script type="text/javascript">
-  $('.login-google').click(function () {
+~~~js
+  $('.signup').click(function () {
     auth0.signup({
       connection: 'google-oauth2',
       username:   'foo@bar.com',
@@ -94,7 +96,6 @@ If there is no hash or the hash doesn't contain the jwt the callback function wi
       console.log(err.message); ///this could be something like "email is required"
     });
   });
-</script>
 ~~~
 
 After a succesful login it will auto login the user. If you do not want to automatically login the user use
@@ -114,6 +115,10 @@ auth0.signup({
 ## Develop
 
 Run `npm run dev` and point your browser to `http://localhost:9999/` to run the test suite.
+
+## Browser Compatibility
+
+We are using [SauceLabs](http://saucelabs.com) and [Travis-CI](http://travis-ci.org) to run the test suite on multiple browsers on every push.
 
 ## License 
 
