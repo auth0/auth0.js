@@ -11,7 +11,7 @@ Auth0.js is a client-side library for [Auth0](http://auth0.com). It allows you t
 
 ## Example
 
-The example directory has a ready-to-go app. If you want to run it, you need [node](http://nodejs.org/) installed, then run `npm example` from the root of this project.
+The example directory has a ready-to-go app. If you want to run it, you need [node](http://nodejs.org/) installed, then run `npm run example` from the root of this project.
 
 ## Usage
 
