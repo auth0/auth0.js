@@ -7,13 +7,13 @@
 
 Auth0.js is a client-side library for [Auth0](http://auth0.com). It allows you to trigger the authentication process and parse the [JWT](http://openid.net/specs/draft-jones-json-web-token-07.html) (JSON web token) with just the Auth0 `clientID`. Once you have the JWT you can use it to authenticate requests to your http API and validate the JWT in your server-side logic with the `clientSecret`.
 
-> Note: I use jQuery in these examples but auth0.js doesn't need jquery and you can use anything.
-
 ## Example
 
 The example directory has a ready-to-go app. If you want to run it, you need [node](http://nodejs.org/) installed, then run `npm run example` from the root of this project.
 
 ## Usage
+
+> Note: I use jQuery in these examples but auth0.js doesn't need jquery and you can use anything.
 
 ### Initialize:
 
