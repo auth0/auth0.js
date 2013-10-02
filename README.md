@@ -110,13 +110,9 @@ auth0.signup({
 });
 ~~~
 
-## Run the example
+## Develop
 
-run `make test-interactive` and open http://localhost:3000:
-
-~~~
-make test-interactive
-~~~
+Run `npm run dev` and point your browser to `http://localhost:9999/` to run the test suite.
 
 ## License 
 
