@@ -26,17 +26,21 @@
         var auth0 = new Auth0({
             domain:      'mdocs.auth0.com',
             callbackURL: 'http://localhost:3000/',
-            clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-            success: function (profile) {
-                alert('hello ' + profile.name);
-            }
+            clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
         });
+
+        auth0.parseHash(function (profile) {
+            window.location.hash = "";
+            alert('hello ' + profile.name);
+        });
+
         $('.login-google').click(function (e) {
             e.preventDefault();
             auth0.login({
                 connection: 'google-oauth2'
             });
         });
+
         $('.login-db').click(function (e) {
             e.preventDefault();
             auth0.login({
@@ -47,6 +51,7 @@
                 if (err) alert('Something went wrong: ' + err.message);
             });
         });
+
         $('.signup-db').click(function (e) {
             e.preventDefault();
             auth0.signup({

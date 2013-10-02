@@ -22,14 +22,8 @@ function Auth0 (options) {
   this._clientID = options.clientID;
   this._callbackURL = options.callbackURL;
   this._domain = options.domain;
-
-  if (options.success && window.location.hash.match(/access_token/)) {
-    var hash = window.location.hash.substr(1);
-    var parsed_qs = qs.parse(hash);
-    var id_token = parsed_qs.id_token;
-    var encoded = id_token.split('.')[1];
-    var prof = json_parse(base64_url_decode(encoded));
-    options.success(prof, id_token, parsed_qs.access_token, parsed_qs.state);
+  if (options.success) {
+    this.parseHash(options.success);
   }
   this._failure = options.failure;
 }
@@ -43,6 +37,16 @@ Auth0.prototype._renderAndSubmitWSFedForm = function (formHtml) {
   div.innerHTML = formHtml;
   var form = document.body.appendChild(div).children[0];
   form.submit();
+};
+
+Auth0.prototype.parseHash = function (callback) {
+  if(!window.location.hash.match(/access_token/)) return;
+  var hash = window.location.hash.substr(1);
+  var parsed_qs = qs.parse(hash);
+  var id_token = parsed_qs.id_token;
+  var encoded = id_token.split('.')[1];
+  var prof = json_parse(base64_url_decode(encoded));
+  callback(prof, id_token, parsed_qs.access_token, parsed_qs.state);
 };
 
 Auth0.prototype.signup = function (options, callback) {
@@ -105,6 +109,26 @@ Auth0.prototype.signup = function (options, callback) {
 };
 
 Auth0.prototype.login = function (options, callback) {
+  if (options.username || options.email) {
+    return this.loginWithDbConnection(options, callback);
+  }
+
+  var query = {
+    response_type: 'token',
+    client_id:     this._clientID,
+    connection:    options.connection,
+    redirect_uri:  this._callbackURL,
+    scope:         'openid profile'
+  };
+
+  if (options.state) {
+    query.state = options.state;
+  }
+
+  this._redirect('https://' + this._domain + '/authorize?' + qs.stringify(query));
+};
+
+Auth0.prototype.loginWithDbConnection = function (options, callback) {
   var self = this;
   
   var query = {
@@ -119,54 +143,50 @@ Auth0.prototype.login = function (options, callback) {
     query.state = options.state;
   }
 
+  query.username = options.username || options.email;
+  query.password = options.password;
+  
+  query.tenant = this._domain.split('.')[0];
+
   function return_error (error) {
     if (callback)      return callback(error);
     if (self._failure) return self._failure(error); 
   }
 
-  if ('username' in options && 'password' in options) {
-    query.username = options.username || options.email;
-    query.password = options.password;
-    
-    query.tenant = this._domain.split('.')[0];
-
-    if (use_jsonp()) {
-      return jsonp('https://' + this._domain + '/dbconnections/login?' + qs.stringify(query), {
-        param: 'cbx',
-        timeout: 15000
-      }, function (err, resp) {
-        if (err) {
-          return return_error(err);
-        }
-        if('error' in resp) {
-          var error = new LoginError(resp.status, resp.error);
-          return return_error(error);
-        }
-        self._renderAndSubmitWSFedForm(resp.form);
-      });
-    }
-
-    reqwest({
-      url:     'https://' + this._domain + '/dbconnections/login',
-      method:  'post',
-      type:    'html',
-      data:    query,
-      success: function (resp) {
-        self._renderAndSubmitWSFedForm(resp);
+  if (use_jsonp()) {
+    return jsonp('https://' + this._domain + '/dbconnections/login?' + qs.stringify(query), {
+      param: 'cbx',
+      timeout: 15000
+    }, function (err, resp) {
+      if (err) {
+        return return_error(err);
       }
-    }).fail(function (err) {
-      var error = new LoginError(err.status, err.responseText);
-      return return_error(error);
+      if('error' in resp) {
+        var error = new LoginError(resp.status, resp.error);
+        return return_error(error);
+      }
+      self._renderAndSubmitWSFedForm(resp.form);
     });
-
-  } else {
-    this._redirect('https://' + this._domain + '/authorize?' + qs.stringify(query));
   }
+
+  reqwest({
+    url:     'https://' + this._domain + '/dbconnections/login',
+    method:  'post',
+    type:    'html',
+    data:    query,
+    success: function (resp) {
+      self._renderAndSubmitWSFedForm(resp);
+    }
+  }).fail(function (err) {
+    var error = new LoginError(err.status, err.responseText);
+    return return_error(error);
+  });
 };
 
 if (global.window) {
   global.window.Auth0 = Auth0;
 }
+
 module.exports = Auth0;
 },{"./lib/LoginError":2,"./lib/assert_required":3,"./lib/base64_url_decode":4,"./lib/json_parse":5,"./lib/use_jsonp":6,"jsonp":8,"qs":10,"reqwest":11}],2:[function(require,module,exports){
 var json_parse = require('./json_parse');
