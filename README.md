@@ -14,7 +14,9 @@ The example directory has a ready-to-go app. If you want to run it, you need [no
 
 ## Usage
 
-Take `auth0.js` or `auth0.min.js` from the `build` directory and import it to your page.
+Take `auth0.js` or `auth0.min.js` from the `build` directory and import it to your page. 
+
+If you are using [browserify](http://browserify.org/) install with `npm i auth0.js`.
 
 > Note: I use jQuery in these examples but auth0.js doesn't need jquery and you can use anything.
 
@@ -36,6 +38,8 @@ Construct a new instance of the Auth0 client as follows:
 ~~~
 
 ### Login:
+
+Trigger the login on any of your active identity provider as follows:
 
 ~~~js
   //trigger login with google
@@ -86,6 +90,8 @@ If there is no hash or the hash doesn't contain the jwt the callback function wi
 
 ### Sign up (database connections):
 
+If you use [Database Connections](https://docs.auth0.com/mysql-connection-tutorial) you can signup as follows:
+
 ~~~js
   $('.signup').click(function () {
     auth0.signup({
@@ -98,19 +104,7 @@ If there is no hash or the hash doesn't contain the jwt the callback function wi
   });
 ~~~
 
-After a succesful login it will auto login the user. If you do not want to automatically login the user use
-
-~~~js
-auth0.signup({
-  connection: 'google-oauth2',
-  username:   'foo@bar.com',
-  password:   'blabla',
-  auto_login: false
-}, function (err) {
-  if (err) return alert('something went wrong: ' + err.message);
-  alert('congrats!')
-});
-~~~
+After a succesful login it will auto login the user. If you do not want to automatically login the user you have to pass the option `auto_login: false`.
 
 ## Develop
 
@@ -122,4 +116,24 @@ We are using [SauceLabs](http://saucelabs.com) and [Travis-CI](http://travis-ci.
 
 ## License 
 
-MIT - 2013 - AUTH10 LLC
+The MIT License (MIT)
+
+Copyright (c) 2013 AUTH10 LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
