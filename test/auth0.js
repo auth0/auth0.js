@@ -183,6 +183,15 @@ Auth0.prototype.loginWithDbConnection = function (options, callback) {
   });
 };
 
+Auth0.prototype.getSSOData = function (callback) {
+  return jsonp('https://' + this._domain + '/user/ssodata', {
+    param: 'cbx',
+    timeout: 15000
+  }, function (err, resp) {
+    callback(null, err ? {} : resp); // Always return OK, regardless of any errors
+  });
+};
+
 if (global.window) {
   global.window.Auth0 = Auth0;
 }
@@ -269,7 +278,7 @@ module.exports = function () {
 ;(function () {
 
   var
-    object = typeof exports != 'undefined' ? exports : window,
+    object = typeof exports != 'undefined' ? exports : this, // #8: web workers
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
     INVALID_CHARACTER_ERR = (function () {
       // fabricate a suitable error object

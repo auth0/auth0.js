@@ -182,6 +182,15 @@ Auth0.prototype.loginWithDbConnection = function (options, callback) {
   });
 };
 
+Auth0.prototype.getSSOData = function (callback) {
+  return jsonp('https://' + this._domain + '/user/ssodata', {
+    param: 'cbx',
+    timeout: 15000
+  }, function (err, resp) {
+    callback(null, err ? {} : resp); // Always return OK, regardless of any errors
+  });
+};
+
 if (global.window) {
   global.window.Auth0 = Auth0;
 }
