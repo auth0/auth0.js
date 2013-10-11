@@ -141,16 +141,18 @@ describe('Auth0 - User And Passwords', function () {
   /*it('should return SSO data after successfull authentication', function (done) {
     forceLogout('mdocs.auth0.com', function () {
       var auth0 = new Auth0({
-        domain:      'mdocs.auth0.com',
-        callbackURL: 'http://localhost:3000',
-        clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+        domain:       'mdocs.auth0.com',
+        callbackURL:  'http://localhost:3000',
+        clientID:     '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
       });
 
+      var loginStarted;
       var iframe = document.createElement('iframe');
       iframe.name = 'test-iframe';
+      iframe.style.display = 'none';
       iframe.onload = function() {
-        if (this.src !== 'http://localhost:3000') return;
-
+        if (!loginStarted) return;
+        
         auth0.getSSOData(function (err, ssoData) {
           expect(ssoData.sso).to.eql(true);
           expect(ssoData.lastUsedClientID).to.eql('0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup');
@@ -170,6 +172,7 @@ describe('Auth0 - User And Passwords', function () {
         var form = document.body.appendChild(div).children[0];
         form.setAttribute('target', 'test-iframe');
         form.submit();
+        loginStarted = true;
       };
 
       auth0.login({
