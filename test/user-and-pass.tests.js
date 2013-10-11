@@ -138,7 +138,7 @@ describe('Auth0 - User And Passwords', function () {
     });
   });
 
-  if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
+  /*if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
     it('should return SSO data after successfull authentication', function (done) {
       forceLogout('mdocs.auth0.com', function () {
         var auth0 = new Auth0({
@@ -183,5 +183,5 @@ describe('Auth0 - User And Passwords', function () {
         });
       });
     });
-  }
+  }*/
 });
