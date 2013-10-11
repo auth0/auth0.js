@@ -112,19 +112,21 @@ describe('Auth0', function () {
     done();
   });
 
-  /*it('should return empty SSO data if login never was called', function (done) {
-    forceLogout('aaa.auth0.com', function () {
-      var auth0 = Auth0({
-        clientID:     'aaaabcdefgh', 
-        callbackURL:  'https://myapp.com/callback',
-        domain:       'aaa.auth0.com'
-      });
+  if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
+    it('should return empty SSO data if login never was called', function (done) {
+      forceLogout('aaa.auth0.com', function () {
+        var auth0 = Auth0({
+          clientID:     'aaaabcdefgh', 
+          callbackURL:  'https://myapp.com/callback',
+          domain:       'aaa.auth0.com'
+        });
 
-      auth0.getSSOData(function (err, ssoData) {
-        expect(ssoData.sso).to.eql(false);
-        done();
+        auth0.getSSOData(function (err, ssoData) {
+          expect(ssoData.sso).to.eql(false);
+          done();
+        });
       });
     });
-  });*/
+  }
 
 });

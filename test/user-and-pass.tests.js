@@ -138,48 +138,50 @@ describe('Auth0 - User And Passwords', function () {
     });
   });
 
-  /*it('should return SSO data after successfull authentication', function (done) {
-    forceLogout('mdocs.auth0.com', function () {
-      var auth0 = new Auth0({
-        domain:       'mdocs.auth0.com',
-        callbackURL:  'http://localhost:3000',
-        clientID:     '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
-      });
-
-      var loginStarted;
-      var iframe = document.createElement('iframe');
-      iframe.name = 'test-iframe';
-      iframe.style.display = 'none';
-      iframe.onload = function() {
-        if (!loginStarted) return;
-        
-        auth0.getSSOData(function (err, ssoData) {
-          expect(ssoData.sso).to.eql(true);
-          expect(ssoData.lastUsedClientID).to.eql('0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup');
-          expect(ssoData.lastUsedUsername).to.eql('johnfoo@gmail.com');
-          expect(ssoData.lastUsedConnection).to.exist;
-          expect(ssoData.lastUsedConnection.name).to.eql('tests');
-          expect(ssoData.lastUsedConnection.strategy).to.eql('auth0');
-          done();
+  if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
+    it('should return SSO data after successfull authentication', function (done) {
+      forceLogout('mdocs.auth0.com', function () {
+        var auth0 = new Auth0({
+          domain:       'mdocs.auth0.com',
+          callbackURL:  'http://localhost:3000',
+          clientID:     '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
         });
-      };
 
-      document.body.appendChild(iframe);
+        var loginStarted;
+        var iframe = document.createElement('iframe');
+        iframe.name = 'test-iframe';
+        iframe.style.display = 'none';
+        iframe.onload = function() {
+          if (!loginStarted) return;
+          
+          auth0.getSSOData(function (err, ssoData) {
+            expect(ssoData.sso).to.eql(true);
+            expect(ssoData.lastUsedClientID).to.eql('0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup');
+            expect(ssoData.lastUsedUsername).to.eql('johnfoo@gmail.com');
+            expect(ssoData.lastUsedConnection).to.exist;
+            expect(ssoData.lastUsedConnection.name).to.eql('tests');
+            expect(ssoData.lastUsedConnection.strategy).to.eql('auth0');
+            done();
+          });
+        };
 
-      auth0._renderAndSubmitWSFedForm = function (formHtml) {
-        var div = document.createElement('div');
-        div.innerHTML = formHtml;
-        var form = document.body.appendChild(div).children[0];
-        form.setAttribute('target', 'test-iframe');
-        form.submit();
-        loginStarted = true;
-      };
+        document.body.appendChild(iframe);
 
-      auth0.login({
-        connection: 'tests',
-        username:   'johnfoo@gmail.com',
-        password:   '12345'
+        auth0._renderAndSubmitWSFedForm = function (formHtml) {
+          var div = document.createElement('div');
+          div.innerHTML = formHtml;
+          var form = document.body.appendChild(div).children[0];
+          form.setAttribute('target', 'test-iframe');
+          form.submit();
+          loginStarted = true;
+        };
+
+        auth0.login({
+          connection: 'tests',
+          username:   'johnfoo@gmail.com',
+          password:   '12345'
+        });
       });
     });
-  });*/
+  }
 });
