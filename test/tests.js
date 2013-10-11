@@ -125,7 +125,7 @@ describe('Auth0', function () {
     });
   });
 
-  if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
+  /*if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
     it('should return empty SSO data after logout', function (done) {
       forceLogout('aaa.auth0.com', function () {
         var auth0 = Auth0({
@@ -140,6 +140,6 @@ describe('Auth0', function () {
         });
       });
     });
-  }
+  }*/
 
 });
