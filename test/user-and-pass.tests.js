@@ -146,6 +146,19 @@ describe('Auth0 - User And Passwords', function () {
         clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
       });
 
+      var iframe = document.getElementsByName('test-iframe')[0];
+      iframe.setAttribute('onload', (function() { 
+        auth0.getSSOData(function (err, ssoData) {
+          expect(ssoData.sso).to.eql(true);
+          expect(ssoData.lastUsedClientID).to.eql('0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup');
+          expect(ssoData.lastUsedUsername).to.eql('johnfoo@gmail.com');
+          expect(ssoData.lastUsedConnection).to.exist;
+          expect(ssoData.lastUsedConnection.name).to.eql('tests');
+          expect(ssoData.lastUsedConnection.strategy).to.eql('auth0');
+          done();
+        });
+      }).call(this));
+
       auth0._renderAndSubmitWSFedForm = function (formHtml) {
         var div = document.createElement('div');
         div.innerHTML = formHtml;
@@ -159,18 +172,6 @@ describe('Auth0 - User And Passwords', function () {
         username:   'johnfoo@gmail.com',
         password:   '12345'
       });
-
-      setTimeout(function () {
-        auth0.getSSOData(function (err, ssoData) {
-          expect(ssoData.sso).to.eql(true);
-          expect(ssoData.lastUsedClientID).to.eql('0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup');
-          expect(ssoData.lastUsedUsername).to.eql('johnfoo@gmail.com');
-          expect(ssoData.lastUsedConnection).to.exist;
-          expect(ssoData.lastUsedConnection.name).to.eql('tests');
-          expect(ssoData.lastUsedConnection.strategy).to.eql('auth0');
-          done();
-        });
-      }, 1 * 1000);
     });
   });*/
 });
