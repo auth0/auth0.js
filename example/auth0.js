@@ -278,7 +278,7 @@ module.exports = function () {
 ;(function () {
 
   var
-    object = typeof exports != 'undefined' ? exports : this, // #8: web workers
+    object = typeof exports != 'undefined' ? exports : window,
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
     INVALID_CHARACTER_ERR = (function () {
       // fabricate a suitable error object
