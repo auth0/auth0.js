@@ -113,15 +113,17 @@ describe('Auth0', function () {
   });
 
   it('should return empty SSO data if login never was called', function (done) {
-    var auth0 = Auth0({
-      clientID:     'aaaabcdefgh', 
-      callbackURL:  'https://myapp.com/callback',
-      domain:       'aaa.auth0.com'
-    });
+    forceLogout('aaa.auth0.com', function () {
+      var auth0 = Auth0({
+        clientID:     'aaaabcdefgh', 
+        callbackURL:  'https://myapp.com/callback',
+        domain:       'aaa.auth0.com'
+      });
 
-    auth0.getSSOData(function (err, ssoData) {
-      expect(ssoData.sso).to.eql(false);
-      done();
+      auth0.getSSOData(function (err, ssoData) {
+        expect(ssoData.sso).to.eql(false);
+        done();
+      });
     });
   });
 

@@ -139,45 +139,38 @@ describe('Auth0 - User And Passwords', function () {
   });
 
   it.skip('should return SSO data after successfull authentication', function (done) {
-    var auth0 = new Auth0({
-      domain:      'mdocs.auth0.com',
-      callbackURL: 'http://localhost:3000',
-      clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
-    });
-
-    auth0._renderAndSubmitWSFedForm = function (formHtml) {
-      var iframe = document.createElement('iframe');
-      iframe.name = 'test-iframe';
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-
-      // force logout
-      window.frames[iframe.name].location = 'https://mdocs.auth0.com/logout';
-
-      var div = document.createElement('div');
-      div.innerHTML = formHtml;
-
-      var form = document.body.appendChild(div).children[0];
-      form.setAttribute('target', iframe.name);
-      form.submit();
-    };
-
-    auth0.login({
-      connection: 'tests',
-      username:   'johnfoo@gmail.com',
-      password:   '12345'
-    });
-
-    setTimeout(function () {
-      auth0.getSSOData(function (err, ssoData) {
-        expect(ssoData.sso).to.eql(true);
-        expect(ssoData.lastUsedClientID).to.eql('0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup');
-        expect(ssoData.lastUsedUsername).to.eql('johnfoo@gmail.com');
-        expect(ssoData.lastUsedConnection).to.exist;
-        expect(ssoData.lastUsedConnection.name).to.eql('tests');
-        expect(ssoData.lastUsedConnection.strategy).to.eql('auth0');
-        done();
+    forceLogout('mdocs.auth0.com', function () {
+      var auth0 = new Auth0({
+        domain:      'mdocs.auth0.com',
+        callbackURL: 'http://localhost:3000',
+        clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
       });
-    }, 4000);
+
+      auth0._renderAndSubmitWSFedForm = function (formHtml) {
+        var div = document.createElement('div');
+        div.innerHTML = formHtml;
+        var form = document.body.appendChild(div).children[0];
+        form.setAttribute('target', 'test-iframe');
+        form.submit();
+      };
+
+      auth0.login({
+        connection: 'tests',
+        username:   'johnfoo@gmail.com',
+        password:   '12345'
+      });
+
+      setTimeout(function () {
+        auth0.getSSOData(function (err, ssoData) {
+          expect(ssoData.sso).to.eql(true);
+          expect(ssoData.lastUsedClientID).to.eql('0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup');
+          expect(ssoData.lastUsedUsername).to.eql('johnfoo@gmail.com');
+          expect(ssoData.lastUsedConnection).to.exist;
+          expect(ssoData.lastUsedConnection.name).to.eql('tests');
+          expect(ssoData.lastUsedConnection.strategy).to.eql('auth0');
+          done();
+        });
+      }, 1 * 1000);
+    });
   });
 });
