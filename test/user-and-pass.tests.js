@@ -138,7 +138,7 @@ describe('Auth0 - User And Passwords', function () {
     });
   });
 
-  it.skip('should return SSO data after successfull authentication', function (done) {
+  /*it('should return SSO data after successfull authentication', function (done) {
     forceLogout('mdocs.auth0.com', function () {
       var auth0 = new Auth0({
         domain:      'mdocs.auth0.com',
@@ -172,5 +172,5 @@ describe('Auth0 - User And Passwords', function () {
         });
       }, 1 * 1000);
     });
-  });
+  });*/
 });
