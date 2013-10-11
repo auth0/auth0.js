@@ -138,10 +138,7 @@ describe('Auth0 - User And Passwords', function () {
     });
   });
 
-  it('should return SSO data after successfull authentication', function (done) {
-    // erase auth0 cookie
-    document.cookie = 'auth0=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-
+  it.skip('should return SSO data after successfull authentication', function (done) {
     var auth0 = new Auth0({
       domain:      'mdocs.auth0.com',
       callbackURL: 'http://localhost:3000',
