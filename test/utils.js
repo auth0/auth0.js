@@ -1,6 +1,11 @@
 function forceLogout (domain, callback) {
-  var iframe = document.getElementsByName('test-iframe')[0];
-  iframe.setAttribute('onload', (function() { callback(); }).call(this));
+  var endpoint = 'https://' + domain + '/logout';
+  var iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.onload = function () {
+    if (this.src !== endpoint) return;
+    callback();
+  };
 
-  window.frames['test-iframe'].location = 'https://' + domain + '/logout';
+  document.body.appendChild(iframe).src = endpoint;
 }

@@ -146,8 +146,11 @@ describe('Auth0 - User And Passwords', function () {
         clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
       });
 
-      var iframe = document.getElementsByName('test-iframe')[0];
-      iframe.setAttribute('onload', (function() { 
+      var iframe = document.createElement('iframe');
+      iframe.name = 'test-iframe';
+      iframe.onload = function() {
+        if (this.src !== 'http://localhost:3000') return;
+
         auth0.getSSOData(function (err, ssoData) {
           expect(ssoData.sso).to.eql(true);
           expect(ssoData.lastUsedClientID).to.eql('0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup');
@@ -157,7 +160,9 @@ describe('Auth0 - User And Passwords', function () {
           expect(ssoData.lastUsedConnection.strategy).to.eql('auth0');
           done();
         });
-      }).call(this));
+      };
+
+      document.body.appendChild(iframe);
 
       auth0._renderAndSubmitWSFedForm = function (formHtml) {
         var div = document.createElement('div');
