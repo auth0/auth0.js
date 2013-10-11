@@ -5,3 +5,10 @@ env:
   global:
   - secure: GpGp/Z+DsaFwkEaXGEeFW2pvcdcg+zWaXnGX1SBP55g7E7zqc16kX59f0el62cCGBefK4MPX6CSGZZhdTwXo3wF0S7eJ2IrcmHhSamn8TYw7CPZvYEBrbtdssqjhBVFVyNBnm8GJOqo4JXq2u2JYPN3JjndmkLS5dzBHk6CucvY=
   - secure: n9tyQ/xEyg4QL1j1UPJ4LyrYeqx6lG/hPi/zqSZELSUAejpKRv+TQEl06S879RUMMB2uZyFdOXO/8/MxGlr0p+lKfzp4NQlGNLj1Xu61dQ+T7IlfXYm2rMkIy/9k3wNHwjH5Jr61Y3Vt5sA8VLCrIHPWsPHkaod2bOAfeU2b5r0=
+notifications:
+  hipchat:
+    rooms:
+      - a0f91742edafa39a4b75894d00d1f6@launch area
+    template:
+      - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
+    format: html
