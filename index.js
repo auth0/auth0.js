@@ -50,7 +50,7 @@ Auth0.prototype.parseHash = function (callback) {
 
 Auth0.prototype.signup = function (options, callback) {
   var self = this;
-  
+
   var query = {
     response_type: 'token',
     client_id:     this._clientID,
@@ -65,7 +65,7 @@ Auth0.prototype.signup = function (options, callback) {
 
   query.email = options.username || options.email;
   query.password = options.password;
-  
+
   query.tenant = this._domain.split('.')[0];
 
   function success () {
@@ -79,7 +79,7 @@ Auth0.prototype.signup = function (options, callback) {
   function fail (status, resp) {
     var error = new LoginError(status, resp);
     if (callback)      return callback(error);
-    if (self._failure) return self._failure(error); 
+    if (self._failure) return self._failure(error);
   }
 
   if (use_jsonp()) {
@@ -90,7 +90,7 @@ Auth0.prototype.signup = function (options, callback) {
       if (err) {
         return fail(0, err);
       }
-      return resp.status == 200 ? 
+      return resp.status == 200 ?
               success() :
               fail(resp.status, resp.err);
     });
@@ -129,7 +129,7 @@ Auth0.prototype.login = function (options, callback) {
 
 Auth0.prototype.loginWithDbConnection = function (options, callback) {
   var self = this;
-  
+
   var query = {
     response_type: 'token',
     client_id:     this._clientID,
@@ -144,12 +144,12 @@ Auth0.prototype.loginWithDbConnection = function (options, callback) {
 
   query.username = options.username || options.email;
   query.password = options.password;
-  
+
   query.tenant = this._domain.split('.')[0];
 
   function return_error (error) {
     if (callback)      return callback(error);
-    if (self._failure) return self._failure(error); 
+    if (self._failure) return self._failure(error);
   }
 
   if (use_jsonp()) {

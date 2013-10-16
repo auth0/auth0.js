@@ -52,6 +52,13 @@ module.exports = function(grunt) {
           base: "example",
           port: 3000
         }
+      },
+      example_https: {
+        options: {
+          base: "example",
+          port: 4000,
+          protocol: 'https'
+        }
       }
     },
     'saucelabs-mocha': {
@@ -107,6 +114,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask("build",   ["clean", "browserify:dist", "uglify:min", "copy:example"]);
   grunt.registerTask("example", ["connect:example", "watch"]);
+  grunt.registerTask("example_https", ["connect:example_https", "watch"]);
   grunt.registerTask("dev",     ["connect:test", "watch"]);
   grunt.registerTask("test",    ["connect", "saucelabs-mocha"]);
 };
