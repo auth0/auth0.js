@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 module.exports = function(grunt) {
   var browsers = [{
       browserName: "firefox",
@@ -55,9 +57,12 @@ module.exports = function(grunt) {
       },
       example_https: {
         options: {
-          base: "example",
-          port: 4000,
-          protocol: 'https'
+          base:  "example",
+          port:  3000,
+          protocol: 'https',
+          hostname: '*',
+          cert: fs.readFileSync(__dirname + '/https_test_certs/server.crt').toString(),
+          key:  fs.readFileSync(__dirname + '/https_test_certs/server.key').toString(),
         }
       }
     },
