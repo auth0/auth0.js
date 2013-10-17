@@ -101,7 +101,8 @@ Auth0.prototype.signup = function (options, callback) {
     method:  'post',
     type:    'html',
     data:    query,
-    success: success
+    success: success,
+    crossOrigin: true
   }).fail(function (err) {
     fail(err.status, err.responseText);
   });
@@ -173,6 +174,7 @@ Auth0.prototype.loginWithDbConnection = function (options, callback) {
     method:  'post',
     type:    'html',
     data:    query,
+    crossOrigin: true,
     success: function (resp) {
       self._renderAndSubmitWSFedForm(resp);
     }
