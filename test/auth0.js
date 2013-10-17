@@ -180,7 +180,15 @@ Auth0.prototype.loginWithDbConnection = function (options, callback) {
       self._renderAndSubmitWSFedForm(resp);
     }
   }).fail(function (err) {
-    var error = new LoginError(err.status, err.responseText);
+    var er = err;
+    if (!er.status || er.status === 0) { //ie10 trick
+      er = {};
+      er.status = 401;
+      er.responseText = {
+        code: 'invalid_user_password'
+      };
+    }
+    var error = new LoginError(er.status, er.responseText);
     return return_error(error);
   });
 };
