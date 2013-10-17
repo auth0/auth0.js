@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/auth0/auth0.js.png)](https://travis-ci.org/auth0/auth0.js)
 
-[![Integrated Test Status](https://saucelabs.com/browser-matrix/jfromaniello.svg)](https://saucelabs.com/u/jfromaniello)
+[![NPM version](https://badge.fury.io/js/auth0-js.png)](http://badge.fury.io/js/auth0-js)
 
 [![Auth0](http://blog.auth0.com.s3.amazonaws.com/logo-290x200-letters.png)](http://auth0.com)
 
@@ -14,7 +14,7 @@ The example directory has a ready-to-go app. In order to run it you need [node](
 
 ## Usage
 
-Take `auth0.js` or `auth0.min.js` from the `build` directory and import it to your page. 
+Take `auth0.js` or `auth0.min.js` from the `build` directory and import it to your page.
 
 If you are using [browserify](http://browserify.org/) install with `npm i auth0.js`.
 
@@ -32,7 +32,7 @@ Construct a new instance of the Auth0 client as follows:
     clientID:     'dsa7d77dsa7d7',
     callbackURL:  'http://my-app.com/callback',
   });
-  
+
   //...
 </script>
 ~~~
@@ -47,7 +47,7 @@ Trigger the login on any of your active identity provider as follows:
     auth0.login({
       connection: 'google-oauth2'
     });
-  }); 
+  });
 
   //trigger login with github
   $('.login-github').click(function () {
@@ -86,7 +86,7 @@ Once you have succesfully authenticated, auth0 will redirect to your `callbackUR
   });
 ~~~
 
-If there is no hash or the hash doesn't contain the jwt the callback function will not be called. So, it is safe to put this in the same page where you trigger the login.  
+If there is no hash or the hash doesn't contain the jwt the callback function will not be called. So, it is safe to put this in the same page where you trigger the login.
 
 ### Sign up (database connections):
 
@@ -112,9 +112,9 @@ Run `npm run dev` and point your browser to `http://localhost:9999/` to run the 
 
 ## Browser Compatibility
 
-We are using [SauceLabs](http://saucelabs.com) and [Travis-CI](http://travis-ci.org) to run the test suite on multiple browsers on every push.
+We are using [BrowserStack](http://browserstack.com) and [Travis-CI](http://travis-ci.org) to run the test suite on multiple browsers on every push.
 
-## License 
+## License
 
 The MIT License (MIT)
 

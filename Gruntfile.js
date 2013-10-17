@@ -1,45 +1,6 @@
 var fs = require('fs');
 
 module.exports = function(grunt) {
-  var browsers = [{
-      browserName: "firefox",
-      version: "19",
-      platform: "XP"
-  }, {
-      browserName: "chrome",
-      platform: "XP"
-  }, {
-      browserName: "chrome",
-      platform: "linux"
-  }, {
-      browserName: "internet explorer",
-      platform: "WIN8",
-      version: "10"
-  }, {
-      browserName: "internet explorer",
-      platform: "Windows 7",
-      version: "9"
-  }, {
-      browserName: "internet explorer",
-      platform: "XP",
-      version: "8"
-  }, {
-      browserName: "safari",
-      platform: "OS X 10.8",
-      version: "6"
-  }, {
-      browserName: "iphone",
-      platform: "OS X 10.8",
-      version: "6"
-  }];
-
-// saucelabs android is not working for me but works in other emulators.
-// , {
-//       browserName: "android",
-//       platform: "Linux",
-//       version: "4.0"
-//   }
-
   grunt.initConfig({
     connect: {
       test: {
@@ -65,19 +26,6 @@ module.exports = function(grunt) {
           key:  fs.readFileSync(__dirname + '/https_test_certs/server.key').toString(),
         }
       }
-    },
-    'saucelabs-mocha': {
-        all: {
-            options: {
-                urls: ["http://127.0.0.1:9999/index.html"],
-                tunnelTimeout: 5,
-                build: process.env.TRAVIS_JOB_ID,
-                concurrency: 3,
-                browsers: browsers,
-                testname: "mocha tests",
-                tags: ["master"]
-            }
-        }
     },
     browserify: {
       dist: {
@@ -121,5 +69,4 @@ module.exports = function(grunt) {
   grunt.registerTask("example", ["connect:example", "watch"]);
   grunt.registerTask("example_https", ["connect:example_https", "watch"]);
   grunt.registerTask("dev",     ["connect:test", "watch"]);
-  grunt.registerTask("test",    ["connect", "saucelabs-mocha"]);
 };

@@ -3,8 +3,9 @@ node_js:
 - 0.8
 env:
   global:
-  - secure: GpGp/Z+DsaFwkEaXGEeFW2pvcdcg+zWaXnGX1SBP55g7E7zqc16kX59f0el62cCGBefK4MPX6CSGZZhdTwXo3wF0S7eJ2IrcmHhSamn8TYw7CPZvYEBrbtdssqjhBVFVyNBnm8GJOqo4JXq2u2JYPN3JjndmkLS5dzBHk6CucvY=
-  - secure: n9tyQ/xEyg4QL1j1UPJ4LyrYeqx6lG/hPi/zqSZELSUAejpKRv+TQEl06S879RUMMB2uZyFdOXO/8/MxGlr0p+lKfzp4NQlGNLj1Xu61dQ+T7IlfXYm2rMkIy/9k3wNHwjH5Jr61Y3Vt5sA8VLCrIHPWsPHkaod2bOAfeU2b5r0=
+  - secure: Fe1YaRDvJbMKdJahNGDywcIHzT5gOdGdDwCC+lwgGt/BYiSm3cDzQrCK2iwlhSpCJONqmwbryzmwgv+2/qgarPZ0ZhX8xYWpX93u/k4E/HvoeYuBRSwmOK+MDTmbslkEvaKSwYAKiOD15hEKqYFlJvfIE4xajEDGrCj5NSpiWNY=
+  - secure: WLdvW6Ia5V1vDrvCBOXoEPLSPF6aioLtF25Gr6YXV13Y4OqMwy0SCbF485D5IF4iYacrhkUM/Qs2X8ozbz1GfKWNKSs1+hCBU/JULM5iCtKnDi4SI/wvYVLxjSemQDXQgIYhcVl0T2KYfgZXYXt/QBakHUsiDGACUlx9JUIikiw=
+  - secure: WMZEk63ucqi8JrcsuTm5ZBqsMKDNjg9BbeyBFEmTvPxWdPv5CUpsYGs9G5vcGo/Q/1P5piziDtssj/B7wr6CoCPamvXRYIJMbQpkOjiCx+vBVCnJncdDpD/a8i3Il2KY+Os3uZTZHYYs6GDPIonI9tiHC5TIFinbAY67GSOx0AU=
 notifications:
   hipchat:
     rooms:

@@ -2,8 +2,8 @@
 
 test_page: index.html
 
-on_start: 
-  command: browserstack tunnel localhost:<port>
+on_start:
+  command: "PORT=<port> ./run-browserstack"
   wait_for_text: Tunnel is running
 
 launchers:
@@ -36,6 +36,14 @@ launchers:
     command: browserstack launch --attach "Motorola Photon 4G" <url>
     protocol: browser
 
-launch_in_ci: [bs_opera, bs_chrome, bs_firefox, bs_safari_51, bs_safari_5, bs_ie_8, bs_ie_9, bs_android_23]
+  bs_android_41:
+    command: browserstack launch --attach "Samsung Galaxy S III" <url>
+    protocol: browser
+
+  bs_iphone_5:
+    command: browserstack launch --attach "iPhone 5" <url>
+    protocol: browser
+
+launch_in_ci: [bs_opera, bs_chrome, bs_firefox, bs_safari_51, bs_safari_5, bs_ie_8, bs_ie_9, bs_iphone_5]
 
 launch_in_dev: []
