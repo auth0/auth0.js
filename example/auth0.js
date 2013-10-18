@@ -202,6 +202,13 @@ Auth0.prototype.getSSOData = function (callback) {
   });
 };
 
+Auth0.prototype.getConnections = function (callback) {
+  return jsonp('https://' + this._domain + '/public/api/' + this._clientID + '/connections', {
+    param: 'cbx',
+    timeout: 15000
+  }, callback);
+};
+
 if (global.window) {
   global.window.Auth0 = Auth0;
 }

@@ -125,6 +125,23 @@ describe('Auth0', function () {
     });
   });
 
+  it('should return configured connections', function (done) {
+    var auth0 = Auth0({
+      domain:      'mdocs.auth0.com',
+      callbackURL: 'http://localhost:3000/',
+      clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+    });
+
+    auth0.getConnections(function (err, conns) {
+      expect(conns.length).to.be.above(0);
+      expect(conns[0].name).to.eql('Apprenda.com');
+      expect(conns[0].strategy).to.eql('adfs');
+      expect(conns[0].status).to.eql(false);
+      expect(conns[0].domain).to.eql('Apprenda.com');
+      done();
+    });
+  });
+
   /*if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
     it('should return empty SSO data after logout', function (done) {
       forceLogout('aaa.auth0.com', function () {
