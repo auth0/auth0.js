@@ -108,6 +108,51 @@ Auth0.prototype.signup = function (options, callback) {
   });
 };
 
+Auth0.prototype.changePassword = function (options, callback) {
+  var self = this;
+  var query = {
+    tenant:         this._domain.split('.')[0],
+    connection:     options.connection,
+    email:          options.username || options.email,
+    password:       options.password
+  };
+
+  function success () {
+    if (callback) callback();
+  }
+
+  function fail (status, resp) {
+    var error = new LoginError(status, resp);
+    if (callback)      return callback(error);
+    if (self._failure) return self._failure(error);
+  }
+
+  if (use_jsonp()) {
+    return jsonp('https://' + this._domain + '/dbconnections/change_password?' + qs.stringify(query), {
+      param: 'cbx',
+      timeout: 15000
+    }, function (err, resp) {
+      if (err) {
+        return fail(0, err);
+      }
+      return resp.status == 200 ?
+              success() :
+              fail(resp.status, resp.err);
+    });
+  }
+
+  reqwest({
+    url:     'https://' + this._domain + '/dbconnections/change_password',
+    method:  'post',
+    type:    'html',
+    data:    query,
+    success: success,
+    crossOrigin: true
+  }).fail(function (err) {
+    fail(err.status, err.responseText);
+  });
+};
+
 Auth0.prototype.login = function (options, callback) {
   if (options.username || options.email) {
     return this.loginWithDbConnection(options, callback);
