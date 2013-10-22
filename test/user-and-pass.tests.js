@@ -159,7 +159,7 @@ describe('Auth0 - User And Passwords', function () {
         password:   '12345'
       }, function (err) {
         expect(err.status).to.equal(400);
-        expect(err.message).to.equal('email is required.');
+        expect(err.message).to.exist;
         expect(err.details).to.exist;
         done();
       });
@@ -168,10 +168,11 @@ describe('Auth0 - User And Passwords', function () {
     it('should return OK after successfull operation', function (done) {
       auth0.changePassword({
         connection: 'tests',
-        username:   'johnfoo@gmail.com',
+        username:   'johnfoo@contoso.com',
         password:   '12345'
-      }, function (err) {
+      }, function (err, resp) {
         expect(err).to.not.exist;
+        expect(resp.message).to.exist;
         done();
       });
     });
