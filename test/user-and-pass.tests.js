@@ -151,7 +151,7 @@ describe('Auth0 - User And Passwords', function () {
     });
   });
 
-  describe('Change Password', function () {
+  /*describe('Change Password', function () {
     it('should fail when the username is null', function (done) {
       auth0.changePassword({
         connection: 'tests',
@@ -176,5 +176,5 @@ describe('Auth0 - User And Passwords', function () {
         done();
       });
     });
-  });
+  });*/
 });
