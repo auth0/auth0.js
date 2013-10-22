@@ -151,7 +151,7 @@ describe('Auth0 - User And Passwords', function () {
     });
   });
 
-  /*describe('Change Password', function () {
+  describe('Change Password', function () {
     it('should fail when the username is null', function (done) {
       auth0.changePassword({
         connection: 'tests',
@@ -159,7 +159,7 @@ describe('Auth0 - User And Passwords', function () {
         password:   '12345'
       }, function (err) {
         expect(err.status).to.equal(400);
-        expect(err.message).to.exist;
+        expect(err.message).to.equal('email is required.');
         expect(err.details).to.exist;
         done();
       });
@@ -170,11 +170,10 @@ describe('Auth0 - User And Passwords', function () {
         connection: 'tests',
         username:   'johnfoo@contoso.com',
         password:   '12345'
-      }, function (err, resp) {
+      }, function (err) {
         expect(err).to.not.exist;
-        expect(resp.message).to.exist;
         done();
       });
     });
-  });*/
+  });
 });

@@ -117,8 +117,8 @@ Auth0.prototype.changePassword = function (options, callback) {
     password:       options.password
   };
 
-  function success (message) {
-    if (callback) callback(null, { message: message });
+  function success () {
+    if (callback) callback();
   }
 
   function fail (status, resp) {
@@ -136,7 +136,7 @@ Auth0.prototype.changePassword = function (options, callback) {
         return fail(0, err);
       }
       return resp.status == 200 ?
-              success(resp.responseText) :
+              success() :
               fail(resp.status, resp.err);
     });
   }
