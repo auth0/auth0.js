@@ -165,7 +165,7 @@ describe('Auth0 - User And Passwords', function () {
       });
     });
 
-    /*it('should return OK after successfull operation', function (done) {
+    it('should return OK after successfull operation', function (done) {
       auth0.changePassword({
         connection: 'tests',
         username:   'johnfoo@contoso.com',
@@ -174,6 +174,6 @@ describe('Auth0 - User And Passwords', function () {
         expect(err).to.not.exist;
         done();
       });
-    });*/
+    });
   });
 });
