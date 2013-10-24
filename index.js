@@ -253,8 +253,4 @@ Auth0.prototype.getConnections = function (callback) {
   }, callback);
 };
 
-if (global.window) {
-  global.window.Auth0 = Auth0;
-}
-
 module.exports = Auth0;

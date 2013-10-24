@@ -254,11 +254,8 @@ Auth0.prototype.getConnections = function (callback) {
   }, callback);
 };
 
-if (global.window) {
-  global.window.Auth0 = Auth0;
-}
-
 module.exports = Auth0;
+
 },{"./lib/LoginError":2,"./lib/assert_required":3,"./lib/base64_url_decode":4,"./lib/json_parse":5,"./lib/use_jsonp":6,"jsonp":8,"qs":10,"reqwest":11}],2:[function(require,module,exports){
 var json_parse = require('./json_parse');
 
@@ -1016,6 +1013,7 @@ function decode(str) {
 }
 
 },{}],11:[function(require,module,exports){
+/*! version: 0.9.1 */
 /*!
   * Reqwest! A general purpose XHR connection manager
   * (c) Dustin Diaz 2013
@@ -1613,5 +1611,22 @@ function decode(str) {
   return reqwest
 });
 
-},{}]},{},[1])
+},{}],12:[function(require,module,exports){
+var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};/*
+ *
+ * This is used to build the bundle with browserify.
+ *
+ * The bundle is used by people who doesn't use browserify.require
+ * Those who use browserify will install with npm and require the module,
+ * the package.json file points to index.js.
+ */
+var Auth0 = require('./');
+
+//use amd or just throught to window object.
+if (typeof global.window.define == 'function' && global.window.define.amd) {
+  global.window.define('auth0', function () { return Auth0; });
+} else if (global.window) {
+  global.window.Auth0 = Auth0;
+}
+},{"./":1}]},{},[12])
 ;
