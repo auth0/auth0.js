@@ -30,7 +30,7 @@ module.exports = function(grunt) {
     browserify: {
       dist: {
         files: {
-          'build/auth0.js': ['index.js'],
+          'build/auth0.js': ['standalone.js'],
         }
       }
     },
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
     },
     watch: {
       another: {
-        files: ['node_modules', 'index.js', 'lib/*.js'],
+        files: ['node_modules', 'index.js', 'standalone.js', 'lib/*.js'],
         tasks: ['build']
       }
     }
