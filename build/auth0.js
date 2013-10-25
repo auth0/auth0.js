@@ -39,6 +39,10 @@ Auth0.prototype._renderAndSubmitWSFedForm = function (formHtml) {
   form.submit();
 };
 
+Auth0.prototype._isAdLdapConnection = function (connection) {
+  return connection === 'adldap';
+};
+
 Auth0.prototype.parseHash = function (callback) {
   if(!window.location.hash.match(/access_token/)) return;
   var hash = window.location.hash.substr(1);
@@ -156,7 +160,7 @@ Auth0.prototype.changePassword = function (options, callback) {
 
 Auth0.prototype.login = function (options, callback) {
   if (options.username || options.email) {
-    return this.loginWithDbConnection(options, callback);
+    return this.loginWithUsernamePassword(options, callback);
   }
 
   var query = {
@@ -174,7 +178,7 @@ Auth0.prototype.login = function (options, callback) {
   this._redirect('https://' + this._domain + '/authorize?' + qs.stringify(query));
 };
 
-Auth0.prototype.loginWithDbConnection = function (options, callback) {
+Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
   var self = this;
 
   var query = {
@@ -199,8 +203,11 @@ Auth0.prototype.loginWithDbConnection = function (options, callback) {
     if (self._failure) return self._failure(error);
   }
 
+  var endpoint = this._isAdLdapConnection(query.connection) ?
+    '/adldap/login' : '/dbconnections/login';
+
   if (use_jsonp()) {
-    return jsonp('https://' + this._domain + '/dbconnections/login?' + qs.stringify(query), {
+    return jsonp('https://' + this._domain + endpoint + '?' + qs.stringify(query), {
       param: 'cbx',
       timeout: 15000
     }, function (err, resp) {
@@ -216,7 +223,7 @@ Auth0.prototype.loginWithDbConnection = function (options, callback) {
   }
 
   reqwest({
-    url:     'https://' + this._domain + '/dbconnections/login',
+    url:     'https://' + this._domain + endpoint,
     method:  'post',
     type:    'html',
     data:    query,
@@ -1013,7 +1020,6 @@ function decode(str) {
 }
 
 },{}],11:[function(require,module,exports){
-/*! version: 0.9.1 */
 /*!
   * Reqwest! A general purpose XHR connection manager
   * (c) Dustin Diaz 2013
