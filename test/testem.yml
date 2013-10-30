@@ -1,7 +1,7 @@
 test_page: index.html
 
 on_start:
-  command: "PORT=<port> ./run-browserstack"
+  command: browserstack tunnel localhost:<port>
   wait_for_text: Tunnel is running
 
 launchers:
