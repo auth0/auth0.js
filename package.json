@@ -41,7 +41,7 @@
     "grunt-contrib-uglify": "~0.2.4",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-copy": "~0.4.1",
-    "browserstack-cli": "~0.2.14",
+    "browserstack-cli": "https://github.com/jfromaniello/browserstack-cli/tarball/master",
     "rimraf": "~2.2.2",
     "testem": "~0.5.4"
   }
