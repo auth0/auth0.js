@@ -1,18 +1,16 @@
 var fs = require('fs');
-
+var spawn = require('child_process').spawn;
 module.exports = function(grunt) {
   grunt.initConfig({
     connect: {
       test: {
         options: {
-          base: "test",
           hostname: '0.0.0.0',
           port: 9999
         }
       },
       example: {
         options: {
-          base: "example",
           port: 3000
         }
       },
@@ -22,8 +20,8 @@ module.exports = function(grunt) {
           port:  3000,
           protocol: 'https',
           hostname: '*',
-          cert: fs.readFileSync(__dirname + '/https_test_certs/server.crt').toString(),
-          key:  fs.readFileSync(__dirname + '/https_test_certs/server.key').toString(),
+          cert: fs.readFileSync(__dirname + '/test/https_test_certs/server.crt').toString(),
+          key:  fs.readFileSync(__dirname + '/test/https_test_certs/server.key').toString(),
         }
       }
     },
@@ -45,7 +43,6 @@ module.exports = function(grunt) {
       example: {
         files: {
           'example/auth0.js': 'build/auth0.js',
-          'test/auth0.js': 'build/auth0.js'
         }
       }
     },
@@ -54,11 +51,34 @@ module.exports = function(grunt) {
     },
     watch: {
       another: {
-        files: ['node_modules', 'index.js', 'standalone.js', 'lib/*.js'],
+        files: ['node_modules', 'standalone.js', 'lib/*.js'],
         tasks: ['build']
+      }
+    },
+    exec: {
+      'test-phantom': {
+        cmd: 'testem -f testem_dev.yml ci -l PhantomJS',
+        stdout: true,
+        stderr: true
+      },
+      'test-desktop': {
+        cmd: 'testem ci -l bs_chrome,bs_firefox,bs_ie_8,bs_ie_9,bs_ie_10',
+        stdout: true,
+        stderr: true
+      },
+      'test-mobile': {
+        cmd: 'testem ci -l bs_iphone_5,bs_android_41',
+        stdout: true,
+        stderr: true
       }
     }
   });
+
+
+    // "test": "testem ci -l bs_chrome,bs_firefox,bs_ie_8,bs_ie_9,bs_ie_10 && testem ci -l bs_iphone_5,bs_android_41",
+    // "test-phantom": "testem -f testem_dev.yml ci -l PhantomJS",
+    // "example": "echo \"open http://localhost:3000\" && grunt example"
+
 
   // Loading dependencies
   for (var key in grunt.file.readJSON("package.json").devDependencies) {
@@ -69,4 +89,6 @@ module.exports = function(grunt) {
   grunt.registerTask("example", ["connect:example", "watch"]);
   grunt.registerTask("example_https", ["connect:example_https", "watch"]);
   grunt.registerTask("dev",     ["connect:test", "watch"]);
+  grunt.registerTask("test",    ["exec:test-phantom"]);
+  grunt.registerTask("integration", ["exec:test-desktop", "exec:test-mobile"]);
 };

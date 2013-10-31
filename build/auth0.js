@@ -1,14 +1,77 @@
 ;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};var assert_required   = require('./lib/assert_required');
-var base64_url_decode = require('./lib/base64_url_decode');
+var json_parse = require('./json_parse');
+
+function LoginError(status, details) {
+  var obj;
+
+  if (typeof details == 'string') {
+    try {
+      obj = json_parse(details);
+    } catch (er) {
+      obj = {message: details};      
+    }
+  } else {
+    obj = details;
+  }
+
+  var err = Error.call(this, obj.description || obj.message || obj.error);
+
+  err.status = status;
+  err.name = obj.code;
+  err.code = obj.code;
+  err.details = obj;
+  
+  if (status === 0) {
+    err.code = "Unknown";
+    err.message = "Unknown error.";
+  }
+
+  return err;
+}
+
+if (Object && Object.create) {
+  LoginError.prototype = Object.create(Error.prototype, { 
+    constructor: { value: LoginError } 
+  });
+}
+
+module.exports = LoginError;
+},{"./json_parse":5}],2:[function(require,module,exports){
+module.exports = function (obj, prop) {
+  if (!obj[prop]) {
+    throw new Error(prop + ' is required.');
+  }
+};
+},{}],3:[function(require,module,exports){
+var Base64 = require('Base64');
+
+module.exports = function(str) {
+  var output = str.replace("-", "+").replace("_", "/");
+  switch (output.length % 4) {
+    case 0:
+      break;
+    case 2:
+      output += "==";
+      break;
+    case 3:
+      output += "=";
+      break;
+    default:
+      throw "Illegal base64url string!";
+  }
+  return Base64.atob(output);
+};
+},{"Base64":7}],4:[function(require,module,exports){
+var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};var assert_required   = require('./assert_required');
+var base64_url_decode = require('./base64_url_decode');
 var qs                = require('qs');
 var reqwest           = require('reqwest');
 
 var jsonp             = require('jsonp');
 
-var use_jsonp         = require('./lib/use_jsonp');
-var LoginError        = require('./lib/LoginError');
-var json_parse        = require('./lib/json_parse');
+var use_jsonp         = require('./use_jsonp');
+var LoginError        = require('./LoginError');
+var json_parse        = require('./json_parse');
 
 function Auth0 (options) {
   if (!(this instanceof Auth0)) {
@@ -263,70 +326,7 @@ Auth0.prototype.getConnections = function (callback) {
 
 module.exports = Auth0;
 
-},{"./lib/LoginError":2,"./lib/assert_required":3,"./lib/base64_url_decode":4,"./lib/json_parse":5,"./lib/use_jsonp":6,"jsonp":9,"qs":10,"reqwest":11}],2:[function(require,module,exports){
-var json_parse = require('./json_parse');
-
-function LoginError(status, details) {
-  var obj;
-
-  if (typeof details == 'string') {
-    try {
-      obj = json_parse(details);
-    } catch (er) {
-      obj = {message: details};      
-    }
-  } else {
-    obj = details;
-  }
-
-  var err = Error.call(this, obj.description || obj.message || obj.error);
-
-  err.status = status;
-  err.name = obj.code;
-  err.code = obj.code;
-  err.details = obj;
-  
-  if (status === 0) {
-    err.code = "Unknown";
-    err.message = "Unknown error.";
-  }
-
-  return err;
-}
-
-if (Object && Object.create) {
-  LoginError.prototype = Object.create(Error.prototype, { 
-    constructor: { value: LoginError } 
-  });
-}
-
-module.exports = LoginError;
-},{"./json_parse":5}],3:[function(require,module,exports){
-module.exports = function (obj, prop) {
-  if (!obj[prop]) {
-    throw new Error(prop + ' is required.');
-  }
-};
-},{}],4:[function(require,module,exports){
-var Base64 = require('Base64');
-
-module.exports = function(str) {
-  var output = str.replace("-", "+").replace("_", "/");
-  switch (output.length % 4) {
-    case 0:
-      break;
-    case 2:
-      output += "==";
-      break;
-    case 3:
-      output += "=";
-      break;
-    default:
-      throw "Illegal base64url string!";
-  }
-  return Base64.atob(output);
-};
-},{"Base64":7}],5:[function(require,module,exports){
+},{"./LoginError":1,"./assert_required":2,"./base64_url_decode":3,"./json_parse":5,"./use_jsonp":6,"jsonp":9,"qs":10,"reqwest":11}],5:[function(require,module,exports){
 module.exports = function (str) {
   return window.JSON ? window.JSON.parse(str) : eval('(' + str + ')');
 };
@@ -1636,11 +1636,11 @@ var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? 
  *
  * This is used to build the bundle with browserify.
  *
- * The bundle is used by people who doesn't use browserify.require
+ * The bundle is used by people who doesn't use browserify.
  * Those who use browserify will install with npm and require the module,
  * the package.json file points to index.js.
  */
-var Auth0 = require('./');
+var Auth0 = require('./lib/index');
 
 //use amd or just throught to window object.
 if (typeof global.window.define == 'function' && global.window.define.amd) {
@@ -1648,5 +1648,5 @@ if (typeof global.window.define == 'function' && global.window.define.amd) {
 } else if (global.window) {
   global.window.Auth0 = Auth0;
 }
-},{"./":1}]},{},[12])
+},{"./lib/index":4}]},{},[12])
 ;

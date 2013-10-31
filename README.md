@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/auth0/auth0.js.png)](https://travis-ci.org/auth0/auth0.js)
-
 [![NPM version](https://badge.fury.io/js/auth0-js.png)](http://badge.fury.io/js/auth0-js)
 
 [![Auth0](http://blog.auth0.com.s3.amazonaws.com/logo-290x200-letters.png)](http://auth0.com)
@@ -108,11 +106,15 @@ After a succesful login it will auto login the user. If you do not want to autom
 
 ## Develop
 
-Run `npm run dev` and point your browser to `http://localhost:9999/` to run the test suite.
+Run `grunt dev` and point your browser to `http://localhost:9999/` to run the test suite.
+
+Run `grunt test` if you have PhantomJS installed.
+
+Do you have issues in some browser? Ask us guidance to test in multiple browsers!
 
 ## Browser Compatibility
 
-We are using [BrowserStack](http://browserstack.com) and [Travis-CI](http://travis-ci.org) to run the test suite on multiple browsers on every push.
+We are using [BrowserStack](http://browserstack.com) and our own CI server to run the test suite on multiple browsers on every push.
 
 ## License
 
