@@ -8,35 +8,35 @@ on_start:
 launchers:
 
   bs_firefox:
-    command: browserstack launch --timeout 90 --attach firefox:22.0 <url>
+    command: browserstack launch --timeout 120 --attach firefox:22.0 <url>
     protocol: browser
 
   bs_chrome:
-    command: browserstack launch --timeout 90 --attach chrome:28.0 <url>
+    command: browserstack launch --timeout 120 --attach chrome:28.0 <url>
     protocol: browser
 
   bs_safari_51:
-    command: browserstack launch --timeout 90 --attach safari:5.1 <url>
+    command: browserstack launch --timeout 120 --attach safari:5.1 <url>
     protocol: browser
 
   bs_ie_8:
-    command: browserstack launch --timeout 90 --attach ie:8.0 <url>
+    command: browserstack launch --timeout 120 --attach ie:8.0 <url>
     protocol: browser
 
   bs_ie_9:
-    command: browserstack launch --timeout 90 --attach ie:9.0 <url>
+    command: browserstack launch --timeout 120 --attach ie:9.0 <url>
     protocol: browser
 
   bs_ie_10:
-    command: browserstack launch --timeout 90 --attach ie:10.0 <url>
+    command: browserstack launch --timeout 120 --attach ie:10.0 <url>
     protocol: browser
 
   bs_android_23:
-    command: browserstack launch --timeout 140 --attach "Motorola Photon 4G" <url>
+    command: browserstack launch --timeout 240 --attach "Motorola Photon 4G" <url>
     protocol: browser
 
   bs_android_41:
-    command: browserstack launch --timeout 140 --attach "Samsung Galaxy S III" <url>
+    command: browserstack launch --timeout 240 --attach "Samsung Galaxy S III" <url>
     protocol: browser
 
   bs_iphone_5:
