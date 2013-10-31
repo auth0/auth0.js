@@ -1,7 +1,7 @@
 test_page: index.html
 
 on_start:
-  command: /usr/bin/java -jar ~/.browserstack/BrowserStackTunnel.jar $BROWSERSTACK_KEY localhost,<port>,0 -force
+  command: /usr/bin/java -jar $HOME/.browserstack/BrowserStackTunnel.jar $BROWSERSTACK_KEY localhost,<port>,0 -force
   wait_for_text: Press Ctrl-C to exit
   wait_for_text_timeout: 9000
 
