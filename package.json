@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "grunt dev",
     "test": "(cd test ; ./run-tests)",
-    "test-phantom": "./test-phantom",
+    "test-phantom": "(cd test ; testem ci -l PhantomJS)",
     "example": "echo \"open http://localhost:3000\" && grunt example"
   },
   "repository": {
@@ -32,7 +32,6 @@
   "devDependencies": {
     "browserify": "~2.33.0",
     "uglify-js": "~2.4.0",
-    "mocha-phantomjs": "~3.1.4",
     "grunt": "~0.4.0",
     "grunt-cli": "~0.1.6",
     "grunt-contrib-connect": "~0.5.0",
