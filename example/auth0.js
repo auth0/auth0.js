@@ -65,6 +65,7 @@ module.exports = function(str) {
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};var assert_required   = require('./assert_required');
 var base64_url_decode = require('./base64_url_decode');
 var qs                = require('qs');
+var xtend             = require('xtend');
 var reqwest           = require('reqwest');
 
 var jsonp             = require('jsonp');
@@ -106,7 +107,7 @@ Auth0.prototype._isAdLdapConnection = function (connection) {
   return connection === 'adldap';
 };
 
-Auth0.prototype._getDefaultExtraParameters = function () {
+Auth0.prototype._getDefaultParameters = function () {
   return {
     response_type: 'code',
     scope:         'openid profile'
@@ -126,25 +127,15 @@ Auth0.prototype.parseHash = function (callback) {
 Auth0.prototype.signup = function (options, callback) {
   var self = this;
 
-  var query = {
-    client_id:     this._clientID,
-    connection:    options.connection,
-    redirect_uri:  this._callbackURL
-  };
-
-  var extraParameters = this._getDefaultExtraParameters();
-  Object.keys(extraParameters).forEach(function (k) {
-    query[k] = options[k] || extraParameters[k];
-  });
-
-  if (options.state) {
-    query.state = options.state;
-  }
-
-  query.email = options.username || options.email;
-  query.password = options.password;
-
-  query.tenant = this._domain.split('.')[0];
+  var query = xtend(
+    this._getDefaultParameters(), 
+    options,
+    { 
+      client_id: this._clientID, 
+      redirect_uri: this._callbackURL, 
+      email: options.username || options.email,
+      tenant: this._domain.split('.')[0]
+    });
 
   function success () {
     if ('auto_login' in options && !options.auto_login) {
@@ -236,20 +227,10 @@ Auth0.prototype.login = function (options, callback) {
     return this.loginWithUsernamePassword(options, callback);
   }
 
-  var query = {
-    client_id:     this._clientID,
-    connection:    options.connection,
-    redirect_uri:  this._callbackURL
-  };
-
-  var extraParameters = this._getDefaultExtraParameters();
-  Object.keys(extraParameters).forEach(function (k) {
-    query[k] = options[k] || extraParameters[k];
-  });
-
-  if (options.state) {
-    query.state = options.state;
-  }
+  var query = xtend(
+    this._getDefaultParameters(), 
+    options,
+    { client_id: this._clientID, redirect_uri: this._callbackURL });
 
   this._redirect('https://' + this._domain + '/authorize?' + qs.stringify(query));
 };
@@ -257,25 +238,15 @@ Auth0.prototype.login = function (options, callback) {
 Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
   var self = this;
 
-  var query = {
-    client_id:     this._clientID,
-    connection:    options.connection,
-    redirect_uri:  this._callbackURL
-  };
-
-  var extraParameters = this._getDefaultExtraParameters();
-  Object.keys(extraParameters).forEach(function (k) {
-    query[k] = options[k] || extraParameters[k];
-  });
-
-  if (options.state) {
-    query.state = options.state;
-  }
-
-  query.username = options.username || options.email;
-  query.password = options.password;
-
-  query.tenant = this._domain.split('.')[0];
+  var query = xtend(
+    this._getDefaultParameters(), 
+    options,
+    { 
+      client_id: this._clientID, 
+      redirect_uri: this._callbackURL, 
+      username: options.username || options.email,
+      tenant: this._domain.split('.')[0]
+    });
 
   function return_error (error) {
     if (callback)      return callback(error);
@@ -342,7 +313,7 @@ Auth0.prototype.getConnections = function (callback) {
 
 module.exports = Auth0;
 
-},{"./LoginError":1,"./assert_required":2,"./base64_url_decode":3,"./json_parse":5,"./use_jsonp":6,"jsonp":9,"qs":10,"reqwest":11}],5:[function(require,module,exports){
+},{"./LoginError":1,"./assert_required":2,"./base64_url_decode":3,"./json_parse":5,"./use_jsonp":6,"jsonp":9,"qs":10,"reqwest":11,"xtend":13}],5:[function(require,module,exports){
 module.exports = function (str) {
   return window.JSON ? window.JSON.parse(str) : eval('(' + str + ')');
 };
@@ -1648,6 +1619,170 @@ function decode(str) {
 });
 
 },{}],12:[function(require,module,exports){
+module.exports = hasKeys
+
+function hasKeys(source) {
+    return source !== null &&
+        (typeof source === "object" ||
+        typeof source === "function")
+}
+
+},{}],13:[function(require,module,exports){
+var Keys = require("object-keys")
+var hasKeys = require("./has-keys")
+
+module.exports = extend
+
+function extend() {
+    var target = {}
+
+    for (var i = 0; i < arguments.length; i++) {
+        var source = arguments[i]
+
+        if (!hasKeys(source)) {
+            continue
+        }
+
+        var keys = Keys(source)
+
+        for (var j = 0; j < keys.length; j++) {
+            var name = keys[j]
+            target[name] = source[name]
+        }
+    }
+
+    return target
+}
+
+},{"./has-keys":12,"object-keys":15}],14:[function(require,module,exports){
+var hasOwn = Object.prototype.hasOwnProperty;
+var toString = Object.prototype.toString;
+
+var isFunction = function (fn) {
+	var isFunc = (typeof fn === 'function' && !(fn instanceof RegExp)) || toString.call(fn) === '[object Function]';
+	if (!isFunc && typeof window !== 'undefined') {
+		isFunc = fn === window.setTimeout || fn === window.alert || fn === window.confirm || fn === window.prompt;
+	}
+	return isFunc;
+};
+
+module.exports = function forEach(obj, fn) {
+	if (!isFunction(fn)) {
+		throw new TypeError('iterator must be a function');
+	}
+	var i, k,
+		isString = typeof obj === 'string',
+		l = obj.length,
+		context = arguments.length > 2 ? arguments[2] : null;
+	if (l === +l) {
+		for (i = 0; i < l; i++) {
+			if (context === null) {
+				fn(isString ? obj.charAt(i) : obj[i], i, obj);
+			} else {
+				fn.call(context, isString ? obj.charAt(i) : obj[i], i, obj);
+			}
+		}
+	} else {
+		for (k in obj) {
+			if (hasOwn.call(obj, k)) {
+				if (context === null) {
+					fn(obj[k], k, obj);
+				} else {
+					fn.call(context, obj[k], k, obj);
+				}
+			}
+		}
+	}
+};
+
+
+},{}],15:[function(require,module,exports){
+module.exports = Object.keys || require('./shim');
+
+
+},{"./shim":17}],16:[function(require,module,exports){
+var toString = Object.prototype.toString;
+
+module.exports = function isArguments(value) {
+	var str = toString.call(value);
+	var isArguments = str === '[object Arguments]';
+	if (!isArguments) {
+		isArguments = str !== '[object Array]'
+			&& value !== null
+			&& typeof value === 'object'
+			&& typeof value.length === 'number'
+			&& value.length >= 0
+			&& toString.call(value.callee) === '[object Function]';
+	}
+	return isArguments;
+};
+
+
+},{}],17:[function(require,module,exports){
+(function () {
+	"use strict";
+
+	// modified from https://github.com/kriskowal/es5-shim
+	var has = Object.prototype.hasOwnProperty,
+		toString = Object.prototype.toString,
+		forEach = require('./foreach'),
+		isArgs = require('./isArguments'),
+		hasDontEnumBug = !({'toString': null}).propertyIsEnumerable('toString'),
+		hasProtoEnumBug = (function () {}).propertyIsEnumerable('prototype'),
+		dontEnums = [
+			"toString",
+			"toLocaleString",
+			"valueOf",
+			"hasOwnProperty",
+			"isPrototypeOf",
+			"propertyIsEnumerable",
+			"constructor"
+		],
+		keysShim;
+
+	keysShim = function keys(object) {
+		var isObject = object !== null && typeof object === 'object',
+			isFunction = toString.call(object) === '[object Function]',
+			isArguments = isArgs(object),
+			theKeys = [];
+
+		if (!isObject && !isFunction && !isArguments) {
+			throw new TypeError("Object.keys called on a non-object");
+		}
+
+		if (isArguments) {
+			forEach(object, function (value) {
+				theKeys.push(value);
+			});
+		} else {
+			var name,
+				skipProto = hasProtoEnumBug && isFunction;
+
+			for (name in object) {
+				if (!(skipProto && name === 'prototype') && has.call(object, name)) {
+					theKeys.push(name);
+				}
+			}
+		}
+
+		if (hasDontEnumBug) {
+			var ctor = object.constructor,
+				skipConstructor = ctor && ctor.prototype === object;
+
+			forEach(dontEnums, function (dontEnum) {
+				if (!(skipConstructor && dontEnum === 'constructor') && has.call(object, dontEnum)) {
+					theKeys.push(dontEnum);
+				}
+			});
+		}
+		return theKeys;
+	};
+
+	module.exports = keysShim;
+}());
+
+
+},{"./foreach":14,"./isArguments":16}],18:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};/*
  *
  * This is used to build the bundle with browserify.
@@ -1664,5 +1799,5 @@ if (typeof global.window.define == 'function' && global.window.define.amd) {
 } else if (global.window) {
   global.window.Auth0 = Auth0;
 }
-},{"./lib/index":4}]},{},[12])
+},{"./lib/index":4}]},{},[18])
 ;

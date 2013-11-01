@@ -25,7 +25,8 @@
     "Base64": "~0.1.3",
     "reqwest": "~0.9.0",
     "debug": "https://github.com/jfromaniello/debug/tarball/master",
-    "jsonp": "0.0.3"
+    "jsonp": "0.0.3",
+    "xtend": "~2.1.1"
   },
   "devDependencies": {
     "browserify": "~2.33.0",
