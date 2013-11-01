@@ -1,5 +1,4 @@
 var fs = require('fs');
-var spawn = require('child_process').spawn;
 module.exports = function(grunt) {
   grunt.initConfig({
     connect: {
@@ -71,6 +70,30 @@ module.exports = function(grunt) {
         stdout: true,
         stderr: true
       }
+    },
+    s3: {
+      options: {
+        key:    process.env.S3_KEY,
+        secret: process.env.S3_SECRET,
+        bucket: process.env.S3_BUCKET,
+        access: 'public-read',
+        headers: {
+          'Cache-Control': 'public, max-age=300',
+        }
+      },
+      publish: {
+        upload: [
+          {
+            src:  'build/auth0.min.js',
+            dest: 'w2/auth0.min.js',
+            options: { gzip: true }
+          },
+          {
+            src:  'build/auth0.js',
+            dest: 'w2/auth0.js'
+          },
+        ]
+      }
     }
   });
 
@@ -79,10 +102,11 @@ module.exports = function(grunt) {
     if (key !== "grunt" && key.indexOf("grunt") === 0) grunt.loadNpmTasks(key);
   }
 
-  grunt.registerTask("build",   ["clean", "browserify:dist", "uglify:min", "copy:example"]);
-  grunt.registerTask("example", ["connect:example", "watch"]);
+  grunt.registerTask("build",         ["clean", "browserify:dist", "uglify:min", "copy:example"]);
+  grunt.registerTask("example",       ["connect:example", "watch"]);
   grunt.registerTask("example_https", ["connect:example_https", "watch"]);
-  grunt.registerTask("dev",     ["connect:test", "watch"]);
-  grunt.registerTask("test",    ["exec:test-phantom"]);
-  grunt.registerTask("integration", ["exec:test-desktop", "exec:test-mobile"]);
+  grunt.registerTask("dev",           ["connect:test", "watch"]);
+  grunt.registerTask("test",          ["exec:test-phantom"]);
+  grunt.registerTask("integration",   ["exec:test-desktop", "exec:test-mobile"]);
+  grunt.registerTask("cdn",           ["s3"]);
 };
