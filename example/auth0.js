@@ -8,7 +8,7 @@ function LoginError(status, details) {
     try {
       obj = json_parse(details);
     } catch (er) {
-      obj = {message: details};      
+      obj = {message: details};
     }
   } else {
     obj = details;
@@ -20,7 +20,7 @@ function LoginError(status, details) {
   err.name = obj.code;
   err.code = obj.code;
   err.details = obj;
-  
+
   if (status === 0) {
     err.code = "Unknown";
     err.message = "Unknown error.";
@@ -30,8 +30,8 @@ function LoginError(status, details) {
 }
 
 if (Object && Object.create) {
-  LoginError.prototype = Object.create(Error.prototype, { 
-    constructor: { value: LoginError } 
+  LoginError.prototype = Object.create(Error.prototype, {
+    constructor: { value: LoginError }
   });
 }
 
@@ -106,6 +106,13 @@ Auth0.prototype._isAdLdapConnection = function (connection) {
   return connection === 'adldap';
 };
 
+Auth0.prototype._getDefaultExtraParameters = function () {
+  return {
+    response_type: 'code',
+    scope:         'openid profile'
+  };
+};
+
 Auth0.prototype.parseHash = function (callback) {
   if(!window.location.hash.match(/access_token/)) return;
   var hash = window.location.hash.substr(1);
@@ -120,12 +127,15 @@ Auth0.prototype.signup = function (options, callback) {
   var self = this;
 
   var query = {
-    response_type: 'token',
     client_id:     this._clientID,
     connection:    options.connection,
-    redirect_uri:  this._callbackURL,
-    scope:         'openid profile'
+    redirect_uri:  this._callbackURL
   };
+
+  var extraParameters = this._getDefaultExtraParameters();
+  Object.keys(extraParameters).forEach(function (k) {
+    query[k] = options[k] || extraParameters[k];
+  });
 
   if (options.state) {
     query.state = options.state;
@@ -227,12 +237,15 @@ Auth0.prototype.login = function (options, callback) {
   }
 
   var query = {
-    response_type: 'token',
     client_id:     this._clientID,
     connection:    options.connection,
-    redirect_uri:  this._callbackURL,
-    scope:         'openid profile'
+    redirect_uri:  this._callbackURL
   };
+
+  var extraParameters = this._getDefaultExtraParameters();
+  Object.keys(extraParameters).forEach(function (k) {
+    query[k] = options[k] || extraParameters[k];
+  });
 
   if (options.state) {
     query.state = options.state;
@@ -245,12 +258,15 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
   var self = this;
 
   var query = {
-    response_type: 'token',
     client_id:     this._clientID,
     connection:    options.connection,
-    redirect_uri:  this._callbackURL,
-    scope:         'openid profile'
+    redirect_uri:  this._callbackURL
   };
+
+  var extraParameters = this._getDefaultExtraParameters();
+  Object.keys(extraParameters).forEach(function (k) {
+    query[k] = options[k] || extraParameters[k];
+  });
 
   if (options.state) {
     query.state = options.state;
@@ -333,7 +349,7 @@ module.exports = function (str) {
 },{}],6:[function(require,module,exports){
 module.exports = function () {
   var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : null;
-  
+
   if (xhr && 'withCredentials' in xhr) {
     return false;
   }

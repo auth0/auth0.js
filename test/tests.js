@@ -33,7 +33,36 @@ describe('Auth0', function () {
       .to.be.an(Auth0);
   });
 
-  it('should redirect to /authorize with google', function (done) {
+  it('should redirect to /authorize with google (with default extra parameters)', function (done) {
+    var auth0 = Auth0({
+      clientID:     'aaaabcdefgh',
+      callbackURL: 'https://myapp.com/callback',
+      domain:       'aaa.auth0.com'
+    });
+
+    auth0._redirect = function (the_url) {
+      expect(the_url.split('?')[0])
+        .to.contain('https://aaa.auth0.com/authorize');
+
+      var parsed = {};
+      the_url.split('?')[1].replace(
+        new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+        function($0, $1, $2, $3) { parsed[$1] = decodeURIComponent($3); }
+      );
+
+      expect(parsed.response_type).to.equal('code');
+      expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
+      expect(parsed.client_id).to.equal('aaaabcdefgh');
+      expect(parsed.scope).to.equal('openid profile');
+      done();
+    };
+
+    auth0.login({
+      connection: 'google-oauth2'
+    });
+  });
+
+  it('should redirect to /authorize with google (with custom extra parameters)', function (done) {
     var auth0 = Auth0({
       clientID:     'aaaabcdefgh',
       callbackURL: 'https://myapp.com/callback',
@@ -53,12 +82,14 @@ describe('Auth0', function () {
       expect(parsed.response_type).to.equal('token');
       expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
       expect(parsed.client_id).to.equal('aaaabcdefgh');
-      expect(parsed.scope).to.equal('openid profile');
+      expect(parsed.scope).to.equal('openid');
       done();
     };
 
     auth0.login({
-      connection: 'google-oauth2'
+      connection: 'google-oauth2',
+      response_type: 'token',
+      scope: 'openid'
     });
   });
 
