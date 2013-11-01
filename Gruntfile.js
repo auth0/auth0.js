@@ -67,18 +67,12 @@ module.exports = function(grunt) {
         stderr: true
       },
       'test-mobile': {
-        cmd: 'testem ci -l bs_iphone_5,bs_android_41',
+        cmd: 'testem ci -l bs_iphone_5', //disable ,bs_android_41: is not working
         stdout: true,
         stderr: true
       }
     }
   });
-
-
-    // "test": "testem ci -l bs_chrome,bs_firefox,bs_ie_8,bs_ie_9,bs_ie_10 && testem ci -l bs_iphone_5,bs_android_41",
-    // "test-phantom": "testem -f testem_dev.yml ci -l PhantomJS",
-    // "example": "echo \"open http://localhost:3000\" && grunt example"
-
 
   // Loading dependencies
   for (var key in grunt.file.readJSON("package.json").devDependencies) {
