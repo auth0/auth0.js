@@ -30,6 +30,7 @@ Construct a new instance of the Auth0 client as follows:
     domain:       'mine.auth0.com',
     clientID:     'dsa7d77dsa7d7',
     callbackURL:  'http://my-app.com/callback',
+    callbackOnLocationHash: true
   });
 
   //...
@@ -78,7 +79,7 @@ Once you have succesfully authenticated, auth0 will redirect to your `callbackUR
 
 ~~~js
   $(function () {
-    auth0.parseHash(function (profile, id_token, access_token, state) {
+    auth0.parseHash(window.location.hash, function (profile, id_token, access_token, state) {
       alert('hello ' + profile.name);
       //use id_token to call your rest api
     });
