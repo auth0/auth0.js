@@ -1,4 +1,6 @@
 var fs = require('fs');
+var pkg = require('./package');
+
 module.exports = function(grunt) {
   grunt.initConfig({
     connect: {
@@ -85,12 +87,12 @@ module.exports = function(grunt) {
         upload: [
           {
             src:  'build/auth0.min.js',
-            dest: 'w2/auth0.min.js',
+            dest: 'w2/auth0-' + pkg.version + '.min.js',
             options: { gzip: true }
           },
           {
             src:  'build/auth0.js',
-            dest: 'w2/auth0.js'
+            dest: 'w2/auth0-' + pkg.version + '.js'
           },
         ]
       }
