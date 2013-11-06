@@ -31,6 +31,14 @@ module.exports = function(grunt) {
         files: {
           'build/auth0.js': ['standalone.js'],
         }
+      },
+      debug: {
+        files: {
+          'build/auth0.debug.js': ['standalone.js'],
+        },
+        options: {
+          debug: true
+        }
       }
     },
     uglify: {
@@ -91,7 +99,7 @@ module.exports = function(grunt) {
             options: { gzip: true }
           },
           {
-            src:  'build/auth0.js',
+            src:  'build/auth0.debug.js',
             dest: 'w2/auth0-' + pkg.version + '.js'
           },
         ]
@@ -104,7 +112,7 @@ module.exports = function(grunt) {
     if (key !== "grunt" && key.indexOf("grunt") === 0) grunt.loadNpmTasks(key);
   }
 
-  grunt.registerTask("build",         ["clean", "browserify:dist", "uglify:min", "copy:example"]);
+  grunt.registerTask("build",         ["clean", "browserify:dist", "browserify:debug", "uglify:min", "copy:example"]);
   grunt.registerTask("example",       ["connect:example", "watch"]);
   grunt.registerTask("example_https", ["connect:example_https", "watch"]);
   grunt.registerTask("dev",           ["connect:test", "watch", "build"]);
