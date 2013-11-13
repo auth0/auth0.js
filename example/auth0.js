@@ -198,7 +198,7 @@ Auth0.prototype.changePassword = function (options, callback) {
         return fail(0, err);
       }
       return resp.status == 200 ?
-              callback() :
+              callback(null, resp.message) :
               fail(resp.status, resp.err);
     });
   }
@@ -208,10 +208,11 @@ Auth0.prototype.changePassword = function (options, callback) {
     method:  'post',
     type:    'html',
     data:    query,
-    success: callback,
     crossOrigin: true
   }).fail(function (err) {
     fail(err.status, err.responseText);
+  }).then(function (r) {
+    callback(null, r);
   });
 };
 

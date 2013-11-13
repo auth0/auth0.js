@@ -138,22 +138,23 @@ describe('Auth0 - User And Passwords', function () {
         password:   '12345'
       }, function (err) {
         expect(err.status).to.equal(400);
-        expect(err.message).to.exist;
-        expect(err.details).to.exist;
+        expect(err).to.have.property('message');
+        expect(err).to.have.property('details');
         done();
       });
     });
 
     //this timeout sometimes. I need to improve.
-    // it('should return OK after successfull operation', function (done) {
-    //   auth0.changePassword({
-    //     connection: 'tests',
-    //     username:   'johnfoo@contoso.com',
-    //     password:   '12345'
-    //   }, function (err) {
-    //     expect(err).to.not.exist;
-    //     done();
-    //   });
-    // });
+    it('should return OK after successfull operation', function (done) {
+      auth0.changePassword({
+        connection: 'tests',
+        username:   'johnfoo@contoso.com',
+        password:   '12345'
+      }, function (err) {
+        expect(err).to.be(null);
+        done();
+      });
+    });
+
   });
 });
