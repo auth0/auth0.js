@@ -11,7 +11,7 @@ function LoginError(status, details) {
       obj = {message: details};
     }
   } else {
-    obj = details;
+    obj = details || { description: 'server error' };
   }
 
   var err = Error.call(this, obj.description || obj.message || obj.error);

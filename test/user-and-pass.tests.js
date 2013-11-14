@@ -114,6 +114,19 @@ describe('Auth0 - User And Passwords', function () {
       });
     });
 
+    it('should handle server errors', function (done) {
+      auth0.signup({
+        connection: 'tests',
+        username:   'pepo@example.com',
+        password:   '12345'
+      }, function (err) {
+        expect(err.status).to.equal(500);
+        expect(err.message).to.exist;
+        expect(err.details).to.exist;
+        done();
+      });
+    });
+
     it('should not render wsfed form after successfull signup if auto_login is false', function (done) {
       auth0._renderAndSubmitWSFedForm = function (htmlForm) {
         done(new Error('this should not be called'));

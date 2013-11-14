@@ -42,7 +42,9 @@ module.exports = function(grunt) {
       }
     },
     uglify: {
-      min: {
+      options: {
+        ascii: true
+      }, min: {
         files: {
           'build/auth0.min.js': ['build/auth0.js']
         }
