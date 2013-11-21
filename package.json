@@ -41,9 +41,9 @@
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-copy": "~0.4.1",
     "rimraf": "~2.2.2",
-    "testem": "~0.5.4",
     "expect.js": "~0.2.0",
     "mocha": "~1.13.0",
-    "grunt-s3": "~0.2.0-alpha.3"
+    "grunt-s3": "~0.2.0-alpha.3",
+    "testem": "~0.5.8"
   }
 }
