@@ -100,10 +100,6 @@ Auth0.prototype._renderAndSubmitWSFedForm = function (formHtml) {
   form.submit();
 };
 
-Auth0.prototype._isAdLdapConnection = function (connection) {
-  return connection === 'adldap';
-};
-
 Auth0.prototype._getMode = function () {
   return {
     scope: 'openid profile',
@@ -242,8 +238,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
       tenant: this._domain.split('.')[0]
     });
 
-  var endpoint = this._isAdLdapConnection(query.connection) ?
-    '/adldap/login' : '/dbconnections/login';
+  var endpoint = '/usernamepassword/login';
 
   if (use_jsonp()) {
     return jsonp('https://' + this._domain + endpoint + '?' + qs.stringify(query), {
@@ -1022,7 +1017,7 @@ function decode(str) {
 }
 
 },{}],11:[function(require,module,exports){
-/*! version: 0.9.3 */
+/*! version: 0.9.1 */
 /*!
   * Reqwest! A general purpose XHR connection manager
   * (c) Dustin Diaz 2013
@@ -1037,7 +1032,7 @@ function decode(str) {
 
   var win = window
     , doc = document
-    , twoHundo = /^(20\d|1223)$/
+    , twoHundo = /^20\d$/
     , byTag = 'getElementsByTagName'
     , readyState = 'readyState'
     , contentType = 'Content-Type'
@@ -1559,7 +1554,7 @@ function decode(str) {
       // If traditional, encode the "old" way (the way 1.3.2 or older
       // did it), otherwise encode params recursively.
       for (prefix in o) {
-        if (o.hasOwnProperty(prefix)) buildParams(prefix, o[prefix], traditional, add)
+        buildParams(prefix, o[prefix], traditional, add)
       }
     }
 
