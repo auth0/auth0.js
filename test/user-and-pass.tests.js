@@ -2,7 +2,7 @@ describe('Auth0 - User And Passwords', function () {
   var auth0 = new Auth0({
     domain:      'mdocs.auth0.com',
     callbackURL: 'http://localhost:3000/',
-    clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+    clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t'
   });
 
   describe('Login', function () {
@@ -52,10 +52,10 @@ describe('Auth0 - User And Passwords', function () {
           iframe.style.display = 'none';
           iframe.onload = function() {
             if (!loginStarted) return;
-            
+
             auth0.getSSOData(function (err, ssoData) {
               expect(ssoData.sso).to.eql(true);
-              expect(ssoData.lastUsedClientID).to.eql('0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup');
+              expect(ssoData.lastUsedClientID).to.eql('ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t');
               expect(ssoData.lastUsedUsername).to.eql('johnfoo@gmail.com');
               expect(ssoData.lastUsedConnection).to.exist;
               expect(ssoData.lastUsedConnection.name).to.eql('tests');

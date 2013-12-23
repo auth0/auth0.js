@@ -3,7 +3,7 @@ describe('logout', function () {
     var auth0 = Auth0({
       domain:      'mdocs.auth0.com',
       callbackURL: 'http://localhost:3000/',
-      clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+      clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t'
     });
 
     auth0._redirect = function (url) {
@@ -18,7 +18,7 @@ describe('logout', function () {
     var auth0 = Auth0({
       domain:      'mdocs.auth0.com',
       callbackURL: 'http://localhost:3000/',
-      clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+      clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t'
     });
 
     auth0._redirect = function (url) {
