@@ -1,0 +1,14 @@
+{
+  "//": "experimental bower support",
+  "name": "auth0-js",
+  "version": "1.2.2",
+  "main": "lib/index.js",
+  "dependencies": {
+    "qs":      "https://github.com/jfromaniello/node-querystring.git",
+    "Base64":  "https://github.com/davidchambers/Base64.js.git",
+    "reqwest": "~0.9.0",
+    "debug":   "https://github.com/jfromaniello/debug.git",
+    "jsonp":   "https://github.com/LearnBoost/jsonp.git",
+    "xtend":   "https://github.com/Raynos/xtend.git"
+  }
+}
