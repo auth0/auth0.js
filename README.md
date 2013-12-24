@@ -114,6 +114,16 @@ Run `grunt test` if you have PhantomJS installed.
 
 Do you have issues in some browser? Ask us guidance to test in multiple browsers!
 
+## Publishing a new version
+
+Use:
+
+```
+$ mversion patch -m "v%s"
+$ git push origin master --tags
+$ npm publish
+```
+
 ## Browser Compatibility
 
 We are using [BrowserStack](http://browserstack.com) and our own CI server to run the test suite on multiple browsers on every push.
