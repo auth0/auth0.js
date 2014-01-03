@@ -68,17 +68,17 @@ module.exports = function(grunt) {
     },
     exec: {
       'test-phantom': {
-        cmd: 'testem -f testem_dev.yml ci -l PhantomJS',
+        cmd: 'node_modules/testem/testem.js -f testem_dev.yml ci -l PhantomJS',
         stdout: true,
         stderr: true
       },
       'test-desktop': {
-        cmd: 'testem ci -l bs_chrome,bs_firefox,bs_ie_8,bs_ie_9,bs_ie_10',
+        cmd: 'node_modules/testem/testem.js ci -l bs_chrome,bs_firefox,bs_ie_8,bs_ie_9,bs_ie_10',
         stdout: true,
         stderr: true
       },
       'test-mobile': {
-        cmd: 'testem ci -l bs_iphone_5', //disable ,bs_android_41: is not working
+        cmd: 'node_modules/testem/testem.js ci -l bs_iphone_5', //disable ,bs_android_41: is not working
         stdout: true,
         stderr: true
       }
