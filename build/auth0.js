@@ -109,6 +109,7 @@ Auth0.prototype._getMode = function () {
 
 Auth0.prototype.parseHash = function (hash, callback, errCallback) {
   if (hash.match(/error/)) {
+    if (!errCallback) { return; }
     hash = hash.substr(1);
     var parsed_qs = qs.parse(hash);
     return errCallback({
@@ -302,8 +303,19 @@ Auth0.prototype.logout = function (query) {
   this._redirect(url);
 };
 
-Auth0.prototype.getSSOData = function (callback) {
-  return jsonp('https://' + this._domain + '/user/ssodata', {
+Auth0.prototype.getSSOData = function (withActiveDirectories, callback) {
+  if (typeof withActiveDirectories === 'function') {
+    callback = withActiveDirectories;
+    withActiveDirectories = false;
+  }
+
+  var url = 'https://' + this._domain + '/user/ssodata';
+
+  if (withActiveDirectories) {
+    url =+ '?' + qs.stringify({ads: 1, client_id: this._clientID});
+  }
+
+  return jsonp(url, {
     param: 'cbx',
     timeout: 15000
   }, function (err, resp) {
