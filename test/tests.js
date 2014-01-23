@@ -214,19 +214,6 @@ describe('Auth0', function () {
         done();
       });
     });
-
-    it('should return error if id_token is invalid', function (done) {
-      var targetClientId = 'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t';
-      var options = {
-        id_token: 'invalid-id-token'
-      };
-
-      auth0.getDelegationToken(targetClientId, options, function (err) {
-        expect(err.statusCode).to.eql(401);
-        expect(err.error_description).to.eql('invalid id_token (Not enough or too many segments)');
-        done();
-      });
-    });
   });
 
   /*if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
