@@ -106,6 +106,22 @@ If you use [Database Connections](https://docs.auth0.com/mysql-connection-tutori
 
 After a succesful login it will auto login the user. If you do not want to automatically login the user you have to pass the option `auto_login: false`.
 
+### Delegation Token Request
+
+You can obtain a delegation token specifying the ID of the target client (`targetClientId`) and an object (`options`) in order to include custom parameters like id_token or scope:
+
+~~~js
+var targetClientId = "{TARGET_CLIENT_ID}";
+var options = {
+    "id_token": "USER_ID_TOKEN",		// MANDATORY!
+    "scope": "openid profile"		    // default: openid
+};
+
+auth0.getDelegationToken(targetClientId, options, function (err, delegationResult) {
+	// Call your API using delegationResult.id_token
+});
+~~~
+
 ## Develop
 
 Run `grunt dev` and point your browser to `http://localhost:9999/` to run the test suite.
