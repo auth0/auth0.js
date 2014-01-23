@@ -194,6 +194,41 @@ describe('Auth0', function () {
     });
   });
 
+  describe('getDelegationToken', function () {
+    var auth0 = Auth0({
+      domain:      'mdocs.auth0.com',
+      callbackURL: 'http://localhost:3000/',
+      clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t'
+    });
+
+    it('should returns delegation token', function (done) {
+      var targetClientId = '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup';
+      var options = {
+        id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6InRlc3QtdXNlci1pZCIsImF1ZCI6IjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIiwiZXhwIjoxNzA2MDQ1MzQ4LCJpYXQiOjEzOTA1MTI1NDh9.D1fS1h7NmM9OgFAe7tnsF5GNT8yN89Lnhi-Hd-R7w4I'
+      };
+
+      auth0.getDelegationToken(targetClientId, options, function (err, delegationResult) {
+        expect(delegationResult.id_token).to.exist;
+        expect(delegationResult.token_type).to.eql('Bearer');
+        expect(delegationResult.expires_in).to.eql(36000);
+        done();
+      });
+    });
+
+    it('should return error if id_token is invalid', function (done) {
+      var targetClientId = 'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t';
+      var options = {
+        id_token: 'invalid-id-token'
+      };
+
+      auth0.getDelegationToken(targetClientId, options, function (err) {
+        expect(err.statusCode).to.eql(401);
+        expect(err.error_description).to.eql('invalid id_token (Not enough or too many segments)');
+        done();
+      });
+    });
+  });
+
   /*if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
     it('should return empty SSO data after logout', function (done) {
       forceLogout('aaa.auth0.com', function () {
