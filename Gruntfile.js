@@ -116,7 +116,7 @@ module.exports = function(grunt) {
   }
 
   grunt.registerTask("build",         ["clean", "browserify:dist", "browserify:debug", "uglify:min", "copy:example"]);
-  grunt.registerTask("example",       ["connect:example", "watch"]);
+  grunt.registerTask("example",       ["connect:example", "watch", "build"]);
   grunt.registerTask("example_https", ["connect:example_https", "watch", "build"]);
   grunt.registerTask("dev",           ["connect:test", "watch", "build"]);
   grunt.registerTask("test",          ["exec:test-phantom"]);

@@ -295,13 +295,13 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
   });
 };
 
-Auth0.prototype.getDelegationToken = function (targetClientId, options, callback) {
+Auth0.prototype.getDelegationToken = function (targetClientId, id_token, options, callback) {
   if (typeof options === 'function') {
     callback = options;
     options = {};
   }
-
-  assert_required(options, 'id_token');
+  
+  options.id_token = id_token;
 
   var query = xtend({
     grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
