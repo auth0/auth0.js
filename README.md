@@ -124,7 +124,7 @@ auth0.getDelegationToken(targetClientId, options, function (err, delegationResul
 
 ## Develop
 
-Run `grunt dev` and point your browser to `http://localhost:9999/` to run the test suite.
+Run `grunt dev` and point your browser to `http://localhost:9999/test_harness.html` to run the test suite.
 
 Run `grunt test` if you have PhantomJS installed.
 
