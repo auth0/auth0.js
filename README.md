@@ -112,12 +112,12 @@ You can obtain a delegation token specifying the ID of the target client (`targe
 
 ~~~js
 var targetClientId = "{TARGET_CLIENT_ID}";
+var id_token = "{USER_ID_TOKEN}";
 var options = {
-    "id_token": "USER_ID_TOKEN",		// MANDATORY!
-    "scope": "openid profile"		    // default: openid
+  "scope": "openid profile"		    // default: openid
 };
 
-auth0.getDelegationToken(targetClientId, options, function (err, delegationResult) {
+auth0.getDelegationToken(targetClientId, id_token, options, function (err, delegationResult) {
 	// Call your API using delegationResult.id_token
 });
 ~~~
