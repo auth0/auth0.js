@@ -108,7 +108,7 @@ After a succesful login it will auto login the user. If you do not want to autom
 
 ### Delegation Token Request
 
-You can obtain a delegation token specifying the ID of the target client (`targetClientId`) and an object (`options`) in order to include custom parameters like id_token or scope:
+You can obtain a delegation token specifying the ID of the target client (`targetClientId`), the `id_token` and, optionally, an object (`options`) in order to include custom parameters like scope:
 
 ~~~js
 var targetClientId = "{TARGET_CLIENT_ID}";
