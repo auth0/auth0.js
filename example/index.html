@@ -21,15 +21,16 @@
     <input type="button" class="signup-db" value="signup"></input>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="/auth0.js"></script>
+    <script src="auth0.js"></script>
     <script type="text/javascript">
         var auth0 = new Auth0({
             domain:      'mdocs.auth0.com',
             callbackURL: 'http://localhost:3000/',
-            clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+            clientID:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+            callbackOnLocationHash: true
         });
-
-        auth0.parseHash(function (profile) {
+        
+        auth0.parseHash(window.location.hash, function (profile) {
             window.location.hash = "";
             alert('hello ' + profile.name);
         });

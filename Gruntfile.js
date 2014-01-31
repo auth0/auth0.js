@@ -12,6 +12,7 @@ module.exports = function(grunt) {
       },
       example: {
         options: {
+          base:  "example",
           port: 3000
         }
       },
