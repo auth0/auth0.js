@@ -71,6 +71,18 @@ Trigger the login on any of your active identity provider as follows:
       password:   $('.password').val(),
     });
   });
+  
+  //trigger login popup with google
+  $('.login-google-popup').click(function () {
+    auth0.login({
+      connection: 'google-oauth2',
+      popup: true,
+      popupOptions: {
+        width: 450,
+        height: 800
+      }
+    });
+  });
 ~~~
 
 ### Parsing JWT profile
