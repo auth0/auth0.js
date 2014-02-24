@@ -93,10 +93,15 @@ Auth0.prototype._redirect = function (url) {
   global.window.location = url;
 };
 
-Auth0.prototype._renderAndSubmitWSFedForm = function (formHtml) {
+Auth0.prototype._renderAndSubmitWSFedForm = function (options, formHtml) {
   var div = document.createElement('div');
   div.innerHTML = formHtml;
   var form = document.body.appendChild(div).children[0];
+
+  if (options.popup && !this._callbackOnLocationHash) {
+    form.target = 'auth0_signup_popup';
+  }
+
   form.submit();
 };
 
@@ -229,7 +234,7 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
 
   if (!!options.popup) {
     return this.loginWithPopup(options, callback);
-  };
+  }
 
   var query = xtend(
     this._getMode(),
@@ -251,7 +256,7 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
     { width: 500, height: 600 },
     options.popupOptions);
 
-  var popup = window.open(popupUrl, null, popupSettings(popupOptions));
+  var popup = window.open(popupUrl, null, stringifyPopupSettings(popupOptions));
   if (!popup) { return callback(new Error('Unable to open popup')); }
 
   var popupReadyTimer = setInterval(popupReadyCheck, 50);
@@ -302,22 +307,31 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
     window.location.reload();
   }
 
-  function popupSettings(options) {
-    // Stringify popup options object into
-    // `window.open` string options format
-    var settings = '';
+};
 
-    for (var key in popupOptions) {
-      settings += key + '=' + popupOptions[key] + ',';
-    }
+function stringifyPopupSettings(popupOptions) {
+  // Stringify popup options object into
+  // `window.open` string options format
+  var settings = '';
 
-    return settings.slice(0, -1);
+  for (var key in popupOptions) {
+    settings += key + '=' + popupOptions[key] + ',';
   }
+
+  return settings.slice(0, -1);
 }
 
 
 Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
   var self = this;
+  var popup;
+
+  if (options.popup  && !this._callbackOnLocationHash) {
+    var popupOptions = stringifyPopupSettings(xtend(
+                            { width: 500, height: 600 },
+                            (options.popupOptions || {})));
+    popup = window.open('about:blank', 'auth0_signup_popup',popupOptions);
+  }
 
   var query = xtend(
     this._getMode(),
@@ -337,13 +351,15 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
       timeout: 15000
     }, function (err, resp) {
       if (err) {
+        if (popup) popup.close();
         return callback(err);
       }
       if('error' in resp) {
+        if (popup) popup.close();
         var error = new LoginError(resp.status, resp.error);
         return callback(error);
       }
-      self._renderAndSubmitWSFedForm(resp.form);
+      self._renderAndSubmitWSFedForm(options, resp.form);
     });
   }
 
@@ -359,10 +375,11 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
     data:    query,
     crossOrigin: true,
     success: function (resp) {
-      self._renderAndSubmitWSFedForm(resp);
+      self._renderAndSubmitWSFedForm(options, resp);
     }
   }).fail(function (err) {
     var er = err;
+    if (popup) popup.close();
     if (!er.status || er.status === 0) { //ie10 trick
       er = {};
       er.status = 401;
@@ -380,7 +397,7 @@ Auth0.prototype.getDelegationToken = function (targetClientId, id_token, options
     callback = options;
     options = {};
   }
-  
+
   options.id_token = id_token;
 
   var query = xtend({
