@@ -100,6 +100,18 @@ Once you have succesfully authenticated, auth0 will redirect to your `callbackUR
 
 If there is no hash or the hash doesn't contain the jwt the callback function will not be called. So, it is safe to put this in the same page where you trigger the login.
 
+### Get User Profile
+
+If the jwt was generated with `scope=openid`, you can retrieve the full user's profile from location hash (which contains the jwt):
+
+~~~js
+  $(function () {
+    auth0.getProfile(window.location.hash, function (err, profile) {
+      alert('hello ' + profile.name);
+    });
+  });
+~~~
+
 ### Sign up (database connections):
 
 If you use [Database Connections](https://docs.auth0.com/mysql-connection-tutorial) you can signup as follows:

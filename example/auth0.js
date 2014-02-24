@@ -112,6 +112,57 @@ Auth0.prototype._getMode = function () {
   };
 };
 
+Auth0.prototype.getProfile = function (hash, callback) {
+
+  var self = this;
+  var fail = function (status, description) {
+    callback({
+      error: status,
+      error_description: description
+    });
+  };
+
+  var getUserInfo = function (profile, id_token) {
+    if (id_token && profile && !profile.user_id) {
+      // the scope was just openid
+      var url = 'https://' + self._domain + '/api/users/' + profile.sub;
+
+      if (use_jsonp()) {
+        return jsonp(url + '?access_token=' + id_token, {
+          param: 'cbx',
+          timeout: 15000
+        }, function (err, resp) {
+          if (err) {
+            return fail(0, err.toString());
+          }
+
+          return resp.status === 200 ?
+            callback(null, resp.user) :
+            fail(resp.status, resp.error);
+        });
+      }
+
+      return reqwest({
+        url:          url,
+        method:       'get',
+        type:         'json',
+        crossOrigin:  true,
+        headers:      {
+          'Authorization': 'Bearer ' + id_token
+        }
+      }).fail(function (err) {
+        fail(err.status, err.responseText);
+      }).then(function (user) {
+        callback(null, user);
+      });
+    }
+
+    callback(null, profile);
+  };
+
+  self.parseHash(hash, getUserInfo, callback);
+};
+
 Auth0.prototype.parseHash = function (hash, callback, errCallback) {
   if (hash.match(/error/)) {
     if (!errCallback) { return; }
