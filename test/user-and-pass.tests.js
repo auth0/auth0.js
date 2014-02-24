@@ -31,7 +31,7 @@ describe('Auth0 - User And Passwords', function () {
     });
 
     it('should render wsfed form after successfull authentication', function (done) {
-      auth0._renderAndSubmitWSFedForm = function (htmlForm) {
+      auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
         expect(htmlForm).to.match(/<form/);
         done();
       };
@@ -66,7 +66,7 @@ describe('Auth0 - User And Passwords', function () {
 
           document.body.appendChild(iframe);
 
-          auth0._renderAndSubmitWSFedForm = function (formHtml) {
+          auth0._renderAndSubmitWSFedForm = function (options, formHtml) {
             var div = document.createElement('div');
             div.innerHTML = formHtml;
             var form = document.body.appendChild(div).children[0];
@@ -87,7 +87,8 @@ describe('Auth0 - User And Passwords', function () {
 
   describe('Signup', function () {
     it('should render wsfed form after successfull signup', function (done) {
-      auth0._renderAndSubmitWSFedForm = function (htmlForm) {
+      auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
+        console.log(htmlForm);
         expect(htmlForm).to.match(/<form/);
         done();
       };
@@ -128,7 +129,7 @@ describe('Auth0 - User And Passwords', function () {
     });
 
     it('should not render wsfed form after successfull signup if auto_login is false', function (done) {
-      auth0._renderAndSubmitWSFedForm = function (htmlForm) {
+      auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
         done(new Error('this should not be called'));
       };
 
