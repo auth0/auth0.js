@@ -106,7 +106,7 @@ If the jwt was generated with `scope=openid`, you can retrieve the full user's p
 
 ~~~js
   $(function () {
-    auth0.getProfile(window.location.hash, function (err, profile) {
+    auth0.getProfile(window.location.hash, function (profile, id_token, access_token, state) {
       alert('hello ' + profile.name);
     });
   });
