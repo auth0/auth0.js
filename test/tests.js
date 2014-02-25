@@ -140,7 +140,7 @@ describe('Auth0', function () {
 
       auth0.parseHash(hash, neverCall, function (error) {
         expect(error.error).to.be.equal('invalid_token');
-        expect(error.error_description).to.be.equal('invalid iss');
+        expect(error.error_description).to.be.equal('The domain configured (https://wrong.auth0.com/) does not match with the domain set in the token (https://login.auth0.com/).');
         done();
       });
       
@@ -162,7 +162,7 @@ describe('Auth0', function () {
 
       auth0.parseHash(hash, neverCall, function (error) {
         expect(error.error).to.be.equal('invalid_token');
-        expect(error.error_description).to.be.equal('invalid aud');
+        expect(error.error_description).to.be.equal('The clientID configured (wrong) does not match with the clientID set in the token (0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup).');
         done();
       });
       
