@@ -59,7 +59,7 @@ module.exports = function(str) {
     default:
       throw "Illegal base64url string!";
   }
-  return Base64.atob(output);
+  return decodeURIComponent(escape(Base64.atob(output)));
 };
 },{"Base64":7}],4:[function(require,module,exports){
 var global=typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {};var assert_required   = require('./assert_required');
