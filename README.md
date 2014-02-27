@@ -98,7 +98,7 @@ Once you have succesfully authenticated, Auth0 will redirect to your `callbackUR
   });
 ~~~
 
-Or just parse the hash _(if loginOption.scope is not 'openid profile' the profile will only contain the user_id)_:
+Or just parse the hash (if loginOption.scope is not `openid profile`, then the profile will only contains the `user_id`):
 
 ~~~js
   $(function () {
