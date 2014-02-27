@@ -128,8 +128,8 @@ Auth0.prototype.getProfile = function (hash, callback, errCallback) {
       // the scope was just openid
       var url = 'https://' + self._domain + '/api/users/' + profile.sub;
 
-      if (use_jsonp()) {
-        return jsonp(url + '?access_tokennn=' + id_token, {
+      if (!use_jsonp()) {
+        return jsonp(url + '?access_token=' + id_token, {
           param: 'cbx',
           timeout: 15000
         }, function (err, resp) {
