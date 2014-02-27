@@ -55,7 +55,7 @@ describe('Auth0', function () {
       expect(parsed.response_type).to.equal('token');
       expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
       expect(parsed.client_id).to.equal('aaaabcdefgh');
-      expect(parsed.scope).to.equal('openid profile');
+      expect(parsed.scope).to.equal('openid');
       done();
     };
 
@@ -95,7 +95,7 @@ describe('Auth0', function () {
       expect(parsed.response_type).to.equal('code');
       expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
       expect(parsed.client_id).to.equal('aaaabcdefgh');
-      expect(parsed.scope).to.equal('openid profile');
+      expect(parsed.scope).to.equal('openid');
       done();
     };
 
@@ -183,6 +183,51 @@ describe('Auth0', function () {
       }
 
       auth0.parseHash(hash, neverCall, function (error) {
+        expect(error.error).to.be.equal('invalid_grant');
+        expect(error.error_description).to.be.equal('this is a cool error description');
+        done();
+      });
+
+    });
+
+  });
+
+  describe('getProfile', function () {
+
+    it('should be able to parse the id_token and get the profile', function (done) {
+      var hash = "#access_token=kQGIQpDnmFjhEeLS&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjEzOTM1NDUxMDcsImlhdCI6MTM5MzUwOTEwN30.oXcIvvxNEGNAzUnvTFFEn3SBSoCIrnRrEQllzP56X-c&token_type=bearer&state=Ttct3tBlHDhRnXCv";
+
+      var auth0 = Auth0({
+        clientID:     '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        callbackURL:  'https://myapp.com/callback',
+        domain:       'mdocs.auth0.com'
+      });
+
+      auth0.getProfile(hash, function (profile, id_token, access_token, state) {
+        expect(profile.name).to.eql('John Foo');
+        expect(profile.identities.length).to.eql(1);
+        expect(access_token).to.eql('kQGIQpDnmFjhEeLS');
+        expect(state).to.eql('Ttct3tBlHDhRnXCv');
+        done();
+      });
+
+    });
+
+    it('should be able to parse an error', function (done) {
+      var hash = '#error=invalid_grant&error_description=this%20is%20a%20cool%20error%20description';
+
+      var auth0 = Auth0({
+        clientID:     'aaaabcdefgh',
+        callbackURL:  'https://myapp.com/callback',
+        domain:       'aaa.auth0.com'
+      });
+
+      function neverCall() {
+        // should never call success as it fails
+        expect(false).to.be.equal(true);
+      }
+
+      auth0.getProfile(hash, neverCall, function (error) {
         expect(error.error).to.be.equal('invalid_grant');
         expect(error.error_description).to.be.equal('this is a cool error description');
         done();

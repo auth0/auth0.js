@@ -32,7 +32,7 @@
             callbackOnLocationHash: true
         });
         
-        auth0.parseHash(window.location.hash, onparsesuccess, onparseerror);
+        auth0.getProfile(window.location.hash, onparsesuccess, onparseerror);
 
         function onparsesuccess(profile) {
             window.location.hash = "";
