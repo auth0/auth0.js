@@ -109,7 +109,7 @@ Or just parse the hash (if loginOption.scope is not `openid profile`, then the p
   });
 ~~~
 
-If there is no hash or the hash doesn't contain the jwt the callback function will not be called. So, it is safe to put this in the same page where you trigger the login.
+If there is no hash or the hash doesn't contain the jwt, the callback function will not be called. So, it is safe to put this in the same page where you trigger the login.
 
 ### Sign up (database connections):
 
