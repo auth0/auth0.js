@@ -87,30 +87,29 @@ Trigger the login on any of your active identity provider as follows:
 
 ### Parsing JWT profile
 
-Once you have succesfully authenticated, auth0 will redirect to your `callbackURL` with a hash containing an access_token and the jwt. You can parse the hash as follows:
+Once you have succesfully authenticated, Auth0 will redirect to your `callbackURL` with a hash containing an access_token and the jwt (id_token). You can parse the hash and retrieve the full user profile as follows:
 
 ~~~js
   $(function () {
-    auth0.parseHash(window.location.hash, function (profile, id_token, access_token, state) {
+    auth0.getProfile(window.location.hash, function (profile, id_token, access_token, state) {
       alert('hello ' + profile.name);
       //use id_token to call your rest api
     });
   });
 ~~~
 
-If there is no hash or the hash doesn't contain the jwt the callback function will not be called. So, it is safe to put this in the same page where you trigger the login.
-
-### Get User Profile
-
-If the jwt was generated with `scope=openid`, you can retrieve the full user's profile from location hash (which contains the jwt):
+Or just parse the hash _(if loginOption.scope is not 'openid profile' the profile will only contain the user_id)_:
 
 ~~~js
   $(function () {
-    auth0.getProfile(window.location.hash, function (profile, id_token, access_token, state) {
-      alert('hello ' + profile.name);
+    auth0.parseHash(window.location.hash, function (profile, id_token, access_token, state) {
+      alert('your user_id is: ' + profile.sub);
+      //use id_token to call your rest api
     });
   });
 ~~~
+
+If there is no hash or the hash doesn't contain the jwt the callback function will not be called. So, it is safe to put this in the same page where you trigger the login.
 
 ### Sign up (database connections):
 
