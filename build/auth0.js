@@ -7,9 +7,6 @@ function LoginError(status, details) {
   if (typeof details == 'string') {
     try {
       obj = json_parse(details);
-      if (obj && !obj.code) {
-        obj.code = obj.error;
-      }
     } catch (er) {
       obj = {message: details};
     }
@@ -17,6 +14,10 @@ function LoginError(status, details) {
     obj = details || { description: 'server error' };
   }
 
+  if (obj && !obj.code) {
+    obj.code = obj.error;
+  }
+  
   var err = Error.call(this, obj.description || obj.message || obj.error);
 
   err.status = status;

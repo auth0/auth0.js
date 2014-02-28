@@ -7,7 +7,7 @@ describe('Auth0 - User And Passwords', function () {
 
   describe('Login', function () {
 
-    describe('with callback', function () {
+    describe('with resource owner', function () {
 
       it('should call the callback when user/pass is wrong', function (done) {
         auth0.login({
@@ -49,7 +49,7 @@ describe('Auth0 - User And Passwords', function () {
 
     });
 
-    describe('without callback function', function () {
+    describe('with wsfed', function () {
 
       it('should call the callback when user/pass is wrong', function (done) {
         auth0.login({
