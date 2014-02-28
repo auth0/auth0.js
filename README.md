@@ -71,6 +71,18 @@ Trigger the login on any of your active identity provider as follows:
       password:   $('.password').val(),
     });
   });
+
+  //trigger login with a db connection and avoid the redirect (best experience for SPA)
+  $('.login-dbconn').click(function () {
+    auth0.login({
+      connection: 'github',
+      username:   $('.username').val(),
+      password:   $('.password').val(),
+    },
+    function (err, profile, id_token, access_token) {
+      // store in cookies
+    });
+  });
   
   //trigger login popup with google
   $('.login-google-popup').click(function () {
