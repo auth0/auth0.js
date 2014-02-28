@@ -21,7 +21,7 @@ describe('Auth0 - User And Passwords', function () {
         });
       });
 
-      it('should call the callback with err when the connection doesn\'t exists', function (done) {
+      it.skip('should call the callback with err when the connection doesn\'t exists', function (done) {
         auth0.login({
           connection: 'testsw3eeasdsadsa',
           username: 'testttt@wrong.com',
