@@ -6,83 +6,94 @@ describe('Auth0 - User And Passwords', function () {
   });
 
   describe('Login', function () {
-    it('should call the callback when user/pass is wrong', function (done) {
-      auth0.login({
-        connection: 'tests',
-        username: 'testttt@wrong.com',
-        password: '12345'
-      }, function (err) {
-        expect(err.status).to.equal(401);
-        expect(err.details.code).to.equal('invalid_user_password');
-        done();
-      });
-    });
 
-    it('should call the callback with err when the connection doesn\'t exists', function (done) {
-      auth0.login({
-        connection: 'testsw3eeasdsadsa',
-        username: 'testttt@wrong.com',
-        password: '12345'
-      }, function (err) {
-        expect(err.status).to.equal(404);
-        expect(err.message).to.match(/connection not found/ig);
-        done();
-      });
-    });
+    describe('with resource owner', function () {
 
-    it('should render wsfed form after successfull authentication', function (done) {
-      auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
-        expect(htmlForm).to.match(/<form/);
-        done();
-      };
-
-      auth0.login({
-        connection: 'tests',
-        username: 'johnfoo@gmail.com',
-        password: '12345'
-      });
-    });
-
-    /*if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
-      it('should return SSO data after successfull authentication', function (done) {
-        forceLogout('mdocs.auth0.com', function () {
-          var loginStarted;
-          var iframe = document.createElement('iframe');
-          iframe.name = 'test-iframe';
-          iframe.style.display = 'none';
-          iframe.onload = function() {
-            if (!loginStarted) return;
-
-            auth0.getSSOData(function (err, ssoData) {
-              expect(ssoData.sso).to.eql(true);
-              expect(ssoData.lastUsedClientID).to.eql('ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t');
-              expect(ssoData.lastUsedUsername).to.eql('johnfoo@gmail.com');
-              expect(ssoData.lastUsedConnection).to.exist;
-              expect(ssoData.lastUsedConnection.name).to.eql('tests');
-              expect(ssoData.lastUsedConnection.strategy).to.eql('auth0');
-              done();
-            });
-          };
-
-          document.body.appendChild(iframe);
-
-          auth0._renderAndSubmitWSFedForm = function (options, formHtml) {
-            var div = document.createElement('div');
-            div.innerHTML = formHtml;
-            var form = document.body.appendChild(div).children[0];
-            form.setAttribute('target', 'test-iframe');
-            form.submit();
-            loginStarted = true;
-          };
-
-          auth0.login({
-            connection: 'tests',
-            username:   'johnfoo@gmail.com',
-            password:   '12345'
-          });
+      it('should call the callback when user/pass is wrong', function (done) {
+        auth0.login({
+          connection: 'tests',
+          username: 'testttt@wrong.com',
+          password: '12345'
+        }, function (err) {
+          console.log(err);
+          expect(err.status).to.equal(401);
+          expect(err.details.code).to.equal('invalid_user_password');
+          done();
         });
       });
-    }*/
+
+      it('should call the callback with err when the connection doesn\'t exists', function (done) {
+        auth0.login({
+          connection: 'testsw3eeasdsadsa',
+          username: 'testttt@wrong.com',
+          password: '12345'
+        }, function (err) {
+          expect(err.status).to.equal(400);
+          expect(err.message).to.equal('invalid_connection');
+          done();
+        });
+      });
+
+      it('should return profile after successfull authentication', function (done) {
+        auth0.login({
+          connection: 'tests',
+          username: 'johnfoo@gmail.com',
+          password: '12345'
+        }, function (err, profile, id_token, access_token) {
+          expect(profile.name).to.eql('John Foo');
+          expect(profile.identities.length).to.eql(1);
+          expect(id_token).to.exist;
+          expect(access_token).to.exist;
+          done();
+        });
+      });
+
+    });
+
+    describe('with wsfed', function () {
+
+      it('should call the callback when user/pass is wrong', function (done) {
+        auth0.login({
+          connection: 'tests',
+          username: 'testttt@wrong.com',
+          password: '12345',
+          wsfed: true
+        }, function (err) {
+          expect(err.status).to.equal(401);
+          expect(err.details.code).to.equal('invalid_user_password');
+          done();
+        });
+      });
+
+      it('should call the callback with err when the connection doesn\'t exists', function (done) {
+        auth0.login({
+          connection: 'testsw3eeasdsadsa',
+          username: 'testttt@wrong.com',
+          password: '12345',
+          wsfed: true
+        }, function (err) {
+          expect(err.status).to.equal(404);
+          expect(err.message).to.match(/connection not found/ig);
+          done();
+        });
+      });
+
+      it('should render wsfed form after successfull authentication', function (done) {
+        auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
+          expect(htmlForm).to.match(/<form/);
+          done();
+        };
+
+        auth0.login({
+          connection: 'tests',
+          username: 'johnfoo@gmail.com',
+          password: '12345',
+          wsfed: true
+        });
+      });
+
+    });
+
   });
 
   describe('Signup', function () {

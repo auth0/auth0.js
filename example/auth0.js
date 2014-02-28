@@ -7,6 +7,9 @@ function LoginError(status, details) {
   if (typeof details == 'string') {
     try {
       obj = json_parse(details);
+      if (obj && !obj.code) {
+        obj.code = obj.error;
+      }
     } catch (er) {
       obj = {message: details};
     }
@@ -112,11 +115,12 @@ Auth0.prototype._getMode = function () {
   };
 };
 
-Auth0.prototype.getProfile = function (hash, callback, errCallback) {
+Auth0.prototype.getProfile = function (token, callback) {
+  if (!token) { return; }
 
   var self = this;
   var fail = function (status, description) {
-    errCallback({
+    callback({
       error: status,
       error_description: description
     });
@@ -138,7 +142,7 @@ Auth0.prototype.getProfile = function (hash, callback, errCallback) {
           }
 
           return resp.status === 200 ?
-            callback(resp.user, id_token, access_token, state) :
+            callback(null, resp.user, id_token, access_token, state) :
             fail(resp.status, resp.error);
         });
       }
@@ -154,14 +158,23 @@ Auth0.prototype.getProfile = function (hash, callback, errCallback) {
       }).fail(function (err) {
         fail(err.status, err.responseText);
       }).then(function (userinfo) {
-        callback(userinfo, id_token, access_token, state);
+        callback(null, userinfo, id_token, access_token, state);
       });
     }
 
-    callback(profile, id_token, access_token, state);
+    callback(null, profile, id_token, access_token, state);
   };
 
-  self.parseHash(hash, getUserInfo, errCallback);
+  if (typeof token === 'string') { // token is a hash
+    return self.parseHash(token, getUserInfo, callback);
+  }
+  
+  getUserInfo(this.decodeJwt(token.id_token), token.id_token, token.access_token);
+};
+
+Auth0.prototype.decodeJwt = function (jwt) {
+  var encoded = jwt && jwt.split('.')[1];
+  return json_parse(base64_url_decode(encoded));
 };
 
 Auth0.prototype.parseHash = function (hash, callback, errCallback) {
@@ -178,8 +191,7 @@ Auth0.prototype.parseHash = function (hash, callback, errCallback) {
   hash = hash.substr(1);
   var parsed_qs = qs.parse(hash);
   var id_token = parsed_qs.id_token;
-  var encoded = id_token.split('.')[1];
-  var prof = json_parse(base64_url_decode(encoded));
+  var prof = this.decodeJwt(id_token);
   var invalidJwt = function (error) {
     if (!errCallback) { return; }
     errCallback({
@@ -395,7 +407,66 @@ function stringifyPopupSettings(popupOptions) {
 }
 
 
+Auth0.prototype.loginWithResourceOwner = function (options, callback) {
+  var self = this;
+  var query = xtend(
+    this._getMode(),
+    options,
+    {
+      client_id:    this._clientID,
+      username:     options.username || options.email,
+      grant_type:   'password'
+    });
+
+  var endpoint = '/oauth/ro';
+
+  if (use_jsonp()) {
+    return jsonp('https://' + this._domain + endpoint + '?' + qs.stringify(query), {
+      param: 'cbx',
+      timeout: 15000
+    }, function (err, resp) {
+      if (err) {
+        return callback(err);
+      }
+      if('error' in resp) {
+        var error = new LoginError(resp.status, resp.error);
+        return callback(error);
+      }
+      self.getProfile(resp, callback);
+    });
+  }
+
+  reqwest({
+    url:     'https://' + this._domain + endpoint,
+    method:  'post',
+    type:    'json',
+    data:    query,
+    crossOrigin: true,
+    success: function (resp) {
+      self.getProfile(resp, callback);
+    }
+  }).fail(function (err) {
+    var er = err;
+    if (!er.status || er.status === 0) { //ie10 trick
+      er = {};
+      er.status = 401;
+      er.responseText = {
+        code: 'invalid_user_password'
+      };
+    }
+    else {
+      er.responseText = err;
+    }
+    var error = new LoginError(er.status, er.responseText);
+    callback(error);
+  });
+};
+
 Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
+  if (!options.wsfed) {
+    return this.loginWithResourceOwner(options, callback);
+  }
+
   var self = this;
   var popup;
 

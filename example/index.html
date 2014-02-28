@@ -32,17 +32,11 @@
             callbackOnLocationHash: true
         });
         
-        auth0.getProfile(window.location.hash, onparsesuccess, onparseerror);
-
-        function onparsesuccess(profile) {
+        auth0.getProfile(window.location.hash, function (err, profile, id_token, access_token, state) {
             window.location.hash = "";
+            if (err) return alert('error at logging: ' + err.error);
             alert('hello ' + profile.name);
-        };
-
-        function onparseerror(err) {
-            window.location.hash = "";
-            alert('error at logging: ' + err.error);
-        };
+        });
 
         $('.login-google').click(function (e) {
             e.preventDefault();
@@ -74,8 +68,9 @@
                 connection: 'tests',
                 username: $('.login-username').val(),
                 password: $('.login-password').val()
-            }, function (err) {
-                if (err) alert('Something went wrong: ' + err.message);
+            }, function (err, profile, id_token, access_token) {
+                if (err) return alert('Something went wrong: ' + err.message);
+                alert('hello ' + profile.name);
             });
         });
 
@@ -85,8 +80,9 @@
                 connection: 'tests',
                 username: $('.signup-username').val(),
                 password: $('.signup-password').val()
-            }, function (err) {
-                if (err) alert('Something went wrong: ' + err.message);
+            }, function (err, profile, id_token, access_token) {
+                if (err) return alert('Something went wrong: ' + err.message);
+                alert('hello ' + profile.name);
             });
         });
     </script>
