@@ -93,20 +93,6 @@ describe('Auth0 - User And Passwords', function () {
   });
 
   describe('Signup', function () {
-    it('should render wsfed form after successfull signup', function (done) {
-      auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
-        expect(htmlForm).to.match(/<form/);
-        done();
-      };
-
-      auth0.signup({
-        connection: 'tests',
-        username: 'johnfoo@gmail.com',
-        password: '12345'
-      }, function (err) {
-        done(err);
-      });
-    });
 
     it('should fail when the username is null', function (done) {
       auth0.signup({
@@ -134,20 +120,73 @@ describe('Auth0 - User And Passwords', function () {
       });
     });
 
-    it('should not render wsfed form after successfull signup if auto_login is false', function (done) {
-      auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
-        done(new Error('this should not be called'));
-      };
+    describe('with resource owner authentication', function () {
 
-      auth0.signup({
-        connection: 'tests',
-        username:   'johnfoo@gmail.com',
-        password:   '12345',
-        auto_login: false
-      }, function (err) {
-        done(err);
+      it('should return profile after successfull signup', function (done) {
+        auth0.signup({
+          connection: 'tests',
+          username:   'johnfoo@gmail.com',
+          password:   '12345'
+        }, function (err, profile, id_token, access_token) {
+          expect(profile.name).to.eql('John Foo');
+          expect(profile.identities.length).to.eql(1);
+          expect(id_token).to.exist;
+          expect(access_token).to.exist;
+          done();
+        });
       });
+
+      it('should not return profile after successfull signup if auto_login is false', function (done) {
+        auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
+          done(new Error('this should not be called'));
+        };
+
+        auth0.signup({
+          connection: 'tests',
+          username:   'johnfoo@gmail.com',
+          password:   '12345',
+          auto_login: false
+        }, function (err, profile) {
+          done(profile);
+        });
+      });
+
     });
+
+    describe('with wsfed authentication', function () {
+      
+      it('should render wsfed form after successfull signup', function (done) {
+        auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
+          expect(htmlForm).to.match(/<form/);
+          done();
+        };
+
+        auth0.signup({
+          connection: 'tests',
+          username: 'johnfoo@gmail.com',
+          password: '12345'
+        }, function (err) {
+          done(err);
+        });
+      });
+
+      it('should not render wsfed form after successfull signup if auto_login is false', function (done) {
+        auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
+          done(new Error('this should not be called'));
+        };
+
+        auth0.signup({
+          connection: 'tests',
+          username:   'johnfoo@gmail.com',
+          password:   '12345',
+          auto_login: false
+        }, function (err) {
+          done(err);
+        });
+      });
+
+    });
+
   });
 
   describe('Change Password', function () {
