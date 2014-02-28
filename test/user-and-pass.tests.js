@@ -7,15 +7,14 @@ describe('Auth0 - User And Passwords', function () {
 
   describe('Login', function () {
 
-    describe('with resource owner', function () {
+    describe('with callback', function () {
 
       it('should call the callback when user/pass is wrong', function (done) {
         auth0.login({
           connection: 'tests',
           username: 'testttt@wrong.com',
           password: '12345'
-        }, function (err) {
-          console.log(err);
+        }, function (err, profile) {
           expect(err.status).to.equal(401);
           expect(err.details.code).to.equal('invalid_user_password');
           done();
@@ -27,7 +26,7 @@ describe('Auth0 - User And Passwords', function () {
           connection: 'testsw3eeasdsadsa',
           username: 'testttt@wrong.com',
           password: '12345'
-        }, function (err) {
+        }, function (err, profile) {
           expect(err.status).to.equal(400);
           expect(err.message).to.equal('invalid_connection');
           done();
@@ -50,14 +49,13 @@ describe('Auth0 - User And Passwords', function () {
 
     });
 
-    describe('with wsfed', function () {
+    describe('without callback function', function () {
 
       it('should call the callback when user/pass is wrong', function (done) {
         auth0.login({
           connection: 'tests',
           username: 'testttt@wrong.com',
-          password: '12345',
-          wsfed: true
+          password: '12345'
         }, function (err) {
           expect(err.status).to.equal(401);
           expect(err.details.code).to.equal('invalid_user_password');
@@ -69,8 +67,7 @@ describe('Auth0 - User And Passwords', function () {
         auth0.login({
           connection: 'testsw3eeasdsadsa',
           username: 'testttt@wrong.com',
-          password: '12345',
-          wsfed: true
+          password: '12345'
         }, function (err) {
           expect(err.status).to.equal(404);
           expect(err.message).to.match(/connection not found/ig);
@@ -87,8 +84,7 @@ describe('Auth0 - User And Passwords', function () {
         auth0.login({
           connection: 'tests',
           username: 'johnfoo@gmail.com',
-          password: '12345',
-          wsfed: true
+          password: '12345'
         });
       });
 
@@ -99,7 +95,6 @@ describe('Auth0 - User And Passwords', function () {
   describe('Signup', function () {
     it('should render wsfed form after successfull signup', function (done) {
       auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
-        console.log(htmlForm);
         expect(htmlForm).to.match(/<form/);
         done();
       };

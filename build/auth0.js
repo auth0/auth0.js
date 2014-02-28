@@ -463,7 +463,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
 };
 
 Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
-  if (!options.wsfed) {
+  if (callback && callback.length > 1) {
     return this.loginWithResourceOwner(options, callback);
   }
 

@@ -91,7 +91,7 @@ Once you have succesfully authenticated, Auth0 will redirect to your `callbackUR
 
 ~~~js
   $(function () {
-    auth0.getProfile(window.location.hash, function (profile, id_token, access_token, state) {
+    auth0.getProfile(window.location.hash, function (err, profile, id_token, access_token, state) {
       alert('hello ' + profile.name);
       //use id_token to call your rest api
     });
