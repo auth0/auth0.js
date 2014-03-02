@@ -115,7 +115,7 @@ describe('Auth0', function () {
         domain:       'login.auth0.com'
       });
 
-      auth0.parseHash(hash, function (profile, id_token, access_token, state) {
+      auth0.parseHash(hash, function (err, profile, id_token, access_token, state) {
         expect(profile.name).to.eql('Jose Romaniello');
         expect(access_token).to.eql('jFxsZUQTJXXwcwIm');
         expect(state).to.eql('Ttct3tBlHDhRnXCv');
