@@ -127,7 +127,7 @@ Auth0.prototype.getProfile = function (token, callback) {
     });
   };
 
-  var getUserInfo = function (profile, id_token, access_token, state) {
+  var getUserInfo = function (err, profile, id_token, access_token, state) {
 
     if (profile && !profile.user_id) {
       // the scope was just openid
@@ -170,7 +170,7 @@ Auth0.prototype.getProfile = function (token, callback) {
     return self.parseHash(token, getUserInfo, callback);
   }
   
-  getUserInfo(this.decodeJwt(token.id_token), token.id_token, token.access_token);
+  getUserInfo(null, this.decodeJwt(token.id_token), token.id_token, token.access_token, token.state);
 };
 
 Auth0.prototype.decodeJwt = function (jwt) {
@@ -180,13 +180,13 @@ Auth0.prototype.decodeJwt = function (jwt) {
 
 Auth0.prototype.parseHash = function (hash, callback, errCallback) {
   if (hash.match(/error/)) {
-    if (!errCallback) { return; }
     hash = hash.substr(1);
     var parsed_qs = qs.parse(hash);
-    return errCallback({
+    var err = {
       error: parsed_qs.error,
       error_description: parsed_qs.error_description
-    });
+    };
+    return errCallback ? errCallback(err) : callback(err);
   }
   if(!hash.match(/access_token/)) return;
   hash = hash.substr(1);
@@ -194,11 +194,11 @@ Auth0.prototype.parseHash = function (hash, callback, errCallback) {
   var id_token = parsed_qs.id_token;
   var prof = this.decodeJwt(id_token);
   var invalidJwt = function (error) {
-    if (!errCallback) { return; }
-    errCallback({
+    var err = {
       error: 'invalid_token',
       error_description: error
-    });
+    };
+    return errCallback ? errCallback(err) : callback(err);
   };
 
   // aud should be the clientID
@@ -213,8 +213,9 @@ Auth0.prototype.parseHash = function (hash, callback, errCallback) {
       'The domain configured (https://' + this._domain + '/) does not match with the domain set in the token (' + prof.iss + ').');
   }
 
-  callback(prof, id_token, parsed_qs.access_token, parsed_qs.state);
+  callback(null, prof, id_token, parsed_qs.access_token, parsed_qs.state);
 };
+
 
 Auth0.prototype.signup = function (options, callback) {
   var self = this;
@@ -332,6 +333,7 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
 
 
 Auth0.prototype.loginWithPopup = function(options, callback) {
+  var self = this;
   var query = xtend(
     this._getMode(),
     options,
@@ -382,15 +384,7 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
       };
     } catch (err) { }
 
-    if (hash.length) { return onready(hash); }
-  }
-
-  function onready(hash) {
-    // Since `parseHash` gets executed
-    // at page load, it requires the page
-    // to be reloaded after hash changes
-    window.location.replace(hash);
-    window.location.reload();
+    if (hash.length) { return self.getProfile(hash, callback); }
   }
 
 };
@@ -1340,13 +1334,12 @@ function decode(str) {
 }
 
 },{}],11:[function(require,module,exports){
-/*! version: 0.9.1 */
-/*!
+/*! version: 0.9.7
   * Reqwest! A general purpose XHR connection manager
-  * (c) Dustin Diaz 2013
+  * license MIT (c) Dustin Diaz 2013
   * https://github.com/ded/reqwest
-  * license MIT
   */
+
 !function (name, context, definition) {
   if (typeof module != 'undefined' && module.exports) module.exports = definition()
   else if (typeof define == 'function' && define.amd) define(definition)
@@ -1355,7 +1348,7 @@ function decode(str) {
 
   var win = window
     , doc = document
-    , twoHundo = /^20\d$/
+    , twoHundo = /^(20\d|1223)$/
     , byTag = 'getElementsByTagName'
     , readyState = 'readyState'
     , contentType = 'Content-Type'
@@ -1375,21 +1368,21 @@ function decode(str) {
           }
 
     , defaultHeaders = {
-          contentType: 'application/x-www-form-urlencoded'
-        , requestedWith: xmlHttpRequest
-        , accept: {
+          'contentType': 'application/x-www-form-urlencoded'
+        , 'requestedWith': xmlHttpRequest
+        , 'accept': {
               '*':  'text/javascript, text/html, application/xml, text/xml, */*'
-            , xml:  'application/xml, text/xml'
-            , html: 'text/html'
-            , text: 'text/plain'
-            , json: 'application/json, text/javascript'
-            , js:   'application/javascript, text/javascript'
+            , 'xml':  'application/xml, text/xml'
+            , 'html': 'text/html'
+            , 'text': 'text/plain'
+            , 'json': 'application/json, text/javascript'
+            , 'js':   'application/javascript, text/javascript'
           }
       }
 
     , xhr = function(o) {
         // is it x-domain
-        if (o.crossOrigin === true) {
+        if (o['crossOrigin'] === true) {
           var xhr = win[xmlHttpRequest] ? new XMLHttpRequest() : null
           if (xhr && 'withCredentials' in xhr) {
             return xhr
@@ -1426,23 +1419,23 @@ function decode(str) {
   }
 
   function setHeaders(http, o) {
-    var headers = o.headers || {}
+    var headers = o['headers'] || {}
       , h
 
-    headers.Accept = headers.Accept
-      || defaultHeaders.accept[o.type]
-      || defaultHeaders.accept['*']
+    headers['Accept'] = headers['Accept']
+      || defaultHeaders['accept'][o['type']]
+      || defaultHeaders['accept']['*']
 
     // breaks cross-origin requests with legacy browsers
-    if (!o.crossOrigin && !headers[requestedWith]) headers[requestedWith] = defaultHeaders.requestedWith
-    if (!headers[contentType]) headers[contentType] = o.contentType || defaultHeaders.contentType
+    if (!o['crossOrigin'] && !headers[requestedWith]) headers[requestedWith] = defaultHeaders['requestedWith']
+    if (!headers[contentType]) headers[contentType] = o['contentType'] || defaultHeaders['contentType']
     for (h in headers)
       headers.hasOwnProperty(h) && 'setRequestHeader' in http && http.setRequestHeader(h, headers[h])
   }
 
   function setCredentials(http, o) {
-    if (typeof o.withCredentials !== 'undefined' && typeof http.withCredentials !== 'undefined') {
-      http.withCredentials = !!o.withCredentials
+    if (typeof o['withCredentials'] !== 'undefined' && typeof http.withCredentials !== 'undefined') {
+      http.withCredentials = !!o['withCredentials']
     }
   }
 
@@ -1456,9 +1449,9 @@ function decode(str) {
 
   function handleJsonp(o, fn, err, url) {
     var reqId = uniqid++
-      , cbkey = o.jsonpCallback || 'callback' // the 'callback' key
-      , cbval = o.jsonpCallbackName || reqwest.getcallbackPrefix(reqId)
-      // , cbval = o.jsonpCallbackName || ('reqwest_' + reqId) // the 'callback' value
+      , cbkey = o['jsonpCallback'] || 'callback' // the 'callback' key
+      , cbval = o['jsonpCallbackName'] || reqwest.getcallbackPrefix(reqId)
+      // , cbval = o['jsonpCallbackName'] || ('reqwest_' + reqId) // the 'callback' value
       , cbreg = new RegExp('((^|\\?|&)' + cbkey + ')=([^&]+)')
       , match = url.match(cbreg)
       , script = doc.createElement('script')
@@ -1520,26 +1513,29 @@ function decode(str) {
 
   function getRequest(fn, err) {
     var o = this.o
-      , method = (o.method || 'GET').toUpperCase()
-      , url = typeof o === 'string' ? o : o.url
-      // convert non-string objects to query-string form unless o.processData is false
-      , data = (o.processData !== false && o.data && typeof o.data !== 'string')
-        ? reqwest.toQueryString(o.data)
-        : (o.data || null)
+      , method = (o['method'] || 'GET').toUpperCase()
+      , url = typeof o === 'string' ? o : o['url']
+      // convert non-string objects to query-string form unless o['processData'] is false
+      , data = (o['processData'] !== false && o['data'] && typeof o['data'] !== 'string')
+        ? reqwest.toQueryString(o['data'])
+        : (o['data'] || null)
       , http
       , sendWait = false
 
     // if we're working on a GET request and we have data then we should append
     // query string to end of URL and not post data
-    if ((o.type == 'jsonp' || method == 'GET') && data) {
+    if ((o['type'] == 'jsonp' || method == 'GET') && data) {
       url = urlappend(url, data)
       data = null
     }
 
-    if (o.type == 'jsonp') return handleJsonp(o, fn, err, url)
+    if (o['type'] == 'jsonp') return handleJsonp(o, fn, err, url)
 
-    http = xhr(o)
-    http.open(method, url, o.async === false ? false : true)
+    // get the xhr from the factory if passed
+    // if the factory returns null, fall-back to ours
+    http = (o.xhr && o.xhr(o)) || xhr(o)
+
+    http.open(method, url, o['async'] === false ? false : true)
     setHeaders(http, o)
     setCredentials(http, o)
     if (win[xDomainRequest] && http instanceof win[xDomainRequest]) {
@@ -1552,7 +1548,7 @@ function decode(str) {
     } else {
       http.onreadystatechange = handleReadyState(this, fn, err)
     }
-    o.before && o.before(http)
+    o['before'] && o['before'](http)
     if (sendWait) {
       setTimeout(function () {
         http.send(data)
@@ -1577,7 +1573,7 @@ function decode(str) {
 
   function init(o, fn) {
 
-    this.url = typeof o == 'string' ? o : o.url
+    this.url = typeof o == 'string' ? o : o['url']
     this.timeout = null
 
     // whether request has been fulfilled for purpose
@@ -1594,36 +1590,36 @@ function decode(str) {
     this._responseArgs = {}
 
     var self = this
-      , type = o.type || setType(this.url)
+      , type = o['type'] || setType(this.url)
 
     fn = fn || function () {}
 
-    if (o.timeout) {
+    if (o['timeout']) {
       this.timeout = setTimeout(function () {
         self.abort()
-      }, o.timeout)
+      }, o['timeout'])
     }
 
-    if (o.success) {
+    if (o['success']) {
       this._successHandler = function () {
-        o.success.apply(o, arguments)
+        o['success'].apply(o, arguments)
       }
     }
 
-    if (o.error) {
+    if (o['error']) {
       this._errorHandlers.push(function () {
-        o.error.apply(o, arguments)
+        o['error'].apply(o, arguments)
       })
     }
 
-    if (o.complete) {
+    if (o['complete']) {
       this._completeHandlers.push(function () {
-        o.complete.apply(o, arguments)
+        o['complete'].apply(o, arguments)
       })
     }
 
     function complete (resp) {
-      o.timeout && clearTimeout(self.timeout)
+      o['timeout'] && clearTimeout(self.timeout)
       self.timeout = null
       while (self._completeHandlers.length > 0) {
         self._completeHandlers.shift()(resp)
@@ -1764,8 +1760,8 @@ function decode(str) {
       , optCb = function (o) {
           // IE gives value="" even where there is no value attribute
           // 'specified' ref: http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-862529273
-          if (o && !o.disabled)
-            cb(n, normalize(o.attributes.value && o.attributes.value.specified ? o.value : o.text))
+          if (o && !o['disabled'])
+            cb(n, normalize(o['attributes']['value'] && o['attributes']['value']['specified'] ? o['value'] : o['text']))
         }
       , ch, ra, val, i
 
@@ -1872,12 +1868,12 @@ function decode(str) {
         }
     // If an array was passed in, assume that it is an array of form elements.
     if (isArray(o)) {
-      for (i = 0; o && i < o.length; i++) add(o[i].name, o[i].value)
+      for (i = 0; o && i < o.length; i++) add(o[i]['name'], o[i]['value'])
     } else {
       // If traditional, encode the "old" way (the way 1.3.2 or older
       // did it), otherwise encode params recursively.
       for (prefix in o) {
-        buildParams(prefix, o[prefix], traditional, add)
+        if (o.hasOwnProperty(prefix)) buildParams(prefix, o[prefix], traditional, add)
       }
     }
 
@@ -1920,10 +1916,10 @@ function decode(str) {
   // .ajax.compat(options, callback)
   reqwest.compat = function (o, fn) {
     if (o) {
-      o.type && (o.method = o.type) && delete o.type
-      o.dataType && (o.type = o.dataType)
-      o.jsonpCallback && (o.jsonpCallbackName = o.jsonpCallback) && delete o.jsonpCallback
-      o.jsonp && (o.jsonpCallback = o.jsonp)
+      o['type'] && (o['method'] = o['type']) && delete o['type']
+      o['dataType'] && (o['type'] = o['dataType'])
+      o['jsonpCallback'] && (o['jsonpCallbackName'] = o['jsonpCallback']) && delete o['jsonpCallback']
+      o['jsonp'] && (o['jsonpCallback'] = o['jsonp'])
     }
     return new Reqwest(o, fn)
   }
