@@ -40,6 +40,7 @@ describe('Auth0 - User And Passwords', function () {
           password: '12345'
         }, function (err, profile, id_token, access_token) {
           expect(profile.name).to.eql('John Foo');
+          expect(profile.foo).to.eql('bar');
           expect(profile.identities.length).to.eql(1);
           expect(id_token).to.exist;
           expect(access_token).to.exist;
