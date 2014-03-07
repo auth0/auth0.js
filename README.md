@@ -66,7 +66,7 @@ Trigger the login on any of your active identity provider as follows:
   //trigger login with a db connection
   $('.login-dbconn').click(function () {
     auth0.login({
-      connection: 'github',
+      connection: 'db-conn',
       username:   $('.username').val(),
       password:   $('.password').val(),
     });
@@ -75,7 +75,7 @@ Trigger the login on any of your active identity provider as follows:
   //trigger login with a db connection and avoid the redirect (best experience for SPA)
   $('.login-dbconn').click(function () {
     auth0.login({
-      connection: 'github',
+      connection: 'db-conn',
       username:   $('.username').val(),
       password:   $('.password').val(),
     },
@@ -130,7 +130,7 @@ If you use [Database Connections](https://docs.auth0.com/mysql-connection-tutori
 ~~~js
   $('.signup').click(function () {
     auth0.signup({
-      connection: 'google-oauth2',
+      connection: 'db-conn',
       username:   'foo@bar.com',
       password:   'blabla'
     }, function (err) {
@@ -155,6 +155,18 @@ var options = {
 auth0.getDelegationToken(targetClientId, id_token, options, function (err, delegationResult) {
 	// Call your API using delegationResult.id_token
 });
+~~~
+
+### Validate User
+
+You can validate a user of a specific connection with his username and password:
+
+~~~js
+auth0.validateUser({
+  connection:   'db-conn',
+  username:     'foo@bar.com',
+  password:     'blabla'
+}, function (err, valid) { });
 ~~~
 
 ## Develop

@@ -217,4 +217,55 @@ describe('Auth0 - User And Passwords', function () {
     });
 
   });
+
+  describe('Validate User', function () {
+    
+    it('should return "true" if the credentials are valid', function (done) {
+      auth0.validateUser({
+        connection:   'tests',
+        username:     'johnfoo@gmail.com',
+        password:     '12345'
+      }, function (err, valid) {
+        expect(err).to.be(null);
+        expect(valid).to.equal(true);
+        done();
+      });
+    });
+
+    it('should return "false" if username is invalid', function (done) {
+      auth0.validateUser({
+        connection:   'tests',
+        username:     'invalid-user@gmail.com',
+        password:     '12345'
+      }, function (err, valid) {
+        expect(err).to.be(null);
+        expect(valid).to.equal(false);
+        done();
+      });
+    });
+
+    it('should return "false" if connection is invalid', function (done) {
+      auth0.validateUser({
+        connection:   'invalid-conn',
+        username:     'johnfoo@gmail.com',
+        password:     '12345'
+      }, function (err, valid) {
+        expect(err).to.be(null);
+        expect(valid).to.equal(false);
+        done();
+      });
+    });
+
+    it('should return error if connection is not specified', function (done) {
+      auth0.validateUser({
+        username:     'johnfoo@gmail.com',
+        password:     '12345'
+      }, function (err) {
+        expect(err.message).to.equal('connection parameter is mandatory');
+        done();
+      });
+    });
+
+  });
+
 });

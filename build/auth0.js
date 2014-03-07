@@ -176,6 +176,46 @@ Auth0.prototype.getProfile = function (token, callback) {
   self._getUserInfo(self.decodeJwt(token.id_token), token.id_token, token.access_token, token.state, callback);
 };
 
+Auth0.prototype.validateUser = function (options, callback) {
+  var endpoint = 'https://' + this._domain + '/api/users/validate_userpassword';
+  var query = xtend(
+    options,
+    {
+      client_id:    this._clientID,
+      username:     options.username || options.email
+    });
+
+  if (use_jsonp()) {
+    return jsonp(endpoint + '?' + qs.stringify(query), {
+      param: 'cbx',
+      timeout: 15000
+    }, function (err, resp) {
+      if (err) {
+        return callback(err);
+      }
+      if('error' in resp && resp.status !== 404) {
+        return callback(new Error(resp.error));
+      }
+      callback(null, resp.status === 200);
+    });
+  }
+
+  reqwest({
+    url:     endpoint,
+    method:  'post',
+    type:    'text',
+    data:    query,
+    crossOrigin: true,
+    error: function (err) {
+      if (err.status !== 404) { return callback(new Error(err.responseText)); }
+      callback(null, false);
+    },
+    success: function (resp) {
+      callback(null, resp.status === 200);
+    }
+  });
+};
+
 Auth0.prototype.decodeJwt = function (jwt) {
   var encoded = jwt && jwt.split('.')[1];
   return json_parse(base64_url_decode(encoded));
