@@ -272,6 +272,19 @@ describe('Auth0', function () {
 
       });
 
+      it('should call the callback even if the token is falsy', function (done) {
+        var auth0 = Auth0({
+          clientID:     'aaaabcdefgh',
+          callbackURL:  'https://myapp.com/callback',
+          domain:       'aaa.auth0.com'
+        });
+
+        auth0.getProfile(null, function (err) {
+          done();
+        });
+
+      });
+
     });
 
     describe('from token', function () {
@@ -328,7 +341,7 @@ describe('Auth0', function () {
     });
   });
 
-  it('should not call the callback if the hash doesnt contain access_token', function (done) {
+  it('should call the error callback if the hash doesnt contain access_token', function (done) {
     var hash = "#myfooobarrr=123";
 
     var auth0 = Auth0({
@@ -337,11 +350,10 @@ describe('Auth0', function () {
       domain:       'aaa.auth0.com'
     });
 
-    auth0.parseHash(hash, function () {
-      done(new Error('this should not be called'));
+    auth0.parseHash(hash, null, function () {
+      done();
     });
 
-    done();
   });
 
   it('should return SSO data', function (done) {

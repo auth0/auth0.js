@@ -165,7 +165,7 @@ Auth0.prototype._getUserInfo = function (profile, id_token, access_token, state,
 Auth0.prototype.getProfile = function (token, callback) {
   var self = this;
 
-  if (!token) { return; }
+  if (!token) { return callback(new Error('Invalid token')); }
   if (typeof token === 'string') { // token is a hash
     return self.parseHash(token, function (err, profile, id_token, access_token, state) {
       if (err) { return callback(err); }
@@ -231,7 +231,9 @@ Auth0.prototype.parseHash = function (hash, callback, errCallback) {
     };
     return errCallback ? errCallback(err) : callback(err);
   }
-  if(!hash.match(/access_token/)) return;
+  if(!hash.match(/access_token/)) {
+    return errCallback(new Error('Invalid hash URL'));
+  }
   hash = hash.substr(1).replace(/^\//, '');
   var parsed_qs = qs.parse(hash);
   var id_token = parsed_qs.id_token;
