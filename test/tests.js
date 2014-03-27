@@ -274,6 +274,23 @@ describe('Auth0', function () {
 
       });
 
+      describe('on parseHash exception ', function () {
+        it('should return parseHash exception', function (done) {
+          var auth0 = Auth0({
+            clientID:     'aaaabcdefgh',
+            callbackURL:  'https://myapp.com/callback',
+            domain:       'aaa.auth0.com'
+          });
+
+          auth0.getProfile('foo', function (err) {
+            expect(err).to.exist;
+            expect(err.message).to.eql('Invalid hash URL');
+            done();
+          });
+
+        });
+      });
+
     });
 
     describe('from token', function () {
