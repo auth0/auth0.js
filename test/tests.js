@@ -64,6 +64,33 @@ describe('Auth0', function () {
     });
   });
 
+  it('should fail if auth0.login is called with {popup: true} and without callback', function () {
+    var auth0 = Auth0({
+      clientID:    'aaaabcdefgh',
+      domain:      'aaa.auth0.com',
+      callbackURL: 'https://myapp.com/callback',
+      callbackOnLocationHash: true
+    });
+
+    expect(function () {
+      auth0.signin({popup: true});
+    }).to.throwError(/popup mode should receive a mandatory callback/);
+  });
+
+  it('should fail if auth0.loginWithPopup is called without callback', function () {
+    var auth0 = Auth0({
+      clientID:    'aaaabcdefgh',
+      domain:      'aaa.auth0.com',
+      callbackURL: 'https://myapp.com/callback',
+      callbackOnLocationHash: true
+    });
+
+    expect(function () {
+      auth0.loginWithPopup({});
+    }).to.throwError(/popup mode should receive a mandatory callback/);
+
+  });
+
   it('should support to use signin as an alias for login', function () {
     var auth0 = Auth0({
       clientID:    'aaaabcdefgh',
