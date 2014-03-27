@@ -165,12 +165,20 @@ Auth0.prototype._getUserInfo = function (profile, id_token, access_token, state,
 Auth0.prototype.getProfile = function (token, callback) {
   var self = this;
 
-  if (!token) { return; }
+  if (!token) { return callback(new Error('Invalid token')); }
   if (typeof token === 'string') { // token is a hash
-    return self.parseHash(token, function (err, profile, id_token, access_token, state) {
-      if (err) { return callback(err); }
-      self._getUserInfo(profile, id_token, access_token, state, callback);
-    });
+    var result = null;
+    try {
+      result = self.parseHash(token);
+    } catch (e) {
+      return callback(err);
+    }
+
+    if (!result || result.error) {
+      return callback(result);
+    }
+
+    return self._getUserInfo(result.profile, result.id_token, result.access_token, result.state, callback);
   }
 
   self._getUserInfo(self.decodeJwt(token.id_token), token.id_token, token.access_token, token.state, callback);
@@ -221,7 +229,7 @@ Auth0.prototype.decodeJwt = function (jwt) {
   return json_parse(base64_url_decode(encoded));
 };
 
-Auth0.prototype.parseHash = function (hash, callback, errCallback) {
+Auth0.prototype.parseHash = function (hash) {
   if (hash.match(/error/)) {
     hash = hash.substr(1).replace(/^\//, '');
     var parsed_qs = qs.parse(hash);
@@ -229,9 +237,11 @@ Auth0.prototype.parseHash = function (hash, callback, errCallback) {
       error: parsed_qs.error,
       error_description: parsed_qs.error_description
     };
-    return errCallback ? errCallback(err) : callback(err);
+    return err;
   }
-  if(!hash.match(/access_token/)) return;
+  if(!hash.match(/access_token/)) {
+    throw new Error('Invalid hash URL');
+  }
   hash = hash.substr(1).replace(/^\//, '');
   var parsed_qs = qs.parse(hash);
   var id_token = parsed_qs.id_token;
@@ -241,7 +251,7 @@ Auth0.prototype.parseHash = function (hash, callback, errCallback) {
       error: 'invalid_token',
       error_description: error
     };
-    return errCallback ? errCallback(err) : callback(err);
+    return err;
   };
 
   // aud should be the clientID
@@ -256,7 +266,12 @@ Auth0.prototype.parseHash = function (hash, callback, errCallback) {
       'The domain configured (https://' + this._domain + '/) does not match with the domain set in the token (' + prof.iss + ').');
   }
 
-  callback(null, prof, id_token, parsed_qs.access_token, parsed_qs.state);
+  return {
+    profile: prof,
+    id_token: id_token,
+    access_token: parsed_qs.access_token,
+    state: parsed_qs.state
+  };
 };
 
 
@@ -666,6 +681,24 @@ Auth0.prototype.getConnections = function (callback) {
     param: 'cbx',
     timeout: 15000
   }, callback);
+};
+
+/*
+ * Returns true if the user is being redirected to callback after
+ * authentication. First argument is optional and was intended for
+ * easier testing.
+* */
+Auth0.prototype.inCallback = function (hash) {
+  var result;
+
+  hash = hash || window.location.hash;
+
+  try {
+    result = this.parseHash(hash);
+  } catch (e) {
+    return false;
+  }
+  return !(result.error);
 };
 
 module.exports = Auth0;
