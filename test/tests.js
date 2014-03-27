@@ -7,19 +7,19 @@ describe('Auth0', function () {
   it('should fail to construct without a clientID', function () {
     expect(function () {
       new Auth0({});
-    }).to.throwError('clientID is required');
+    }).to.throwError(/clientID is required/);
   });
 
   it('should fail to construct without a callbackURL', function () {
     expect(function () {
       new Auth0({clientID: '1123sadsd'});
-    }).to.throwError('callbackURL is required');
+    }).to.throwError(/callbackURL is required/);
   });
 
   it('should fail to construct without a domain', function () {
     expect(function () {
       new Auth0({clientID: '1123sadsd', callbackURL: 'aaaa'});
-    }).to.throwError('domain is required');
+    }).to.throwError(/domain is required/);
   });
 
   it('should force constructor', function () {
