@@ -114,9 +114,9 @@ Or just parse the hash (if loginOption.scope is not `openid profile`, then the p
 
 ~~~js
   $(function () {
-    auth0.parseHash(window.location.hash, function (profile, id_token, access_token, state) {
-      alert('your user_id is: ' + profile.sub);
-      //use id_token to call your rest api
+    var result = auth0.parseHash(window.location.hash);
+      alert('your user_id is: ' + result.profile.sub);
+      //use result.id_token to call your rest api
     });
   });
 ~~~
