@@ -32,11 +32,15 @@
             callbackOnLocationHash: true
         });
         
-        auth0.getProfile(window.location.hash, function (err, profile, id_token, access_token, state) {
+        if (auth0.inCallback()) {
+          auth0.getProfile(window.location.hash, function (err, profile, id_token, access_token, state) {
             window.location.hash = "";
-            if (err) return alert('error at logging: ' + err.error);
-            alert('hello ' + profile.name);
-        });
+            if (err) {
+              return alert('error at logging: ' + err.message);
+            }
+              alert('hello ' + profile.name);
+          });
+        }
 
         $('.login-google').click(function (e) {
             e.preventDefault();
@@ -57,8 +61,11 @@
                     height: 800
                 }
             }, function(err, profile, id_token, access_token, state) {
-                if (err) alert("something went wrong: " + err.message);
-                alert('hello ' + profile.name);
+              if (err) {
+                alert("something went wrong: " + err.message);
+                return;
+              }
+              alert('hello ' + profile.name);
             });
         });
 
