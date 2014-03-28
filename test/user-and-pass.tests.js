@@ -114,7 +114,7 @@ describe('Auth0 - User And Passwords', function () {
         username:   'pepo@example.com',
         password:   '12345'
       }, function (err) {
-        expect(err.status).to.equal(400);
+        expect(err.status).to.equal(500);
         expect(err.message).to.exist;
         expect(err.details).to.exist;
         done();
