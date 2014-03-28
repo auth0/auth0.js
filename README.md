@@ -24,7 +24,7 @@ If you are using [browserify](http://browserify.org/) install with `npm i auth0.
 Construct a new instance of the Auth0 client as follows:
 
 ~~~html
-<script src="auth0.min.js"></script>
+<script src="http://cdn.auth0.com/w2/auth0-2.0.5.js"></script>
 <script type="text/javascript">
   var auth0 = new Auth0({
     domain:       'mine.auth0.com',
@@ -105,34 +105,54 @@ Trigger the login on any of your active identity provider as follows:
   });
 ~~~
 
-### Parsing JWT profile
+### Processing the callback
+
+### Redirect Mode
 
 Once you have succesfully authenticated, Auth0 will redirect to your `callbackURL` with a hash containing an `access_token` and the jwt (`id_token`). You can parse the hash and retrieve the full user profile as follows:
 
-~~~js
+```js
   $(function () {
     var result = auth0.parseHash(window.location.hash);
     if (result) {
-      auth0.getProfile(window.location.hash, function (err, profile, id_token, access_token, state) {
+      auth0.getProfile(result, function (err, profile, id_token, access_token, state) {
         alert('hello ' + profile.name);
         //use id_token to call your rest api
       });
     }
   });
-~~~
+```
 
 Or just parse the hash (if loginOption.scope is not `openid profile`, then the profile will only contains the `user_id`):
 
-~~~js
+```js
   $(function () {
       var result = auth0.parseHash(window.location.hash);
-      alert('your user_id is: ' + result.profile.sub);
-      //use result.id_token to call your rest api
+      if (result && result.profile) {
+      	alert('your user_id is: ' + result.profile.sub);
+      	//use result.id_token to call your rest api
+      }
     });
   });
-~~~
+```
 
-If there is no hash or the hash doesn't contain the jwt, the callback function will not be called. So, it is safe to put this in the same page where you trigger the login.
+If there is no hash, `result` will be null. It the hash contains the jwt, the profile field will be populated.
+
+### Popup Mode
+
+While using this mode, the result will be passed as the `login` method callback.
+```js
+  auth0.login({ popup: true }, function(err, profile, id_token, access_token, state) {
+    if (err) {
+      // Handle the error!
+      return;
+    }
+    
+    //use id_token to call your rest api
+    alert('hello ' + profile.name);
+  });
+});
+```
 
 ### Sign up (database connections):
 
