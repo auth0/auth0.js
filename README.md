@@ -85,7 +85,8 @@ Trigger the login on any of your active identity provider as follows:
   });
   
   //trigger login popup with google
-  $('.login-google-popup').click(function () {
+  $('.login-google-popup').click(function (e) {
+    e.preventDefault();
     auth0.login({
       connection: 'google-oauth2',
       popup: true,
@@ -93,6 +94,13 @@ Trigger the login on any of your active identity provider as follows:
         width: 450,
         height: 800
       }
+    }, function(err, profile, id_token, access_token, state) {
+      if (err) {
+        debugger;
+        alert("something went wrong: " + err.message);
+        return;
+      }
+      alert('hello ' + profile.name);
     });
   });
 ~~~
