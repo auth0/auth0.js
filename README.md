@@ -99,14 +99,17 @@ Trigger the login on any of your active identity provider as follows:
 
 ### Parsing JWT profile
 
-Once you have succesfully authenticated, Auth0 will redirect to your `callbackURL` with a hash containing an access_token and the jwt (id_token). You can parse the hash and retrieve the full user profile as follows:
+Once you have succesfully authenticated, Auth0 will redirect to your `callbackURL` with a hash containing an `access_token` and the jwt (`id_token`). You can parse the hash and retrieve the full user profile as follows:
 
 ~~~js
   $(function () {
-    auth0.getProfile(window.location.hash, function (err, profile, id_token, access_token, state) {
-      alert('hello ' + profile.name);
-      //use id_token to call your rest api
-    });
+    var result = auth0.parseHash(window.location.hash);
+    if (result) {
+      auth0.getProfile(window.location.hash, function (err, profile, id_token, access_token, state) {
+        alert('hello ' + profile.name);
+        //use id_token to call your rest api
+      });
+    }
   });
 ~~~
 
@@ -114,7 +117,7 @@ Or just parse the hash (if loginOption.scope is not `openid profile`, then the p
 
 ~~~js
   $(function () {
-    var result = auth0.parseHash(window.location.hash);
+      var result = auth0.parseHash(window.location.hash);
       alert('your user_id is: ' + result.profile.sub);
       //use result.id_token to call your rest api
     });
