@@ -166,19 +166,10 @@ Auth0.prototype.getProfile = function (token, callback) {
   var self = this;
 
   if (!token) { return callback(new Error('Invalid token')); }
-  if (typeof token === 'string') { // token is a hash
-    var result = null;
-    try {
-      result = self.parseHash(token);
-    } catch (e) {
-      return callback(e);
-    }
 
-    if (!result || result.error) {
-      return callback(result);
-    }
-
-    return self._getUserInfo(result.profile, result.id_token, result.access_token, result.state, callback);
+  // case when token is a hash (deprecated on 3.0.x)
+  if (typeof token === 'string') {
+    return callback(new Error('Token should be an object'));
   }
 
   self._getUserInfo(self.decodeJwt(token.id_token), token.id_token, token.access_token, token.state, callback);
@@ -240,7 +231,8 @@ Auth0.prototype.parseHash = function (hash) {
     return err;
   }
   if(!hash.match(/access_token/)) {
-    throw new Error('Invalid hash URL');
+    // Invalid hash URL
+    return null;
   }
   hash = hash.substr(1).replace(/^\//, '');
   var parsed_qs = qs.parse(hash);
@@ -446,7 +438,16 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
       };
     } catch (err) { }
 
-    if (hash.length) { return self.getProfile(hash, callback); }
+    if (hash.length) {
+      var result = self.parseHash(hash);
+
+      if (result && result.profile) {
+        return self.getProfile(result, callback);
+      }
+
+      return callback(new Error('Invalid hash URL'));
+
+    }
   }
 
 };
@@ -685,24 +686,6 @@ Auth0.prototype.getConnections = function (callback) {
     param: 'cbx',
     timeout: 15000
   }, callback);
-};
-
-/*
- * Returns true if the user is being redirected to callback after
- * authentication. First argument is optional and was intended for
- * easier testing.
-* */
-Auth0.prototype.inCallback = function (hash) {
-  var result;
-
-  hash = hash || window.location.hash;
-
-  try {
-    result = this.parseHash(hash);
-  } catch (e) {
-    return false;
-  }
-  return !(result.error);
 };
 
 module.exports = Auth0;
