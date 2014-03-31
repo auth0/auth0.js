@@ -148,7 +148,7 @@ Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
       method:       'post',
       type:         'json',
       crossOrigin:  true,
-      data:         {id_token: id_token},
+      data:         {id_token: id_token}
     }).fail(function (err) {
       fail(err.status, err.responseText);
     }).then(function (userinfo) {
