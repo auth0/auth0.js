@@ -96,7 +96,6 @@ Trigger the login on any of your active identity provider as follows:
       }
     }, function(err, profile, id_token, access_token, state) {
       if (err) {
-        debugger;
         alert("something went wrong: " + err.message);
         return;
       }
