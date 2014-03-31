@@ -33,9 +33,9 @@
 
         var result = auth0.parseHash(window.location.hash);
 
-        if (result && result.error !== '0') {
+        if (result) {
             // This will execute on redirect callback
-            auth0.getProfile(result, function (err, profile, id_token, access_token, state) {
+            auth0.getProfile(result.id_token, function (err, profile) {
               window.location.hash = "";
               if (err) {
                 return alert('error at login: ' + JSON.stringify(err));

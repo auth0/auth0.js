@@ -248,7 +248,7 @@ describe('Auth0', function () {
 
   describe('getProfile', function () {
 
-    describe('when called with an string', function () {
+    describe('when called with an object', function () {
       it('should call the callback with error', function (done) {
         var auth0 = Auth0({
           clientID:     'aaaabcdefgh',
@@ -256,8 +256,23 @@ describe('Auth0', function () {
           domain:       'aaa.auth0.com'
         });
 
-        auth0.getProfile('foo', function (err) {
-          expect(err.message).to.eql('Token should be an object');
+        auth0.getProfile({foo: 'bar'}, function (err) {
+          expect(err.message).to.eql('Invalid token');
+          done();
+        });
+      });
+    });
+
+    describe('when called with an null', function () {
+      it('should call the callback with error', function (done) {
+        var auth0 = Auth0({
+          clientID:     'aaaabcdefgh',
+          callbackURL:  'https://myapp.com/callback',
+          domain:       'aaa.auth0.com'
+        });
+
+        auth0.getProfile(null, function (err) {
+          expect(err.message).to.eql('Invalid token');
           done();
         });
       });
@@ -272,19 +287,14 @@ describe('Auth0', function () {
           domain:       'mdocs.auth0.com'
         });
 
-        var token = {
-          access_token: 'MDSTVlujS0LHQzZC',
-          id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjEzOTM5ODMwNDEsImlhdCI6MTM5Mzk0NzA0MSwiY2xpZW50SUQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImNyZWF0ZWRfYXQiOiJUdWUgTWFyIDA0IDIwMTQgMTU6MzA6NDEgR01UKzAwMDAgKFVUQykiLCJlbWFpbCI6ImpvaG5mb29AZ21haWwuY29tIiwiZmFtaWx5X25hbWUiOiJGb28iLCJnaXZlbl9uYW1lIjoiSm9obiIsImlkZW50aXRpZXMiOlt7InVzZXJfaWQiOiI0QVpERjU2Nzg5IiwicHJvdmlkZXIiOiJhdXRoMCIsImNvbm5lY3Rpb24iOiJ0ZXN0cyIsImlzU29jaWFsIjpmYWxzZX1dLCJuYW1lIjoiSm9obiBGb28iLCJuaWNrbmFtZSI6ImpvaG5mb28iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zZWN1cmUuZ3JhdmF0YXIuY29tL2F2YXRhci8zOGZhMDAyNDIzYmQ4Yzk0MWM2ZWQwNTg4YjYwZmZlZD9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZzc2wuZ3N0YXRpYy5jb20lMkZzMiUyRnByb2ZpbGVzJTJGaW1hZ2VzJTJGc2lsaG91ZXR0ZTgwLnBuZyIsInVzZXJfaWQiOiJhdXRoMHw0QVpERjU2Nzg5IiwibG9naW5Db3VudCI6NywiZm9vIjoiYmFyIn0.sktOHRTH76nylw4qYkv9mFSSV-33I9-75CdT10caJko',
-          state: '123456'
+        var result = {
+          id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjEzOTM5ODMwNDEsImlhdCI6MTM5Mzk0NzA0MSwiY2xpZW50SUQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImNyZWF0ZWRfYXQiOiJUdWUgTWFyIDA0IDIwMTQgMTU6MzA6NDEgR01UKzAwMDAgKFVUQykiLCJlbWFpbCI6ImpvaG5mb29AZ21haWwuY29tIiwiZmFtaWx5X25hbWUiOiJGb28iLCJnaXZlbl9uYW1lIjoiSm9obiIsImlkZW50aXRpZXMiOlt7InVzZXJfaWQiOiI0QVpERjU2Nzg5IiwicHJvdmlkZXIiOiJhdXRoMCIsImNvbm5lY3Rpb24iOiJ0ZXN0cyIsImlzU29jaWFsIjpmYWxzZX1dLCJuYW1lIjoiSm9obiBGb28iLCJuaWNrbmFtZSI6ImpvaG5mb28iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zZWN1cmUuZ3JhdmF0YXIuY29tL2F2YXRhci8zOGZhMDAyNDIzYmQ4Yzk0MWM2ZWQwNTg4YjYwZmZlZD9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZzc2wuZ3N0YXRpYy5jb20lMkZzMiUyRnByb2ZpbGVzJTJGaW1hZ2VzJTJGc2lsaG91ZXR0ZTgwLnBuZyIsInVzZXJfaWQiOiJhdXRoMHw0QVpERjU2Nzg5IiwibG9naW5Db3VudCI6NywiZm9vIjoiYmFyIn0.sktOHRTH76nylw4qYkv9mFSSV-33I9-75CdT10caJko'
         };
 
-        auth0.getProfile(token, function (err, profile, id_token, access_token, state) {
+        auth0.getProfile(result.id_token, function (err, profile) {
           expect(profile.name).to.eql('John Foo');
           expect(profile.foo).to.eql('bar');
           expect(profile.identities.length).to.eql(1);
-          expect(id_token).to.eql(token.id_token);
-          expect(access_token).to.eql(token.access_token);
-          expect(state).to.eql(token.state);
           done();
         });
 
@@ -297,21 +307,17 @@ describe('Auth0', function () {
           domain:       'mdocs.auth0.com'
         });
 
-        var token = {
-          access_token: '8m1aMhJG3Qt9KtWH',
-          id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjEzOTM5ODMwMDQsImlhdCI6MTM5Mzk0NzAwNH0.Hh7S4HIPCITag5b0VVF52AA4bWPgVFI2wzgamNzjxUA',
-          state: '123456'
+        var parseHashResult = {
+          id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjEzOTM5ODMwMDQsImlhdCI6MTM5Mzk0NzAwNH0.Hh7S4HIPCITag5b0VVF52AA4bWPgVFI2wzgamNzjxUA'
         };
 
-        auth0._getUserInfo = _getUserInfo = function (profile, id_token, access_token, state, callback) {
+        auth0._getUserInfo = _getUserInfo = function (profile, id_token, callback) {
           expect(profile.sub).to.eql('auth0|4AZDF56789');
-          expect(id_token).to.eql(token.id_token);
-          expect(access_token).to.eql(token.access_token);
-          expect(state).to.eql(token.state);
+          expect(id_token).to.eql(parseHashResult.id_token);
           done();
         };
 
-        auth0.getProfile(token);
+        auth0.getProfile(parseHashResult.id_token);
       });
       
     });

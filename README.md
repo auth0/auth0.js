@@ -113,10 +113,12 @@ Once you have succesfully authenticated, Auth0 will redirect to your `callbackUR
 ```js
   $(function () {
     var result = auth0.parseHash(window.location.hash);
-    if (result) {
-      auth0.getProfile(result, function (err, profile, id_token, access_token, state) {
+
+    //use result.id_token to call your rest api
+
+    if (result && result.id_token) {
+      auth0.getProfile(result.id_token, function (err, profile) {
         alert('hello ' + profile.name);
-        //use id_token to call your rest api
       });
     }
   });
@@ -128,8 +130,8 @@ Or just parse the hash (if loginOption.scope is not `openid profile`, then the p
   $(function () {
       var result = auth0.parseHash(window.location.hash);
       if (result && result.profile) {
-      	alert('your user_id is: ' + result.profile.sub);
-      	//use result.id_token to call your rest api
+        alert('your user_id is: ' + result.profile.sub);
+        //use result.id_token to call your rest api
       }
     });
   });

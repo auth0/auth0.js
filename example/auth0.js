@@ -116,7 +116,7 @@ Auth0.prototype._getMode = function () {
   };
 };
 
-Auth0.prototype._getUserInfo = function (profile, id_token, access_token, state, callback) {
+Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
 
   if (profile && !profile.user_id) { // the scope was just openid
     var self = this;
@@ -129,7 +129,7 @@ Auth0.prototype._getUserInfo = function (profile, id_token, access_token, state,
     };
 
     if (use_jsonp()) {
-      return jsonp(url + qs.stringify({access_token: access_token, id_token: id_token}), {
+      return jsonp(url + qs.stringify({id_token: id_token}), {
         param: 'cbx',
         timeout: 15000
       }, function (err, resp) {
@@ -138,7 +138,7 @@ Auth0.prototype._getUserInfo = function (profile, id_token, access_token, state,
         }
 
         return resp.status === 200 ?
-          callback(null, resp.user, id_token, access_token, state) :
+          callback(null, resp.user) :
           fail(resp.status, resp.error);
       });
     }
@@ -149,30 +149,22 @@ Auth0.prototype._getUserInfo = function (profile, id_token, access_token, state,
       type:         'json',
       crossOrigin:  true,
       data:         {id_token: id_token},
-      headers:      {
-        'Authorization': 'Bearer ' + access_token
-      }
     }).fail(function (err) {
       fail(err.status, err.responseText);
     }).then(function (userinfo) {
-      callback(null, userinfo, id_token, access_token, state);
+      callback(null, userinfo);
     });
   }
 
-  callback(null, profile, id_token, access_token, state);
+  callback(null, profile);
 };
 
-Auth0.prototype.getProfile = function (token, callback) {
-  var self = this;
-
-  if (!token) { return callback(new Error('Invalid token')); }
-
-  // case when token is a hash (deprecated on 3.0.x)
-  if (typeof token === 'string') {
-    return callback(new Error('Token should be an object'));
+Auth0.prototype.getProfile = function (id_token, callback) {
+  if (!id_token || typeof id_token !== 'string') {
+    return callback(new Error('Invalid token'));
   }
 
-  self._getUserInfo(self.decodeJwt(token.id_token), token.id_token, token.access_token, token.state, callback);
+  this._getUserInfo(this.decodeJwt(id_token), id_token, callback);
 };
 
 Auth0.prototype.validateUser = function (options, callback) {
@@ -442,8 +434,10 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
     if (hash.length) {
       var result = self.parseHash(hash);
 
-      if (result) {
-        return self.getProfile(result, callback);
+      if (result && result.id_token) {
+        return self.getProfile(result.id_token, function (err, profile) {
+          callback(err, profile, result.id_token, result.access_token, result.state);
+        });
       }
 
       // Nothing found at the URL, will check
@@ -480,6 +474,12 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
 
   var endpoint = '/oauth/ro';
 
+  function enrichGetProfile(resp, callback) {
+    self.getProfile(resp.id_token, function (err, profile) {
+      callback(err, profile, resp.id_token, resp.access_token, resp.state);
+    });
+  }
+
   if (use_jsonp()) {
     return jsonp('https://' + this._domain + endpoint + '?' + qs.stringify(query), {
       param: 'cbx',
@@ -492,7 +492,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
         var error = new LoginError(resp.status, resp.error);
         return callback(error);
       }
-      self.getProfile(resp, callback);
+      enrichGetProfile(resp, callback);
     });
   }
 
@@ -503,7 +503,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
     data:    query,
     crossOrigin: true,
     success: function (resp) {
-      self.getProfile(resp, callback);
+      enrichGetProfile(resp, callback);
     }
   }).fail(function (err) {
     var er = err;
