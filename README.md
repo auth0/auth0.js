@@ -120,6 +120,8 @@ Once you have succesfully authenticated, Auth0 will redirect to your `callbackUR
       auth0.getProfile(result.id_token, function (err, profile) {
         alert('hello ' + profile.name);
       });
+    } else if (result && result.error) {
+      alert('error: ' + result.error);
     }
   });
 ```

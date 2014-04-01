@@ -33,15 +33,17 @@
 
         var result = auth0.parseHash(window.location.hash);
 
-        if (result) {
+        if (result && result.id) {
             // This will execute on redirect callback
             auth0.getProfile(result.id_token, function (err, profile) {
               window.location.hash = "";
               if (err) {
-                return alert('error at login: ' + JSON.stringify(err));
+                return alert('error fetching profile: ' + JSON.stringify(err));
               }
                 alert('hello ' + profile.name);
             });
+        } else if (result && result.error) {
+          alert('error at login: ' + result.error)
         }
 
         $('.login-google').click(function (e) {
