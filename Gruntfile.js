@@ -1,6 +1,17 @@
 var fs = require('fs');
 var pkg = require('./package');
 
+var minor_version = pkg.version.replace(/\.(\d)*$/, '');
+var major_version = pkg.version.replace(/\.(\d)*\.(\d)*$/, '');
+var path = require('path');
+
+function  rename_release (v) {
+  return function (d, f) {
+    var dest = path.join(d, f.replace(/(\.min)?\.js$/, '-'+ v + "$1.js"));
+    return dest;
+  };
+}
+
 module.exports = function(grunt) {
   grunt.initConfig({
     connect: {
@@ -56,10 +67,17 @@ module.exports = function(grunt) {
         files: {
           'example/auth0.js': 'build/auth0.js',
         }
+      },
+      release: {
+        files: [
+          { expand: true, flatten: true, src: 'build/*', dest: 'release/', rename: rename_release(pkg.version) },
+          { expand: true, flatten: true, src: 'build/*', dest: 'release/', rename: rename_release(minor_version) },
+          { expand: true, flatten: true, src: 'build/*', dest: 'release/', rename: rename_release(major_version) }
+        ]
       }
     },
     clean: {
-      build: ["build/", "example/auth0.js"],
+      build: ["release/", "build/", "example/auth0.js"],
     },
     watch: {
       another: {
@@ -94,17 +112,35 @@ module.exports = function(grunt) {
           'Cache-Control': 'public, max-age=300',
         }
       },
+      clean: {
+        del: [
+          {
+            src:     'w2/auth0-' + pkg.version + '.js',
+          },
+          {
+            src:     'w2/auth0-' + pkg.version + '.min.js',
+          },
+          {
+            src:     'w2/auth0-' + major_version + '.js',
+          },
+          {
+            src:     'w2/auth0-' + major_version + '.min.js',
+          },
+          {
+            src:     'w2/auth0-' + minor_version + '.js',
+          },
+          {
+            src:     'w2/auth0-' + minor_version + '.min.js',
+          }
+        ]
+      },
       publish: {
         upload: [
           {
-            src:  'build/auth0.min.js',
-            dest: 'w2/auth0-' + pkg.version + '.min.js',
+            src:  'release/*',
+            dest: 'w2/',
             options: { gzip: true }
-          },
-          {
-            src:  'build/auth0.debug.js',
-            dest: 'w2/auth0-' + pkg.version + '.js'
-          },
+          }
         ]
       }
     },
@@ -120,6 +156,10 @@ module.exports = function(grunt) {
         files: [
           { dest:     'w2/auth0-' + pkg.version + '.min.js' },
           { dest:     'w2/auth0-' + pkg.version + '.js' },
+          { dest:     'w2/auth0-' + major_version + '.js', },
+          { dest:     'w2/auth0-' + major_version + '.min.js', },
+          { dest:     'w2/auth0-' + minor_version + '.js', },
+          { dest:     'w2/auth0-' + minor_version + '.min.js', }
         ],
       },
     }
@@ -136,5 +176,5 @@ module.exports = function(grunt) {
   grunt.registerTask("dev",           ["connect:test", "watch", "build"]);
   grunt.registerTask("test",          ["exec:test-phantom"]);
   grunt.registerTask("integration",   ["exec:test-desktop", "exec:test-mobile"]);
-  grunt.registerTask("cdn",           ["s3","maxcdn:purgeCache"]);
+  grunt.registerTask("cdn",           ["build", "copy:release", "s3","maxcdn:purgeCache"]);
 };
