@@ -87,6 +87,7 @@ function Auth0 (options) {
   assert_required(options, 'callbackURL');
   assert_required(options, 'domain');
 
+  this._useJSONP = options.forceJSONP || use_jsonp();
   this._clientID = options.clientID;
   this._callbackURL = options.callbackURL;
   this._domain = options.domain;
@@ -128,7 +129,7 @@ Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
       });
     };
 
-    if (use_jsonp()) {
+    if (this._useJSONP) {
       return jsonp(url + qs.stringify({id_token: id_token}), {
         param: 'cbx',
         timeout: 15000
@@ -176,7 +177,7 @@ Auth0.prototype.validateUser = function (options, callback) {
       username:     options.username || options.email
     });
 
-  if (use_jsonp()) {
+  if (this._useJSONP) {
     return jsonp(endpoint + '?' + qs.stringify(query), {
       param: 'cbx',
       timeout: 15000
@@ -286,7 +287,7 @@ Auth0.prototype.signup = function (options, callback) {
     throw error;
   }
 
-  if (use_jsonp()) {
+  if (this._useJSONP) {
     return jsonp('https://' + this._domain + '/dbconnections/signup?' + qs.stringify(query), {
       param: 'cbx',
       timeout: 15000
@@ -328,7 +329,7 @@ Auth0.prototype.changePassword = function (options, callback) {
     if (callback)      return callback(error);
   }
 
-  if (use_jsonp()) {
+  if (this._useJSONP) {
     return jsonp('https://' + this._domain + '/dbconnections/change_password?' + qs.stringify(query), {
       param: 'cbx',
       timeout: 15000
@@ -480,7 +481,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
     });
   }
 
-  if (use_jsonp()) {
+  if (this._useJSONP) {
     return jsonp('https://' + this._domain + endpoint + '?' + qs.stringify(query), {
       param: 'cbx',
       timeout: 15000
@@ -549,7 +550,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
 
   var endpoint = '/usernamepassword/login';
 
-  if (use_jsonp()) {
+  if (this._useJSONP) {
     return jsonp('https://' + this._domain + endpoint + '?' + qs.stringify(query), {
       param: 'cbx',
       timeout: 15000
@@ -612,7 +613,7 @@ Auth0.prototype.getDelegationToken = function (targetClientId, id_token, options
 
   var endpoint = '/delegation';
 
-  if (use_jsonp()) {
+  if (this._useJSONP) {
     return jsonp('https://' + this._domain + endpoint + '?' + qs.stringify(query), {
       param: 'cbx',
       timeout: 15000
@@ -704,7 +705,11 @@ module.exports = function () {
     return false;
   }
 
-  return 'XDomainRequest' in window && window.location.protocol === 'http:';
+  if ('XDomainRequest' in window && window.location.protocol === 'https:') {
+    return false;
+  }
+
+  return true;
 };
 },{}],7:[function(require,module,exports){
 ;(function () {
