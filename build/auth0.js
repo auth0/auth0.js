@@ -161,7 +161,7 @@ Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
 };
 
 Auth0.prototype.getProfile = function (id_token, callback) {
-  if (!id_token || typeof id_token !== 'string') {
+  if (!id_token || typeof id_token !== 'string') {
     return callback(new Error('Invalid token'));
   }
 
@@ -622,7 +622,7 @@ Auth0.prototype.getDelegationToken = function (targetClientId, id_token, options
         return callback(err);
       }
       if('error' in resp) {
-        var error = new LoginError(resp.status, resp.error_description || resp.error);
+        var error = new LoginError(resp.status, resp.error_description || resp.error);
         return callback(error);
       }
       callback(null, resp);
@@ -680,7 +680,7 @@ Auth0.prototype.getSSOData = function (withActiveDirectories, callback) {
     param: 'cbx',
     timeout: 15000
   }, function (err, resp) {
-    callback(null, err ? {} : resp); // Always return OK, regardless of any errors
+    callback(null, err ? {} : resp); // Always return OK, regardless of any errors
   });
 };
 
