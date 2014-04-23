@@ -425,7 +425,8 @@ describe('Auth0', function () {
         connection: 'google-oauth2'
       }, function (err, profile, id_token, access_token, state) {
         expect(err).to.be.ok;
-        expect(err.error).to.equal('some error');
+        expect(err.constructor).to.equal(Error);
+        expect(err.message).to.equal('some error');
         expect(popup.close.called).to.be.equal(true);
         done();
       });
@@ -437,7 +438,8 @@ describe('Auth0', function () {
         connection: 'google-oauth2'
       }, function (err, profile, id_token, access_token, state) {
         expect(err).to.be.ok;
-        expect(err.error).to.equal('some error');
+        expect(err.constructor).to.equal(Error);
+        expect(err.message).to.equal('some error');
         expect(popup.close.called).to.be.equal(true);
         done();
       });
@@ -474,7 +476,8 @@ describe('Auth0', function () {
         connection: 'google-oauth2'
       }, function (err, profile, id_token, access_token, state) {
         expect(err).to.be.ok;
-        expect(err.error).to.equal('User closed the popup window');
+        expect(err.constructor).to.equal(Error);
+        expect(err.message).to.equal('User closed the popup window');
         expect(popup.close.called).to.be.equal(true);
         done();
       });
