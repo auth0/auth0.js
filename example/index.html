@@ -66,7 +66,7 @@
                 }
             }, function(err, profile, id_token, access_token, state) {
                 if (err) {
-                    alert("something went wrong: " + err.message);
+                    alert("something went wrong: " + (err.message || err.error));
                     return;
                 }
                 alert('hello ' + profile.name);

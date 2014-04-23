@@ -403,6 +403,8 @@ describe('Auth0', function () {
             this.location.search = href.substring(href.lastIndexOf('?'));
           },
           close: function () {
+            this.window = undefined;
+            this.top = undefined;
             this.close.called = true;
           }
         };
@@ -466,6 +468,19 @@ describe('Auth0', function () {
       });
       popup.setHref('http://localhost:8080/#access_token=blah');
     });
+
+    it('should call the error callback when the user has closed the popup', function (done) {
+      auth0.loginWithPopup({
+        connection: 'google-oauth2'
+      }, function (err, profile, id_token, access_token, state) {
+        expect(err).to.be.ok;
+        expect(err.error).to.equal('User closed the popup window');
+        expect(popup.close.called).to.be.equal(true);
+        done();
+      });
+      popup.close();
+    });
+
   });
 
   /*if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
