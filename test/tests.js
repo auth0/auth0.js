@@ -373,6 +373,101 @@ describe('Auth0', function () {
     });
   });
 
+  describe('popup', function () {
+    var originalWindowOpen;
+    var popup;
+
+    var auth0;
+
+    beforeEach(function () {
+      auth0 = Auth0({
+        domain:      'mdocs.auth0.com',
+        callbackURL: 'http://localhost:3000/',
+        clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t'
+      });
+
+      originalWindowOpen = window.open;
+      window.open = function () {
+        var d = {
+          focus: function () {},
+          top: {},
+          window: {},
+          location: {
+            href: 'http://localhost',
+            hash: '',
+            search: ''
+          },
+          setHref: function (href) {
+            this.location.href = href;
+            this.location.hash = href.substring(href.lastIndexOf('#'));
+            this.location.search = href.substring(href.lastIndexOf('?'));
+          },
+          close: function () {
+            this.close.called = true;
+          }
+        };
+
+        popup = d;
+
+        return popup;
+      };
+
+    });
+
+    afterEach(function () {
+      window.open = originalWindowOpen;
+    });
+
+    it('should return error on ?error= redirect url', function (done) {
+      auth0.loginWithPopup({
+        connection: 'google-oauth2'
+      }, function (err, profile, id_token, access_token, state) {
+        expect(err).to.be.ok;
+        expect(err.error).to.equal('some error');
+        expect(popup.close.called).to.be.equal(true);
+        done();
+      });
+      popup.setHref('http://localhost:8080/?error=some+error');
+    });
+
+    it('should return error on #error= redirect url', function (done) {
+      auth0.loginWithPopup({
+        connection: 'google-oauth2'
+      }, function (err, profile, id_token, access_token, state) {
+        expect(err).to.be.ok;
+        expect(err.error).to.equal('some error');
+        expect(popup.close.called).to.be.equal(true);
+        done();
+      });
+      popup.setHref('http://localhost:8080/#error=some+error');
+    });
+
+    it('should not return error on #access_token url', function (done) {
+      var expectedProfile = {name: 'John Doe'};
+      var expectedParsedHash = {
+          id_token: 'id_token',
+          access_token: 'access_token',
+          state: 'some_state'
+        };
+      auth0.parseHash = function () { return expectedParsedHash; };
+      auth0.getProfile = function (idToken, callback) { callback(null, expectedProfile); };
+      auth0.loginWithPopup({
+        connection: 'google-oauth2'
+      }, function (err, profile, id_token, access_token, state) {
+        expect(err).not.to.be.ok;
+
+        expect(profile).to.be.equal(expectedProfile);
+        expect(id_token).to.be.equal(expectedParsedHash.id_token);
+        expect(access_token).to.be.equal(expectedParsedHash.access_token);
+        expect(state).to.be.equal(expectedParsedHash.state);
+
+        expect(popup.close.called).to.be.equal(true);
+        done();
+      });
+      popup.setHref('http://localhost:8080/#access_token=blah');
+    });
+  });
+
   /*if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
     it('should return empty SSO data after logout', function (done) {
       forceLogout('aaa.auth0.com', function () {
