@@ -6,7 +6,8 @@
     <h2>Login with Social Connection</h2>
     <a href="#login" class='login-google'>login with google</a>
     <br>
-    <a href="#login-popup" class='login-google-popup'>login with google on popup</a>
+    <a href="#login-popup" class='login-google-popup'>login with google on popup</a><br>
+    <a href="#login-popup-all-connections" class='login-popup'>login with popup</a>
     <hr>
 
     <h2>Login with Database Connection</h2>
@@ -71,7 +72,24 @@
                 }
                 alert('hello ' + profile.name);
             });
-      });
+        });
+
+        $('.login-popup').click(function (e) {
+            e.preventDefault();
+            auth0.login({
+                popup: true,
+                popupOptions: {
+                    width: 450,
+                    height: 800
+                }
+            }, function(err, profile, id_token, access_token, state) {
+                if (err) {
+                    alert("something went wrong: " + (err.message || err.error));
+                    return;
+                }
+                alert('hello ' + profile.name);
+            });
+        });
 
         $('.login-db').click(function (e) {
             e.preventDefault();
