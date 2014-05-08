@@ -360,9 +360,9 @@ describe('Auth0', function () {
       clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t'
     });
 
-    it('should returns delegation token', function (done) {
+    it('should return delegation token', function (done) {
       var targetClientId = '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup';
-      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6InRlc3QtdXNlci1pZCIsImF1ZCI6IjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIiwiZXhwIjoxNzA2MDQ1MzQ4LCJpYXQiOjEzOTA1MTI1NDh9.D1fS1h7NmM9OgFAe7tnsF5GNT8yN89Lnhi-Hd-R7w4I';
+      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6ImF1dGgwfDRBWkRGNTY3ODkiLCJhdWQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImV4cCI6MTcwNjA0NTM0OCwiaWF0IjoxMzkwNTEyNTQ4fQ._waKcxcmkfubfZg16V3DWa6JguowOMq6YWi110G4FiE';
       
       auth0.getDelegationToken(targetClientId, id_token, function (err, delegationResult) {
         expect(delegationResult.id_token).to.exist;
