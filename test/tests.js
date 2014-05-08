@@ -64,7 +64,7 @@ describe('Auth0', function () {
     });
   });
 
-  it('should fail if auth0.login is called with {popup: true} and without callback', function () {
+  it('should fail if auth0.login is called with {popup: true, callbackOnLocationHash: true} and without callback', function () {
     var auth0 = Auth0({
       clientID:    'aaaabcdefgh',
       domain:      'aaa.auth0.com',
@@ -77,7 +77,7 @@ describe('Auth0', function () {
     }).to.throwError(/popup mode should receive a mandatory callback/);
   });
 
-  it('should fail if auth0.loginWithPopup is called without callback', function () {
+  it('should fail if auth0.loginWithPopup is called with {callbackOnLocationHash: true} without callback', function () {
     var auth0 = Auth0({
       clientID:    'aaaabcdefgh',
       domain:      'aaa.auth0.com',
@@ -383,7 +383,8 @@ describe('Auth0', function () {
       auth0 = Auth0({
         domain:      'mdocs.auth0.com',
         callbackURL: 'http://localhost:3000/',
-        clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t'
+        clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t',
+        callbackOnLocationHash: true
       });
 
       originalWindowOpen = window.open;
