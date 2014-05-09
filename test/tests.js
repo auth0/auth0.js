@@ -131,6 +131,37 @@ describe('Auth0', function () {
     });
   });
 
+  it('should not contain popupOptions= inside the authorize query string', function (done) {
+    var auth0 = Auth0({
+      clientID:     'aaaabcdefgh',
+      callbackURL: 'https://myapp.com/callback',
+      domain:       'aaa.auth0.com'
+    });
+
+    auth0._redirect = function (the_url) {
+      expect(the_url.split('?')[0])
+        .to.contain('https://aaa.auth0.com/authorize');
+
+      var parsed = {};
+      the_url.split('?')[1].replace(
+        new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+        function($0, $1, $2, $3) { parsed[$1] = decodeURIComponent($3); }
+      );
+
+      expect(parsed.response_type).to.equal('code');
+      expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
+      expect(parsed.client_id).to.equal('aaaabcdefgh');
+      expect(parsed.scope).to.equal('openid');
+      expect(parsed.popupOptions).not.to.be.ok;
+      done();
+    };
+
+    auth0.login({
+      connection: 'google-oauth2',
+      popupOptions: {}
+    });
+  });
+
   describe('parseHash', function () {
 
     it('should be able to parse the profile', function () {
@@ -485,6 +516,20 @@ describe('Auth0', function () {
       popup.close();
     });
 
+  });
+
+  describe('_buildAuthorizeQueryString', function () {
+    it('should filter elements in blacklist', function () {
+      var blacklist = ['hello', 'foo', 'bar'];
+
+      var queryString = Auth0.prototype._buildAuthorizeQueryString([
+        {hello: 'world', useful: 'info'},
+        {foo: 'bar', baz: true},
+        {bar: 9}
+      ], blacklist);
+
+      expect(queryString).to.equal('useful=info&baz=true');
+    });
   });
 
   /*if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
