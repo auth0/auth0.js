@@ -168,12 +168,26 @@ If you use [Database Connections](https://docs.auth0.com/mysql-connection-tutori
       username:   'foo@bar.com',
       password:   'blabla'
     }, function (err) {
-      console.log(err.message); ///this could be something like "email is required"
+      console.log(err.message);
     });
   });
 ~~~
 
 After a succesful login it will auto login the user. If you do not want to automatically login the user you have to pass the option `auto_login: false`.
+
+### Change Password (database connections):
+
+~~~js
+  $('.change_password').click(function () {
+    auth0.changePassword({
+      connection: 'db-conn',
+      username:   'foo@bar.com',
+      password:   'blabla' // new password
+    }, function (err, resp) {
+      console.log(err.message);
+    });
+  });
+~~~
 
 ### Delegation Token Request
 
