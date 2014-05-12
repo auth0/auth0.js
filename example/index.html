@@ -34,7 +34,7 @@
 
         var result = auth0.parseHash(window.location.hash);
 
-        if (result && result.id) {
+        if (result && result.id_token) {
             // This will execute on redirect callback
             auth0.getProfile(result.id_token, function (err, profile) {
               window.location.hash = "";
