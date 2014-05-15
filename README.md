@@ -24,7 +24,7 @@ If you are using [browserify](http://browserify.org/) install with `npm i auth0.
 Construct a new instance of the Auth0 client as follows:
 
 ~~~html
-<script src="http://cdn.auth0.com/w2/auth0-2.0.5.js"></script>
+<script src="http://cdn.auth0.com/w2/auth0-2.1.js"></script>
 <script type="text/javascript">
   var auth0 = new Auth0({
     domain:       'mine.auth0.com',
