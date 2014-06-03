@@ -1,4 +1,3 @@
-[![Build Status](https://auth0-tc-hub.herokuapp.com/bt21/status.png)](https://auth0-tc-hub.herokuapp.com/bt21)
 [![NPM version](https://badge.fury.io/js/auth0-js.png)](http://badge.fury.io/js/auth0-js)
 
 [![Auth0](http://blog.auth0.com.s3.amazonaws.com/logo-290x200-letters.png)](http://auth0.com)
