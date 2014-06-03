@@ -242,7 +242,7 @@ We are using [BrowserStack](http://browserstack.com) and our own CI server to ru
 
 The MIT License (MIT)
 
-Copyright (c) 2013 AUTH10 LLC
+Copyright (c) 2013-2014 Auth0 Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
