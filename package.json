@@ -26,7 +26,8 @@
     "reqwest": "~0.9.0",
     "debug": "https://github.com/jfromaniello/debug/tarball/master",
     "jsonp": "0.0.3",
-    "xtend": "~2.1.1"
+    "xtend": "~2.1.1",
+    "packageify": "^0.2.0"
   },
   "browserify": {
     "transform": [
@@ -49,7 +50,6 @@
     "grunt-maxcdn": "https://github.com/siacomuzzi/grunt-maxcdn/tarball/0.0.1",
     "grunt-s3": "~0.2.0-alpha.3",
     "mocha": "~1.13.0",
-    "packageify": "^0.2.0",
     "rimraf": "~2.2.2",
     "testem": "~0.5.8",
     "uglify-js": "~2.4.0"
