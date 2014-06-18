@@ -21,13 +21,14 @@
   "author": "Jose F. Romaniello <jfromaniello@gmail.com> (http://joseoncode.com)",
   "license": "MIT",
   "dependencies": {
-    "qs": "https://github.com/jfromaniello/node-querystring/tarball/master",
     "Base64": "~0.1.3",
-    "reqwest": "~0.9.0",
     "debug": "https://github.com/jfromaniello/debug/tarball/master",
     "jsonp": "~0.0.4",
-    "xtend": "~2.1.1",
-    "packageify": "^0.2.0"
+    "packageify": "^0.2.0",
+    "qs": "https://github.com/jfromaniello/node-querystring/tarball/master",
+    "reqwest": "~0.9.0",
+    "winchan": "^0.0.6",
+    "xtend": "~2.1.1"
   },
   "browserify": {
     "transform": [
