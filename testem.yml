@@ -31,6 +31,10 @@ launchers:
     command: browserstack launch --timeout 120 --attach ie:10.0 <url>/test_harness.html
     protocol: browser
 
+  bs_ie_11:
+    command: browserstack launch --timeout 120 --attach ie:11.0 <url>/test_harness.html
+    protocol: browser
+
   bs_android_23:
     command: browserstack launch --timeout 240 --attach "Motorola Photon 4G" <url>/test_harness.html
     protocol: browser
@@ -43,4 +47,4 @@ launchers:
     command: browserstack launch --timeout 60 --attach "iPhone 5" <url>/test_harness.html
     protocol: browser
 
-launch_in_ci: [bs_chrome, bs_firefox, bs_ie_8, bs_ie_9, bs_ie_10, bs_iphone_5, bs_android_41]
+launch_in_ci: [bs_chrome, bs_firefox, bs_ie_8, bs_ie_9, bs_ie_10, bs_ie_11, bs_iphone_5, bs_android_41]

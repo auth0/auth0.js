@@ -87,7 +87,7 @@ module.exports = function(grunt) {
         stderr: true
       },
       'test-desktop': {
-        cmd: 'node_modules/testem/testem.js ci -l bs_chrome,bs_firefox,bs_ie_8,bs_ie_9,bs_ie_10',
+        cmd: 'node_modules/testem/testem.js ci -l bs_chrome,bs_firefox,bs_ie_8,bs_ie_9,bs_ie_10,bs_ie_11',
         stdout: true,
         stderr: true
       },
