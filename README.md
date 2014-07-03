@@ -103,6 +103,27 @@ Trigger the login on any of your active identity provider as follows:
   });
 ~~~
 
+You can also request scopes that are not were not configured for the connection.
+
+~~~js
+  //trigger login requesting additional scopes with google
+  $('.login-google').click(function () {
+    auth0.login({
+      connection: 'google-oauth2',
+      connection_scope: ['https://www.googleapis.com/auth/orkut', 'https://picasaweb.google.com/data/']
+    });
+  });
+  
+  // alternatively a comma separated list also works
+  $('.login-google').click(function () {
+    auth0.login({
+      connection: 'google-oauth2',
+      connection_scope: 'https://www.googleapis.com/auth/orkut,https://picasaweb.google.com/data/'
+    });
+  });
+~~~
+
+
 ### Processing the callback
 
 ### Redirect Mode
