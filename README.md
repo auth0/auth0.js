@@ -16,7 +16,7 @@ Take `auth0.js` or `auth0.min.js` from the `/build` directory and import it to y
 
 If you are using [browserify](http://browserify.org/) install with `npm install auth0.js`.
 
-> Note: I use jQuery in these examples but auth0.js doesn't need jquery and you can use anything.
+> Note: The following examples use jQuery, but auth0.js is not tied to jQuery and any library can be used with it.
 
 ### Initialize:
 
@@ -229,7 +229,7 @@ Do you have issues in some browser? Ask us guidance to test in multiple browsers
 Use:
 
 ```
-$ mversion patch -m "v%s"
+$ ./bin/version patch -m "v%s"
 $ git push origin master --tags
 $ npm publish
 ```
