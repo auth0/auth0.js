@@ -530,6 +530,26 @@ describe('Auth0', function () {
 
       expect(queryString).to.equal('useful=info&baz=true');
     });
+    
+    it('should handle connection_scope array', function () {
+      var connection_scope = ['grant1', 'grant2', 'grant3'];
+      
+      var queryString = Auth0.prototype._buildAuthorizeQueryString([
+        { connection_scope: connection_scope }
+      ], []);
+
+      expect(queryString).to.equal('connection_scope=grant1%2Cgrant2%2Cgrant3');
+    });
+    
+    it('should handle connection_scope string', function () {
+      var connection_scope = 'grant1,grant2,grant3';
+      
+      var queryString = Auth0.prototype._buildAuthorizeQueryString([
+        { connection_scope: connection_scope }
+      ], []);
+
+      expect(queryString).to.equal('connection_scope=grant1%2Cgrant2%2Cgrant3');
+    });
   });
 
   /*if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
