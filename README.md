@@ -23,7 +23,7 @@ If you are using [browserify](http://browserify.org/) install with `npm install 
 Construct a new instance of the Auth0 client as follows:
 
 ~~~html
-<script src="http://cdn.auth0.com/w2/auth0-2.1.js"></script>
+<script src="http://cdn.auth0.com/w2/auth0-2.3.js"></script>
 <script type="text/javascript">
   var auth0 = new Auth0({
     domain:       'mine.auth0.com',
@@ -250,7 +250,7 @@ Do you have issues in some browser? Ask us guidance to test in multiple browsers
 Use:
 
 ```
-$ ./bin/version patch -m "v%s"
+$ ./bin/version patch
 $ git push origin master --tags
 $ npm publish
 ```
