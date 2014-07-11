@@ -155,7 +155,7 @@ describe('Auth0 - User And Passwords', function () {
     });
 
     describe('with wsfed authentication', function () {
-      
+
       it('should render wsfed form after successfull signup', function (done) {
         auth0._renderAndSubmitWSFedForm = function (options, htmlForm) {
           expect(htmlForm).to.match(/<form/);
@@ -219,7 +219,7 @@ describe('Auth0 - User And Passwords', function () {
   });
 
   describe('Validate User', function () {
-    
+
     it('should return "true" if the credentials are valid', function (done) {
       auth0.validateUser({
         connection:   'tests',
@@ -262,6 +262,18 @@ describe('Auth0 - User And Passwords', function () {
         password:     '12345'
       }, function (err) {
         expect(err.message).to.equal('connection parameter is mandatory');
+        done();
+      });
+    });
+
+    it.only('should trim username before validation', function (done) {
+      auth0.validateUser({
+        connection:   'tests',
+        username:     '    johnfoo@gmail.com    ',
+        password:     '12345'
+      }, function (err, valid) {
+        expect(err).to.be(null);
+        expect(valid).to.equal(true);
         done();
       });
     });
