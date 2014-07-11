@@ -91,6 +91,20 @@ describe('Auth0 - User And Passwords', function () {
 
     });
 
+    it('should trim username before login', function (done) {
+      auth0.login({
+        connection: 'tests',
+        username: '    johnfoo@gmail.com     ',
+        password: '12345'
+      }, function (err, profile, id_token, access_token) {
+        expect(profile.name).to.eql('John Foo');
+        expect(profile.foo).to.eql('bar');
+        expect(profile.identities.length).to.eql(1);
+        expect(id_token).to.exist;
+        expect(access_token).to.exist;
+        done();
+      });
+    });
   });
 
   describe('Signup', function () {
@@ -188,6 +202,17 @@ describe('Auth0 - User And Passwords', function () {
 
     });
 
+    it('should trim username before signup', function (done) {
+      auth0.signup({
+        connection: 'tests',
+        username:   'johnfoo@gmail.com',
+        password:   '12345'
+      }, function (err, profile) {
+        expect(err).to.be(null);
+        done();
+      });
+    });
+
   });
 
   describe('Change Password', function () {
@@ -209,6 +234,17 @@ describe('Auth0 - User And Passwords', function () {
       auth0.changePassword({
         connection: 'tests',
         username:   'johnfoo@contoso.com',
+        password:   '12345'
+      }, function (err) {
+        expect(err).to.be(null);
+        done();
+      });
+    });
+
+    it('should trim username before operation', function (done) {
+      auth0.changePassword({
+        connection: 'tests',
+        username:     '    johnfoo@gmail.com    ',
         password:   '12345'
       }, function (err) {
         expect(err).to.be(null);
@@ -266,7 +302,7 @@ describe('Auth0 - User And Passwords', function () {
       });
     });
 
-    it.only('should trim username before validation', function (done) {
+    it('should trim username before validation', function (done) {
       auth0.validateUser({
         connection:   'tests',
         username:     '    johnfoo@gmail.com    ',
