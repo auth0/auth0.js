@@ -28,6 +28,7 @@
     "qs": "https://github.com/jfromaniello/node-querystring/tarball/master",
     "reqwest": "~0.9.0",
     "winchan": "^0.0.6",
+    "trim": "git://github.com/component/trim",
     "xtend": "~2.1.1"
   },
   "browserify": {
