@@ -237,6 +237,22 @@ auth0.validateUser({
 }, function (err, valid) { });
 ~~~
 
+### SSO
+
+Method `getSSOData` fetches Single Sign-On information:
+
+```js
+  auth0.getSSOData(function (err, ssoData) {
+    if (err) return console.log(err.message);
+    expect(ssoData.sso).to.exist;
+  });
+```
+
+```js
+  // Don't bring active directoy data
+  auth0.getSSOData(false, fn);
+```
+
 ## Develop
 
 Run `grunt dev` and point your browser to `http://localhost:9999/test_harness.html` to run the test suite.
