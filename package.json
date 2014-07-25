@@ -25,10 +25,10 @@
     "debug": "~1.0.4",
     "jsonp": "~0.0.4",
     "packageify": "^0.2.0",
-    "qs": "git://github.com/jfromaniello/node-querystring",
+    "qs": "git://github.com/jfromaniello/node-querystring.git#fix_ie7_bug_with_arrays",
     "reqwest": "~0.9.0",
     "winchan": "^0.0.6",
-    "trim": "git://github.com/component/trim",
+    "trim": "~0.0.1",
     "xtend": "~2.1.1"
   },
   "browserify": {
