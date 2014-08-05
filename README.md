@@ -211,19 +211,45 @@ After a succesful login it will auto login the user. If you do not want to autom
 
 ### Delegation Token Request
 
-You can obtain a delegation token specifying the ID of the target client (`targetClientId`), the `id_token` and, optionally, an object (`options`) in order to include custom parameters like scope:
+A delegation token is a new token for a different service or app/API.
 
-~~~js
-var targetClientId = "{TARGET_CLIENT_ID}";
-var id_token = "{USER_ID_TOKEN}";
+If you just want to get a new token for an addon that you've activated, you can do the following:
+
+````js
 var options = {
+  id_token: "your id token", // The id_token you have now
+  api: 'firebase', // This defaults to the first active addon if any or you can specify this
   "scope": "openid profile"		    // default: openid
 };
 
-auth0.getDelegationToken(targetClientId, id_token, options, function (err, delegationResult) {
+auth0.getDelegationToken(options, function (err, delegationResult) {
 	// Call your API using delegationResult.id_token
 });
-~~~
+````
+
+If you want to get the token for another API or App:
+
+````js
+var options = {
+  id_token: "your id token", // The id_token you have now
+  api: 'auth0' // This is default when calling another app that doesn't have an addon
+  clientId: 'The other client id'
+};
+
+auth0.getDelegationToken(options, function (err, delegationResult) {
+  // Call your API using delegationResult.id_token
+});
+````
+
+### Refresh token
+
+If you want to refresh your existing (not expired) token, you can just do the following:
+
+````js
+auth0.refreshToken(current_id_token, function (err, delegationResult) {
+  // Get here the new delegationResult.id_token
+});
+````
 
 ### Validate User
 
