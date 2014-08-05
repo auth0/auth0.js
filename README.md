@@ -233,7 +233,7 @@ If you want to get the token for another API or App:
 var options = {
   id_token: "your id token", // The id_token you have now
   api: 'auth0' // This is default when calling another app that doesn't have an addon
-  clientId: 'The other client id'
+  targetClientId: 'The other client id'
 };
 
 auth0.getDelegationToken(options, function (err, delegationResult) {
@@ -246,7 +246,7 @@ auth0.getDelegationToken(options, function (err, delegationResult) {
 If you want to refresh your existing (not expired) token, you can just do the following:
 
 ````js
-auth0.refreshIdToken(current_id_token, function (err, delegationResult) {
+auth0.renewIdToken(current_id_token, function (err, delegationResult) {
   // Get here the new delegationResult.id_token
 });
 ````
