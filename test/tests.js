@@ -408,7 +408,7 @@ describe('Auth0', function () {
     it('should refresh the token when calling refresh as well', function (done) {
       var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6ImF1dGgwfDRBWkRGNTY3ODkiLCJhdWQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImV4cCI6MTcwNjA0NTM0OCwiaWF0IjoxMzkwNTEyNTQ4fQ._waKcxcmkfubfZg16V3DWa6JguowOMq6YWi110G4FiE';
 
-      auth0.refreshToken(id_token, function (err, delegationResult) {
+      auth0.refreshIdToken(id_token, function (err, delegationResult) {
         expect(delegationResult.id_token).to.exist;
         expect(delegationResult.token_type).to.eql('Bearer');
         expect(delegationResult.expires_in).to.eql(36000);

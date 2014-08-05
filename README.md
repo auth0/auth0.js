@@ -246,7 +246,15 @@ auth0.getDelegationToken(options, function (err, delegationResult) {
 If you want to refresh your existing (not expired) token, you can just do the following:
 
 ````js
-auth0.refreshToken(current_id_token, function (err, delegationResult) {
+auth0.refreshIdToken(current_id_token, function (err, delegationResult) {
+  // Get here the new delegationResult.id_token
+});
+````
+
+If you want to refresh your existing (expired) token, if you have the refresh_token, you can call the following:
+
+````js
+auth0.refreshToken(refresh_token, function (err, delegationResult) {
   // Get here the new delegationResult.id_token
 });
 ````
