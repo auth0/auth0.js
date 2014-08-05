@@ -208,7 +208,7 @@ describe('Auth0', function () {
       var result = auth0.parseHash(hash);
       expect(result.error).to.be.equal('invalid_token');
       expect(result.error_description).to.be.equal('The domain configured (https://wrong.auth0.com/) does not match with the domain set in the token (https://login.auth0.com/).');
-      
+
     });
 
     it('should return an error if aud is invalid', function () {
@@ -223,7 +223,7 @@ describe('Auth0', function () {
       var result = auth0.parseHash(hash);
       expect(result.error).to.be.equal('invalid_token');
       expect(result.error_description).to.be.equal('The clientID configured (wrong) does not match with the clientID set in the token (0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup).');
-      
+
     });
 
     it('should be able to parse an error', function () {
@@ -350,7 +350,7 @@ describe('Auth0', function () {
 
         auth0.getProfile(parseHashResult.id_token);
       });
-      
+
     });
   });
 
@@ -391,17 +391,71 @@ describe('Auth0', function () {
       clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t'
     });
 
-    it('should return delegation token', function (done) {
-      var targetClientId = '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup';
+    it('should refresh the token', function (done) {
       var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6ImF1dGgwfDRBWkRGNTY3ODkiLCJhdWQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImV4cCI6MTcwNjA0NTM0OCwiaWF0IjoxMzkwNTEyNTQ4fQ._waKcxcmkfubfZg16V3DWa6JguowOMq6YWi110G4FiE';
-      
-      auth0.getDelegationToken(targetClientId, id_token, function (err, delegationResult) {
+
+      auth0.getDelegationToken({
+        id_token: id_token,
+        api: 'auth0'
+      }, function (err, delegationResult) {
         expect(delegationResult.id_token).to.exist;
         expect(delegationResult.token_type).to.eql('Bearer');
         expect(delegationResult.expires_in).to.eql(36000);
         done();
       });
     });
+
+    it('should refresh the token when calling refresh as well', function (done) {
+      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6ImF1dGgwfDRBWkRGNTY3ODkiLCJhdWQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImV4cCI6MTcwNjA0NTM0OCwiaWF0IjoxMzkwNTEyNTQ4fQ._waKcxcmkfubfZg16V3DWa6JguowOMq6YWi110G4FiE';
+
+      auth0.refreshToken(id_token, function (err, delegationResult) {
+        expect(delegationResult.id_token).to.exist;
+        expect(delegationResult.token_type).to.eql('Bearer');
+        expect(delegationResult.expires_in).to.eql(36000);
+        done();
+      });
+    });
+
+    it('should throw error if no token is sent', function () {
+      expect(function () {
+        auth0.getDelegationToken(null, function(err, delegation) {});
+      }).to.throwError(/You must send either an id_token or a refresh_token to do this call/);
+    });
+
+
+
+    it('should return a Firebase token by default since it\'s active', function (done) {
+      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6ImF1dGgwfDRBWkRGNTY3ODkiLCJhdWQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImV4cCI6MTcwNjA0NTM0OCwiaWF0IjoxMzkwNTEyNTQ4fQ._waKcxcmkfubfZg16V3DWa6JguowOMq6YWi110G4FiE';
+
+      auth0.getDelegationToken({
+        id_token: id_token
+      }, function (err, delegationResult) {
+        expect(delegationResult.id_token).to.exist;
+        expect(delegationResult.token_type).to.eql('Bearer');
+        expect(delegationResult.expires_in).to.eql(36000);
+        done();
+      });
+    });
+
+    it('should return a Firebase token by default or when asked', function (done) {
+      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6ImF1dGgwfDRBWkRGNTY3ODkiLCJhdWQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImV4cCI6MTcwNjA0NTM0OCwiaWF0IjoxMzkwNTEyNTQ4fQ._waKcxcmkfubfZg16V3DWa6JguowOMq6YWi110G4FiE';
+
+      auth0.getDelegationToken({
+        id_token: id_token,
+      }, function (err, delegationResult) {
+        var token1 = delegationResult.id_token;
+        auth0.getDelegationToken({
+          id_token: id_token,
+          api: 'firebase'
+        }, function(err, delegationResult2) {
+          expect(delegationResult2.id_token).to.exist;
+          expect(delegationResult2.token_type).to.eql('Bearer');
+          expect(delegationResult2.expires_in).to.eql(36000);
+          done();
+        });
+      });
+    });
+
   });
 
   describe('_buildAuthorizeQueryString', function () {
@@ -416,20 +470,20 @@ describe('Auth0', function () {
 
       expect(queryString).to.equal('useful=info&baz=true');
     });
-    
+
     it('should handle connection_scope array', function () {
       var connection_scope = ['grant1', 'grant2', 'grant3'];
-      
+
       var queryString = Auth0.prototype._buildAuthorizeQueryString([
         { connection_scope: connection_scope }
       ], []);
 
       expect(queryString).to.equal('connection_scope=grant1%2Cgrant2%2Cgrant3');
     });
-    
+
     it('should handle connection_scope string', function () {
       var connection_scope = 'grant1,grant2,grant3';
-      
+
       var queryString = Auth0.prototype._buildAuthorizeQueryString([
         { connection_scope: connection_scope }
       ], []);
