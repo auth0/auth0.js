@@ -16,8 +16,12 @@ RUN npm i -g grunt-cli
 #Install PhantomJS
 RUN curl https://gist.githubusercontent.com/jfromaniello/26899be0cad9a7e8741d/raw/install-phantom-ubuntu.sh | bash
 
+
 #Add the current dir
 ADD . /auth0.js
 WORKDIR /auth0.js
+
+RUN cp browserstack.json /home/root/.browserstack/
+RUN mv browserstack.json /home/root/
 
 RUN npm_config_unsafe_perm=true npm i

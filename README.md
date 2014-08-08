@@ -313,6 +313,8 @@ We are using [BrowserStack](http://browserstack.com) and our own CI server to ru
 
 Since sometimes it is problematic to configure the environment to run the tests we've created a docker container.
 
+Generate or copy a `browserstack.json`.
+
 Build and tag the image:
 
 ```
