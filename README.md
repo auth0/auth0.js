@@ -82,7 +82,7 @@ Trigger the login on any of your active identity provider as follows:
       // store in cookies
     });
   });
-  
+
   //trigger login popup with google
   $('.login-google-popup').click(function (e) {
     e.preventDefault();
@@ -113,7 +113,7 @@ You can also request scopes that are not were not configured for the connection.
       connection_scope: ['https://www.googleapis.com/auth/orkut', 'https://picasaweb.google.com/data/']
     });
   });
-  
+
   // alternatively a comma separated list also works
   $('.login-google').click(function () {
     auth0.login({
@@ -170,7 +170,7 @@ While using this mode, the result will be passed as the `login` method callback.
       // Handle the error!
       return;
     }
-    
+
     //use id_token to call your rest api
     alert('hello ' + profile.name);
   });
@@ -308,6 +308,28 @@ $ npm publish
 ## Browser Compatibility
 
 We are using [BrowserStack](http://browserstack.com) and our own CI server to run the test suite on multiple browsers on every push.
+
+## Run tests in docker
+
+Since sometimes it is problematic to configure the environment to run the tests we've created a docker container.
+
+Build and tag the image:
+
+```
+$ docker build --tag=auth0-js-tests .
+```
+
+Run tests in Browserstack as follows:
+
+```bash
+$ docker run -it --rm --env BROWSERSTACK_KEY=<your browser stack key> auth0-js-tests
+```
+
+Run tests in phantomjs as follows:
+
+```bash
+$ docker run -it --rm auth0-js-tests grunt test
+```
 
 ## License
 
