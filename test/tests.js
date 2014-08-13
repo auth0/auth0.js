@@ -482,6 +482,13 @@ describe('Auth0', function () {
       expect(queryString).to.equal('connection_scope=grant1%2Cgrant2%2Cgrant3');
     });
 
+    it('should add offline mode', function () {
+      var queryString = Auth0.prototype._buildAuthorizeQueryString([
+        Auth0.prototype._getMode(), { offline_mode: true, device: 'Gonto'}
+      ], []);
+      expect(queryString).to.equal('scope=openid%20offline_access&response_type=code&device=Gonto');
+    });
+
     it('should handle connection_scope string', function () {
       var connection_scope = 'grant1,grant2,grant3';
 

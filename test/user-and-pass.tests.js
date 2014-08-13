@@ -48,6 +48,23 @@ describe('Auth0 - User And Passwords', function () {
         });
       });
 
+      it('should return refresh_token after successfull authentication with offline_mode', function (done) {
+        auth0.login({
+          connection: 'tests',
+          username: 'johnfoo@gmail.com',
+          password: '12345',
+          offline_mode: true
+        }, function (err, profile, id_token, access_token, state, refresh_token) {
+          expect(profile.name).to.eql('John Foo');
+          expect(profile.foo).to.eql('bar');
+          expect(profile.identities.length).to.eql(1);
+          expect(id_token).to.exist;
+          expect(refresh_token).to.exist;
+          expect(access_token).to.exist;
+          done();
+        });
+      });
+
     });
 
     describe('with wsfed', function () {
