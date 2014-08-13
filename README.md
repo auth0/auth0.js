@@ -123,6 +123,22 @@ You can also request scopes that are not were not configured for the connection.
   });
 ~~~
 
+Trigger the login with offline mode support to get the `refresh_token`
+
+````js
+$('.login-dbconn').click(function () {
+    auth0.login({
+      connection: 'db-conn',
+      username:   $('.username').val(),
+      password:   $('.password').val(),
+      offline_mode: true
+    },
+    function (err, profile, id_token, access_token, state, refresh_token) {
+      // store in cookies
+      // refresh_token is sent because offline_mode is set to true
+    });
+  });
+````
 
 ### Processing the callback
 
@@ -140,6 +156,9 @@ Once you have succesfully authenticated, Auth0 will redirect to your `callbackUR
       auth0.getProfile(result.id_token, function (err, profile) {
         alert('hello ' + profile.name);
       });
+      // If offline_mode: true was sent on the request
+      // You can grab the result.refresh_token here
+
     } else if (result && result.error) {
       alert('error: ' + result.error);
     }
@@ -165,7 +184,7 @@ If there is no hash, `result` will be null. It the hash contains the jwt, the pr
 
 While using this mode, the result will be passed as the `login` method callback.
 ```js
-  auth0.login({ popup: true }, function(err, profile, id_token, access_token, state) {
+  auth0.login({ popup: true }, function(err, profile, id_token, access_token, state, refresh_token) {
     if (err) {
       // Handle the error!
       return;
@@ -173,6 +192,8 @@ While using this mode, the result will be passed as the `login` method callback.
 
     //use id_token to call your rest api
     alert('hello ' + profile.name);
+
+    // refresh_token is sent only if offline_mode was set to true
   });
 });
 ```
