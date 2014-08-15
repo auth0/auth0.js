@@ -1,0 +1,14 @@
+ui: mocha-bdd
+scripts:
+  - "/test/support/config.js"
+  - "/node_modules/expect.js/expect.js"
+  - "/build/auth0.js"
+browsers:
+  - name: chrome
+    version: 27..latest
+  - name: safari
+    version: latest
+  - name: firefox
+    version: 28..latest
+  - name: ie
+    version: 8..latest

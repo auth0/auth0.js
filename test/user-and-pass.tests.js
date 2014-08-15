@@ -314,6 +314,7 @@ describe('Auth0 - User And Passwords', function () {
         username:     'johnfoo@gmail.com',
         password:     '12345'
       }, function (err) {
+        if (auth0._use)
         expect(err.message).to.equal('connection parameter is mandatory');
         done();
       });

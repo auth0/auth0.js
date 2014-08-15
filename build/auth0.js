@@ -991,14 +991,14 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
     id_token: id_token,
     api: 'auth0'
   }, callback);
- }
+ };
 
  Auth0.prototype.refreshToken = function (refresh_token, callback) {
   this.getDelegationToken({
     refresh_token: refresh_token,
     api: 'auth0'
   }, callback);
- }
+ };
 
 Auth0.prototype.getDelegationToken = function (options, callback) {
   options = options || {};
@@ -1010,9 +1010,13 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
   var query = xtend({
     grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
     client_id:  this._clientID,
-    target: options.targetClientId,
+    target: options.targetClientId || this._clientID,
     api_type: options.api
   }, options);
+
+  delete query.hasOwnProperty;
+  delete query.targetClientId;
+  delete query.api;
 
   var endpoint = '/delegation';
 
@@ -1202,13 +1206,13 @@ function use_jsonp() {
     return false;
   }
 
-  if ('XDomainRequest' in window && window.location.protocol === 'https:') {
-    return false;
-  }
+  // We no longer support XDomainRequest for IE8 and IE9 for CORS because it has many quirks.
+  // if ('XDomainRequest' in window && window.location.protocol === 'https:') {
+  //   return false;
+  // }
 
   return true;
-};
-
+}
 },{}],8:[function(require,module,exports){
 ;(function () {
 

@@ -13,8 +13,6 @@
   ],
   "scripts": {
     "test": "grunt integration",
-    "test-desktop": " grunt exec:test-desktop",
-    "test-mobile": " grunt exec:test-mobile",
     "example": "grunt example"
   },
   "repository": {
@@ -31,9 +29,10 @@
     "packageify": "^0.2.0",
     "qs": "git://github.com/jfromaniello/node-querystring.git#fix_ie7_bug_with_arrays",
     "reqwest": "~0.9.0",
-    "winchan": "^0.0.6",
     "trim": "~0.0.1",
-    "xtend": "~2.1.1"
+    "winchan": "^0.0.6",
+    "xtend": "~2.1.1",
+    "zuul": "^1.10.1"
   },
   "browserify": {
     "transform": [
@@ -56,8 +55,9 @@
     "grunt-maxcdn": "https://github.com/siacomuzzi/grunt-maxcdn/tarball/0.0.1",
     "grunt-s3": "~0.2.0-alpha.3",
     "mocha": "~1.13.0",
+    "phantomjs": "^1.9.2-6",
     "rimraf": "~2.2.2",
-    "testem": "~0.5.8",
-    "uglify-js": "~2.4.0"
+    "uglify-js": "~2.4.0",
+    "zuul": "https://github.com/jfromaniello/zuul/tarball/phantom_custom_port"
   }
 }

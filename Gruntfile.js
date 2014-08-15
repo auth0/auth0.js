@@ -81,18 +81,13 @@ module.exports = function(grunt) {
       }
     },
     exec: {
+      'test-integration': {
+        cmd: 'node_modules/.bin/zuul -- test/tests.js',
+        stdout: true,
+        stderr: true
+      },
       'test-phantom': {
-        cmd: 'node_modules/testem/testem.js -f testem_dev.yml ci -l PhantomJS',
-        stdout: true,
-        stderr: true
-      },
-      'test-desktop': {
-        cmd: 'node_modules/testem/testem.js ci -l bs_chrome,bs_firefox,bs_ie_8,bs_ie_9,bs_ie_10,bs_ie_11',
-        stdout: true,
-        stderr: true
-      },
-      'test-mobile': {
-        cmd: 'node_modules/testem/testem.js ci -l bs_iphone_5', //disable ,bs_android_41: is not working
+        cmd: 'node_modules/.bin/zuul --phantom 9999 -- test/tests.js',
         stdout: true,
         stderr: true
       }
@@ -168,8 +163,10 @@ module.exports = function(grunt) {
   grunt.registerTask("build",         ["clean", "browserify:dist", "uglify:min", "copy:example"]);
   grunt.registerTask("example",       ["connect:example", "watch", "build"]);
   grunt.registerTask("example_https", ["connect:example_https", "watch", "build"]);
+
   grunt.registerTask("dev",           ["connect:test", "watch", "build"]);
-  grunt.registerTask("test",          ["exec:test-phantom"]);
-  grunt.registerTask("integration",   ["exec:test-desktop", "exec:test-mobile"]);
+  grunt.registerTask("integration",   ["exec:test-integration"]);
+  grunt.registerTask("phantom",       ["exec:test-phantom"]);
+
   grunt.registerTask("cdn",           ["build", "copy:release", "s3","maxcdn:purgeCache"]);
 };

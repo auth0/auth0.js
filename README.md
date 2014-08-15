@@ -14,7 +14,7 @@ The example directory has a ready-to-go app. In order to run it you need [node](
 
 Take `auth0.js` or `auth0.min.js` from the `/build` directory and import it to your page.
 
-If you are using [browserify](http://browserify.org/) install with `npm install auth0.js`.
+If you are using [browserify](http://browserify.org/) install with `npm i auth0.js --production`.
 
 > Note: The following examples use jQuery, but auth0.js is not tied to jQuery and any library can be used with it.
 
@@ -312,9 +312,9 @@ Method `getSSOData` fetches Single Sign-On information:
 
 Run `grunt dev` and point your browser to `http://localhost:9999/test_harness.html` to run the test suite.
 
-Run `grunt test` if you have PhantomJS installed.
+Run `grunt phantom` if you have PhantomJS installed.
 
-Do you have issues in some browser? Ask us guidance to test in multiple browsers!
+Run `grunt integration` (or `npm test`) if you have SauceLabs account. You will need a `SAUCE_ACCESS_KEY` and `SAUCE_USERNAME` env variables.
 
 ## Publishing a new version
 
@@ -324,34 +324,6 @@ Use:
 $ ./bin/version patch
 $ git push origin master --tags
 $ npm publish
-```
-
-## Browser Compatibility
-
-We are using [BrowserStack](http://browserstack.com) and our own CI server to run the test suite on multiple browsers on every push.
-
-## Run tests in docker
-
-Since sometimes it is problematic to configure the environment to run the tests we've created a docker container.
-
-Generate or copy a `browserstack.json`.
-
-Build and tag the image:
-
-```
-$ docker build --tag=auth0-js-tests .
-```
-
-Run tests in Browserstack as follows:
-
-```bash
-$ docker run -it --rm --env BROWSERSTACK_KEY=<your browser stack key> auth0-js-tests
-```
-
-Run tests in phantomjs as follows:
-
-```bash
-$ docker run -it --rm auth0-js-tests grunt test
 ```
 
 ## License
