@@ -92,6 +92,12 @@ module.exports = function(grunt) {
         stderr: true
       }
     },
+    /* Checks for outdated npm dependencies before release. */
+    outdated: {
+      release: {
+        development: false
+      }
+    },
     s3: {
       options: {
         key:    process.env.S3_KEY,
