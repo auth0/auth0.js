@@ -2,7 +2,6 @@
 [![NPM version][npm-image]][npm-url]
 [![Github tag][tag-image]][tag-url]
 [![Build status][strider-image]][strider-url]
-<!-- [![Test coverage][coveralls-image]][coveralls-url] -->
 [![Dependency Status][david-image]][david-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
@@ -362,8 +361,6 @@ THE SOFTWARE.
 [tag-url]: https://github.com/auth0/auth0.js/tags
 [strider-image]: https://ci.auth0.com/auth0/auth0.js/badge
 [strider-url]: https://ci.auth0.com/auth0/auth0.js
-[coveralls-image]: https://img.shields.io/coveralls/auth0/auth0.js.svg?style=flat-square
-[coveralls-url]: https://coveralls.io/r/auth0/auth0.js?branch=master
 [david-image]: http://img.shields.io/david/auth0/auth0.js.svg?style=flat-square
 [david-url]: https://david-dm.org/auth0-js
 [license-image]: http://img.shields.io/npm/l/auth0-js.svg?style=flat-square
