@@ -1,6 +1,6 @@
 [![NPM version](https://badge.fury.io/js/auth0-js.png)](http://badge.fury.io/js/auth0-js)
 
-[![Auth0](https://i.cloudup.com/1vaSVATKTL.png)](http://auth0.com)
+[![Auth0](https://ci.auth0.com/auth0/auth0.js/badge)](http://auth0.com)
 
 [Auth0](http://auth0.com) is an authentication broker that supports social identity providers as well as enterprise identity providers such as Active Directory, LDAP, Office365, Google Apps, Salesforce.
 
