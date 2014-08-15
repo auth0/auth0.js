@@ -14,7 +14,8 @@
   "scripts": {
     "test": "grunt integration",
     "test-desktop": " grunt exec:test-desktop",
-    "test-mobile": " grunt exec:test-mobile"
+    "test-mobile": " grunt exec:test-mobile",
+    "example": "grunt example"
   },
   "repository": {
     "type": "git",
