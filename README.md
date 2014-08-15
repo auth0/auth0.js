@@ -2,7 +2,7 @@
 [![NPM version][npm-image]][npm-url]
 [![Github tag][tag-image]][tag-url]
 [![Build status][strider-image]][strider-url]
-[![Test coverage][coveralls-image]][coveralls-url]
+<!-- [![Test coverage][coveralls-image]][coveralls-url] -->
 [![Dependency Status][david-image]][david-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
