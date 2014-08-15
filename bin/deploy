@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+VERSION=$(node -e "console.log(require('$DIR/../package.json').version)")
+TAG_NAME="v$VERSION"
+TAG_EXISTS=$(git tag -l "$TAG_NAME")
+LAST_COMMIT=$(git log -1 --pretty=%B)
+
+if [ ! -z "$TAG_EXISTS" ]; then
+    echo "There is already a tag $TAG_EXISTS."
+    echo "This means that the version is already deployed."
+    exit 0
+fi
+
+echo "Pushing tag for version: $VERSION"
+git checkout -b dist
+git add --force build/*
+git commit -am "$TAG_NAME"
+git tag "$TAG_NAME" -m "$LAST_COMMIT"
+git checkout master
+git push origin $TAG_NAME
+git branch -d dist
+
+echo "Deploying $VERSION to npm"
+npm publish
+
+echo "Deploying $VERSION to cdn"
+grunt cdn
