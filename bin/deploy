@@ -20,7 +20,7 @@ git commit -am "$TAG_NAME"
 git tag "$TAG_NAME" -m "$LAST_COMMIT"
 git checkout master
 git push origin $TAG_NAME
-git branch -d dist
+git branch -D dist
 
 echo "Deploying $VERSION to npm"
 npm publish
