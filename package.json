@@ -55,7 +55,7 @@
     "grunt-exec": "~0.4.2",
     "grunt-maxcdn": "https://github.com/siacomuzzi/grunt-maxcdn/tarball/0.0.1",
     "grunt-s3": "~0.2.0-alpha.3",
-    "mocha": "~1.13.0",
+    "mocha": "1.20.1",
     "phantomjs": "^1.9.2-6",
     "rimraf": "~2.2.2",
     "uglify-js": "~2.4.0",
