@@ -7,12 +7,15 @@
 <body>
   <div id="mocha"></div>
 
+  <!-- support -->
   <script src="/node_modules/mocha/mocha.js"></script>
-  <script src="/testem.js"></script>
   <script src="/node_modules/expect.js/expect.js"></script>
+  <script src="/test/support/config.js"></script>
 
+  <!-- libs -->
   <script src="/build/auth0.js"></script>
 
+  <!-- config -->
   <script>
     mocha.timeout(60000);
     mocha.ui('bdd');
@@ -20,11 +23,12 @@
     mocha.setup({ignoreLeaks: true});
   </script>
 
-  <script src="/test/utils.js"></script>
+  <!-- tests -->
   <script src="/test/tests.js"></script>
   <script src="/test/user-and-pass.tests.js"></script>
   <script src="/test/logout.js"></script>
 
+  <!-- start -->
   <script>
     mocha.run();
   </script>

@@ -82,12 +82,12 @@ module.exports = function(grunt) {
     },
     exec: {
       'test-integration': {
-        cmd: 'node_modules/.bin/zuul -- test/tests.js',
+        cmd: 'node_modules/.bin/zuul -- test/*.js',
         stdout: true,
         stderr: true
       },
       'test-phantom': {
-        cmd: 'node_modules/.bin/zuul --phantom 9999 -- test/tests.js',
+        cmd: 'node_modules/.bin/zuul --phantom 9999 -- test/*.js',
         stdout: true,
         stderr: true
       }
