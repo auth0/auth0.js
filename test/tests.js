@@ -1,5 +1,15 @@
-describe('Auth0', function () {
+/**
+ * Config mocha
+ */
 
+mocha.timeout(60000);
+mocha.globals(['jQuery*', '__auth0jp*']);
+
+/**
+ * Test Auth0
+ */
+
+describe('Auth0', function () {
   afterEach(function () {
     global.window.location.hash = "";
   });
@@ -343,7 +353,7 @@ describe('Auth0', function () {
           id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjEzOTM5ODMwMDQsImlhdCI6MTM5Mzk0NzAwNH0.Hh7S4HIPCITag5b0VVF52AA4bWPgVFI2wzgamNzjxUA'
         };
 
-        auth0._getUserInfo = _getUserInfo = function (profile, id_token, callback) {
+        auth0._getUserInfo = function (profile, id_token, callback) {
           expect(profile.sub).to.eql('auth0|4AZDF56789');
           expect(id_token).to.eql(parseHashResult.id_token);
           done();
@@ -389,16 +399,21 @@ describe('Auth0', function () {
     var auth0 = Auth0({
       domain:      'mdocs.auth0.com',
       callbackURL: 'http://localhost:3000/',
-      clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t'
+      clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t',
+      // forceJSONP:  ('XDomainRequest' in window) //force JSONP in IE8 and IE9
     });
 
     it('should refresh the token', function (done) {
-      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6ImF1dGgwfDRBWkRGNTY3ODkiLCJhdWQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImV4cCI6MTcwNjA0NTM0OCwiaWF0IjoxMzkwNTEyNTQ4fQ._waKcxcmkfubfZg16V3DWa6JguowOMq6YWi110G4FiE';
+      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6Imdvb2dsZS1hcHBzfGpvc2VAYXV0aDEwLmNvbSIsImF1ZCI6InB0UjZVUm1YZWYwT2ZCREhLMGFDSXk3aVBLcGRDRzR0IiwiZXhwIjoxOTA2MDQ1MzQ4LCJpYXQiOjEzOTA1MTI1NDh9.73wcRfaz5N2U_ZzCHOjmv9KCF1FunQNgOdPNDwD3Exc';
 
       auth0.getDelegationToken({
         id_token: id_token,
         api: 'auth0'
       }, function (err, delegationResult) {
+        if (err) {
+          console.log(err);
+          throw new Error(err.message);
+        }
         expect(delegationResult.id_token).to.exist;
         expect(delegationResult.token_type).to.eql('Bearer');
         expect(delegationResult.expires_in).to.eql(36000);
@@ -442,9 +457,8 @@ describe('Auth0', function () {
       var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6ImF1dGgwfDRBWkRGNTY3ODkiLCJhdWQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImV4cCI6MTcwNjA0NTM0OCwiaWF0IjoxMzkwNTEyNTQ4fQ._waKcxcmkfubfZg16V3DWa6JguowOMq6YWi110G4FiE';
 
       auth0.getDelegationToken({
-        id_token: id_token,
+        id_token: id_token
       }, function (err, delegationResult) {
-        var token1 = delegationResult.id_token;
         auth0.getDelegationToken({
           id_token: id_token,
           api: 'firebase'
@@ -500,7 +514,7 @@ describe('Auth0', function () {
     });
   });
 
-  /*if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
+  if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
     it('should return empty SSO data after logout', function (done) {
       forceLogout('aaa.auth0.com', function () {
         var auth0 = Auth0({
@@ -515,6 +529,6 @@ describe('Auth0', function () {
         });
       });
     });
-  }*/
+  }
 
 });

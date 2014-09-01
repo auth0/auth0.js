@@ -1,3 +1,14 @@
+/**
+ * Config mocha
+ */
+
+mocha.timeout(60000);
+mocha.globals(['jQuery*', '__auth0jp*']);
+
+/**
+ * Test User and Password
+ */
+
 describe('Auth0 - User And Passwords', function () {
   var auth0 = new Auth0({
     domain:      'mdocs.auth0.com',
@@ -21,6 +32,8 @@ describe('Auth0 - User And Passwords', function () {
         });
       });
 
+      // Fails on IE8. Some bug with errors on XMLHttpRequest handling
+      // XXX: Fix it!
       it.skip('should call the callback with err when the connection doesn\'t exists', function (done) {
         auth0.login({
           connection: 'testsw3eeasdsadsa',
@@ -314,6 +327,7 @@ describe('Auth0 - User And Passwords', function () {
         username:     'johnfoo@gmail.com',
         password:     '12345'
       }, function (err) {
+        if (auth0._use)
         expect(err.message).to.equal('connection parameter is mandatory');
         done();
       });

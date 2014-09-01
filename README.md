@@ -1,6 +1,10 @@
-[![NPM version](https://badge.fury.io/js/auth0-js.png)](http://badge.fury.io/js/auth0-js)
-
-[![Auth0](https://i.cloudup.com/1vaSVATKTL.png)](http://auth0.com)
+# Auth0.js
+[![NPM version][npm-image]][npm-url]
+[![Build status][strider-image]][strider-url]
+[![Test coverage][coveralls-image]][coveralls-url]
+[![Dependency Status][david-image]][david-url]
+[![License][license-image]][license-url]
+[![Downloads][downloads-image]][downloads-url]
 
 [Auth0](http://auth0.com) is an authentication broker that supports social identity providers as well as enterprise identity providers such as Active Directory, LDAP, Office365, Google Apps, Salesforce.
 
@@ -8,13 +12,13 @@ Auth0.js is a client-side library for [Auth0](http://auth0.com). It allows you t
 
 ## Example
 
-The example directory has a ready-to-go app. In order to run it you need [node](http://nodejs.org/) installed, then execute `npm run example` from the root of this project.
+The example directory has a ready-to-go app. In order to run it you need [node](http://nodejs.org/) installed, download dependencies with `npm install`, then execute `npm run example` from the root of this project.
 
 ## Usage
 
 Take `auth0.js` or `auth0.min.js` from the `/build` directory and import it to your page.
 
-If you are using [browserify](http://browserify.org/) install with `npm install auth0.js`.
+If you are using [browserify](http://browserify.org/) install with `npm i auth0.js --production --save`.
 
 > Note: The following examples use jQuery, but auth0.js is not tied to jQuery and any library can be used with it.
 
@@ -312,9 +316,9 @@ Method `getSSOData` fetches Single Sign-On information:
 
 Run `grunt dev` and point your browser to `http://localhost:9999/test_harness.html` to run the test suite.
 
-Run `grunt test` if you have PhantomJS installed.
+Run `grunt phantom` if you have PhantomJS installed.
 
-Do you have issues in some browser? Ask us guidance to test in multiple browsers!
+Run `grunt integration` (or `npm test`) if you have SauceLabs account. You will need a `SAUCE_ACCESS_KEY` and `SAUCE_USERNAME` env variables.
 
 ## Publishing a new version
 
@@ -322,36 +326,7 @@ Use:
 
 ```
 $ ./bin/version patch
-$ git push origin master --tags
-$ npm publish
-```
-
-## Browser Compatibility
-
-We are using [BrowserStack](http://browserstack.com) and our own CI server to run the test suite on multiple browsers on every push.
-
-## Run tests in docker
-
-Since sometimes it is problematic to configure the environment to run the tests we've created a docker container.
-
-Generate or copy a `browserstack.json`.
-
-Build and tag the image:
-
-```
-$ docker build --tag=auth0-js-tests .
-```
-
-Run tests in Browserstack as follows:
-
-```bash
-$ docker run -it --rm --env BROWSERSTACK_KEY=<your browser stack key> auth0-js-tests
-```
-
-Run tests in phantomjs as follows:
-
-```bash
-$ docker run -it --rm auth0-js-tests grunt test
+$ git push origin master
 ```
 
 ## License
@@ -377,3 +352,18 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+<!-- Vaaaaarrrrsss -->
+
+[npm-image]: https://img.shields.io/npm/v/auth0-js.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/auth0-js
+[strider-image]: https://ci.auth0.com/auth0/auth0.js/badge
+[strider-url]: https://ci.auth0.com/auth0/auth0.js
+[coveralls-image]: https://img.shields.io/coveralls/auth0/auth0.js.svg?style=flat-square
+[coveralls-url]: https://coveralls.io/r/auth0/auth0.js?branch=master
+[david-image]: http://img.shields.io/david/auth0/auth0.js.svg?style=flat-square
+[david-url]: https://david-dm.org/auth0-js
+[license-image]: http://img.shields.io/npm/l/auth0-js.svg?style=flat-square
+[license-url]: #license
+[downloads-image]: http://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
+[downloads-url]: https://npmjs.org/package/auth0-js

@@ -1,3 +1,14 @@
+/**
+ * Config mocha
+ */
+
+mocha.timeout(60000);
+mocha.globals(['jQuery*', '__auth0jp*']);
+
+/**
+ * Test Logout
+ */
+
 describe('logout', function () {
   it('should redirect to the logout url', function (done) {
     var auth0 = Auth0({

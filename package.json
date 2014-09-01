@@ -1,6 +1,7 @@
 {
   "name": "auth0-js",
   "version": "4.1.1",
+  "version": "4.2.4",
   "description": "Auth0 headless browser sdk",
   "main": "lib/index.js",
   "keywords": [
@@ -13,8 +14,7 @@
   ],
   "scripts": {
     "test": "grunt integration",
-    "test-desktop": " grunt exec:test-desktop",
-    "test-mobile": " grunt exec:test-mobile"
+    "example": "grunt example"
   },
   "repository": {
     "type": "git",
@@ -30,9 +30,10 @@
     "packageify": "^0.2.0",
     "qs": "git://github.com/jfromaniello/node-querystring.git#fix_ie7_bug_with_arrays",
     "reqwest": "~0.9.0",
-    "winchan": "^0.0.6",
     "trim": "~0.0.1",
-    "xtend": "~2.1.1"
+    "winchan": "^0.0.6",
+    "xtend": "~2.1.1",
+    "zuul": "^1.10.1"
   },
   "browserify": {
     "transform": [
@@ -42,6 +43,7 @@
   "devDependencies": {
     "browserify": "~2.35.0",
     "browserstack-cli": "0.3.1",
+    "bump": "git://github.com/ianstormtaylor/bump",
     "expect.js": "~0.2.0",
     "grunt": "~0.4.0",
     "grunt-browserify": "~1.2.8",
@@ -54,9 +56,10 @@
     "grunt-exec": "~0.4.2",
     "grunt-maxcdn": "https://github.com/siacomuzzi/grunt-maxcdn/tarball/0.0.1",
     "grunt-s3": "~0.2.0-alpha.3",
-    "mocha": "~1.13.0",
+    "mocha": "1.20.1",
+    "phantomjs": "^1.9.2-6",
     "rimraf": "~2.2.2",
-    "testem": "~0.5.8",
-    "uglify-js": "~2.4.0"
+    "uglify-js": "~2.4.0",
+    "zuul": "https://github.com/jfromaniello/zuul/tarball/phantom_custom_port"
   }
 }
