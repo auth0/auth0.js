@@ -150,13 +150,32 @@ module.exports = function(grunt) {
           method:         'delete'
         },
         files: [
-          { dest:     'w2/auth0-' + pkg.version + '.min.js' },
-          { dest:     'w2/auth0-' + pkg.version + '.js' },
-          { dest:     'w2/auth0-' + major_version + '.js', },
-          { dest:     'w2/auth0-' + major_version + '.min.js', },
-          { dest:     'w2/auth0-' + minor_version + '.js', },
-          { dest:     'w2/auth0-' + minor_version + '.min.js', }
+          { dest: 'w2/auth0-' + pkg.version   + '.min.js'  },
+          { dest: 'w2/auth0-' + pkg.version   + '.js'      },
+          { dest: 'w2/auth0-' + major_version + '.js'      },
+          { dest: 'w2/auth0-' + major_version + '.min.js'  },
+          { dest: 'w2/auth0-' + minor_version + '.js'      },
+          { dest: 'w2/auth0-' + minor_version + '.min.js'  }
         ],
+      },
+    },
+    /* Purge FASTLY cache. */
+    fastly: {
+      options: {
+        key:  process.env.FASTLY_KEY,
+        host: process.env.FASTLY_HOST
+      },
+      purge: {
+        options: {
+          urls: [
+            'w2/auth0-' + pkg.version   + '.min.js',
+            'w2/auth0-' + pkg.version   + '.js',
+            'w2/auth0-' + major_version + '.js',
+            'w2/auth0-' + major_version + '.min.js',
+            'w2/auth0-' + minor_version + '.js',
+            'w2/auth0-' + minor_version + '.min.js'
+          ]
+        },
       },
     }
   });
@@ -174,5 +193,5 @@ module.exports = function(grunt) {
   grunt.registerTask("integration",   ["exec:test-integration"]);
   grunt.registerTask("phantom",       ["exec:test-phantom"]);
 
-  grunt.registerTask("cdn",           ["build", "copy:release", "s3","maxcdn:purgeCache"]);
+  grunt.registerTask("cdn",           ["build", "copy:release", "s3", "maxcdn:purgeCache", "maxcdn:purgeCache"]);
 };
