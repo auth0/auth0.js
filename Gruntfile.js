@@ -130,25 +130,6 @@ module.exports = function(grunt) {
         ]
       }
     },
-    maxcdn: {
-      purgeCache: {
-        options: {
-          companyAlias:   process.env.MAXCDN_COMPANY_ALIAS,
-          consumerKey:    process.env.MAXCDN_CONSUMER_KEY,
-          consumerSecret: process.env.MAXCDN_CONSUMER_SECRET,
-          zone_id:        process.env.MAXCDN_ZONE_ID,
-          method:         'delete'
-        },
-        files: [
-          { dest: 'w2/auth0-' + pkg.version   + '.min.js'  },
-          { dest: 'w2/auth0-' + pkg.version   + '.js'      },
-          { dest: 'w2/auth0-' + major_version + '.js'      },
-          { dest: 'w2/auth0-' + major_version + '.min.js'  },
-          { dest: 'w2/auth0-' + minor_version + '.js'      },
-          { dest: 'w2/auth0-' + minor_version + '.min.js'  }
-        ],
-      },
-    },
     /* Purge FASTLY cache. */
     fastly: {
       options: {
