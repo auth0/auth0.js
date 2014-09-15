@@ -164,5 +164,5 @@ module.exports = function(grunt) {
   grunt.registerTask("integration",   ["exec:test-integration"]);
   grunt.registerTask("phantom",       ["exec:test-phantom"]);
 
-  grunt.registerTask("cdn",           ["build", "copy:release", "aws_s3", "fastly:purgeCache"]);
+  grunt.registerTask("cdn",           ["build", "copy:release", "aws_s3", "fastly:purge"]);
 };
