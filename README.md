@@ -1,4 +1,4 @@
-![](https://cdn.auth0.com/resources/oss-source-large-1x.png)
+![](https://cdn.auth0.com/resources/oss-source-large-2x.png)
 
 # Auth0.js
 [![NPM version][npm-image]][npm-url]
