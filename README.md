@@ -1,3 +1,5 @@
+![](https://cdn.auth0.com/resources/oss-source-large-1x.png)
+
 # Auth0.js
 [![NPM version][npm-image]][npm-url]
 [![Build status][strider-image]][strider-url]
