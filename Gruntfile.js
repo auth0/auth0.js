@@ -107,7 +107,7 @@ module.exports = function(grunt) {
         params: {
           CacheControl: 'public, max-age=300'
         },
-        debug: true //<<< use this option to test changes
+        //debug: true //<<< use this option to test changes
       },
       clean: {
         files: [
