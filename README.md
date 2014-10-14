@@ -364,7 +364,7 @@ THE SOFTWARE.
 [coveralls-image]: https://img.shields.io/coveralls/auth0/auth0.js.svg?style=flat-square
 [coveralls-url]: https://coveralls.io/r/auth0/auth0.js?branch=master
 [david-image]: http://img.shields.io/david/auth0/auth0.js.svg?style=flat-square
-[david-url]: https://david-dm.org/auth0-js
+[david-url]: https://david-dm.org/auth0/auth0.js
 [license-image]: http://img.shields.io/npm/l/auth0-js.svg?style=flat-square
 [license-url]: #license
 [downloads-image]: http://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
