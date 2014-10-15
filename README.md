@@ -137,11 +137,11 @@ $('.login-dbconn').click(function () {
       connection: 'db-conn',
       username:   $('.username').val(),
       password:   $('.password').val(),
-      offline_mode: true
+      scope: 'openid offline_access'
     },
     function (err, profile, id_token, access_token, state, refresh_token) {
       // store in cookies
-      // refresh_token is sent because offline_mode is set to true
+      // refresh_token is sent because offline_access is set as a scope
     });
   });
 ````
@@ -162,7 +162,7 @@ Once you have succesfully authenticated, Auth0 will redirect to your `callbackUR
       auth0.getProfile(result.id_token, function (err, profile) {
         alert('hello ' + profile.name);
       });
-      // If offline_mode: true was sent on the request
+      // If offline_access was a requested scope
       // You can grab the result.refresh_token here
 
     } else if (result && result.error) {
@@ -199,7 +199,7 @@ While using this mode, the result will be passed as the `login` method callback.
     //use id_token to call your rest api
     alert('hello ' + profile.name);
 
-    // refresh_token is sent only if offline_mode was set to true
+    // refresh_token is sent only if offline_access is set as a scope
   });
 });
 ```

@@ -498,9 +498,9 @@ describe('Auth0', function () {
 
     it('should add offline mode', function () {
       var queryString = Auth0.prototype._buildAuthorizeQueryString([
-        Auth0.prototype._getMode(), { offline_mode: true, device: 'Gonto'}
+        Auth0.prototype._getMode(), { scope: 'openid offline_access'}
       ], []);
-      expect(queryString).to.equal('scope=openid%20offline_access&response_type=code&device=Gonto');
+      expect(queryString).to.equal('scope=openid%20offline_access&response_type=code&device=Browser');
     });
 
     it('should handle connection_scope string', function () {
