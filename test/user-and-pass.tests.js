@@ -243,6 +243,24 @@ describe('Auth0 - User And Passwords', function () {
       });
     });
 
+    it.skip('should send handle username and email', function (done) {
+      // TODO: needs to create a new auth0 instance with a db connection that has `requires_username` enabled
+      // in order to run this test
+      auth0.signup({
+        connection: 'mydb',
+        username:   'jfoo',
+        email: 'johnfoo@gmail.com',
+        password:   '12345'
+      }, function (err, profile) {
+        expect(err).to.be(null);
+        expect(profile).to.have.property('username');
+        expect(profile).to.have.property('email');
+        expect(profile.username).to.be('jfoo');
+        expect(profile.email).to.be('johnfoo@gmail.com');
+        done();
+      });
+    });
+
   });
 
   describe('Change Password', function () {
@@ -298,10 +316,49 @@ describe('Auth0 - User And Passwords', function () {
       });
     });
 
+    it('should return "true" if the credentials with username and email are valid', function (done) {
+      auth0.validateUser({
+        connection:   'tests',
+        username:     'johnfoo',
+        email:        'johnfoo@gmail.com',
+        password:     '12345'
+      }, function (err, valid) {
+        expect(err).to.be(null);
+        expect(valid).to.equal(false);
+        done();
+      });
+    });
+
     it('should return "false" if username is invalid', function (done) {
       auth0.validateUser({
         connection:   'tests',
         username:     'invalid-user@gmail.com',
+        password:     '12345'
+      }, function (err, valid) {
+        expect(err).to.be(null);
+        expect(valid).to.equal(false);
+        done();
+      });
+    });
+
+    it('should return "false" if email is valid and username is invalid', function (done) {
+      auth0.validateUser({
+        connection:   'tests',
+        username:     'invalid-user',
+        email:        'johnfoo@gmail.com',
+        password:     '12345'
+      }, function (err, valid) {
+        expect(err).to.be(null);
+        expect(valid).to.equal(false);
+        done();
+      });
+    });
+
+    it('should return "false" if email is invalid and username is valid', function (done) {
+      auth0.validateUser({
+        connection:   'tests',
+        username:     'johnfoo',
+        email:        'invalid#email@gmail.com',
         password:     '12345'
       }, function (err, valid) {
         expect(err).to.be(null);
