@@ -264,6 +264,8 @@ describe('Auth0 - User And Passwords', function () {
   });
 
   describe('Change Password', function () {
+    // TODO: add a test to check that the user can provide a username or email, when `requires_username` is enabled
+    
     it('should fail when the username is null', function (done) {
       auth0.changePassword({
         connection: 'tests',
