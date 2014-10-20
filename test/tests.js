@@ -435,7 +435,7 @@ describe('Auth0', function () {
     it('should throw error if no token is sent', function () {
       expect(function () {
         auth0.getDelegationToken(null, function(err, delegation) {});
-      }).to.throwError(/You must send either an id_token or a refresh_token to do this call/);
+      }).to.throwError(/You must send either an id_token or a refresh_token to get a delegation token./);
     });
 
 
