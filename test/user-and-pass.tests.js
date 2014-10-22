@@ -243,20 +243,20 @@ describe('Auth0 - User And Passwords', function () {
       });
     });
 
-    it.skip('should send handle username and email', function (done) {
-      // TODO: needs to create a new auth0 instance with a db connection that has `requires_username` enabled
-      // in order to run this test
+    it('should send handle username and email', function (done) {
+      var username = makeUsername(15);
+
       auth0.signup({
-        connection: 'mydb',
-        username:   'jfoo',
-        email: 'johnfoo@gmail.com',
+        connection: 'requires-username',
+        username:   username,
+        email: username + '@gmail.com',
         password:   '12345'
       }, function (err, profile) {
         expect(err).to.be(null);
         expect(profile).to.have.property('username');
         expect(profile).to.have.property('email');
-        expect(profile.username).to.be('jfoo');
-        expect(profile.email).to.be('johnfoo@gmail.com');
+        expect(profile.username).to.be(username);
+        expect(profile.email).to.be(username + '@gmail.com');
         done();
       });
     });
@@ -265,7 +265,7 @@ describe('Auth0 - User And Passwords', function () {
 
   describe('Change Password', function () {
     // TODO: add a test to check that the user can provide a username or email, when `requires_username` is enabled
-    
+
     it('should fail when the username is null', function (done) {
       auth0.changePassword({
         connection: 'tests',
@@ -407,3 +407,15 @@ describe('Auth0 - User And Passwords', function () {
   });
 
 });
+
+
+function makeUsername(size) {
+  var uname = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for( var i=0; i < size; i++ ) {
+    uname += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+
+  return uname.toLowerCase();
+}
