@@ -243,7 +243,7 @@ describe('Auth0 - User And Passwords', function () {
       });
     });
 
-    it('should send handle username and email', function (done) {
+    it('should handle username and email when requires_username enabled', function (done) {
       var username = makeUsername(15);
 
       auth0.signup({
@@ -257,6 +257,23 @@ describe('Auth0 - User And Passwords', function () {
         expect(profile).to.have.property('email');
         expect(profile.username).to.be(username);
         expect(profile.email).to.be(username + '@gmail.com');
+        done();
+      });
+    });
+
+    it('should error when username is missing when requires_username enabled', function (done) {
+      var username = makeUsername(15);
+
+      auth0.signup({
+        connection: 'requires-username',
+        email: username + '@gmail.com',
+        password:   '12345'
+      }, function (err, profile) {
+        expect(err).to.not.be(null);
+        expect(err.status).to.be(400);
+        expect(err).to.have.property('message');
+        expect(err).to.have.property('details');
+        expect(err.message).to.match(/missing username/ig);
         done();
       });
     });
