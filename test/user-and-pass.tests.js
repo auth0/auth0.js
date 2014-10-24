@@ -243,9 +243,46 @@ describe('Auth0 - User And Passwords', function () {
       });
     });
 
+    it('should handle username and email when requires_username enabled', function (done) {
+      var username = makeUsername(15);
+
+      auth0.signup({
+        connection: 'requires-username',
+        username:   username,
+        email: username + '@gmail.com',
+        password:   '12345'
+      }, function (err, profile) {
+        expect(err).to.be(null);
+        expect(profile).to.have.property('username');
+        expect(profile).to.have.property('email');
+        expect(profile.username).to.be(username);
+        expect(profile.email).to.be(username + '@gmail.com');
+        done();
+      });
+    });
+
+    it('should error when username is missing when requires_username enabled', function (done) {
+      var username = makeUsername(15);
+
+      auth0.signup({
+        connection: 'requires-username',
+        email: username + '@gmail.com',
+        password:   '12345'
+      }, function (err, profile) {
+        expect(err).to.not.be(null);
+        expect(err.status).to.be(400);
+        expect(err).to.have.property('message');
+        expect(err).to.have.property('details');
+        expect(err.message).to.match(/missing username/ig);
+        done();
+      });
+    });
+
   });
 
   describe('Change Password', function () {
+    // TODO: add a test to check that the user can provide a username or email, when `requires_username` is enabled
+
     it('should fail when the username is null', function (done) {
       auth0.changePassword({
         connection: 'tests',
@@ -298,10 +335,49 @@ describe('Auth0 - User And Passwords', function () {
       });
     });
 
+    it('should return "true" if the credentials with username and email are valid', function (done) {
+      auth0.validateUser({
+        connection:   'tests',
+        username:     'johnfoo',
+        email:        'johnfoo@gmail.com',
+        password:     '12345'
+      }, function (err, valid) {
+        expect(err).to.be(null);
+        expect(valid).to.equal(false);
+        done();
+      });
+    });
+
     it('should return "false" if username is invalid', function (done) {
       auth0.validateUser({
         connection:   'tests',
         username:     'invalid-user@gmail.com',
+        password:     '12345'
+      }, function (err, valid) {
+        expect(err).to.be(null);
+        expect(valid).to.equal(false);
+        done();
+      });
+    });
+
+    it('should return "false" if email is valid and username is invalid', function (done) {
+      auth0.validateUser({
+        connection:   'tests',
+        username:     'invalid-user',
+        email:        'johnfoo@gmail.com',
+        password:     '12345'
+      }, function (err, valid) {
+        expect(err).to.be(null);
+        expect(valid).to.equal(false);
+        done();
+      });
+    });
+
+    it('should return "false" if email is invalid and username is valid', function (done) {
+      auth0.validateUser({
+        connection:   'tests',
+        username:     'johnfoo',
+        email:        'invalid#email@gmail.com',
         password:     '12345'
       }, function (err, valid) {
         expect(err).to.be(null);
@@ -348,3 +424,15 @@ describe('Auth0 - User And Passwords', function () {
   });
 
 });
+
+
+function makeUsername(size) {
+  var uname = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for( var i=0; i < size; i++ ) {
+    uname += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+
+  return uname.toLowerCase();
+}
