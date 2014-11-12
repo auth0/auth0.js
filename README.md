@@ -314,6 +314,11 @@ Method `getSSOData` fetches Single Sign-On information:
   auth0.getSSOData(false, fn);
 ```
 
+## Issue Reporting
+
+If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
+
+
 ## Develop
 
 Run `grunt dev` and point your browser to `http://localhost:9999/test_harness.html` to run the test suite.
