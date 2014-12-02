@@ -74,6 +74,38 @@ describe('Auth0', function () {
     });
   });
 
+  it('should redirect to /authorize with values set on login (overriding constructor)', function (done) {
+    var auth0 = Auth0({
+      clientID:    'aaaabcdefgh',
+      domain:      'aaa.auth0.com',
+      callbackURL: 'http://fakeCallback.com',
+      callbackOnLocationHash: false
+    });
+
+    auth0._redirect = function (the_url) {
+      expect(the_url.split('?')[0])
+        .to.contain('https://aaa.auth0.com/authorize');
+
+      var parsed = {};
+      the_url.split('?')[1].replace(
+        new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+        function($0, $1, $2, $3) { parsed[$1] = decodeURIComponent($3); }
+      );
+
+      expect(parsed.response_type).to.equal('token');
+      expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
+      expect(parsed.client_id).to.equal('aaaabcdefgh');
+      expect(parsed.scope).to.equal('openid');
+      done();
+    };
+
+    auth0.login({
+      connection: 'google-oauth2',
+      callbackOnLocationHash: true,
+      callbackURL: 'https://myapp.com/callback'
+    });
+  });
+
   it('should fail if auth0.login is called with {popup: true, callbackOnLocationHash: true} and without callback', function () {
     var auth0 = Auth0({
       clientID:    'aaaabcdefgh',
@@ -397,14 +429,14 @@ describe('Auth0', function () {
 
   describe('getDelegationToken', function () {
     var auth0 = Auth0({
-      domain:      'mdocs.auth0.com',
+      domain:      'samples.auth0.com',
       callbackURL: 'http://localhost:3000/',
-      clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t',
+      clientID:    'BUIJSW9x60sIHBw8Kd9EmCbj8eDIFxDC',
       // forceJSONP:  ('XDomainRequest' in window) //force JSONP in IE8 and IE9
     });
 
     it('should refresh the token', function (done) {
-      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6Imdvb2dsZS1hcHBzfGpvc2VAYXV0aDEwLmNvbSIsImF1ZCI6InB0UjZVUm1YZWYwT2ZCREhLMGFDSXk3aVBLcGRDRzR0IiwiZXhwIjoxOTA2MDQ1MzQ4LCJpYXQiOjEzOTA1MTI1NDh9.73wcRfaz5N2U_ZzCHOjmv9KCF1FunQNgOdPNDwD3Exc';
+      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3NhbXBsZXMuYXV0aDAuY29tLyIsInN1YiI6ImdpdGh1Ynw3MjM3MjMiLCJhdWQiOiJCVUlKU1c5eDYwc0lIQnc4S2Q5RW1DYmo4ZURJRnhEQyIsImlhdCI6MTM5MDUxMjU0OH0.Rd3wjlFhRk6CBzsB371V5x41HITzx5880ezK9rwYzuM';
 
       auth0.getDelegationToken({
         id_token: id_token,
@@ -422,7 +454,7 @@ describe('Auth0', function () {
     });
 
     it('should refresh the token when calling refresh as well', function (done) {
-      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6ImF1dGgwfDRBWkRGNTY3ODkiLCJhdWQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImV4cCI6MTcwNjA0NTM0OCwiaWF0IjoxMzkwNTEyNTQ4fQ._waKcxcmkfubfZg16V3DWa6JguowOMq6YWi110G4FiE';
+      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3NhbXBsZXMuYXV0aDAuY29tLyIsInN1YiI6ImdpdGh1Ynw3MjM3MjMiLCJhdWQiOiJCVUlKU1c5eDYwc0lIQnc4S2Q5RW1DYmo4ZURJRnhEQyIsImlhdCI6MTM5MDUxMjU0OH0.Rd3wjlFhRk6CBzsB371V5x41HITzx5880ezK9rwYzuM';
 
       auth0.renewIdToken(id_token, function (err, delegationResult) {
         expect(delegationResult.id_token).to.exist;
@@ -441,7 +473,7 @@ describe('Auth0', function () {
 
 
     it('should return a Firebase token by default since it\'s active', function (done) {
-      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6ImF1dGgwfDRBWkRGNTY3ODkiLCJhdWQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImV4cCI6MTcwNjA0NTM0OCwiaWF0IjoxMzkwNTEyNTQ4fQ._waKcxcmkfubfZg16V3DWa6JguowOMq6YWi110G4FiE';
+      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3NhbXBsZXMuYXV0aDAuY29tLyIsInN1YiI6ImdpdGh1Ynw3MjM3MjMiLCJhdWQiOiJCVUlKU1c5eDYwc0lIQnc4S2Q5RW1DYmo4ZURJRnhEQyIsImlhdCI6MTM5MDUxMjU0OH0.Rd3wjlFhRk6CBzsB371V5x41HITzx5880ezK9rwYzuM';
 
       auth0.getDelegationToken({
         id_token: id_token
@@ -454,7 +486,7 @@ describe('Auth0', function () {
     });
 
     it('should return a Firebase token by default or when asked', function (done) {
-      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbTozMDAwLyIsInN1YiI6ImF1dGgwfDRBWkRGNTY3ODkiLCJhdWQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImV4cCI6MTcwNjA0NTM0OCwiaWF0IjoxMzkwNTEyNTQ4fQ._waKcxcmkfubfZg16V3DWa6JguowOMq6YWi110G4FiE';
+      var id_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3NhbXBsZXMuYXV0aDAuY29tLyIsInN1YiI6ImdpdGh1Ynw3MjM3MjMiLCJhdWQiOiJCVUlKU1c5eDYwc0lIQnc4S2Q5RW1DYmo4ZURJRnhEQyIsImlhdCI6MTM5MDUxMjU0OH0.Rd3wjlFhRk6CBzsB371V5x41HITzx5880ezK9rwYzuM';
 
       auth0.getDelegationToken({
         id_token: id_token
