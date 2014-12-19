@@ -20,7 +20,7 @@ The example directory has a ready-to-go app. In order to run it you need [node](
 
 Take `auth0.js` or `auth0.min.js` from the `/build` directory and import it to your page.
 
-If you are using [browserify](http://browserify.org/) install with `npm i auth0.js --production --save`.
+If you are using [browserify](http://browserify.org/) install with `npm i auth0-js --production --save`.
 
 > Note: The following examples use jQuery, but auth0.js is not tied to jQuery and any library can be used with it.
 
