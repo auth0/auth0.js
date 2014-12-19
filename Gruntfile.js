@@ -160,7 +160,7 @@ module.exports = function(grunt) {
   grunt.registerTask("example",       ["connect:example", "watch", "build"]);
   grunt.registerTask("example_https", ["connect:example_https", "watch", "build"]);
 
-  grunt.registerTask("dev",           ["connect:test", "watch", "build"]);
+  grunt.registerTask("dev",           ["build", "connect:test", "watch"]);
   grunt.registerTask("integration",   ["exec:test-integration"]);
   grunt.registerTask("phantom",       ["exec:test-phantom"]);
 
