@@ -17,7 +17,6 @@ describe('Auth0 - User And Passwords', function () {
   });
 
   describe('Login', function () {
-
     describe('with resource owner', function () {
 
       it('should call the callback when user/pass is wrong', function (done) {
@@ -138,7 +137,6 @@ describe('Auth0 - User And Passwords', function () {
   });
 
   describe('Signup', function () {
-
     it('should fail when the username is null', function (done) {
       auth0.signup({
         connection: 'tests',
@@ -277,7 +275,6 @@ describe('Auth0 - User And Passwords', function () {
         done();
       });
     });
-
   });
 
   describe('Change Password', function () {
@@ -318,11 +315,9 @@ describe('Auth0 - User And Passwords', function () {
         done();
       });
     });
-
   });
 
   describe('Validate User', function () {
-
     it('should return "true" if the credentials are valid', function (done) {
       auth0.validateUser({
         connection:   'tests',
@@ -420,15 +415,14 @@ describe('Auth0 - User And Passwords', function () {
         done();
       });
     });
-
   });
 
 });
 
 
 function makeUsername(size) {
-  var uname = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var uname = '';
+  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
   for( var i=0; i < size; i++ ) {
     uname += possible.charAt(Math.floor(Math.random() * possible.length));
