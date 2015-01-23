@@ -44,6 +44,16 @@ describe('Auth0', function () {
   });
 
 
+  it('should disable phonegap by default', function () {
+    var auth0 = new Auth0({
+      clientID:    'aaaabcdefgh',
+      callbackURL: 'https://myapp.com/callback',
+      domain:      'aaa.auth0.com'
+    });
+
+    expect(auth0._useCordovaSocialPlugins).not.to.be.ok();
+  });
+
   it('should redirect to /authorize with google (callbackOnLocationHash: on)', function (done) {
     var auth0 = Auth0({
       clientID:    'aaaabcdefgh',
