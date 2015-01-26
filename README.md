@@ -204,6 +204,12 @@ While using this mode, the result will be passed as the `login` method callback.
 });
 ```
 
+When using database connection there are two possible modes:
+
+ * **Resource Owner endpoint** (`/ro`)enabled by passing sso: false (default): Performs a CORS POST request against the former endpoint (or in IE8 or 9 perform a JSONP request). This endpoint allows users to authenticate by sending their username and password and returning a JWT. This does not set any cookie and no popup is opened (even with `popup` set to `true`).
+
+ * **SSO mode** enabled by passing `sso: true`: In this case, a popup is created in which the authentication takes place. Sets the SSO cookie and prompts for a multifactor authentication code, if enabled.
+
 ### Sign up (database connections):
 
 If you use [Database Connections](https://docs.auth0.com/mysql-connection-tutorial) you can signup as follows:
