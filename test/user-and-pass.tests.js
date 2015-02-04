@@ -134,6 +134,26 @@ describe('Auth0 - User And Passwords', function () {
         done();
       });
     });
+
+    it.skip('should require recaptcha after three failed logins', function(done) {
+      var attempts = 0;
+
+      function login(cb) {
+        attempts++;
+        return auth0.login({
+          connection: 'tests'
+          username: 'johnfoo@gmail.com',
+          password: '54321'
+        }, cb);
+      }
+
+      function relogin(err) {
+        if (attempts >= 3) {
+          login(relogin);
+        } else {
+          expect(err.require_recaptcha).to.eql(true);
+        }
+      }
   });
 
   describe('Signup', function () {
