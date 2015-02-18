@@ -23,5 +23,4 @@ release
 
 .DS_Store
 
-build
 example/auth0.js
