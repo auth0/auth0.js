@@ -9,19 +9,24 @@
     <br>
     <a href="#login-popup" class='login-google-popup'>login with google on popup</a><br>
     <a href="#login-popup-all-connections" class='login-popup'>login with popup</a>
-    <hr>
 
+    <hr>
     <h2>Login with Database Connection</h2>
     <input class="login-username" value="johnfoo@gmail.com" />
     <input type="password" class="login-password" value="1234" />
-    <input type="button" class="login-db" value="login"></input>
+    <input type="button" class="login-db" value="login" />
 
     <hr>
-
     <h2>Signup Database Connection</h2>
     <input class="signup-username" value="johnfoo@gmail.com" />
     <input type="password" class="signup-password" value="1234" />
-    <input type="button" class="signup-db" value="signup"></input>
+    <input type="button" class="signup-db" value="signup" />
+
+    <hr>
+    <h2>Validate User in Database Connection</h2>
+    <input class="validate-username" value="johnfoo@gmail.com" />
+    <input type="password" class="validate-password" value="1234" />
+    <input type="button" class="validate-db" value="validate" />
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="auth0.js"></script>
@@ -103,6 +108,19 @@
             }, function (err, profile, id_token, access_token) {
                 if (err) return alert('Something went wrong: ' + err.message);
                 alert('hello ' + profile.name);
+            });
+        });
+
+        $('.validate-db').click(function (e) {
+            e.preventDefault();
+            auth0.validateUser({
+                connection: 'tests',
+                username: $('.validate-username').val(),
+                password: $('.validate-password').val()
+            }, function (err, profile, id_token, access_token) {
+                if (err) return alert('Something went wrong: ' + err.message);
+                if (profile) return alert('User exists and password is correct!');
+                return alert('User not found or incorrect password.');
             });
         });
 
