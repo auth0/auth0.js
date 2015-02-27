@@ -1,3 +1,34 @@
+
+## [6.0.6] - 2015-02-18
+
+### Fixed
+
+ - [auth0.js] Fixes issues with Phonegap and db connections. (`pose`)
+  https://github.com/auth0/auth0.js/commit/6800c05460919da0bb514068e71fd7ee76663af0
+
+## [6.0.5] - 2015-02-18
+
+### Fixed
+
+ - [auth0.js] Fixed: If callback has not >1 arguments, then we don't do open a popup and do sso. (`pose`)
+  https://github.com/auth0/auth0.js/commit/ac5a535ff1201fd4fb4fec464517ac29172d02d9
+
+## [6.0.4] - 2015-02-18
+
+### Fixed
+
+ - [auth0.js] Fixing sso flag not working by default. (`pose`)
+  https://github.com/auth0/auth0.js/commit/a876394a17536429bfd99546d3d6bfffcc247f8e
+ - [auth0.js] Sending scope parameter when using dbconn, sso: true and popup. (`pose`)
+  https://github.com/auth0/auth0.js/commit/908493a5028f1bc339b26a7390d51142c95d0314
+
+### Added
+
+ - [auth0.js] Adding popup blocker warning. (`pose`)
+  https://github.com/auth0/auth0.js/commit/e7fa8c282cd827dae758282d2b54b22443c595fd
+
+## [6.0.3] - 2015-02-11 [YANKED]
+
 ## [6.0.2] - 2015-01-26
 - [925ec92] Fixing merge conflict. (`Alberto Pose`)
 - [15eff14] Updating to winchan@0.1.1 (`Alberto Pose`)
