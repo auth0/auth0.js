@@ -315,9 +315,20 @@ Method `getSSOData` fetches Single Sign-On information:
   });
 ```
 
+Load Active Directory data if available (Kerberos):
+
 ```js
-  // Don't bring active directoy data
-  auth0.getSSOData(false, fn);
+  auth0.getSSOData(true, fn);
+```
+
+When Kerberos is available you can automatically trigger Windows Authentication. As a result the user will immediately be authenticated without taking any action.
+
+```js
+  auth0.getSSOData(true, function (err, ssoData) {
+    if (!err && ssoData && ssoData.connection) {
+      auth0.login({ connection: ssoData.connection });
+    }
+  });
 ```
 
 ## Develop
