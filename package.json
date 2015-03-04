@@ -31,8 +31,7 @@
     "reqwest": "^1.1.4",
     "trim": "~0.0.1",
     "winchan": "^0.1.1",
-    "xtend": "~2.1.1",
-    "zuul": "^1.10.1"
+    "xtend": "~2.1.1"
   },
   "browserify": {
     "transform": [
