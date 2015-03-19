@@ -99,7 +99,8 @@
             auth0.login({
                 connection: 'tests',
                 username: $('.login-username').val(),
-                password: $('.login-password').val()
+                password: $('.login-password').val(),
+                sso: false
             }, function (err, profile, id_token, access_token) {
                 if (err) return alert('Something went wrong: ' + err.message);
                 alert('hello ' + profile.name);
@@ -111,7 +112,8 @@
             auth0.signup({
                 connection: 'tests',
                 username: $('.signup-username').val(),
-                password: $('.signup-password').val()
+                password: $('.signup-password').val(),
+                sso: false
             }, function (err, profile, id_token, access_token) {
                 if (err) return alert('Something went wrong: ' + err.message);
                 alert('hello ' + profile.name);
