@@ -1,4 +1,21 @@
 
+## [6.2.0] - 2015-04-07
+
+### Added
+
+ - [errors] Added refused/timeout connection errors. (https://github.com/auth0/auth0.js/pull/76) (https://github.com/auth0/auth0.js/issues/75) (`pose`)
+  https://github.com/auth0/auth0.js/commit/e7f3ef95993b62ed3f40e4e7608b586b9bab6c68
+  https://github.com/auth0/auth0.js/commit/5db28b9c269c44da4d72ea6e5254c692cf5e31c2
+  https://github.com/auth0/auth0.js/commit/d07733c717c8bee2214f36963880ec26563f76f8
+
+## [6.1.0] - 2015-03-19
+
+### Added
+
+ - [error] Added Internet connection error reporting: Failing requests that report status code === 0 are now reported as offline rather than invalid_user_password (https://github.com/auth0/auth0.js/pull/71) (https://github.com/auth0/auth0.js/issues/50) (`pose`)
+  https://github.com/auth0/auth0.js/commit/8fa314997adaa0832a838758432f5249c5ebd0a4
+  https://github.com/auth0/auth0.js/commit/68aea5dee564c60ede71e0668468f7433f723f3b
+
 ## [6.0.6] - 2015-02-18
 
 ### Fixed
