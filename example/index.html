@@ -28,6 +28,14 @@
     <input type="password" class="validate-password" value="1234" />
     <input type="button" class="validate-db" value="validate" />
 
+    <hr>
+    <h2>Passwordless authentication with SMS</h2>
+    <input class="phone-input" value="" placeholder="phone number" />
+    <input type="button" class="request-sms-code" value="request code" />
+    <br>
+    <input class="sms-code-input" value="" placeholder="sms passcode" />
+    <input type="button" class="submit-sms-code" value="submit code" />
+
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="auth0.js"></script>
     <script type="text/javascript">
@@ -135,6 +143,29 @@
             }, function (err, profile, id_token, access_token) {
                 if (err) return alert('Something went wrong: ' + err.message);
                 alert('hello ' + profile.name);
+            });
+        });
+
+        $('.request-sms-code').click(function (e) {
+            e.preventDefault();
+            auth0.requestSMSCode({
+                apiToken: 'your-api-token-here',
+                phoneNumber: $('.phone-input').val()
+            }, function (err, result) {
+                if (err) return alert("something went wrong: " + err.message);
+                console.log(result);
+            });
+        });
+
+        $('.submit-sms-code').click(function (e) {
+            e.preventDefault();
+            auth0.loginWithResourceOwner({
+                username: $('.phone-input').val(),
+                password: $('.sms-code-input').val(),
+                connection: 'sms'
+            }, function (err, profile, id_token, access_token, state, refresh_token) {
+                if (err) return alert("something went wrong: " + err.message);
+                console.log(profile, id_token, access_token, state, refresh_token);
             });
         });
     </script>

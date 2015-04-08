@@ -444,6 +444,97 @@ describe('Auth0', function () {
     });
   });
 
+  describe('requestSMSCode', function () {
+
+    var domain = 'aaa.auth0.com';
+
+    var auth0 = new Auth0({
+      clientID:     'aaaabcdefgh',
+      callbackURL:  'https://myapp.com/callback',
+      domain:       domain
+    });
+
+    var server;
+
+    beforeEach(function () {
+      server = sinon.fakeServer.create();
+    });
+
+    afterEach(function () {
+      server.restore();
+    });
+
+    var apiToken = 'aaaabcdefgh';
+    var phoneNumber = '+5491122334455';
+
+    it('should throw if no arguments are passed', function () {
+      expect(function () {
+        auth0.requestSMSCode();
+      }).to.throwError('An options object is required');
+    });
+
+    it('should throw if no options are passed', function () {
+      expect(function () {
+        auth0.requestSMSCode(undefined, function() {});
+      }).to.throwError('An options object is required');
+    });
+
+    it('should throw if no callback is passed', function () {
+      expect(function () {
+        auth0.requestSMSCode({ apiToken: apiToken, phoneNumber: phoneNumber });
+      }).to.throwError('A callback function is required');
+    });
+
+    it('should throw if options has no property apiToken', function () {
+      expect(function () {
+        auth0.requestSMSCode({ phoneNumber: phoneNumber });
+      }).to.throwError('apiToken is required.');
+    });
+
+    it('should throw if options has no property phoneNumber', function () {
+      expect(function () {
+        auth0.requestSMSCode({ apiToken: apiToken });
+      }).to.throwError('phoneNumber is required.');
+    });
+
+    it('should send sms successfully', function (done) {
+      server.respondWith('POST', 'https://' + domain + '/api/v2/users', [
+        200,
+        { 'Content-Type': 'application/json' },
+        '{}'
+      ]);
+
+      auth0.requestSMSCode({ apiToken: apiToken, phoneNumber: phoneNumber }, function (err) {
+        expect(err).to.be(null);
+        done();
+      });
+
+      server.respond();
+    });
+
+    it('should fail using invalid phone number', function (done) {
+      server.respondWith('POST', 'https://' + domain + '/api/v2/users', [
+        400,
+        { 'Content-Type': 'application/json' },
+        '{"statusCode":400,"error":"Bad Request","message":"The \'To\' number 541234 is not a valid phone number."}'
+      ]);
+
+      auth0.requestSMSCode({ apiToken: apiToken, phoneNumber: '+541234' }, function (err) {
+        expect(err).not.to.be(null);
+        expect(err).to.have.property('statusCode');
+        expect(err).to.have.property('error');
+        expect(err).to.have.property('message');
+        expect(err.statusCode).to.be(400);
+        expect(err.error).to.be('Bad Request');
+        expect(err.message).to.be('The \'To\' number 541234 is not a valid phone number.');
+        done();
+      });
+
+      server.respond();
+    });
+
+  });
+
   describe('getDelegationToken', function () {
     var auth0 = Auth0({
       domain:      'samples.auth0.com',

@@ -147,6 +147,43 @@ $('.login-dbconn').click(function () {
   });
 ````
 
+### Passwordless authentication with SMS
+
+```js
+//request a passcode sending an sms
+$('.request-sms-code').click(function (e) {
+  e.preventDefault();
+  auth0.requestSMSCode({
+    apiToken: 'your-api-token-here',
+    phoneNumber: $('.phone-input').val()
+  }, function (err, result) {
+    if (err) {
+      alert("something went wrong: " + err.message);
+      return;
+    }
+    console.log(result);
+  });
+});
+
+//submit the passcode
+$('.submit-sms-code').click(function (e) {
+  e.preventDefault();
+  auth0.loginWithResourceOwner({
+    username: $('.phone-input').val(),
+    password: $('.sms-code-input').val(),
+    connection: 'sms'
+  }, function (err, profile, id_token, access_token, state, refresh_token) {
+    if (err) {
+      alert("something went wrong: " + err.message);
+      return;
+    }
+    console.log(profile, id_token, access_token, state, refresh_token);
+  });
+});
+```
+
+> You can generate the `apiToken` from [here](https://auth0.com/docs/apiv2). Please, notice it has to have `user:create` as the scope.
+
 ### Processing the callback
 
 ### Redirect Mode
