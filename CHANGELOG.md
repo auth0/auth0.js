@@ -3,7 +3,7 @@
 
 ### Added
 
- - [errors] Added refused/timeout connection errors. (https://github.com/auth0/auth0.js/pull/76) (https://github.com/auth0/auth0.js/issues/75) (`pose`)
+ - [error] Added refused/timeout connection errors. (https://github.com/auth0/auth0.js/pull/76) (https://github.com/auth0/auth0.js/issues/75) (`pose`)
   https://github.com/auth0/auth0.js/commit/e7f3ef95993b62ed3f40e4e7608b586b9bab6c68
   https://github.com/auth0/auth0.js/commit/5db28b9c269c44da4d72ea6e5254c692cf5e31c2
   https://github.com/auth0/auth0.js/commit/d07733c717c8bee2214f36963880ec26563f76f8
