@@ -404,7 +404,7 @@ describe('Auth0', function () {
           done();
         };
 
-        auth0.getProfile(parseHashResult.id_token);
+        auth0.getProfile(parseHashResult.id_token, function () {});
       });
 
     });
@@ -432,7 +432,7 @@ describe('Auth0', function () {
         callbackURL: 'http://localhost:3000/',
         clientID:    'ptR6URmXef0OfBDHK0aCIy7iPKpdCG4t'
       });
-  
+
       auth0.getConnections(function (err, conns) {
         expect(conns.length).to.be.above(0);
         expect(conns[0].name).to.eql('Apprenda.com');
