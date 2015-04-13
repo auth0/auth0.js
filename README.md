@@ -149,7 +149,9 @@ $('.login-dbconn').click(function () {
 
 ### Passwordless authentication with SMS
 
-To request an SMS `code` to be send to a `phone-number` you start by calling `.requestSMSCode()` with an `apiToken` and the `phone-number` with the country code included.
+First you start by requesting an SMS code to be sent to a phone number. For that you use the `.requestSMSCode()` with an `apiToken` and a full length `phoneNumber` with country code.
+This endpoint is at `beta` stage since [APIv2](https://auth0.com/docs/apiv2) (used by this method) is still in `beta` development.
+To generate an `apiToken` go [here](https://auth0.com/docs/apiv2). Notice that the token must have the `users:create` scope for the request to work.
 
 ```js
 //request a passcode sending an sms
@@ -167,10 +169,8 @@ $('.request-sms-code').click(function (e) {
   });
 });
 ```
-> This endpoint is at a `beta` stage since APIv2 (used by this method) is still in `beta` development.
-> You can generate the `apiToken` from [here](https://auth0.com/docs/apiv2). Please, notice it has to have `user:create` as the scope.
 
-Then when you receive the code submit the login with the `.loginWithResourceOwner()` method like this:
+Once you receive the code you can follow by using `.loginWithResourceOwner()` to login
 
 ```
 //submit the passcode
