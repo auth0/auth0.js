@@ -2,9 +2,9 @@
  * Module dependencies.
  */
 
-var assert_required   = require('./assert_required');
-var base64_url_decode = require('./base64_url_decode');
-var is_array          = require('./is-array');
+var assert_required   = require('./lib/assert_required');
+var base64_url_decode = require('./lib/base64_url_decode');
+var is_array          = require('./lib/is-array');
 
 var qs                = require('qs');
 var xtend             = require('xtend');
@@ -15,9 +15,9 @@ var WinChan           = require('winchan');
 var jsonp             = require('jsonp');
 var jsonpOpts         = { param: 'cbx', timeout: 8000, prefix: '__auth0jp' };
 
-var use_jsonp         = require('./use_jsonp');
-var LoginError        = require('./LoginError');
-var json_parse        = require('./json-parse');
+var use_jsonp         = require('./lib/use_jsonp');
+var LoginError        = require('./lib/LoginError');
+var json_parse        = require('./lib/json-parse');
 
 /**
  * Check if running in IE.
