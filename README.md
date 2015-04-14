@@ -159,7 +159,6 @@ To generate an `apiToken` go [here](https://auth0.com/docs/apiv2). Notice that t
 ```js
 // request a passcode sent via sms to `phoneNumber`
 // using Twilio's configured connection
-
 $('.request-sms-code').click(function (ev) {
   ev.preventDefault();
 
@@ -176,8 +175,8 @@ $('.request-sms-code').click(function (ev) {
 
 Once you receive the code you follow using `.loginWithResourceOwner()` to login
 
-```
-//submit the passcode
+```js
+//submit the passcode to authenticate the phoneNumber
 $('.submit-sms-code').click(function (ev) {
   ev.preventDefault();
 
