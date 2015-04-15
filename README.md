@@ -151,7 +151,7 @@ $('.login-dbconn').click(function () {
 
 First you must activate and configure your passwordless [Twilio](https://twilio.com) connection in our [dashboard](https://manage.auth0.com/#/connections/passwordless).
 
-Only then you can request for an SMS code to be sent to a phone number. For that you use the `auth0.requestSMSCode()` with an `apiToken` and a [full-length](https://www.twilio.com/help/faq/phone-numbers/how-do-i-format-phone-numbers-to-work-internationally) `phoneNumber`.
+After that you can request a passcode to be sent via SMS to a phone number. For that you use the `.requestSMSCode()` with an `apiToken` and a [full-length](https://www.twilio.com/help/faq/phone-numbers/how-do-i-format-phone-numbers-to-work-internationally) `phoneNumber`.
 
 To generate an `apiToken` go [here](https://auth0.com/docs/apiv2). Notice that the generated token must have the `users:create` scope, otherwise it won't work.
 
