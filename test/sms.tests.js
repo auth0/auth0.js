@@ -10,6 +10,10 @@ mocha.globals(['jQuery*', '__auth0jp*']);
  */
 
 describe('Auth0 - SMS', function () {
+  // TODO: Most of this are usage and params tests
+  //       integration tests should be added
+  //       hitting Auth0's APIv2
+
   afterEach(function () {
     global.window.location.hash = '';
     this.server.restore();
@@ -159,7 +163,6 @@ describe('Auth0 - SMS', function () {
   });
 
   describe('.login()', function () {
-    // TODO: Improve submit tests
     it('should throw if called without callback', function(done) {
       var auth0 = this.auth0;
       expect(function () {

@@ -166,9 +166,12 @@ $('.request-sms-code').click(function (ev) {
     apiToken: 'your-api-token-here',
     phone: $('.phone-input').val()
   }, function (err) {
-    if (!err) retun;
+    if (err) {
+      alert("something went wrong: " + err.message);
+      return;
+    }
     // the request was successful and you should
-    // wait for the SMS passcode
+    // receive the passcode to the specified phone
   });
 });
 ```
