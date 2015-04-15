@@ -164,7 +164,7 @@ $('.request-sms-code').click(function (ev) {
 
   auth0.requestSMSCode({
     apiToken: 'your-api-token-here',
-    phoneNumber: $('.phone-input').val()
+    phone: $('.phone-input').val()
   }, function (err) {
     if (!err) retun;
     // the request was successful and you should
@@ -173,17 +173,16 @@ $('.request-sms-code').click(function (ev) {
 });
 ```
 
-Once you receive the code you follow using `.loginWithResourceOwner()` to login
+Once you receive the code you follow using `.login()` to authenticate the user using `phone` and `passcode`.
 
 ```js
-//submit the passcode to authenticate the phoneNumber
+//submit the passcode to authenticate the phone
 $('.submit-sms-code').click(function (ev) {
   ev.preventDefault();
 
-  auth0.loginWithResourceOwner({
-    username: $('.phone-input').val(),
-    password: $('.sms-code-input').val(),
-    connection: 'sms'
+  auth0.login({
+    phone: $('.phone-input').val(),
+    passcode: $('.sms-code-input').val()
   }, function (err, profile, id_token, access_token, state, refresh_token) {
     if (err) {
       alert("something went wrong: " + err.message);

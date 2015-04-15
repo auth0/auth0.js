@@ -1500,10 +1500,10 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
   }
 
   assert_required(options, 'apiToken');
-  assert_required(options, 'phoneNumber');
+  assert_required(options, 'phone');
 
   var apiToken = options.apiToken;
-  var phoneNumber = options.phoneNumber;
+  var phone = options.phone;
 
   return reqwest({
     url:          'https://' + this._domain + '/api/v2/users',
@@ -1514,7 +1514,7 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
       Authorization: 'Bearer ' + apiToken
     },
     data:         {
-      phone_number:   phoneNumber,
+      phone_number:   phone,
       connection:     'sms',
       email_verified: false
     }
