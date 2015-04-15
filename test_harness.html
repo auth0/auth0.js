@@ -10,6 +10,7 @@
   <!-- support -->
   <script src="/node_modules/mocha/mocha.js"></script>
   <script src="/node_modules/expect.js/expect.js"></script>
+  <script src="/node_modules/sinon/pkg/sinon-1.14.1.js"></script>
   <script src="/test/support/config.js"></script>
 
   <!-- libs -->
@@ -20,12 +21,13 @@
     mocha.timeout(60000);
     mocha.ui('bdd');
     mocha.reporter('html');
-    mocha.setup({ignoreLeaks: true});
+    mocha.setup({ ignoreLeaks: true });
   </script>
 
   <!-- tests -->
   <script src="/test/tests.js"></script>
   <script src="/test/user-and-pass.tests.js"></script>
+  <script src="/test/sms.tests.js"></script>
   <script src="/test/logout.js"></script>
 
   <!-- start -->

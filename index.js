@@ -2,9 +2,9 @@
  * Module dependencies.
  */
 
-var assert_required   = require('./assert_required');
-var base64_url_decode = require('./base64_url_decode');
-var is_array          = require('./is-array');
+var assert_required   = require('./lib/assert_required');
+var base64_url_decode = require('./lib/base64_url_decode');
+var is_array          = require('./lib/is-array');
 
 var qs                = require('qs');
 var xtend             = require('xtend');
@@ -15,9 +15,9 @@ var WinChan           = require('winchan');
 var jsonp             = require('jsonp');
 var jsonpOpts         = { param: 'cbx', timeout: 8000, prefix: '__auth0jp' };
 
-var use_jsonp         = require('./use_jsonp');
-var LoginError        = require('./LoginError');
-var json_parse        = require('./json-parse');
+var use_jsonp         = require('./lib/use_jsonp');
+var LoginError        = require('./lib/LoginError');
+var json_parse        = require('./lib/json-parse');
 
 /**
  * Check if running in IE.
@@ -276,6 +276,9 @@ Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
  */
 
 Auth0.prototype.getProfile = function (id_token, callback) {
+  if ('function' !== typeof callback) {
+    throw new Error('A callback function is required');
+  }
   if (!id_token || typeof id_token !== 'string') {
     return callback(new Error('Invalid token'));
   }
@@ -610,6 +613,11 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
   // By default, options.sso is true
   if (!checkIfSet(options, 'sso')) {
     options.sso = true;
+  }
+
+  if (typeof options.phone !== 'undefined' ||
+      typeof options.passcode !== 'undefined') {
+    return this.loginWithPhoneNumber(options, callback);
   }
 
   if (typeof options.username !== 'undefined' ||
@@ -1120,7 +1128,7 @@ Auth0.prototype._buildPopupWindow = function (options, url) {
  * Login with Username and Password
  *
  * @param {Object} options
- * @param {Fucntion} callback
+ * @param {Function} callback
  * @method loginWithUsernamePassword
  */
 
@@ -1205,6 +1213,40 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
       handleRequestError(err, return_error);
     }
   });
+};
+
+/**
+ * Login with phone number and passcode
+ *
+ * @param {Object} options
+ * @param {Function} callback
+ * @method loginWithPhoneNumber
+ */
+Auth0.prototype.loginWithPhoneNumber = function (options, callback) {
+
+  if ('function' !== typeof callback) {
+    throw new Error('callback is required for phone number authentication');
+  }
+
+  if (null == options.phone) {
+    throw new Error('phone is required for authentication');
+  }
+
+  if (null == options.passcode) {
+    throw new Error('passcode is required for authentication');
+  }
+
+  var opts = xtend({
+    connection: 'sms',
+    username: options.phone,
+    password: options.passcode
+  }, opts);
+
+  opts.sso = false;
+  delete opts.phone;
+  delete opts.passcode;
+
+  this.loginWithResourceOwner(opts, callback);
 };
 
 // TODO Document me
@@ -1349,10 +1391,12 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
  * Trigger logout redirect with
  * params from `query` object
  *
- * Examples:
+ * @example
  *
  *     auth0.logout();
  *     // redirects to -> 'https://yourapp.auth0.com/logout'
+ *
+ * @example
  *
  *     auth0.logout({returnTo: 'http://logout'});
  *     // redirects to -> 'https://yourapp.auth0.com/logout?returnTo=http://logout'
@@ -1372,11 +1416,14 @@ Auth0.prototype.logout = function (query) {
 /**
  * Get single sign on Data
  *
- * Examples:
+ * @example
+ *
  *     auth0.getSSOData(function (err, ssoData) {
  *       if (err) return console.log(err.message);
  *       expect(ssoData.sso).to.exist;
  *     });
+ *
+ * @example
  *
  *     auth0.getSSOData(false, fn);
  *
@@ -1408,7 +1455,7 @@ Auth0.prototype.getSSOData = function (withActiveDirectories, callback) {
 /**
  * Get all configured connections for a client
  *
- * Examples:
+ * @example
  *
  *     auth0.getConnections(function (err, conns) {
  *       if (err) return console.log(err.message);
@@ -1427,6 +1474,65 @@ Auth0.prototype.getSSOData = function (withActiveDirectories, callback) {
 
 Auth0.prototype.getConnections = function (callback) {
   return jsonp('https://' + this._domain + '/public/api/' + this._clientID + '/connections', jsonpOpts, callback);
+};
+
+/**
+ * Send SMS to do passwordless authentication
+ *
+ * @example
+ *
+ *     auth0.requestSMSCode(apiToken, phoneNumber, function (err, result) {
+ *       if (err) return console.log(err.message);
+ *       console.log(result);
+ *     });
+ *
+ * @method requestSMSCode
+ * @param {Object} options
+ * @param {Function} callback
+ */
+
+Auth0.prototype.requestSMSCode = function (options, callback) {
+  if ('object' !== typeof options) {
+    throw new Error('An options object is required');
+  }
+  if ('function' !== typeof callback) {
+    throw new Error('A callback function is required');
+  }
+
+  assert_required(options, 'apiToken');
+  assert_required(options, 'phone');
+
+  var apiToken = options.apiToken;
+  var phone = options.phone;
+
+  return reqwest({
+    url:          'https://' + this._domain + '/api/v2/users',
+    method:       'post',
+    type:         'json',
+    crossOrigin:  true,
+    headers:      {
+      Authorization: 'Bearer ' + apiToken
+    },
+    data:         {
+      phone_number:   phone,
+      connection:     'sms',
+      email_verified: false
+    }
+  })
+  .fail(function (err) {
+    try {
+      callback(JSON.parse(err.responseText));
+    } catch (e) {
+      var error = new Error(err.status + '(' + err.statusText + '): ' + err.responseText);
+      error.statusCode = err.status;
+      error.error = err.statusText;
+      error.message = err.responseText;
+      callback(error);
+    }
+  })
+  .then(function (result) {
+    callback(null, result);
+  });
 };
 
 /**
