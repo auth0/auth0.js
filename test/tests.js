@@ -14,141 +14,6 @@ describe('Auth0', function () {
     global.window.location.hash = '';
   });
 
-  describe('Constructor', function () {
-    it('should fail to construct without a clientID', function () {
-      expect(function () {
-        new Auth0({});
-      }).to.throwError(/clientID is required/);
-    });
-
-    it('should not fail to construct without a callbackURL', function () {
-      expect(function () {
-        new Auth0({clientID: '1123sadsd'});
-      }).not.to.throwError(/callbackURL is required/);
-    });
-
-    it('should fail to construct without a domain', function () {
-      expect(function () {
-        new Auth0({clientID: '1123sadsd', callbackURL: 'aaaa'});
-      }).to.throwError(/domain is required/);
-    });
-
-    it('should use constructor if called as function', function () {
-      var auth0 = Auth0;
-      var initialized_without_new = auth0({
-        clientID:    'aaaabcdefgh',
-        callbackURL: 'https://myapp.com/callback',
-        domain:      'aaa.auth0.com'
-      });
-
-      expect(initialized_without_new)
-        .to.be.an(Auth0);
-    });
-  });
-
-  describe('In redirect mode', function () {
-    it('should redirect to /authorize with google (callbackOnLocationHash: on)', function (done) {
-      var auth0 = new Auth0({
-        clientID:    'aaaabcdefgh',
-        domain:      'aaa.auth0.com',
-        callbackURL: 'https://myapp.com/callback',
-        callbackOnLocationHash: true
-      });
-
-      auth0._redirect = function (the_url) {
-        expect(the_url.split('?')[0])
-          .to.contain('https://aaa.auth0.com/authorize');
-
-        var parsed = {};
-        the_url.split('?')[1].replace(
-          new RegExp('([^?=&]+)(=([^&]*))?', 'g'),
-          function($0, $1, $2, $3) { parsed[$1] = decodeURIComponent($3); }
-        );
-
-        expect(parsed.response_type).to.equal('token');
-        expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
-        expect(parsed.client_id).to.equal('aaaabcdefgh');
-        expect(parsed.scope).to.equal('openid');
-        done();
-      };
-
-      auth0.login({ connection: 'google-oauth2' });
-    });
-
-  it('should disable phonegap by default', function () {
-    var auth0 = new Auth0({
-      clientID:    'aaaabcdefgh',
-      callbackURL: 'https://myapp.com/callback',
-      domain:      'aaa.auth0.com'
-    });
-
-    expect(auth0._useCordovaSocialPlugins).not.to.be.ok();
-  });
-
-    it('should redirect to /authorize with values set on login (overriding constructor)', function (done) {
-      var auth0 = new Auth0({
-        clientID:    'aaaabcdefgh',
-        domain:      'aaa.auth0.com',
-        callbackURL: 'http://fakeCallback.com',
-        callbackOnLocationHash: false
-      });
-
-      auth0._redirect = function (the_url) {
-        expect(the_url.split('?')[0])
-          .to.contain('https://aaa.auth0.com/authorize');
-
-        var parsed = {};
-        the_url.split('?')[1].replace(
-          new RegExp('([^?=&]+)(=([^&]*))?', 'g'),
-          function($0, $1, $2, $3) { parsed[$1] = decodeURIComponent($3); }
-        );
-
-        expect(parsed.response_type).to.equal('token');
-        expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
-        expect(parsed.client_id).to.equal('aaaabcdefgh');
-        expect(parsed.scope).to.equal('openid');
-        done();
-      };
-
-      auth0.login({
-        connection: 'google-oauth2',
-        callbackOnLocationHash: true,
-        callbackURL: 'https://myapp.com/callback'
-      });
-    });
-    it('should redirect to /authorize with google (callbackOnLocationHash: off)', function (done) {
-      var auth0 = new Auth0({
-        clientID:     'aaaabcdefgh',
-        callbackURL: 'https://myapp.com/callback',
-        domain:       'aaa.auth0.com'
-      });
-
-      auth0._redirect = function (the_url) {
-        expect(the_url.split('?')[0])
-          .to.contain('https://aaa.auth0.com/authorize');
-
-        var parsed = {};
-        the_url.split('?')[1].replace(
-          new RegExp('([^?=&]+)(=([^&]*))?', 'g'),
-          function($0, $1, $2, $3) { parsed[$1] = decodeURIComponent($3); }
-        );
-
-        expect(parsed.response_type).to.equal('code');
-        expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
-        expect(parsed.client_id).to.equal('aaaabcdefgh');
-        expect(parsed.scope).to.equal('openid');
-        done();
-      };
-
-      auth0.login({
-        connection: 'google-oauth2'
-      });
-    });
-
-  });
-
-
-
   it('should fail if auth0.login is called with {popup: true, callbackOnLocationHash: true} and without callback', function () {
     var auth0 = new Auth0({
       clientID:    'aaaabcdefgh',
@@ -173,7 +38,6 @@ describe('Auth0', function () {
     expect(function () {
       auth0.loginWithPopup({});
     }).to.throwError(/popup mode should receive a mandatory callback/);
-
   });
 
   it('should support to use signin as an alias for login', function () {
@@ -215,6 +79,155 @@ describe('Auth0', function () {
     auth0.login({
       connection: 'google-oauth2',
       popupOptions: {}
+    });
+  });
+
+  if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
+    it('should return empty SSO data after logout', function (done) {
+      forceLogout('aaa.auth0.com', function () {
+        var auth0 = new Auth0({
+          clientID:     'aaaabcdefgh',
+          callbackURL:  'https://myapp.com/callback',
+          domain:       'aaa.auth0.com'
+        });
+
+        auth0.getSSOData(function (err, ssoData) {
+          expect(ssoData.sso).to.eql(false);
+          done();
+        });
+      });
+    });
+  }
+
+  describe('Constructor', function () {
+    it('should fail to construct without a clientID', function () {
+      expect(function () {
+        new Auth0({});
+      }).to.throwError(/clientID is required/);
+    });
+
+    it('should not fail to construct without a callbackURL', function () {
+      expect(function () {
+        new Auth0({clientID: '1123sadsd'});
+      }).not.to.throwError(/callbackURL is required/);
+    });
+
+    it('should fail to construct without a domain', function () {
+      expect(function () {
+        new Auth0({clientID: '1123sadsd', callbackURL: 'aaaa'});
+      }).to.throwError(/domain is required/);
+    });
+
+    it('should use constructor if called as function', function () {
+      var auth0 = Auth0;
+      var initialized_without_new = auth0({
+        clientID:    'aaaabcdefgh',
+        callbackURL: 'https://myapp.com/callback',
+        domain:      'aaa.auth0.com'
+      });
+
+      expect(initialized_without_new).to.be.an(Auth0);
+    });
+  });
+
+  describe('In redirect mode', function () {
+    it('should redirect to /authorize with google (callbackOnLocationHash: on)', function (done) {
+      var auth0 = new Auth0({
+        clientID:    'aaaabcdefgh',
+        domain:      'aaa.auth0.com',
+        callbackURL: 'https://myapp.com/callback',
+        callbackOnLocationHash: true
+      });
+
+      auth0._redirect = function (the_url) {
+        expect(the_url.split('?')[0])
+          .to.contain('https://aaa.auth0.com/authorize');
+
+        var parsed = {};
+        the_url.split('?')[1].replace(
+          new RegExp('([^?=&]+)(=([^&]*))?', 'g'),
+          function($0, $1, $2, $3) { parsed[$1] = decodeURIComponent($3); }
+        );
+
+        expect(parsed.response_type).to.equal('token');
+        expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
+        expect(parsed.client_id).to.equal('aaaabcdefgh');
+        expect(parsed.scope).to.equal('openid');
+        done();
+      };
+
+      auth0.login({ connection: 'google-oauth2' });
+    });
+
+    it('should disable phonegap by default', function () {
+      var auth0 = new Auth0({
+        clientID:    'aaaabcdefgh',
+        callbackURL: 'https://myapp.com/callback',
+        domain:      'aaa.auth0.com'
+      });
+
+      expect(auth0._useCordovaSocialPlugins).not.to.be.ok();
+    });
+
+    it('should redirect to /authorize with values set on login (overriding constructor)', function (done) {
+      var auth0 = new Auth0({
+        clientID:    'aaaabcdefgh',
+        domain:      'aaa.auth0.com',
+        callbackURL: 'http://fakeCallback.com',
+        callbackOnLocationHash: false
+      });
+
+      auth0._redirect = function (the_url) {
+        expect(the_url.split('?')[0])
+          .to.contain('https://aaa.auth0.com/authorize');
+
+        var parsed = {};
+        the_url.split('?')[1].replace(
+          new RegExp('([^?=&]+)(=([^&]*))?', 'g'),
+          function($0, $1, $2, $3) { parsed[$1] = decodeURIComponent($3); }
+        );
+
+        expect(parsed.response_type).to.equal('token');
+        expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
+        expect(parsed.client_id).to.equal('aaaabcdefgh');
+        expect(parsed.scope).to.equal('openid');
+        done();
+      };
+
+      auth0.login({
+        connection: 'google-oauth2',
+        callbackOnLocationHash: true,
+        callbackURL: 'https://myapp.com/callback'
+      });
+    });
+
+    it('should redirect to /authorize with google (callbackOnLocationHash: off)', function (done) {
+      var auth0 = new Auth0({
+        clientID:     'aaaabcdefgh',
+        callbackURL: 'https://myapp.com/callback',
+        domain:       'aaa.auth0.com'
+      });
+
+      auth0._redirect = function (the_url) {
+        expect(the_url.split('?')[0])
+          .to.contain('https://aaa.auth0.com/authorize');
+
+        var parsed = {};
+        the_url.split('?')[1].replace(
+          new RegExp('([^?=&]+)(=([^&]*))?', 'g'),
+          function($0, $1, $2, $3) { parsed[$1] = decodeURIComponent($3); }
+        );
+
+        expect(parsed.response_type).to.equal('code');
+        expect(parsed.redirect_uri).to.equal('https://myapp.com/callback');
+        expect(parsed.client_id).to.equal('aaaabcdefgh');
+        expect(parsed.scope).to.equal('openid');
+        done();
+      };
+
+      auth0.login({
+        connection: 'google-oauth2'
+      });
     });
   });
 
@@ -444,97 +457,6 @@ describe('Auth0', function () {
     });
   });
 
-  describe('requestSMSCode', function () {
-
-    var domain = 'aaa.auth0.com';
-
-    var auth0 = new Auth0({
-      clientID:     'aaaabcdefgh',
-      callbackURL:  'https://myapp.com/callback',
-      domain:       domain
-    });
-
-    var server;
-
-    beforeEach(function () {
-      server = sinon.fakeServer.create();
-    });
-
-    afterEach(function () {
-      server.restore();
-    });
-
-    var apiToken = 'aaaabcdefgh';
-    var phoneNumber = '+5491122334455';
-
-    it('should throw if no arguments are passed', function () {
-      expect(function () {
-        auth0.requestSMSCode();
-      }).to.throwError('An options object is required');
-    });
-
-    it('should throw if no options are passed', function () {
-      expect(function () {
-        auth0.requestSMSCode(undefined, function() {});
-      }).to.throwError('An options object is required');
-    });
-
-    it('should throw if no callback is passed', function () {
-      expect(function () {
-        auth0.requestSMSCode({ apiToken: apiToken, phoneNumber: phoneNumber });
-      }).to.throwError('A callback function is required');
-    });
-
-    it('should throw if options has no property apiToken', function () {
-      expect(function () {
-        auth0.requestSMSCode({ phoneNumber: phoneNumber });
-      }).to.throwError('apiToken is required.');
-    });
-
-    it('should throw if options has no property phoneNumber', function () {
-      expect(function () {
-        auth0.requestSMSCode({ apiToken: apiToken });
-      }).to.throwError('phoneNumber is required.');
-    });
-
-    it('should send sms successfully', function (done) {
-      server.respondWith('POST', 'https://' + domain + '/api/v2/users', [
-        200,
-        { 'Content-Type': 'application/json' },
-        '{}'
-      ]);
-
-      auth0.requestSMSCode({ apiToken: apiToken, phoneNumber: phoneNumber }, function (err) {
-        expect(err).to.be(null);
-        done();
-      });
-
-      server.respond();
-    });
-
-    it('should fail using invalid phone number', function (done) {
-      server.respondWith('POST', 'https://' + domain + '/api/v2/users', [
-        400,
-        { 'Content-Type': 'application/json' },
-        '{"statusCode":400,"error":"Bad Request","message":"The \'To\' number 541234 is not a valid phone number."}'
-      ]);
-
-      auth0.requestSMSCode({ apiToken: apiToken, phoneNumber: '+541234' }, function (err) {
-        expect(err).not.to.be(null);
-        expect(err).to.have.property('statusCode');
-        expect(err).to.have.property('error');
-        expect(err).to.have.property('message');
-        expect(err.statusCode).to.be(400);
-        expect(err.error).to.be('Bad Request');
-        expect(err.message).to.be('The \'To\' number 541234 is not a valid phone number.');
-        done();
-      });
-
-      server.respond();
-    });
-
-  });
-
   describe('getDelegationToken', function () {
     var auth0 = Auth0({
       domain:      'samples.auth0.com',
@@ -653,22 +575,4 @@ describe('Auth0', function () {
       expect(queryString).to.equal('connection_scope=grant1%2Cgrant2%2Cgrant3');
     });
   });
-
-  if (!navigator.userAgent.match(/iPad|iPhone|iPod/g)) {
-    it('should return empty SSO data after logout', function (done) {
-      forceLogout('aaa.auth0.com', function () {
-        var auth0 = new Auth0({
-          clientID:     'aaaabcdefgh',
-          callbackURL:  'https://myapp.com/callback',
-          domain:       'aaa.auth0.com'
-        });
-
-        auth0.getSSOData(function (err, ssoData) {
-          expect(ssoData.sso).to.eql(false);
-          done();
-        });
-      });
-    });
-  }
-
 });

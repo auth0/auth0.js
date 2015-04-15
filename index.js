@@ -615,6 +615,11 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
     options.sso = true;
   }
 
+  if (typeof options.phone !== 'undefined' ||
+      typeof options.passcode !== 'undefined') {
+    return this.loginWithPhoneNumber(options, callback);
+  }
+
   if (typeof options.username !== 'undefined' ||
       typeof options.email !== 'undefined') {
     return this.loginWithUsernamePassword(options, callback);
@@ -1208,6 +1213,40 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
       handleRequestError(err, return_error);
     }
   });
+};
+
+/**
+ * Login with phone number and passcode
+ *
+ * @param {Object} options
+ * @param {Function} callback
+ * @method loginWithPhoneNumber
+ */
+Auth0.prototype.loginWithPhoneNumber = function (options, callback) {
+
+  if ('function' !== typeof callback) {
+    throw new Error('callback is required for phone number authentication');
+  }
+
+  if (null == options.phone) {
+    throw new Error('phone is required for authentication');
+  }
+
+  if (null == options.passcode) {
+    throw new Error('passcode is required for authentication');
+  }
+
+  var opts = xtend({
+    connection: 'sms',
+    username: options.phone,
+    password: options.passcode
+  }, opts);
+
+  opts.sso = false;
+  delete opts.phone;
+  delete opts.passcode;
+
+  this.loginWithResourceOwner(opts, callback);
 };
 
 // TODO Document me
