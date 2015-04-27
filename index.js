@@ -459,6 +459,9 @@ Auth0.prototype.signup = function (options, callback) {
   }
 
   function success () {
+    if (popup && popup.kill) {
+      popup.kill();
+    }
     if ('auto_login' in options && !options.auto_login) {
       if (callback) {
         callback();
