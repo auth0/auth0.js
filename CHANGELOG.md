@@ -1,3 +1,25 @@
+## [6.3.0] - 2015-04-15
+
+### Added
+
+ - [sms] Added SMS authentication ([docs](https://github.com/auth0/auth0.js#passwordless-authentication-with-sms)) (`ivancevich - cristiandouce`)
+  https://github.com/auth0/auth0.js/commit/7af1c105b9470ada7ac28f780342513d55f2b502
+  https://github.com/auth0/auth0.js/commit/2836d0d0222ba4fef7a270cf9520671fdaf087dd
+  https://github.com/auth0/auth0.js/commit/95e282c922362ab68ea29ef5f5de6127ebe44882
+  https://github.com/auth0/auth0.js/commit/3de0408888bfa952f28ff9f2465912476aebc874
+  https://github.com/auth0/auth0.js/commit/27b53cc04180ec83e273082e9082e08f45dc9b02
+  https://github.com/auth0/auth0.js/commit/d6a239758fdcf7b1911ebcc577f26d20068a6194
+  https://github.com/auth0/auth0.js/commit/0452ba4b10aeae7bf67eaf3c2f7201e18fbe7e94
+  https://github.com/auth0/auth0.js/commit/037605cae5d5b334e99ef308d3b1c393ea9a0f4b
+  https://github.com/auth0/auth0.js/commit/e560f0c857b6b9709257271871b87635615fda7e
+  https://github.com/auth0/auth0.js/commit/82ea2573ef876200d358c7706d083b77cddfb563
+  https://github.com/auth0/auth0.js/commit/6bbdc74fd3a9485947137d202d111ed444bdcd99
+  https://github.com/auth0/auth0.js/commit/68dbacea12dc3a0e68246c833c64610f28371b60
+  https://github.com/auth0/auth0.js/commit/2c4170eff747818656f920dad6cea4ce6f786036
+  https://github.com/auth0/auth0.js/commit/5e3df9151b2273bea9a320a7c35ee04e5c5b767f
+  https://github.com/auth0/auth0.js/commit/32c782f02661e9a53ecc78fe6e0da3bf728eacff
+  https://github.com/auth0/auth0.js/commit/5aea2aa7b48c167264e63c441c51f5db2cd54577
+  https://github.com/auth0/auth0.js/commit/8f34c789fadafa3d74bfd18ab6cc4f72f7fd1280
 
 ## [6.2.0] - 2015-04-07
 
