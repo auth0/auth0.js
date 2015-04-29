@@ -15,9 +15,10 @@ var WinChan           = require('winchan');
 var jsonp             = require('jsonp');
 var jsonpOpts         = { param: 'cbx', timeout: 8000, prefix: '__auth0jp' };
 
-var use_jsonp         = require('./lib/use_jsonp');
-var LoginError        = require('./lib/LoginError');
+var same_origin       = require('./lib/same-origin');
 var json_parse        = require('./lib/json-parse');
+var LoginError        = require('./lib/LoginError');
+var use_jsonp         = require('./lib/use_jsonp');
 
 /**
  * Check if running in IE.
@@ -225,46 +226,51 @@ Auth0.prototype._configureOfflineMode = function(options) {
 
 Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
 
-  if (profile && !profile.user_id) { // the scope was just openid
-    var self = this;
-    var url = 'https://' + self._domain + '/tokeninfo?';
+  if (!(profile && !profile.user_id)) {
+    return callback(null, profile);
+  }
 
-    var fail = function (status, description) {
-      var error = new Error(status + ': ' + (description || ''));
+  // the scope was just openid
+  var self = this;
+  var protocol = 'https:';
+  var domain = this._domain;
+  var endpoint = '/tokeninfo';
+  var url = protocol + '//' + domain + endpoint;
 
-      // These two properties are added for compatibility with old versions (no Error instance was returned)
-      error.error = status;
-      error.error_description = description;
+  var fail = function (status, description) {
+    var error = new Error(status + ': ' + (description || ''));
 
-      callback(error);
-    };
+    // These two properties are added for compatibility with old versions (no Error instance was returned)
+    error.error = status;
+    error.error_description = description;
 
-    if (this._useJSONP) {
-      return jsonp(url + qs.stringify({id_token: id_token}), jsonpOpts, function (err, resp) {
-        if (err) {
-          return fail(0, err.toString());
-        }
+    callback(error);
+  };
 
-        return resp.status === 200 ?
-          callback(null, resp.user) :
-          fail(resp.status, resp.error);
-      });
-    }
+  if (this._useJSONP) {
+    return jsonp(url + '?' + qs.stringify({id_token: id_token}), jsonpOpts, function (err, resp) {
+      if (err) {
+        return fail(0, err.toString());
+      }
 
-    return reqwest({
-      url:          url,
-      method:       'post',
-      type:         'json',
-      crossOrigin:  true,
-      data:         {id_token: id_token}
-    }).fail(function (err) {
-      fail(err.status, err.responseText);
-    }).then(function (userinfo) {
-      callback(null, userinfo);
+      return resp.status === 200 ?
+        callback(null, resp.user) :
+        fail(resp.status, resp.error);
     });
   }
 
-  callback(null, profile);
+  return reqwest({
+    url:          same_origin(protocol, domain) ? endpoint : url,
+    method:       'post',
+    type:         'json',
+    crossOrigin:  !same_origin(protocol, domain),
+    data:         {id_token: id_token}
+  }).fail(function (err) {
+    fail(err.status, err.responseText);
+  }).then(function (userinfo) {
+    callback(null, userinfo);
+  });
+
 };
 
 /**
@@ -295,7 +301,11 @@ Auth0.prototype.getProfile = function (id_token, callback) {
  */
 
 Auth0.prototype.validateUser = function (options, callback) {
-  var endpoint = 'https://' + this._domain + '/public/api/users/validate_userpassword';
+  var protocol = 'https:';
+  var domain = this._domain;
+  var endpoint = '/public/api/users/validate_userpassword';
+  var url = protocol + '//' + domain + endpoint;
+
   var query = xtend(
     options,
     {
@@ -304,7 +314,7 @@ Auth0.prototype.validateUser = function (options, callback) {
     });
 
   if (this._useJSONP) {
-    return jsonp(endpoint + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
+    return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
       if (err) {
         return callback(err);
       }
@@ -316,11 +326,11 @@ Auth0.prototype.validateUser = function (options, callback) {
   }
 
   reqwest({
-    url:     endpoint,
+    url:     same_origin(protocol, domain) ? endpoint : url,
     method:  'post',
     type:    'text',
     data:    query,
-    crossOrigin: true,
+    crossOrigin: !same_origin(protocol, domain),
     error: function (err) {
       if (err.status !== 404) { return callback(new Error(err.responseText)); }
       callback(null, false);
@@ -482,8 +492,13 @@ Auth0.prototype.signup = function (options, callback) {
     throw error;
   }
 
+  var protocol = 'https:';
+  var domain = this._domain;
+  var endpoint = '/dbconnections/signup';
+  var url = protocol + '//' + domain + endpoint;
+
   if (this._useJSONP) {
-    return jsonp('https://' + this._domain + '/dbconnections/signup?' + qs.stringify(query), jsonpOpts, function (err, resp) {
+    return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
       if (err) {
         return fail(0, err);
       }
@@ -494,12 +509,12 @@ Auth0.prototype.signup = function (options, callback) {
   }
 
   reqwest({
-    url:     'https://' + this._domain + '/dbconnections/signup',
+    url:     same_origin(protocol, domain) ? endpoint : url,
     method:  'post',
     type:    'html',
     data:    query,
     success: success,
-    crossOrigin: true,
+    crossOrigin: !same_origin(protocol, domain),
     error: function (err) {
       fail(err.status, err.responseText);
     }
@@ -532,8 +547,13 @@ Auth0.prototype.changePassword = function (options, callback) {
     }
   }
 
+  var protocol = 'https:';
+  var domain = this._domain;
+  var endpoint = '/dbconnections/change_password';
+  var url = protocol + '//' + domain + endpoint;
+
   if (this._useJSONP) {
-    return jsonp('https://' + this._domain + '/dbconnections/change_password?' + qs.stringify(query), jsonpOpts, function (err, resp) {
+    return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
       if (err) {
         return fail(0, err);
       }
@@ -544,11 +564,11 @@ Auth0.prototype.changePassword = function (options, callback) {
   }
 
   reqwest({
-    url:     'https://' + this._domain + '/dbconnections/change_password',
+    url:     same_origin(protocol, domain) ? endpoint : url,
     method:  'post',
     type:    'html',
     data:    query,
-    crossOrigin: true,
+    crossOrigin: !same_origin(protocol, domain),
     error: function (err) {
       fail(err.status, err.responseText);
     },
@@ -1002,7 +1022,11 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
 
   this._configureOfflineMode(query);
 
+  var protocol = 'https:';
+  var domain = this._domain;
   var endpoint = '/oauth/ro';
+  var url = protocol + '//' + domain + endpoint;
+
 
   function enrichGetProfile(resp, callback) {
     self.getProfile(resp.id_token, function (err, profile) {
@@ -1011,7 +1035,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
   }
 
   if (this._useJSONP) {
-    return jsonp('https://' + this._domain + endpoint + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
+    return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
       if (err) {
         return callback(err);
       }
@@ -1024,11 +1048,11 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
   }
 
   reqwest({
-    url:     'https://' + this._domain + endpoint,
+    url:     same_origin(protocol, domain) ? endpoint : url,
     method:  'post',
     type:    'json',
     data:    query,
-    crossOrigin: true,
+    crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
       enrichGetProfile(resp, callback);
     },
@@ -1054,7 +1078,10 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
       { client_id: this._clientID }
     ]);
 
+  var protocol = 'https:';
+  var domain = this._domain;
   var endpoint = '/oauth/access_token';
+  var url = protocol + domain + endpoint;
 
   function enrichGetProfile(resp, callback) {
     self.getProfile(resp.id_token, function (err, profile) {
@@ -1063,7 +1090,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   }
 
   if (this._useJSONP) {
-    return jsonp('https://' + this._domain + endpoint + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
+    return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
       if (err) {
         return callback(err);
       }
@@ -1076,11 +1103,11 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   }
 
   reqwest({
-    url:     'https://' + this._domain + endpoint,
+    url:     same_origin(protocol, domain) ? endpoint : url,
     method:  'post',
     type:    'json',
     data:    query,
-    crossOrigin: true,
+    crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
       enrichGetProfile(resp, callback);
     },
@@ -1176,10 +1203,13 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
 
   this._configureOfflineMode(query);
 
+  var protocol = 'https:';
+  var domain = this._domain;
   var endpoint = '/usernamepassword/login';
+  var url = protocol + '//' + domain + endpoint;
 
   if (this._useJSONP) {
-    return jsonp('https://' + this._domain + endpoint + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
+    return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
       if (err) {
         if (popup && popup.kill) { popup.kill(); }
         return callback(err);
@@ -1201,11 +1231,11 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
   }
 
   reqwest({
-    url:     'https://' + this._domain + endpoint,
+    url:     same_origin(protocol, domain) ? endpoint : url,
     method:  'post',
     type:    'html',
     data:    query,
-    crossOrigin: true,
+    crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
       self._renderAndSubmitWSFedForm(options, resp);
     },
@@ -1323,10 +1353,13 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
   delete query.targetClientId;
   delete query.api;
 
+  var protocol = 'https:';
+  var domain = this._domain;
   var endpoint = '/delegation';
+  var url = protocol + '//' + domain + endpoint;
 
   if (this._useJSONP) {
-    return jsonp('https://' + this._domain + endpoint + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
+    return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
       if (err) {
         return callback(err);
       }
@@ -1339,11 +1372,11 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
   }
 
   reqwest({
-    url:     'https://' + this._domain + endpoint,
+    url:     same_origin(protocol, domain) ? endpoint : url,
     method:  'post',
     type:    'json',
     data:    query,
-    crossOrigin: true,
+    crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
       callback(null, resp);
     },
@@ -1508,11 +1541,16 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
   var apiToken = options.apiToken;
   var phone = options.phone;
 
+  var protocol = 'https:';
+  var domain = this._domain;
+  var endpoint = '/api/v2/users';
+  var url = protocol + '//' + domain + endpoint;
+
   return reqwest({
-    url:          'https://' + this._domain + '/api/v2/users',
+    url:          same_origin(protocol, domain) ? endpoint : url,
     method:       'post',
     type:         'json',
-    crossOrigin:  true,
+    crossOrigin:  !same_origin(protocol, domain),
     headers:      {
       Authorization: 'Bearer ' + apiToken
     },
