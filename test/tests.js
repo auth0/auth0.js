@@ -128,6 +128,25 @@ describe('Auth0', function () {
 
       expect(initialized_without_new).to.be.an(Auth0);
     });
+
+    it('should set forceJSONP to the provided Boolean value', function(done) {
+      var auth0 = new Auth0({
+        clientID:    'aaaabcdefgh',
+        callbackURL: 'https://myapp.com/callback',
+        domain:      'aaa.auth0.com',
+        forceJSONP:  false
+      });
+      expect(auth0._useJSONP).to.be(false);
+
+      auth0 = new Auth0({
+        clientID:    'aaaabcdefgh',
+        callbackURL: 'https://myapp.com/callback',
+        domain:      'aaa.auth0.com',
+        forceJSONP:  true
+      });
+      expect(auth0._useJSONP).to.be(true);
+      done();
+    });
   });
 
   describe('In redirect mode', function () {
