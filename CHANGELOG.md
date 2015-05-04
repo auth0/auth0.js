@@ -1,3 +1,10 @@
+## [6.3.1] - 2015-04-27
+
+### Fixed
+
+ - [popup] Pop up is now closed when signing up successfully (`ivancevich`)
+  https://github.com/auth0/auth0.js/commit/77865c65eaa54017a94d13dd23da81c855a64634
+
 ## [6.3.0] - 2015-04-15
 
 ### Added
