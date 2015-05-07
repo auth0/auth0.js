@@ -1,3 +1,22 @@
+
+## [6.4.1] - 2015-05-07
+
+### Fixed
+
+ - [base64url] Fix incorrect base64 decode (only first `-` and `_` characters were replaced). (`wooorm`)
+  https://github.com/auth0/auth0.js/commit/5f6c98bf2d15356d657c58d68afeabb677324194
+
+
+## [6.4.0] - 2015-05-05
+
+### Changed
+
+ - [cors] Allow to override the useJSONP policy by disabling with `{forceJSONP: false}` in constructor options. (`cristiandouce`)
+  https://github.com/auth0/auth0.js/commit/8ff0529a444272fd1f6696a2bf1f02136dd67743
+ - [cors]  Only use crossOrigin flags when the origin differs as on the same domain security policies detail. (`cristiandouce`)
+  https://github.com/auth0/auth0.js/commit/8ff0529a444272fd1f6696a2bf1f02136dd67743
+
+
 ## [6.3.1] - 2015-04-27
 
 ### Fixed
