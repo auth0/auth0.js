@@ -63,7 +63,7 @@ Triggers the login on any of your active identity provider as follows:
   });
 
   //trigger login with an enterprise connection
-  $('.login-github').click(function () {
+  $('.login-microsoft').click(function () {
     auth0.login({
       connection: 'contoso.com'
     });
