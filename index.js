@@ -121,6 +121,14 @@ function handleRequestError(err, callback) {
 }
 
 /**
+ * join url from protocol
+ */
+
+function joinUrl(protocol, domain, endpoint) {
+  return protocol + '//' + domain + endpoint;
+}
+
+/**
  * Create an `Auth0` instance with `options`
  *
  * @class Auth0
@@ -235,7 +243,7 @@ Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/tokeninfo';
-  var url = protocol + '//' + domain + endpoint;
+  var url = joinUrl(protocol, domain, endpoint);
 
   var fail = function (status, description) {
     var error = new Error(status + ': ' + (description || ''));
@@ -304,7 +312,7 @@ Auth0.prototype.validateUser = function (options, callback) {
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/public/api/users/validate_userpassword';
-  var url = protocol + '//' + domain + endpoint;
+  var url = joinUrl(protocol, domain, endpoint);
 
   var query = xtend(
     options,
@@ -495,7 +503,7 @@ Auth0.prototype.signup = function (options, callback) {
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/dbconnections/signup';
-  var url = protocol + '//' + domain + endpoint;
+  var url = joinUrl(protocol, domain, endpoint);
 
   if (this._useJSONP) {
     return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
@@ -550,7 +558,7 @@ Auth0.prototype.changePassword = function (options, callback) {
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/dbconnections/change_password';
-  var url = protocol + '//' + domain + endpoint;
+  var url = joinUrl(protocol, domain, endpoint);
 
   if (this._useJSONP) {
     return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
@@ -631,7 +639,6 @@ Auth0.prototype._buildAuthorizationParameters = function(args, blacklist) {
  */
 
 Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
-
   // TODO Change this to a property named 'disableSSO' for consistency.
   // By default, options.sso is true
   if (!checkIfSet(options, 'sso')) {
@@ -662,7 +669,7 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
     { client_id: this._clientID, redirect_uri: this._getCallbackURL(options) }
   ]);
 
-  var url = 'https://' + this._domain + '/authorize?' + query;
+  var url = joinUrl('https:', this._domain, '/authorize?' + query);
 
   if (options.popup) {
     this._buildPopupWindow(options, url);
@@ -727,14 +734,14 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
     return;
   }
 
-  var mobileCallbackURL = 'https://' + this._domain + '/mobile';
+  var mobileCallbackURL = joinUrl('https:', this._domain, '/mobile');
   var self = this;
   var query = this._buildAuthorizeQueryString([
     this._getMode(options),
     options,
     { client_id: this._clientID, redirect_uri: mobileCallbackURL}]);
 
-    var popupUrl = 'https://' + this._domain + '/authorize?' + query;
+    var popupUrl = joinUrl('https:', this._domain, '/authorize?' + query);
 
     var popupOptions = xtend({location: 'yes'} ,
       options.popupOptions);
@@ -841,7 +848,7 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
     { client_id: this._clientID, owp: true }]);
 
 
-  var popupUrl = 'https://' + this._domain + '/authorize?' + query;
+  var popupUrl = joinUrl('https:', this._domain, '/authorize?' + query);
 
   var popupOptions = xtend(
     self._computePopupPosition({
@@ -1025,7 +1032,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/oauth/ro';
-  var url = protocol + '//' + domain + endpoint;
+  var url = joinUrl(protocol, domain, endpoint);
 
 
   function enrichGetProfile(resp, callback) {
@@ -1081,7 +1088,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/oauth/access_token';
-  var url = protocol + domain + endpoint;
+  var url = joinUrl(protocol, domain, endpoint);
 
   function enrichGetProfile(resp, callback) {
     self.getProfile(resp.id_token, function (err, profile) {
@@ -1206,7 +1213,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/usernamepassword/login';
-  var url = protocol + '//' + domain + endpoint;
+  var url = joinUrl(protocol, domain, endpoint);
 
   if (this._useJSONP) {
     return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
@@ -1356,7 +1363,7 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/delegation';
-  var url = protocol + '//' + domain + endpoint;
+  var url = joinUrl(protocol, domain, endpoint);
 
   if (this._useJSONP) {
     return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
@@ -1442,7 +1449,7 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
  */
 
 Auth0.prototype.logout = function (query) {
-  var url = 'https://' + this._domain + '/logout';
+  var url = joinUrl('https:', this._domain, '/logout');
   if (query) {
     url += '?' + qs.stringify(query);
   }
@@ -1474,7 +1481,7 @@ Auth0.prototype.getSSOData = function (withActiveDirectories, callback) {
     withActiveDirectories = false;
   }
 
-  var url = 'https://' + this._domain + '/user/ssodata';
+  var url = joinUrl('https:', this._domain, '/user/ssodata');
 
   if (withActiveDirectories) {
     url += '?' + qs.stringify({ldaps: 1, client_id: this._clientID});
@@ -1544,7 +1551,7 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/api/v2/users';
-  var url = protocol + '//' + domain + endpoint;
+  var url = joinUrl(protocol, domain, endpoint);
 
   return reqwest({
     url:          same_origin(protocol, domain) ? endpoint : url,
