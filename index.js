@@ -397,7 +397,7 @@ Auth0.prototype.parseHash = function (hash) {
   }
   if(!hash.match(/access_token/)) {
     // Invalid hash URL
-    return null;
+    return {};
   }
   hash = hash.substr(1).replace(/^\//, '');
   parsed_qs = qs.parse(hash);

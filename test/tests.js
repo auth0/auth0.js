@@ -351,7 +351,7 @@ describe('Auth0', function () {
     });
 
 
-    it('should return null if the hash URL doesn\'t contain access_token/error', function () {
+    it('should return empty object if the hash URL doesn\'t contain access_token/error', function () {
       var hash = '#myfooobarrr=123';
 
       var auth0 = new Auth0({
@@ -360,7 +360,7 @@ describe('Auth0', function () {
         domain:       'aaa.auth0.com'
       });
 
-      expect(auth0.parseHash(hash)).to.eql(null);
+      expect(auth0.parseHash(hash)).to.eql({});
 
     });
 
