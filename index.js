@@ -143,7 +143,10 @@ function Auth0 (options) {
   assert_required(options, 'clientID');
   assert_required(options, 'domain');
 
-  this._useJSONP = null != options.forceJSONP ? !!options.forceJSONP : use_jsonp();
+  this._useJSONP = null != options.forceJSONP ?
+                    !!options.forceJSONP :
+                    use_jsonp() && !same_origin('https:', options.domain);
+
   this._clientID = options.clientID;
   this._callbackURL = options.callbackURL || document.location.href;
   this._domain = options.domain;
