@@ -1,3 +1,9 @@
+## [6.4.1] - 2015-05-18
+
+### Fixed
+
+ - [cors] do not use jsonp on same origin
+  https://github.com/auth0/auth0.js/commit/5f6c98bf2d15356d657c58d68afeabb677324194
 
 ## [6.4.1] - 2015-05-07
 
