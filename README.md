@@ -365,6 +365,23 @@ Method `getSSOData` fetches Single Sign-On information:
   });
 ```
 
+The returned `ssoData` object will contain the following fields, for example:
+
+```js
+{
+  sso: true,
+  sessionClients: [
+    "jGMow0KO3WDJELW8XIxolqb1XIitjkYL"
+  ],
+  lastUsedClientID: "jGMow0KO3WDJELW8XIxolqb1XIitjkYL",
+  lastUsedUsername: "alice@example.com",
+  lastUsedConnection: {
+    name: "Username-Password-Authentication",
+    strategy: "auth0"
+  }
+}
+```
+
 Load Active Directory data if available (Kerberos):
 
 ```js
