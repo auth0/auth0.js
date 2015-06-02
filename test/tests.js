@@ -248,6 +248,23 @@ describe('Auth0', function () {
         connection: 'google-oauth2'
       });
     });
+
+    it('contains client version information within authorize redirection url', function (done) {
+      var auth0 = new Auth0({
+        clientID:     'aaaabcdefgh',
+        callbackURL: 'https://myapp.com/callback',
+        domain:       'aaa.auth0.com'
+      });
+
+      auth0._redirect = function (url) {
+        expect(url).to.contain('auth0Client=');
+        done();
+      };
+
+      auth0.login({
+        connection: 'google-oauth2'
+      });
+    })
   });
 
   describe('parseHash', function () {
