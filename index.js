@@ -2,8 +2,8 @@
  * Module dependencies.
  */
 
+var Base64Url         = require('./lib/base64_url');
 var assert_required   = require('./lib/assert_required');
-var base64_url_decode = require('./lib/base64_url_decode');
 var is_array          = require('./lib/is-array');
 
 var qs                = require('qs');
@@ -166,6 +166,14 @@ function Auth0 (options) {
 Auth0.version = require('package.version');
 
 /**
+ * Export client name
+ *
+ * @property {String} name
+ */
+
+Auth0.client = 'auth0.js';
+
+/**
  * Redirect current location to `url`
  *
  * @param {String} url
@@ -185,6 +193,11 @@ Auth0.prototype._getCallbackURL = function(options) {
   return (options && typeof options.callbackURL !== 'undefined') ?
     options.callbackURL : this._callbackURL;
 };
+
+Auth0.prototype._getClientInfoString = function () {
+  var clientInfo = JSON.stringify({name: Auth0.client, version: Auth0.version});
+  return Base64Url.encode(clientInfo);
+}
 
 /**
  * Renders and submits a WSFed form
@@ -361,7 +374,7 @@ Auth0.prototype.validateUser = function (options, callback) {
 
 Auth0.prototype.decodeJwt = function (jwt) {
   var encoded = jwt && jwt.split('.')[1];
-  return json_parse(base64_url_decode(encoded));
+  return json_parse(Base64Url.decode(encoded));
 };
 
 /**
@@ -669,7 +682,11 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
   var query = this._buildAuthorizeQueryString([
     this._getMode(options),
     options,
-    { client_id: this._clientID, redirect_uri: this._getCallbackURL(options) }
+    {
+      client_id: this._clientID,
+      redirect_uri: this._getCallbackURL(options),
+      auth0Client: this._getClientInfoString()
+    }
   ]);
 
   var url = joinUrl('https:', this._domain, '/authorize?' + query);
@@ -742,7 +759,11 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
   var query = this._buildAuthorizeQueryString([
     this._getMode(options),
     options,
-    { client_id: this._clientID, redirect_uri: mobileCallbackURL}]);
+    {
+      client_id: this._clientID,
+      redirect_uri: mobileCallbackURL,
+      auth0Client: this._getClientInfoString()
+    }]);
 
     var popupUrl = joinUrl('https:', this._domain, '/authorize?' + query);
 
@@ -848,7 +869,11 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
   var query = this._buildAuthorizeQueryString([
     this._getMode(options),
     options,
-    { client_id: this._clientID, owp: true }]);
+    {
+      client_id: this._clientID,
+      owp: true,
+      auth0Client: this._getClientInfoString()
+    }]);
 
 
   var popupUrl = joinUrl('https:', this._domain, '/authorize?' + query);
@@ -1027,7 +1052,8 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
     {
       client_id:    this._clientID,
       username:     trim(options.username || options.email || ''),
-      grant_type:   'password'
+      grant_type:   'password',
+      auth0Client:  this._getClientInfoString()
     });
 
   this._configureOfflineMode(query);
@@ -1085,7 +1111,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   var query = this._buildAuthorizationParameters([
       { scope: 'openid' },
       options,
-      { client_id: this._clientID }
+      { client_id: this._clientID, auth0Client: this._getClientInfoString() }
     ]);
 
   var protocol = 'https:';
@@ -1208,7 +1234,8 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
       client_id: this._clientID,
       redirect_uri: this._getCallbackURL(options),
       username: trim(options.username || options.email || ''),
-      tenant: this._domain.split('.')[0]
+      tenant: this._domain.split('.')[0],
+      auth0Client: this._getClientInfoString()
     });
 
   this._configureOfflineMode(query);
