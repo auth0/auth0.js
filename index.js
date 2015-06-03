@@ -166,6 +166,14 @@ function Auth0 (options) {
 Auth0.version = require('package.version');
 
 /**
+ * Export client name
+ *
+ * @property {String} name
+ */
+
+Auth0.client = 'auth0.js';
+
+/**
  * Redirect current location to `url`
  *
  * @param {String} url
@@ -187,7 +195,7 @@ Auth0.prototype._getCallbackURL = function(options) {
 };
 
 Auth0.prototype._getClientInfoString = function () {
-  var clientInfo = JSON.stringify({name: 'auth0.js', version: Auth0.version});
+  var clientInfo = JSON.stringify({name: Auth0.client, version: Auth0.version});
   return Base64Url.encode(clientInfo);
 }
 

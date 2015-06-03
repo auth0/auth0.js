@@ -14,6 +14,22 @@ describe('Auth0', function () {
     global.window.location.hash = '';
   });
 
+  it('has a semver tag', function (done) {
+    expect(Auth0.version).to.be.a('string');
+    done();
+  });
+
+  it('has a default client name', function (done) {
+    expect(Auth0.client).to.be.equal('auth0.js');
+    done();
+  });
+
+  it('can have the client name renamed', function (done) {
+    Auth0.client = 'auth0.js (lock)'
+    expect(Auth0.client).to.be.equal('auth0.js (lock)');
+    done();
+  });
+
   it('should fail if auth0.login is called with {popup: true, callbackOnLocationHash: true} and without callback', function () {
     var auth0 = new Auth0({
       clientID:    'aaaabcdefgh',
