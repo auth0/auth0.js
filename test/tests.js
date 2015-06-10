@@ -19,14 +19,41 @@ describe('Auth0', function () {
     done();
   });
 
-  it('has a default client name', function (done) {
-    expect(Auth0.client).to.be.equal('auth0.js');
+  it('has a client information', function (done) {
+    expect(Auth0.clientInfo).to.be.a('object');
     done();
   });
 
-  it('can have the client name renamed', function (done) {
-    Auth0.client = 'auth0.js (lock)'
-    expect(Auth0.client).to.be.equal('auth0.js (lock)');
+  it('sends client information by default', function (done) {
+    var auth0 = new Auth0({
+      clientID:     'aaaabcdefgh',
+      callbackURL: 'https://myapp.com/callback',
+      domain:       'aaa.auth0.com'
+    });
+
+    auth0._redirect = function (the_url) {
+      expect(the_url).to.contain('auth0Client');
+    };
+
+    auth0.login({});
+
+    done();
+  });
+
+  it('should not send client information when disabled', function (done) {
+    var auth0 = new Auth0({
+      clientID:     'aaaabcdefgh',
+      callbackURL: 'https://myapp.com/callback',
+      domain:       'aaa.auth0.com',
+      sendSDKClientInfo: false
+    });
+
+    auth0._redirect = function (the_url) {
+      expect(the_url).to.not.contain('auth0Client');
+    };
+
+    auth0.login({});
+
     done();
   });
 

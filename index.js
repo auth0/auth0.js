@@ -155,6 +155,7 @@ function Auth0 (options) {
     facebook: this._phonegapFacebookLogin
   };
   this._useCordovaSocialPlugins = false || options.useCordovaSocialPlugins;
+  this._sendClientInfo = null != options.sendSDKClientInfo ? options.sendSDKClientInfo : true;
 }
 
 /**
@@ -166,12 +167,14 @@ function Auth0 (options) {
 Auth0.version = require('package.version');
 
 /**
- * Export client name
+ * Export client info object
  *
- * @property {String} name
+ *
+ * @property {Hash}
  */
 
-Auth0.client = 'auth0.js';
+Auth0.clientInfo = { name: 'auth0.js', version: Auth0.version };
+
 
 /**
  * Redirect current location to `url`
@@ -195,9 +198,15 @@ Auth0.prototype._getCallbackURL = function(options) {
 };
 
 Auth0.prototype._getClientInfoString = function () {
-  var clientInfo = JSON.stringify({name: Auth0.client, version: Auth0.version});
+  var clientInfo = JSON.stringify(Auth0.clientInfo);
   return Base64Url.encode(clientInfo);
-}
+};
+
+Auth0.prototype._getClientInfoHeader = function () {
+  return {
+    'Auth0-Client': this._getClientInfoString()
+  };
+};
 
 /**
  * Renders and submits a WSFed form
@@ -629,6 +638,9 @@ Auth0.prototype._buildAuthorizationParameters = function(args, blacklist) {
   // Adds offline mode to the query
   this._configureOfflineMode(query);
 
+  // Adds client SDK information (when enabled)
+  if ( this._sendClientInfo ) query['auth0Client'] = this._getClientInfoString();
+
   // Elements to filter from query string
   blacklist = blacklist || ['popup', 'popupOptions'];
 
@@ -679,15 +691,16 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
     return this.loginWithPopup(options, callback);
   }
 
-  var query = this._buildAuthorizeQueryString([
+  var qs = [
     this._getMode(options),
     options,
     {
       client_id: this._clientID,
-      redirect_uri: this._getCallbackURL(options),
-      auth0Client: this._getClientInfoString()
+      redirect_uri: this._getCallbackURL(options)
     }
-  ]);
+  ];
+
+  var query = this._buildAuthorizeQueryString(qs);
 
   var url = joinUrl('https:', this._domain, '/authorize?' + query);
 
@@ -756,77 +769,83 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
 
   var mobileCallbackURL = joinUrl('https:', this._domain, '/mobile');
   var self = this;
-  var query = this._buildAuthorizeQueryString([
+  var qs = [
     this._getMode(options),
     options,
     {
       client_id: this._clientID,
-      redirect_uri: mobileCallbackURL,
-      auth0Client: this._getClientInfoString()
-    }]);
+      redirect_uri: mobileCallbackURL
+    }
+  ];
 
-    var popupUrl = joinUrl('https:', this._domain, '/authorize?' + query);
+  if ( this._sendClientInfo ) {
+    qs.push({ auth0Client: this._getClientInfoString() });
+  }
 
-    var popupOptions = xtend({location: 'yes'} ,
-      options.popupOptions);
+  var query = this._buildAuthorizeQueryString(qs);
 
-    // This wasn't send before so we don't send it now either
-    delete popupOptions.width;
-    delete popupOptions.height;
+  var popupUrl = joinUrl('https:', this._domain, '/authorize?' + query);
+
+  var popupOptions = xtend({location: 'yes'} ,
+    options.popupOptions);
+
+  // This wasn't send before so we don't send it now either
+  delete popupOptions.width;
+  delete popupOptions.height;
 
 
 
-    var ref = window.open(popupUrl, '_blank', stringifyPopupSettings(popupOptions));
-    var answered = false;
+  var ref = window.open(popupUrl, '_blank', stringifyPopupSettings(popupOptions));
+  var answered = false;
 
-    function errorHandler(event) {
-      if (answered) { return; }
-      callback(new Error(event.message), null, null, null, null);
+  function errorHandler(event) {
+    if (answered) { return; }
+    callback(new Error(event.message), null, null, null, null);
+    answered = true;
+    return ref.close();
+  }
+
+  function startHandler(event) {
+    if (answered) { return; }
+
+    if ( event.url && !(event.url.indexOf(mobileCallbackURL + '#') === 0 ||
+                       event.url.indexOf(mobileCallbackURL + '?') === 0)) { return; }
+
+    var result = self.parseHash(event.url.slice(mobileCallbackURL.length));
+
+    if (!result) {
+      callback(new Error('Error parsing hash'), null, null, null, null);
       answered = true;
       return ref.close();
     }
 
-    function startHandler(event) {
-      if (answered) { return; }
-
-      if ( event.url && !(event.url.indexOf(mobileCallbackURL + '#') === 0 ||
-                         event.url.indexOf(mobileCallbackURL + '?') === 0)) { return; }
-
-      var result = self.parseHash(event.url.slice(mobileCallbackURL.length));
-
-      if (!result) {
-        callback(new Error('Error parsing hash'), null, null, null, null);
-        answered = true;
-        return ref.close();
-      }
-
-      if (result.id_token) {
-        self.getProfile(result.id_token, function (err, profile) {
-          callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
-        });
-        answered = true;
-        return ref.close();
-      }
-
-      // Case where we've found an error
-      callback(new Error(result.err || result.error || 'Something went wrong'), null, null, null, null);
+    if (result.id_token) {
+      self.getProfile(result.id_token, function (err, profile) {
+        callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
+      });
       answered = true;
       return ref.close();
     }
 
-    function exitHandler() {
-      if (answered) { return; }
+    // Case where we've found an error
+    callback(new Error(result.err || result.error || 'Something went wrong'), null, null, null, null);
+    answered = true;
+    return ref.close();
+  }
 
-      callback(new Error('Browser window closed'), null, null, null, null);
+  function exitHandler() {
+    if (answered) { return; }
 
-      ref.removeEventListener('loaderror', errorHandler);
-      ref.removeEventListener('loadstart', startHandler);
-      ref.removeEventListener('exit', exitHandler);
-    }
+    callback(new Error('Browser window closed'), null, null, null, null);
 
-    ref.addEventListener('loaderror', errorHandler);
-    ref.addEventListener('loadstart', startHandler);
-    ref.addEventListener('exit', exitHandler);
+    ref.removeEventListener('loaderror', errorHandler);
+    ref.removeEventListener('loadstart', startHandler);
+    ref.removeEventListener('exit', exitHandler);
+  }
+
+  ref.addEventListener('loaderror', errorHandler);
+  ref.addEventListener('loadstart', startHandler);
+  ref.addEventListener('exit', exitHandler);
 
 };
 
@@ -866,15 +885,20 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
     throw new Error('popup mode should receive a mandatory callback');
   }
 
-  var query = this._buildAuthorizeQueryString([
+  var qs = [
     this._getMode(options),
     options,
     {
       client_id: this._clientID,
-      owp: true,
-      auth0Client: this._getClientInfoString()
-    }]);
+      owp: true
+    }
+  ];
 
+  if ( this._sendClientInfo ) {
+    qs.push({ auth0Client: this._getClientInfoString() });
+  }
+
+  var query = this._buildAuthorizeQueryString(qs);
 
   var popupUrl = joinUrl('https:', this._domain, '/authorize?' + query);
 
@@ -1052,8 +1076,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
     {
       client_id:    this._clientID,
       username:     trim(options.username || options.email || ''),
-      grant_type:   'password',
-      auth0Client:  this._getClientInfoString()
+      grant_type:   'password'
     });
 
   this._configureOfflineMode(query);
@@ -1063,6 +1086,9 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
   var endpoint = '/oauth/ro';
   var url = joinUrl(protocol, domain, endpoint);
 
+  if ( this._sendClientInfo && this._useJSONP ) {
+    query['auth0Client'] = this._getClientInfoString();
+  }
 
   function enrichGetProfile(resp, callback) {
     self.getProfile(resp.id_token, function (err, profile) {
@@ -1088,6 +1114,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
     method:  'post',
     type:    'json',
     data:    query,
+    headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
       enrichGetProfile(resp, callback);
@@ -1111,7 +1138,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   var query = this._buildAuthorizationParameters([
       { scope: 'openid' },
       options,
-      { client_id: this._clientID, auth0Client: this._getClientInfoString() }
+      { client_id: this._clientID }
     ]);
 
   var protocol = 'https:';
@@ -1143,6 +1170,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
     method:  'post',
     type:    'json',
     data:    query,
+    headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
       enrichGetProfile(resp, callback);
@@ -1234,8 +1262,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
       client_id: this._clientID,
       redirect_uri: this._getCallbackURL(options),
       username: trim(options.username || options.email || ''),
-      tenant: this._domain.split('.')[0],
-      auth0Client: this._getClientInfoString()
+      tenant: this._domain.split('.')[0]
     });
 
   this._configureOfflineMode(query);
@@ -1272,6 +1299,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
     method:  'post',
     type:    'html',
     data:    query,
+    headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
       self._renderAndSubmitWSFedForm(options, resp);
