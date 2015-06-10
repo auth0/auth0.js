@@ -14,6 +14,7 @@
   "scripts": {
     "test": "grunt integration",
     "example": "grunt example",
+    "phantom": "grunt phantom",
     "dev": "grunt dev"
   },
   "repository": {
