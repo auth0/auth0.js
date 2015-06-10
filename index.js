@@ -155,7 +155,7 @@ function Auth0 (options) {
     facebook: this._phonegapFacebookLogin
   };
   this._useCordovaSocialPlugins = false || options.useCordovaSocialPlugins;
-  this._sendClientInfo = (typeof options.sendSDKClientInfo === 'undefined') ? true : options.sendSDKClientInfo;
+  this._sendClientInfo = null != options.sendSDKClientInfo ? options.sendSDKClientInfo : true;
 }
 
 /**
@@ -200,7 +200,13 @@ Auth0.prototype._getCallbackURL = function(options) {
 Auth0.prototype._getClientInfoString = function () {
   var clientInfo = JSON.stringify(Auth0.clientInfo);
   return Base64Url.encode(clientInfo);
-}
+};
+
+Auth0.prototype._getClientInfoHeader = function () {
+  return {
+    'Auth0-Client': this._getClientInfoString()
+  };
+};
 
 /**
  * Renders and submits a WSFed form
@@ -632,6 +638,9 @@ Auth0.prototype._buildAuthorizationParameters = function(args, blacklist) {
   // Adds offline mode to the query
   this._configureOfflineMode(query);
 
+  // Adds client SDK information (when enabled)
+  if ( this._sendClientInfo ) query['auth0Client'] = this._getClientInfoString();
+
   // Elements to filter from query string
   blacklist = blacklist || ['popup', 'popupOptions'];
 
@@ -690,10 +699,6 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
       redirect_uri: this._getCallbackURL(options)
     }
   ];
-
-  if ( this._sendClientInfo ) {
-    qs.push({auth0Client: this._getClientInfoString()});
-  }
 
   var query = this._buildAuthorizeQueryString(qs);
 
@@ -1080,16 +1085,9 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
   var domain = this._domain;
   var endpoint = '/oauth/ro';
   var url = joinUrl(protocol, domain, endpoint);
-  var headers = {};
 
-  if ( this._sendClientInfo ) {
-    if ( this._useJSONP ) {
-      query['auth0Client'] = this._getClientInfoString();
-    } else {
-      headers = {
-        'Auth0-Client': this._getClientInfoString()
-      }
-    }
+  if ( this._sendClientInfo && this._useJSONP ) {
+    query['auth0Client'] = this._getClientInfoString();
   }
 
   function enrichGetProfile(resp, callback) {
@@ -1116,7 +1114,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
     method:  'post',
     type:    'json',
     data:    query,
-    headers: headers,
+    headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
       enrichGetProfile(resp, callback);
@@ -1147,17 +1145,6 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   var domain = this._domain;
   var endpoint = '/oauth/access_token';
   var url = joinUrl(protocol, domain, endpoint);
-  var headers = {};
-
-  if ( this._sendClientInfo ) {
-    if ( this._useJSONP ) {
-      query['auth0Client'] = this._getClientInfoString();
-    } else {
-      headers = {
-        'Auth0-Client': this._getClientInfoString()
-      }
-    }
-  }
 
   function enrichGetProfile(resp, callback) {
     self.getProfile(resp.id_token, function (err, profile) {
@@ -1183,7 +1170,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
     method:  'post',
     type:    'json',
     data:    query,
-    headers: headers,
+    headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
       enrichGetProfile(resp, callback);
@@ -1284,18 +1271,6 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
   var domain = this._domain;
   var endpoint = '/usernamepassword/login';
   var url = joinUrl(protocol, domain, endpoint);
-  var headers = {};
-
-  if ( this._sendClientInfo ) {
-    if ( this._useJSONP ) {
-      query['auth0Client'] = this._getClientInfoString();
-    } else {
-      headers = {
-        'Auth0-Client': this._getClientInfoString()
-      }
-    }
-  }
-
 
   if (this._useJSONP) {
     return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
@@ -1324,7 +1299,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
     method:  'post',
     type:    'html',
     data:    query,
-    headers: headers,
+    headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
       self._renderAndSubmitWSFedForm(options, resp);
