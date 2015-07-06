@@ -1646,7 +1646,7 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
  *
  * @example
  *
- *     auth0.requestPasswordlessCode({email: 'foo@bar.com'}, function (err, result) {
+ *     auth0.startPasswordless({email: 'foo@bar.com'}, function (err, result) {
  *       if (err) return console.log(err.message);
  *       console.log(result);
  *     });
