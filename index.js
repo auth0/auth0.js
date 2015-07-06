@@ -1642,6 +1642,66 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
 };
 
 /**
+ * Send Email to do passwordless authentication
+ *
+ * @example
+ *
+ *     auth0.requestPasswordlessCode({email: 'foo@bar.com'}, function (err, result) {
+ *       if (err) return console.log(err.message);
+ *       console.log(result);
+ *     });
+ *
+ * @method startPasswordless
+ * @param {Object} options
+ * @param {Function} callback
+ */
+
+Auth0.prototype.startPasswordless = function (options, callback) {
+  if ('object' !== typeof options) {
+    throw new Error('An options object is required');
+  }
+  if ('function' !== typeof callback) {
+    throw new Error('A callback function is required');
+  }
+
+  assert_required(options, 'email');
+
+  var protocol = 'https:';
+  var domain = this._domain;
+  var endpoint = '/passwordless/start';
+  var url = joinUrl(protocol, domain, endpoint);
+
+  return reqwest({
+    url:          same_origin(protocol, domain) ? endpoint : url,
+    method:       'post',
+    type:         'json',
+    crossOrigin:  !same_origin(protocol, domain),
+    data:         {
+      client_id: this._clientID,
+      connection: 'email',
+      email: options.email,
+      authParams: {
+         scope: 'openid profile'
+       }
+    }
+  })
+  .fail(function (err) {
+    try {
+      callback(JSON.parse(err.responseText));
+    } catch (e) {
+      var error = new Error(err.status + '(' + err.statusText + '): ' + err.responseText);
+      error.statusCode = err.status;
+      error.error = err.statusText;
+      error.message = err.responseText;
+      callback(error);
+    }
+  })
+  .then(function (result) {
+    callback(null, result);
+  });
+};
+
+/**
  * Expose `Auth0` constructor
  */
 
