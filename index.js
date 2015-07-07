@@ -1663,27 +1663,36 @@ Auth0.prototype.startPasswordless = function (options, callback) {
   if ('function' !== typeof callback) {
     throw new Error('A callback function is required');
   }
-
-  assert_required(options, 'email');
+  if (!options.email && !options.phone_number) {
+    throw new Error('An email or a phone number is required.');
+  }
 
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/passwordless/start';
   var url = joinUrl(protocol, domain, endpoint);
 
+  var data = {client_id: this._clientID};
+  if (options.email) {
+    data.email = options.email;
+    data.connection = 'email';
+    if (options.authParams) {
+      data.authParams = options.authParams;
+    }
+    if (options.send) {
+      data.send = options.send;
+    }
+  } else {
+    data.phone_number = options.phone_number;
+    data.connection = 'sms';
+  }
+
   return reqwest({
     url:          same_origin(protocol, domain) ? endpoint : url,
     method:       'post',
     type:         'json',
     crossOrigin:  !same_origin(protocol, domain),
-    data:         {
-      client_id: this._clientID,
-      connection: 'email',
-      email: options.email,
-      authParams: {
-         scope: 'openid profile'
-       }
-    }
+    data:         data
   })
   .fail(function (err) {
     try {
