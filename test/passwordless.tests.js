@@ -56,155 +56,201 @@ describe('Auth0 - Passwordless', function () {
       }).to.throwError('email is required.');
     });
 
-    it('should send email successfully', function (done) {
-      this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
-        200,
-        { 'Content-Type': 'application/json' },
-        '{"_id":"5b7bb4","email":"foo@bar.com"}'
-      ]);
-
-      this.auth0.startPasswordless({ email: this.email }, function (err) {
-        expect(err).to.be(null);
-        done();
+    describe('sending an email successfully', function() {
+      beforeEach(function() {
+        this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
+          200,
+          { 'Content-Type': 'application/json' },
+          '{"_id":"5b7bb4","email":"' + this.email + '"}'
+        ]);
       });
 
-      var requestData = parseRequestBody(this.server.requests[0]);
-      expect(requestData.client_id).to.be(this.clientID);
-      expect(requestData.email).to.be(this.email);
-      expect(requestData.connection).to.be('email');
-      this.server.respond();
-    });
+      it('should send the expected parameters', function (done) {
+        this.auth0.startPasswordless({ email: this.email }, function (err) {
+          expect(err).to.be(null);
+          done();
+        });
 
-    it('should allow send option when sending an email', function (done) {
-      this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
-        200,
-        { 'Content-Type': 'application/json' },
-        '{"_id":"5b7bb4","email":"foo@bar.com"}'
-      ]);
-
-      var send = 'code';
-      this.auth0.startPasswordless({ email: this.email, send: send }, function (err) {
-        done();
+        var requestData = parseRequestBody(this.server.requests[0]);
+        expect(requestData.client_id).to.be(this.clientID);
+        expect(requestData.email).to.be(this.email);
+        expect(requestData.connection).to.be('email');
+        this.server.respond();
       });
 
-      var requestData = parseRequestBody(this.server.requests[0]);
-      expect(requestData.client_id).to.be(this.clientID);
-      expect(requestData.email).to.be(this.email);
-      expect(requestData.connection).to.be('email');
-      expect(requestData.send).to.be(send);
-      this.server.respond();
-    });
+      it('should allow a send option', function (done) {
+        var send = 'code';
+        this.auth0.startPasswordless({ email: this.email, send: send }, function (err) {
+          done();
+        });
 
-    it('should allow authParams option when sending an email', function (done) {
-      this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
-        200,
-        { 'Content-Type': 'application/json' },
-        '{"_id":"5b7bb4","email":"foo@bar.com"}'
-      ]);
-
-      var authParams = 'fakeauthparams';
-      this.auth0.startPasswordless({ email: this.email, authParams: authParams }, function (err) {
-        done();
+        var requestData = parseRequestBody(this.server.requests[0]);
+        expect(requestData.client_id).to.be(this.clientID);
+        expect(requestData.email).to.be(this.email);
+        expect(requestData.connection).to.be('email');
+        expect(requestData.send).to.be(send);
+        this.server.respond();
       });
 
-      var requestData = parseRequestBody(this.server.requests[0]);
-      expect(requestData.client_id).to.be(this.clientID);
-      expect(requestData.email).to.be(this.email);
-      expect(requestData.connection).to.be('email');
-      expect(requestData.authParams).to.be(authParams);
-      this.server.respond();
+      it('should allow an authParams option', function (done) {
+        var authParams = 'fakeauthparams';
+        this.auth0.startPasswordless({ email: this.email, authParams: authParams }, function (err) {
+          done();
+        });
+
+        var requestData = parseRequestBody(this.server.requests[0]);
+        expect(requestData.client_id).to.be(this.clientID);
+        expect(requestData.email).to.be(this.email);
+        expect(requestData.connection).to.be('email');
+        expect(requestData.authParams).to.be(authParams);
+        this.server.respond();
+      });
     });
 
-    it('should fail using invalid email', function (done) {
-      this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
-        400,
-        { 'Content-Type': 'application/json' },
-        '{"error":"bad.email","error_description":"error in email - email format validation failed: foo"}'
-      ]);
-
-      this.auth0.startPasswordless({ email: this.email }, function (err) {
-        expect(err).not.to.be(null);
-        expect(err).to.have.property('error');
-        expect(err).to.have.property('error_description');
-        expect(err.error).to.be('bad.email');
-        expect(err.error_description).to.be('error in email - email format validation failed: foo');
-        done();
+    describe('unsuccessful attempt to send an email', function() {
+      beforeEach(function() {
+        this.email = "foo";
+        this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
+          400,
+          { 'Content-Type': 'application/json' },
+          '{"error":"bad.email","error_description":"error in email - email format validation failed: ' + this.email + '"}'
+        ]);
       });
 
-      this.server.respond();
+      it('should provide the error information', function (done) {
+        var email = this.email;
+        this.auth0.startPasswordless({ email: this.email }, function (err) {
+          expect(err).not.to.be(null);
+          expect(err).to.have.property('error');
+          expect(err).to.have.property('error_description');
+          expect(err.error).to.be('bad.email');
+          expect(err.error_description).to.be('error in email - email format validation failed: ' + email);
+          done();
+        });
+
+        this.server.respond();
+      });
     });
 
-    it('should send sms successfully', function (done) {
-      this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
-        200,
-        { 'Content-Type': 'application/json' },
-        '{}'
-      ]);
-
-      this.auth0.startPasswordless({ phone_number: this.phone_number }, function (err) {
-        expect(err).to.be(null);
-        done();
+    describe('sending a sms successfully', function() {
+      beforeEach(function() {
+        this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
+          200,
+          { 'Content-Type': 'application/json' },
+          '{}'
+        ]);
       });
 
-      var requestData = parseRequestBody(this.server.requests[0]);
-      expect(requestData.client_id).to.be(this.clientID);
-      expect(requestData.phone_number).to.be(this.phone_number);
-      expect(requestData.connection).to.be('sms');
-      this.server.respond();
-    });
+      it('should send the expected parameters', function (done) {
+        this.auth0.startPasswordless({ phone_number: this.phone_number }, function (err) {
+          expect(err).to.be(null);
+          done();
+        });
 
-    it('should not allow send option when sending a sms', function (done) {
-      this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
-        200,
-        { 'Content-Type': 'application/json' },
-        '{}'
-      ]);
-
-      this.auth0.startPasswordless({ phone_number: this.phone_number, send: 'link' }, function (err) {
-        done();
+        var requestData = parseRequestBody(this.server.requests[0]);
+        expect(requestData.client_id).to.be(this.clientID);
+        expect(requestData.phone_number).to.be(this.phone_number);
+        expect(requestData.connection).to.be('sms');
+        this.server.respond();
       });
 
-      var requestData = parseRequestBody(this.server.requests[0]);
-      expect(requestData.send).to.be(undefined)
-      this.server.respond();
-    });
+      it('should not allow a send option', function (done) {
+        this.auth0.startPasswordless({ phone_number: this.phone_number, send: 'link' }, function (err) {
+          done();
+        });
 
-    it('should not allow authParams option when sending a sms', function (done) {
-      this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
-        200,
-        { 'Content-Type': 'application/json' },
-        '{}'
-      ]);
-
-      this.auth0.startPasswordless({ phone_number: this.phone_number, authParams: 'fakeauthparams' }, function (err) {
-        done();
+        var requestData = parseRequestBody(this.server.requests[0]);
+        expect(requestData.authParams).to.be(undefined);
+        this.server.respond();
       });
 
-      var requestData = parseRequestBody(this.server.requests[0]);
-      expect(requestData.authParams).to.be(undefined);
-      this.server.respond();
-    });
+      it('should not allow an authParams option', function (done) {
+        this.auth0.startPasswordless({ phone_number: this.phone_number, authParams: 'fakeauthparams' }, function (err) {
+          done();
+        });
 
-    it('should fail using invalid phone number', function (done) {
-      this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
-        400,
-        { 'Content-Type': 'application/json' },
-        '{"statusCode":400,"error":"Bad Request","message":"The \'To\' number 541234 is not a valid phone number."}'
-      ]);
-
-      this.auth0.startPasswordless({ phone_number: '+541234' }, function (err) {
-        expect(err).not.to.be(null);
-        expect(err).to.have.property('statusCode');
-        expect(err).to.have.property('error');
-        expect(err).to.have.property('message');
-        expect(err.statusCode).to.be(400);
-        expect(err.error).to.be('Bad Request');
-        expect(err.message).to.be('The \'To\' number 541234 is not a valid phone number.');
-        done();
+        var requestData = parseRequestBody(this.server.requests[0]);
+        expect(requestData.authParams).to.be(undefined);
+        this.server.respond();
       });
 
-      this.server.respond();
     });
+
+    describe('unsuccessful attempt to send a sms', function() {
+      beforeEach(function() {
+        this.phone_number = '+541234';
+        this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
+          400,
+          { 'Content-Type': 'application/json' },
+          '{"statusCode":400,"error":"Bad Request","message":"The \'To\' number ' + this.phone_number + ' is not a valid phone number."}'
+        ]);
+      });
+
+      it('should provide the error information', function (done) {
+        this.auth0.startPasswordless({ phone_number: this.phone_number }, function (err) {
+          expect(err).not.to.be(null);
+          expect(err).to.have.property('statusCode');
+          expect(err).to.have.property('error');
+          expect(err).to.have.property('message');
+          expect(err.statusCode).to.be(400);
+          expect(err.error).to.be('Bad Request');
+          expect(err.message).to.be('The \'To\' number +541234 is not a valid phone number.');
+          done();
+        });
+
+        this.server.respond();
+      });
+    });
+  });
+
+  describe('.login()', function() {
+    it('should throw if called without callback', function(done) {
+      var auth0 = this.auth0;
+      expect(function () {
+        auth0.login({
+          phone: '+123123',
+          passcode: '123123'
+        });
+      }).to.throwError(function (err) {
+        done();
+      });
+    });
+
+    describe('successful login', function() {
+      beforeEach(function() {
+        this.passcode = '123456';
+        this.server.respondWith('POST', 'https://' + this.domain + '/oauth/ro', [
+          200,
+          { 'Content-Type': 'application/json' },
+          '{}'
+        ]);
+        // XXX Avoid fetching the profile
+        this.auth0.getProfile = function(id_token, callback) {
+          return callback(null, {});
+        }
+      });
+
+      it('should send the expected parameters', function (done) {
+        this.auth0.login({ phone: this.phone_number, passcode: this.passcode }, function (err, profile) {
+          expect(err).to.be(null);
+          done();
+        });
+
+        var requestData = parseRequestBody(this.server.requests[0]);
+        expect(requestData.client_id).to.be(this.clientID);
+        expect(requestData.connection).to.be('sms');
+        expect(requestData.grant_type).to.be('password');
+        expect(requestData.username).to.be(this.phone_number);
+        expect(requestData.password).to.be(this.passcode);
+        expect(requestData.scope).to.be('openid');
+        expect(requestData.sso).to.be('false');
+        expect(requestData.phone).to.be(undefined);
+        expect(requestData.passcode).to.be(undefined);
+
+        this.server.respond();
+      });
+    });
+
   });
 });
 
