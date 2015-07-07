@@ -1593,6 +1593,10 @@ Auth0.prototype.getConnections = function (callback) {
  */
 
 Auth0.prototype.requestSMSCode = function (options, callback) {
+  if (console && 'function' === typeof console.warn) {
+    console.warn("`requestSMSCode` is deprected, please use `startPasswordless` instead");
+  }
+
   if ('object' !== typeof options) {
     throw new Error('An options object is required');
   }
@@ -1600,45 +1604,11 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
     throw new Error('A callback function is required');
   }
 
-  assert_required(options, 'apiToken');
   assert_required(options, 'phone');
+  options.phone_number = options.phone;
+  delete options.phone;
 
-  var apiToken = options.apiToken;
-  var phone = options.phone;
-
-  var protocol = 'https:';
-  var domain = this._domain;
-  var endpoint = '/api/v2/users';
-  var url = joinUrl(protocol, domain, endpoint);
-
-  return reqwest({
-    url:          same_origin(protocol, domain) ? endpoint : url,
-    method:       'post',
-    type:         'json',
-    crossOrigin:  !same_origin(protocol, domain),
-    headers:      {
-      Authorization: 'Bearer ' + apiToken
-    },
-    data:         {
-      phone_number:   phone,
-      connection:     'sms',
-      email_verified: false
-    }
-  })
-  .fail(function (err) {
-    try {
-      callback(JSON.parse(err.responseText));
-    } catch (e) {
-      var error = new Error(err.status + '(' + err.statusText + '): ' + err.responseText);
-      error.statusCode = err.status;
-      error.error = err.statusText;
-      error.message = err.responseText;
-      callback(error);
-    }
-  })
-  .then(function (result) {
-    callback(null, result);
-  });
+  return this.startPasswordless(options, callback);
 };
 
 /**

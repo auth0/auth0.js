@@ -50,65 +50,30 @@ describe('Auth0 - SMS', function () {
 
     it('should throw if no callback is passed', function () {
       var auth0 = this.auth0;
-      var apiToken = this.apiToken;
-      var phone = this.phone;
-      expect(function () {
-        auth0.requestSMSCode({ apiToken: apiToken, phone: phone });
-      }).to.throwError('A callback function is required');
-    });
-
-    it('should throw if options has no property apiToken', function () {
-      var auth0 = this.auth0;
-      var apiToken = this.apiToken;
       var phone = this.phone;
       expect(function () {
         auth0.requestSMSCode({ phone: phone });
-      }).to.throwError('apiToken is required.');
+      }).to.throwError('A callback function is required');
     });
 
     it('should throw if options has no property phone', function () {
       var auth0 = this.auth0;
-      var apiToken = this.apiToken;
       var phone = this.phone;
       expect(function () {
-        auth0.requestSMSCode({ apiToken: apiToken });
+        auth0.requestSMSCode({}, function() {});
       }).to.throwError('phone is required.');
     });
 
-    it('should send sms successfully', function (done) {
-      this.server.respondWith('POST', 'https://' + this.domain + '/api/v2/users', [
-        200,
-        { 'Content-Type': 'application/json' },
-        '{}'
-      ]);
-
-      this.auth0.requestSMSCode({ apiToken: this.apiToken, phone: this.phone }, function (err) {
-        expect(err).to.be(null);
+    it('should call startPasswordless', function(done) {
+      var callback = function() {};
+      var phone = this.phone;
+      this.auth0.startPasswordless = function(options, cb) {
+        expect(cb).to.be(callback);
+        expect(options).to.eql({phone_number: phone, other: 'other'});
         done();
-      });
+      };
 
-      this.server.respond();
-    });
-
-    it('should fail using invalid phone number', function (done) {
-      this.server.respondWith('POST', 'https://' + this.domain + '/api/v2/users', [
-        400,
-        { 'Content-Type': 'application/json' },
-        '{"statusCode":400,"error":"Bad Request","message":"The \'To\' number 541234 is not a valid phone number."}'
-      ]);
-
-      this.auth0.requestSMSCode({ apiToken: this.apiToken, phone: '+541234' }, function (err) {
-        expect(err).not.to.be(null);
-        expect(err).to.have.property('statusCode');
-        expect(err).to.have.property('error');
-        expect(err).to.have.property('message');
-        expect(err.statusCode).to.be(400);
-        expect(err.error).to.be('Bad Request');
-        expect(err.message).to.be('The \'To\' number 541234 is not a valid phone number.');
-        done();
-      });
-
-      this.server.respond();
+      this.auth0.requestSMSCode({ phone: this.phone, other: 'other' }, callback);
     });
   });
 
