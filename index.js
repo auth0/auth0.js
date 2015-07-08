@@ -1612,11 +1612,18 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
 };
 
 /**
- * Send Email to do passwordless authentication
+ * Send email or SMS to do passwordless authentication
  *
  * @example
- *
+ *     // To send an email
  *     auth0.startPasswordless({email: 'foo@bar.com'}, function (err, result) {
+ *       if (err) return console.log(err.message);
+ *       console.log(result);
+ *     });
+ *
+ * @example
+ *     // To send a SMS
+ *     auth0.startPasswordless({phone_number: '+14251112222'}, function (err, result) {
  *       if (err) return console.log(err.message);
  *       console.log(result);
  *     });
