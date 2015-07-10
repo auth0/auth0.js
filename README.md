@@ -149,6 +149,8 @@ $('.login-dbconn').click(function () {
 
 ### Passwordless authentication
 
+Passwordless authentication allows users to login without credentials, by using an email or a SMS message, which can be delivered through `startPasswordless()`.
+
 #### With Email
 
 Once you have configured a passwordless `email` connection, you can request a link to be sent via email that will allow to login automatically in to the application.
