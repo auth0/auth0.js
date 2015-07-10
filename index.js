@@ -1664,6 +1664,15 @@ Auth0.prototype.startPasswordless = function (options, callback) {
     data.connection = 'sms';
   }
 
+  if (this._useJSONP) {
+    return jsonp(url + '?' + qs.stringify(data), jsonpOpts, function (err, resp) {
+      if (err) {
+        return callback(new Error(0 + ': ' + err.toString()));
+      }
+      return resp.status === 200 ? callback(null, true) : callback(resp.error);
+    });
+  }
+
   return reqwest({
     url:          same_origin(protocol, domain) ? endpoint : url,
     method:       'post',
