@@ -69,7 +69,7 @@ describe('Auth0 - SMS', function () {
       var phone = this.phone;
       this.auth0.startPasswordless = function(options, cb) {
         expect(cb).to.be(callback);
-        expect(options).to.eql({phone_number: phone, other: 'other'});
+        expect(options).to.eql({phoneNumber: phone, other: 'other'});
         done();
       };
 

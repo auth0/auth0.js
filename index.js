@@ -1605,7 +1605,7 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
   }
 
   assert_required(options, 'phone');
-  options.phone_number = options.phone;
+  options.phoneNumber = options.phone;
   delete options.phone;
 
   return this.startPasswordless(options, callback);
@@ -1623,7 +1623,7 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
  *
  * @example
  *     // To send a SMS
- *     auth0.startPasswordless({phone_number: '+14251112222'}, function (err, result) {
+ *     auth0.startPasswordless({phoneNumber: '+14251112222'}, function (err, result) {
  *       if (err) return console.log(err.error_description);
  *       console.log(result);
  *     });
@@ -1640,7 +1640,7 @@ Auth0.prototype.startPasswordless = function (options, callback) {
   if ('function' !== typeof callback) {
     throw new Error('A callback function is required');
   }
-  if (!options.email && !options.phone_number) {
+  if (!options.email && !options.phoneNumber) {
     throw new Error('An email or a phone number is required.');
   }
 
@@ -1660,7 +1660,7 @@ Auth0.prototype.startPasswordless = function (options, callback) {
       data.send = options.send;
     }
   } else {
-    data.phone_number = options.phone_number;
+    data.phone_number = options.phoneNumber;
     data.connection = 'sms';
   }
 

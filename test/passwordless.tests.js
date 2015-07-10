@@ -23,7 +23,7 @@ describe('Auth0 - Passwordless', function () {
     });
     this.server = sinon.fakeServer.create();
     this.email = 'foo@bar.com';
-    this.phone_number = '+5491122334455';
+    this.phoneNumber = '+5491122334455';
   });
 
   describe('.startPasswordless()', function () {
@@ -49,7 +49,7 @@ describe('Auth0 - Passwordless', function () {
       }).to.throwError('A callback function is required');
     });
 
-    it('should throw if options has no property email or phone_number', function () {
+    it('should throw if options has no property email or phoneNumber', function () {
       var auth0 = this.auth0;
       expect(function () {
         auth0.startPasswordless({}, function() {});
@@ -142,20 +142,20 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should send the expected parameters', function (done) {
-        this.auth0.startPasswordless({ phone_number: this.phone_number }, function (err) {
+        this.auth0.startPasswordless({ phoneNumber: this.phoneNumber }, function (err) {
           expect(err).to.be(null);
           done();
         });
 
         var requestData = parseRequestBody(this.server.requests[0]);
         expect(requestData.client_id).to.be(this.clientID);
-        expect(requestData.phone_number).to.be(this.phone_number);
+        expect(requestData.phone_number).to.be(this.phoneNumber);
         expect(requestData.connection).to.be('sms');
         this.server.respond();
       });
 
       it('should not allow a send option', function (done) {
-        this.auth0.startPasswordless({ phone_number: this.phone_number, send: 'link' }, function (err) {
+        this.auth0.startPasswordless({ phoneNumber: this.phoneNumber, send: 'link' }, function (err) {
           done();
         });
 
@@ -165,7 +165,7 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should not allow an authParams option', function (done) {
-        this.auth0.startPasswordless({ phone_number: this.phone_number, authParams: 'fakeauthparams' }, function (err) {
+        this.auth0.startPasswordless({ phoneNumber: this.phoneNumber, authParams: 'fakeauthparams' }, function (err) {
           done();
         });
 
@@ -178,16 +178,16 @@ describe('Auth0 - Passwordless', function () {
 
     describe('unsuccessful attempt to send a sms', function() {
       beforeEach(function() {
-        this.phone_number = '+541234';
+        this.phoneNumber = '+541234';
         this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
           400,
           { 'Content-Type': 'application/json' },
-          '{"statusCode":400,"error":"Bad Request","message":"The \'To\' number ' + this.phone_number + ' is not a valid phone number."}'
+          '{"statusCode":400,"error":"Bad Request","message":"The \'To\' number ' + this.phoneNumber + ' is not a valid phone number."}'
         ]);
       });
 
       it('should provide the error information', function (done) {
-        this.auth0.startPasswordless({ phone_number: this.phone_number }, function (err) {
+        this.auth0.startPasswordless({ phoneNumber: this.phoneNumber }, function (err) {
           expect(err).not.to.be(null);
           expect(err).to.have.property('statusCode');
           expect(err).to.have.property('error');
@@ -231,7 +231,7 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should send the expected parameters', function (done) {
-        this.auth0.login({ phone: this.phone_number, passcode: this.passcode }, function (err, profile) {
+        this.auth0.login({ phone: this.phoneNumber, passcode: this.passcode }, function (err, profile) {
           expect(err).to.be(null);
           done();
         });
@@ -240,7 +240,7 @@ describe('Auth0 - Passwordless', function () {
         expect(requestData.client_id).to.be(this.clientID);
         expect(requestData.connection).to.be('sms');
         expect(requestData.grant_type).to.be('password');
-        expect(requestData.username).to.be(this.phone_number);
+        expect(requestData.username).to.be(this.phoneNumber);
         expect(requestData.password).to.be(this.passcode);
         expect(requestData.scope).to.be('openid');
         expect(requestData.sso).to.be('false');

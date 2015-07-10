@@ -162,7 +162,7 @@
         $('.request-sms-code').click(function (e) {
             e.preventDefault();
             auth0.startPasswordless({
-                phone_number: $('.phone-input').val()
+                phoneNumber: $('.phone-input').val()
             }, function (err, result) {
                 if (err) return alert("something went wrong: " + err.message);
                 console.log(result);
