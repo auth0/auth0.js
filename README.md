@@ -147,27 +147,44 @@ $('.login-dbconn').click(function () {
   });
 ```
 
-### Passwordless authentication with SMS
+### Passwordless authentication
+
+#### With Email
+
+Once you have configured a passwordless `email` connection, you can request a link to be sent via email that will allow to login automatically in to the application.
+
+```js
+$('.request-email-link').click(function (ev) {
+  ev.preventDefault();
+
+  auth0.startPasswordless({ email: $('.email-input').val() }, function (err) {
+    if (err) {
+      alert(err.error_description);
+      return;
+    }
+    // the request was successful and you should receive
+    // an email with the link at the specified address
+  });
+});
+```
+
+#### With SMS
 
 First you must activate and configure your passwordless [Twilio](https://twilio.com) connection in our [dashboard](https://manage.auth0.com/#/connections/passwordless).
 
-After that you can request a passcode to be sent via SMS to a phone number. For that you use the `.requestSMSCode()` with an `apiToken` and a [full-length](https://www.twilio.com/help/faq/phone-numbers/how-do-i-format-phone-numbers-to-work-internationally) `phoneNumber`.
-
-To generate an `apiToken` go [here](https://auth0.com/docs/apiv2). Notice that the generated token must have the `users:create` scope, otherwise it won't work.
-
+After that you can request a passcode to be sent via SMS to a phone number. Ensure the phone number has the proper [full-length format](https://www.twilio.com/help/faq/phone-numbers/how-do-i-format-phone-numbers-to-work-internationally) `phoneNumber`.
 
 ```js
-// request a passcode sent via sms to `phoneNumber`
+// request a passcode sent via sms to `phone_number`
 // using Twilio's configured connection
 $('.request-sms-code').click(function (ev) {
   ev.preventDefault();
 
-  auth0.requestSMSCode({
-    apiToken: 'your-api-token-here',
-    phone: $('.phone-input').val()
+  auth0.startPasswordless({
+    phone_number: $('.phone-input').val()
   }, function (err) {
     if (err) {
-      alert("something went wrong: " + err.message);
+      alert(err.error_description);
       return;
     }
     // the request was successful and you should

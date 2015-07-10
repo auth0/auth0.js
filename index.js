@@ -1617,14 +1617,14 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
  * @example
  *     // To send an email
  *     auth0.startPasswordless({email: 'foo@bar.com'}, function (err, result) {
- *       if (err) return console.log(err.message);
+ *       if (err) return console.log(err.error_description);
  *       console.log(result);
  *     });
  *
  * @example
  *     // To send a SMS
  *     auth0.startPasswordless({phone_number: '+14251112222'}, function (err, result) {
- *       if (err) return console.log(err.message);
+ *       if (err) return console.log(err.error_description);
  *       console.log(result);
  *     });
  *

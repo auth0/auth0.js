@@ -29,6 +29,11 @@
     <input type="button" class="validate-db" value="validate" />
 
     <hr>
+    <h2>Passwordless authentication with Email</h2>
+    <input class="email-input" value="" placeholder="email" />
+    <input type="button" class="request-email-link" value="request code" />
+
+    <hr>
     <h2>Passwordless authentication with SMS</h2>
     <input class="phone-input" value="" placeholder="phone number" />
     <input type="button" class="request-sms-code" value="request code" />
@@ -146,11 +151,18 @@
             });
         });
 
+        $('.request-email-link').click(function (e) {
+            e.preventDefault();
+            auth0.startPasswordless({ email: $('.email-input').val() }, function (err, result) {
+                if (err) return alert("something went wrong: " + err.message);
+                console.log(result);
+            });
+        });
+
         $('.request-sms-code').click(function (e) {
             e.preventDefault();
-            auth0.requestSMSCode({
-                apiToken: 'your-api-token-here',
-                phoneNumber: $('.phone-input').val()
+            auth0.startPasswordless({
+                phone_number: $('.phone-input').val()
             }, function (err, result) {
                 if (err) return alert("something went wrong: " + err.message);
                 console.log(result);
