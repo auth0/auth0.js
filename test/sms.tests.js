@@ -151,13 +151,16 @@ describe('Auth0 - SMS', function () {
         expect(options.username).not.to.be.empty();
         expect(options.password).not.to.be.empty();
         expect(options.connection).to.be('sms');
+        expect(options.customOption).to.be('customOption');
         expect(callback).to.be.a('function');
         done();
       }
 
       this.auth0.loginWithPhoneNumber({
         phone: '+123123',
-        passcode: '123123'
+        passcode: '123123',
+        connection: 'email',
+        customOption: 'customOption'
       }, function () {});
     })
   });
