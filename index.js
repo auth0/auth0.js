@@ -1334,11 +1334,11 @@ Auth0.prototype.loginWithPhoneNumber = function (options, callback) {
     throw new Error('passcode is required for authentication');
   }
 
-  var opts = xtend({
+  var opts = xtend(options, {
     connection: 'sms',
     username: options.phone,
     password: options.passcode
-  }, opts);
+  });
 
   opts.sso = false;
   delete opts.phone;
