@@ -153,7 +153,7 @@ Passwordless authentication allows users to login without credentials, by using 
 
 #### With Email
 
-Once you have configured a passwordless `email` connection, you can request a link to be sent via email that will allow to login automatically in to the application.
+Once you have configured a passwordless `email` connection, you can request a link to be sent via email that will allow the receiver to sign in to your application.
 
 ```js
 $('.request-email-link').click(function (ev) {
