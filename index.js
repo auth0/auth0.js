@@ -1641,7 +1641,7 @@ Auth0.prototype.startPasswordless = function (options, callback) {
     throw new Error('A callback function is required');
   }
   if (!options.email && !options.phoneNumber) {
-    throw new Error('An email or a phone number is required.');
+    throw new Error('An `email` or a `phoneNumber` is required.');
   }
 
   var protocol = 'https:';
