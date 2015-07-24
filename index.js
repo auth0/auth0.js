@@ -1593,6 +1593,10 @@ Auth0.prototype.getConnections = function (callback) {
  */
 
 Auth0.prototype.requestSMSCode = function (options, callback) {
+  if (console && 'function' === typeof console.warn) {
+    console.warn("`requestSMSCode` is deprected, please use `startPasswordless` instead");
+  }
+
   if ('object' !== typeof options) {
     throw new Error('An options object is required');
   }
@@ -1600,30 +1604,81 @@ Auth0.prototype.requestSMSCode = function (options, callback) {
     throw new Error('A callback function is required');
   }
 
-  assert_required(options, 'apiToken');
   assert_required(options, 'phone');
+  options.phoneNumber = options.phone;
+  delete options.phone;
 
-  var apiToken = options.apiToken;
-  var phone = options.phone;
+  return this.startPasswordless(options, callback);
+};
+
+/**
+ * Send email or SMS to do passwordless authentication
+ *
+ * @example
+ *     // To send an email
+ *     auth0.startPasswordless({email: 'foo@bar.com'}, function (err, result) {
+ *       if (err) return console.log(err.error_description);
+ *       console.log(result);
+ *     });
+ *
+ * @example
+ *     // To send a SMS
+ *     auth0.startPasswordless({phoneNumber: '+14251112222'}, function (err, result) {
+ *       if (err) return console.log(err.error_description);
+ *       console.log(result);
+ *     });
+ *
+ * @method startPasswordless
+ * @param {Object} options
+ * @param {Function} callback
+ */
+
+Auth0.prototype.startPasswordless = function (options, callback) {
+  if ('object' !== typeof options) {
+    throw new Error('An options object is required');
+  }
+  if ('function' !== typeof callback) {
+    throw new Error('A callback function is required');
+  }
+  if (!options.email && !options.phoneNumber) {
+    throw new Error('An `email` or a `phoneNumber` is required.');
+  }
 
   var protocol = 'https:';
   var domain = this._domain;
-  var endpoint = '/api/v2/users';
+  var endpoint = '/passwordless/start';
   var url = joinUrl(protocol, domain, endpoint);
+
+  var data = {client_id: this._clientID};
+  if (options.email) {
+    data.email = options.email;
+    data.connection = 'email';
+    if (options.authParams) {
+      data.authParams = options.authParams;
+    }
+    if (options.send) {
+      data.send = options.send;
+    }
+  } else {
+    data.phone_number = options.phoneNumber;
+    data.connection = 'sms';
+  }
+
+  if (this._useJSONP) {
+    return jsonp(url + '?' + qs.stringify(data), jsonpOpts, function (err, resp) {
+      if (err) {
+        return callback(new Error(0 + ': ' + err.toString()));
+      }
+      return resp.status === 200 ? callback(null, true) : callback(resp.error);
+    });
+  }
 
   return reqwest({
     url:          same_origin(protocol, domain) ? endpoint : url,
     method:       'post',
     type:         'json',
     crossOrigin:  !same_origin(protocol, domain),
-    headers:      {
-      Authorization: 'Bearer ' + apiToken
-    },
-    data:         {
-      phone_number:   phone,
-      connection:     'sms',
-      email_verified: false
-    }
+    data:         data
   })
   .fail(function (err) {
     try {
