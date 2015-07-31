@@ -1665,6 +1665,10 @@ Auth0.prototype.startPasswordless = function (options, callback) {
   }
 
   if (this._useJSONP) {
+    if (this._sendClientInfo) {
+      query['auth0Client'] = this._getClientInfoString();
+    }
+
     return jsonp(url + '?' + qs.stringify(data), jsonpOpts, function (err, resp) {
       if (err) {
         return callback(new Error(0 + ': ' + err.toString()));
@@ -1677,6 +1681,7 @@ Auth0.prototype.startPasswordless = function (options, callback) {
     url:          same_origin(protocol, domain) ? endpoint : url,
     method:       'post',
     type:         'json',
+    headers:      this._getClientInfoHeader(),
     crossOrigin:  !same_origin(protocol, domain),
     data:         data
   })
