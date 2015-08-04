@@ -6,6 +6,17 @@ mocha.timeout(60000);
 mocha.globals(['jQuery*', '__auth0jp*']);
 
 /**
+ * XHR support variables
+ */
+
+var xhrSupport = !(new Auth0({clientID: "clientID", domain: "domain"}))._useJSONP;
+var xhrSupportPrefix = xhrSupport ? '' : 'not ';
+
+// TODO: we are using the support variables to test only for XHR requests, since
+// we don't have an easy way to test JSONP. The plan is to wrap calls to reqwest
+// and jsonp so we can stub them.
+
+/**
  * Test User and Password
  */
 
@@ -56,7 +67,7 @@ describe('Auth0 - Passwordless', function () {
       }).to.throwError('email is required.');
     });
 
-    describe('sending an email successfully', function() {
+    describe('sending an email successfully (xhr ' + xhrSupportPrefix + ' supported)', function() {
       beforeEach(function() {
         this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
           200,
@@ -66,6 +77,8 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should send the expected parameters', function (done) {
+        // TODO test JSONP request
+        if (!xhrSupport) return done();
         this.auth0.startPasswordless({ email: this.email }, function (err) {
           expect(err).to.be(null);
           done();
@@ -79,6 +92,8 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should allow a send option', function (done) {
+        // TODO test JSONP request
+        if (!xhrSupport) return done();
         var send = 'code';
         this.auth0.startPasswordless({ email: this.email, send: send }, function (err) {
           done();
@@ -93,6 +108,8 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should allow an authParams option', function (done) {
+        // TODO test JSONP request
+        if (!xhrSupport) return done();
         var authParams = 'fakeauthparams';
         this.auth0.startPasswordless({ email: this.email, authParams: authParams }, function (err) {
           done();
@@ -107,7 +124,7 @@ describe('Auth0 - Passwordless', function () {
       });
     });
 
-    describe('unsuccessful attempt to send an email', function() {
+    describe('unsuccessful attempt to send an email (xhr ' + xhrSupportPrefix + ' supported)', function() {
       beforeEach(function() {
         this.email = "foo";
         this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
@@ -118,6 +135,9 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should provide the error information', function (done) {
+        // TODO test JSONP request
+        if (!xhrSupport) return done();
+
         var email = this.email;
         this.auth0.startPasswordless({ email: this.email }, function (err) {
           expect(err).not.to.be(null);
@@ -132,7 +152,7 @@ describe('Auth0 - Passwordless', function () {
       });
     });
 
-    describe('sending a sms successfully', function() {
+    describe('sending a sms successfully (xhr ' + xhrSupportPrefix + ' supported)', function() {
       beforeEach(function() {
         this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
           200,
@@ -142,6 +162,9 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should send the expected parameters', function (done) {
+        // TODO test JSONP request
+        if (!xhrSupport) return done();
+
         this.auth0.startPasswordless({ phoneNumber: this.phoneNumber }, function (err) {
           expect(err).to.be(null);
           done();
@@ -155,6 +178,9 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should not allow a send option', function (done) {
+        // TODO test JSONP request
+        if (!xhrSupport) return done();
+
         this.auth0.startPasswordless({ phoneNumber: this.phoneNumber, send: 'link' }, function (err) {
           done();
         });
@@ -165,6 +191,9 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should not allow an authParams option', function (done) {
+        // TODO test JSONP request
+        if (!xhrSupport) return done();
+
         this.auth0.startPasswordless({ phoneNumber: this.phoneNumber, authParams: 'fakeauthparams' }, function (err) {
           done();
         });
@@ -176,7 +205,7 @@ describe('Auth0 - Passwordless', function () {
 
     });
 
-    describe('unsuccessful attempt to send a sms', function() {
+    describe('unsuccessful attempt to send a sms (xhr ' + xhrSupportPrefix + ' supported)', function() {
       beforeEach(function() {
         this.phoneNumber = '+541234';
         this.server.respondWith('POST', 'https://' + this.domain + '/passwordless/start', [
@@ -187,6 +216,9 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should provide the error information', function (done) {
+        // TODO test JSONP request
+        if (!xhrSupport) return done();
+
         this.auth0.startPasswordless({ phoneNumber: this.phoneNumber }, function (err) {
           expect(err).not.to.be(null);
           expect(err).to.have.property('statusCode');
@@ -216,7 +248,7 @@ describe('Auth0 - Passwordless', function () {
       });
     });
 
-    describe('successful login', function() {
+    describe('successful login (xhr ' + xhrSupportPrefix + ' supported)', function() {
       beforeEach(function() {
         this.passcode = '123456';
         this.server.respondWith('POST', 'https://' + this.domain + '/oauth/ro', [
@@ -231,6 +263,9 @@ describe('Auth0 - Passwordless', function () {
       });
 
       it('should send the expected parameters', function (done) {
+        // TODO test JSONP request
+        if (!xhrSupport) return done();
+
         this.auth0.login({ phone: this.phoneNumber, passcode: this.passcode }, function (err, profile) {
           expect(err).to.be(null);
           done();
