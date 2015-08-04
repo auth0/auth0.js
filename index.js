@@ -1666,7 +1666,7 @@ Auth0.prototype.startPasswordless = function (options, callback) {
 
   if (this._useJSONP) {
     if (this._sendClientInfo) {
-      query['auth0Client'] = this._getClientInfoString();
+      data['auth0Client'] = this._getClientInfoString();
     }
 
     return jsonp(url + '?' + qs.stringify(data), jsonpOpts, function (err, resp) {
