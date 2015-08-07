@@ -171,10 +171,11 @@
 
         $('.submit-sms-code').click(function (e) {
             e.preventDefault();
-            auth0.loginWithResourceOwner({
+            auth0.login({
                 username: $('.phone-input').val(),
                 password: $('.sms-code-input').val(),
-                connection: 'sms'
+                connection: 'sms',
+                sso: false
             }, function (err, profile, id_token, access_token, state, refresh_token) {
                 if (err) return alert("something went wrong: " + err.message);
                 console.log(profile, id_token, access_token, state, refresh_token);
