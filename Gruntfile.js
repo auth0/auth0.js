@@ -158,8 +158,8 @@ module.exports = function(grunt) {
   }
 
   grunt.registerTask("build",         ["clean", "browserify:dist", "uglify:min", "copy:example"]);
-  grunt.registerTask("example",       ["connect:example", "watch", "build"]);
-  grunt.registerTask("example_https", ["connect:example_https", "watch", "build"]);
+  grunt.registerTask("example",       ["build", "connect:example", "watch"]);
+  grunt.registerTask("example_https", ["build", "connect:example_https", "watch"]);
 
   grunt.registerTask("dev",           ["build", "connect:test", "watch"]);
   grunt.registerTask("integration",   ["exec:test-integration"]);
