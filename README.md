@@ -215,87 +215,188 @@ $('.submit-sms-code').click(function (ev) {
 });
 ```
 
-### Processing the callback
+### Processing the Callback
 
-### Redirect Mode
+How does control return back to your app after a login has been attempted?  This all depends on which "mode" you choose to use (**Redirect** or **Popup**) and in some cases, which type of connection you're using.
 
-Once you have succesfully authenticated, Auth0 will redirect to your `callbackURL` with a hash containing an `access_token` and the jwt (`id_token`). You can parse the hash and retrieve the full user profile as follows:
+#### Redirect Mode
+
+The default mode of the `login` method is Redirect Mode.  Here two separate "redirect" actions will occur when `login` is called.  First, Auth0 will navigate the browser to a separate login page to collect the user's credentials.  Then, if the user successfully logs in, Auth0 will redirect the user back to your application via the `callbackURL`.
+
+For example, let's say you've initialized your Auth0 client as shown in the [Initialize](#initialize) section above.  Then the following call to `login` using your `google-oauth2` social connection would result in a redirect to a Google login page and then a redirect back to `http://my-app.com/callback` if successful:
 
 ```js
-  $(function () {
-    var result = auth0.parseHash(window.location.hash);
-
-    //use result.id_token to call your rest api
-
-    if (result && result.id_token) {
-      auth0.getProfile(result.id_token, function (err, profile) {
-        alert('hello ' + profile.name);
-      });
-      // If offline_access was a requested scope
-      // You can grab the result.refresh_token here
-
-    } else if (result && result.error) {
-      alert('error: ' + result.error);
-    }
-  });
+auth0.login({
+  connection: 'google-oauth2'
+});
 ```
 
-Or just parse the hash (if loginOption.scope is not `openid profile`, then the profile will only contains the `user_id`):
+##### Single Page Apps
+
+If you're building a SPA (Single Page Application) and using Redirect Mode, then your `callbackURL` should send the user back to the same page.  The URL that gets called will also have a URL hash containing an `access_token` and the JWT (`id_token`).  These items are in the hash because the `callbackOnLocationHash` initialization option was set to `true`.
+
+> Note: This scenario makes use of the "implicit grant" flow in OAuth 2
+
+After control returns to your app, you can parse the hash and retrieve the full user profile as follows:
 
 ```js
-  $(function () {
-      var result = auth0.parseHash(window.location.hash);
-      if (result && result.profile) {
-        alert('your user_id is: ' + result.profile.sub);
-        //use result.id_token to call your rest api
-      }
+$(function () {
+  var result = auth0.parseHash(window.location.hash);
+
+  //use result.id_token to call your rest api
+
+  if (result && result.id_token) {
+    auth0.getProfile(result.id_token, function (err, profile) {
+      alert('hello ' + profile.name);
     });
-  });
+    // If offline_access was a requested scope
+    // You can grab the result.refresh_token here
+
+  } else if (result && result.error) {
+    alert('error: ' + result.error);
+  }
+});
 ```
 
-If there is no hash, `result` will be null. It the hash contains the jwt, the profile field will be populated.
+Or just parse the hash (if the `scope` option is not `openid profile`, then the profile will only contains the `user_id`):
 
-### Popup Mode
-
-While using this mode, the result will be passed as the `login` method callback.
 ```js
-  auth0.login({ popup: true }, function(err, profile, id_token, access_token, state, refresh_token) {
-    if (err) {
-      // Handle the error!
-      return;
+$(function () {
+    var result = auth0.parseHash(window.location.hash);
+    if (result && result.profile) {
+      alert('your user_id is: ' + result.profile.sub);
+      //use result.id_token to call your rest api
     }
-
-    //use id_token to call your rest api
-    alert('hello ' + profile.name);
-
-    // refresh_token is sent only if offline_access is set as a scope
   });
 });
 ```
 
-When using database connection there are two possible modes:
+If there is no hash, `result` will be null. It the hash contains the JWT, the `profile` field will be populated.
 
- * **Resource Owner endpoint** (`/ro`)enabled by passing `sso: false`: Performs a CORS POST request against the former endpoint (or in IE8 or 9 perform a JSONP request). This endpoint allows users to authenticate by sending their username and password and returning a JWT. This does not set any cookie and no popup is opened (even with `popup` set to `true`).
+##### Regular Web Apps
 
- * **SSO mode** enabled by passing `sso: true` (default): In this case, a popup is created in which the authentication takes place. Sets the SSO cookie and prompts for a multifactor authentication code, if enabled.
-
-### Sign up (database connections):
-
-If you use [Database Connections](https://docs.auth0.com/mysql-connection-tutorial) you can signup as follows:
+If you're building a regular web application (HTML pages rendered on the server), then `callbackURL` should point to a server-side endpoint that will process the successful login.  In this scenario you should make sure the `callbackOnLocationHash` option is `false` (or just not specified) when you create your Auth0 client:
 
 ```js
-  $('.signup').click(function () {
-    auth0.signup({
-      connection: 'db-conn',
-      username:   'foo@bar.com',
-      password:   'blabla'
-    }, function (err) {
-      console.log(err.message);
-    });
-  });
+var auth0 = new Auth0({
+  domain:       'mine.auth0.com',
+  clientID:     'dsa7d77dsa7d7',
+  callbackURL:  'http://my-app.com/callback'
+  // callbackOnLocationHash not set (defaults to false)
+});
 ```
 
-After a succesful login it will auto login the user. If you do not want to automatically login the user you have to pass the option `auto_login: false`.
+This will result in Auth0 redirecting to your `callbackURL` with an authorization `code` query parameter (vs. items in the URL hash).  The server-side endpoint then exchanges the `code` for an `access_token` and `id_token` and optionally a full user profile.  It then usually sets some kind of local session cookie (which is what enables a user to be logged in) and finally redirects back to a meaningful page.
+
+> Note: This scenario makes use of the "authorization code grant" flow in OAuth 2
+
+#### Popup Mode
+
+The `login` method also supports another mode called Popup Mode, which you enable by passing `popup: true` in the `options` argument.  In this mode the browser will not be redirected to a separate login page.  Instead Auth0 will display a popup window where the user enters their credentials.  The advantage of this approach is that the original page (and all of its state) remains intact, which can be important, especially for Single Page Apps.
+
+In Popup Mode you also have no need to get redirected back to the application, since, once the user has logged in, the popup is simply closed.  Instead Auth0 uses the `login` method's `callback` argument to return control to your application, for both failed and successful logins.  Along with the `err` argument, you also need to pass `profile, id_token, access_token, state` (and optionally `refresh_token` if you've requested the `offline_access` scope):
+
+```js
+auth0.login({
+  popup: true,
+  connection: 'google-oauth2'
+},
+function(err, profile, id_token, access_token, state) {
+  if (err) {
+    // Handle the error!
+    return;
+  }
+
+  // Success!
+});
+```
+
+#### Database and Active Directory/LDAP connections
+
+The behavior of Redirect Mode and Popup Mode are slightly different if you're using a Database or Active Directory/LDAP connection.  Those differences depend on two factors: whether SSO (Single Sign-On) is enabled or not and whether or not you're passing credentials directly to the `login` method.
+
+##### SSO enabled
+
+By default SSO is enabled (equivalent to passing the `sso: true` option to the `login` method).  This means that after a successful login, Auth0 will set a special SSO cookie that can be used to automatically log a user onto additional websites that are registered as Auth0 apps.  When using either the Database or Active Directory/LDAP connections with SSO enabled, you can still choose to go with Redirect or Popup Mode.
+
+Redirect Mode will happen by default (equivalent to passing `popup: false` to the `login` method).  The browser will navigate to a login page that will prompt the user for their credentials and then, when login is complete, redirect back to the `callbackURL` you set when you initialized the Auth0 client.
+
+However, one of the unique options you have with Database and Active Directory/LDAP connections is that you bypass the redirect to the login page by having a *custom login form* in your app where you can collect the user's credentials and pass them directly to the `login` method via the `username` and `password` options:
+
+```js
+auth0.login({
+  connection: 'db-conn',
+  username:   $('.username').val(),
+  password:   $('.password').val(),
+},
+function (err) {
+  // this only gets called if there was a login error
+});
+```
+
+If the login is successful, the browser will then be redirected to `callbackURL`.  It's also a good idea to provide a `callback` argument to the `login` method as shown above that handles any authentication errors (without redirecting).
+
+Furthermore, sometimes you don't want a redirect to occur at all after a login.  This is often the case with Single Page Apps where a redirect will result in loss of important page state.  To handle all login results client-side, simply provide additional parameters to the `callback` argument you pass to the `login` method:
+
+```js
+auth0.login({
+  connection: 'db-conn',
+  username:   $('.username').val(),
+  password:   $('.password').val(),
+},
+function(err, profile, id_token, access_token, state) {
+  if (err) {
+    // Handle the error!
+    return;
+  }
+
+  // Success!
+});
+```
+
+This `callback` approach is similar to what you'd do in the [Popup Mode](#popup-mode) scenario except no popups (or redirects) occur.  Everything happens in the client-code of the current page.
+
+You can still do Popup Mode with SSO enabled with a Database or Active Directory/LDAP connection if you want to.  This is similar to the Redirect Mode scenario where you don't have a custom login form, but want to use a popup window to collect the user's credentials, and also want control to return to the client-side code (vs the `callbackURL`).  This behavior would occur if you simply specified the `popup: true` option:
+
+```js
+auth0.login({
+  connection: 'db-conn',
+  popup: true
+},
+function(err, profile, id_token, access_token, state) {
+  if (err) {
+    // Handle the error!
+    return;
+  }
+
+  // Success!
+});
+```
+
+##### SSO disabled
+
+If you don't want to use SSO in your application, you can pass the `sso: false` option to the `login` method.  The result is that when a login occurs, Auth0 performs a CORS POST request (or in IE8 or 9 a JSONP request) against a special "resource owner" endpoint (`/ro`), which allows users to authenticate by sending their username and password.  This produces a couple important constraints:
+
+* Because the `/ro` requires a username and password, you must provide them in the options passed to the `login` method
+* It's not possible to use Popup Mode when SSO is disabled, even if you pass `popup: true`
+
+This leaves you with a call to the `login` method that looks something like this:
+
+```js
+auth0.login({
+  connection: 'db-conn',
+  sso: false,
+  username:   $('.username').val(),
+  password:   $('.password').val()  
+},
+function(err) {
+  // this only gets called if there was a login error
+});
+```
+
+If the login succeeds, Auth0 will redirect to your `callbackURL` and if it fails, control will be given to the `callback`.  
+
+And if you don't want that redirect to occur (i.e. you have a Single Page App), you can use a `callback` that takes the additional parameters (like what's shown in [Popup Mode](#popup-mode)), and control will go to your callback with a failed or successful login.
 
 ### Change Password (database connections):
 
