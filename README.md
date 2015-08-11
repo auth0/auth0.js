@@ -290,6 +290,8 @@ On successful login, Auth0 will redirect to your `callbackURL` with an appended 
 
 Besides Redirect Mode, the `login` method also supports Popup Mode, which you enable by passing `popup: true` in the `options` argument.  In this mode the browser will *not* be redirected to a separate login page.  Instead Auth0 will display a popup window where the user enters their credentials.  The advantage of this approach is that the original page (and all of its state) remains intact, which can be important, especially for certain Single Page Apps.
 
+> **WARNING**: While Popup Mode does have the advantage of preserving page state, it has some issues. Often times users have popup blockers that prevent the login page from even displaying. There are also known issues with mobile browsers. For example, in recent versions of Chrome on iOS, the login popup does not get closed properly after login (see an example [here](https://github.com/auth0/lock/issues/71)). For these reasons, we encourage developers to favor Redirect Mode over Popup Mode, even with Single Page Apps.
+
 In Popup Mode you also have no need to be redirected back to the application, since, once the user has logged in, the popup is simply closed.  Instead Auth0 uses the `login` method's `callback` argument to return control to your client-side application, for both failed and successful logins.  Along with the `err` argument, `callback` should also contain arguments `profile, id_token, access_token, state` (and optionally `refresh_token` if the `offline_access` scope has been requested):
 
 ```js
@@ -350,7 +352,7 @@ function(err, profile, id_token, access_token, state) {
 
 > Note: This `callback` approach is similar to what you'd do in the [Popup Mode](#popup-mode) scenario described earlier, except no popups (or redirects) occur since credentials are provided to the `login` method and success and failure is handled in the `callback` argument.
 
-You can still do Popup Mode with SSO enabled with a Database or Active Directory/LDAP connection if you want to.  This is similar to the Redirect Mode scenario where you don't have a custom login form, but want to use a popup window to collect the user's credentials, and also want control to return to the client-side code (vs. redirecting to `callbackURL`).  This behavior would occur if you simply specified the `popup: true` option:
+You can still do Popup Mode with SSO enabled with a Database or Active Directory/LDAP connection if you want to (but please see the **WARNING** in the [Popup Mode](#popup-mode) section above). This is similar to the Redirect Mode scenario where you don't have a custom login form, but want to use a popup window to collect the user's credentials, and also want control to return to the client-side code (vs. redirecting to `callbackURL`).  This behavior would occur if you simply specified the `popup: true` option:
 
 ```js
 auth0.login({
