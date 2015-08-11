@@ -254,7 +254,7 @@ $(function () {
 });
 ```
 
-If the `scope` option used with the `login` method did not contain `openid profile`, then the profile will only contains the `user_id`.  In that case just parse the hash to obtain the user ID:
+If the `scope` option used with the `login` method did not contain `openid profile`, then the profile will only contain `user_id`.  In that case just parse the hash to obtain the user ID:
 
 ```js
 $(function () {
@@ -282,7 +282,7 @@ var auth0 = new Auth0({
 });
 ```
 
-On successful login, Auth0 will redirect to your `callbackURL` with an appended authorization `code` query parameter.  Unlike the SPA scenario, this `code` value gets processed completely server-side.
+On successful login, Auth0 will redirect to your `callbackURL` with an appended authorization `code` query parameter.  Unlike the SPA scenario, this `code` value should get processed completely server-side.
 
 > Note: Server-side processing of the `code` looks something like this: Using whichever [Auth0 server-side SDK](https://auth0.com/docs/quickstart/webapp) necessary, the endpoint on the server should exchange the `code` for an `access_token` and `id_token` and optionally a full user profile.  It should then set some kind of local session cookie, which is what enables a user to be "logged in" to the website and usually contains data from the user profile.  It should finally redirect the user back to a meaningful page.
 
@@ -290,7 +290,7 @@ On successful login, Auth0 will redirect to your `callbackURL` with an appended 
 
 Besides Redirect Mode, the `login` method also supports Popup Mode, which you enable by passing `popup: true` in the `options` argument.  In this mode the browser will *not* be redirected to a separate login page.  Instead Auth0 will display a popup window where the user enters their credentials.  The advantage of this approach is that the original page (and all of its state) remains intact, which can be important, especially for certain Single Page Apps.
 
-In Popup Mode you also have no need to get redirected back to the application, since, once the user has logged in, the popup is simply closed.  Instead Auth0 uses the `login` method's `callback` argument to return control to your client-side application, for both failed and successful logins.  Along with the `err` argument, `callback` should also contain arguments `profile, id_token, access_token, state` (and optionally `refresh_token` if the `offline_access` scope has been requested):
+In Popup Mode you also have no need to be redirected back to the application, since, once the user has logged in, the popup is simply closed.  Instead Auth0 uses the `login` method's `callback` argument to return control to your client-side application, for both failed and successful logins.  Along with the `err` argument, `callback` should also contain arguments `profile, id_token, access_token, state` (and optionally `refresh_token` if the `offline_access` scope has been requested):
 
 ```js
 auth0.login({
@@ -313,9 +313,9 @@ The behavior of Redirect and Popup Modes differs if you're using a [Database](ht
 
 ##### SSO enabled
 
-By default SSO is enabled (equivalent to passing the `sso: true` option to the `login` method).  This means that after a successful login, Auth0 will set a special cookie that can be used to automatically log a user onto additional websites that are registered as Auth0 apps.  When using either the Database or Active Directory/LDAP connections with SSO enabled, you can still choose to go with Redirect or Popup Mode.
+By default SSO is enabled (equivalent to passing the `sso: true` option to the `login` method).  This means that after a successful login, Auth0 will set a special cookie that [can be used](#sso) to automatically log a user onto additional websites that are registered as Auth0 apps.  When using either the Database or Active Directory/LDAP connections with SSO enabled, you can still choose to go with Redirect or Popup Mode.
 
-As with other connection types, Redirect Mode will happen by default.  The browser will navigate to a login page that will prompt the user for their credentials and then, when login is complete, redirect back to the `callbackURL` you set when you initialized the Auth0 client.  However, one of the unique options you have with Database and Active Directory/LDAP connections is that the redirect to the login page can be bypassed if the `username` and `password` options are passed to the `login` method.  These values are typically collected via a *custom login form* in your app:
+As with other connection types, Redirect Mode will happen by default.  The browser will navigate to a login page that will prompt the user for their credentials and then, when login is complete, redirect back to the `callbackURL`.  However, one of the unique options you have with Database and Active Directory/LDAP connections is that the redirect to the login page can be bypassed if the `username` and `password` options are passed to the `login` method.  These values are typically collected via a *custom login form* in your app:
 
 ```js
 auth0.login({
@@ -392,7 +392,7 @@ function(err) {
 
 If the login succeeds, Auth0 will redirect to your `callbackURL` and if it fails, control will be given to the `callback`.  
 
-And if you don't want that redirect to occur (i.e. you have a Single Page App), you can use a `callback` argument that takes the additional parameters (like what's shown in [Popup Mode](#popup-mode)), and control will go to your callback with a failed or successful login.
+And if you don't want that redirect to occur (i.e. you have a Single Page App), you can use a `callback` argument that takes the additional parameters (like what's shown in [Popup Mode](#popup-mode)), and control will go to your callback function with a failed or successful login.
 
 ### Change Password (database connections):
 
