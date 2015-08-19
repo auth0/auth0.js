@@ -537,7 +537,7 @@ Auth0.prototype.signup = function (options, callback) {
       }
       return resp.status == 200 ?
               success() :
-              fail(resp.status, resp.err);
+              fail(resp.status, resp.error);
     });
   }
 
