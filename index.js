@@ -537,7 +537,7 @@ Auth0.prototype.signup = function (options, callback) {
       }
       return resp.status == 200 ?
               success() :
-              fail(resp.status, resp.err);
+              fail(resp.status, resp.error);
     });
   }
 
@@ -1673,7 +1673,7 @@ Auth0.prototype.startPasswordless = function (options, callback) {
       if (err) {
         return callback(new Error(0 + ': ' + err.toString()));
       }
-      return resp.status === 200 ? callback(null, true) : callback(resp.error);
+      return resp.status === 200 ? callback(null, true) : callback(resp.err || resp.error);
     });
   }
 
