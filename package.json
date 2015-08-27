@@ -59,7 +59,7 @@
     "mocha": "1.20.1",
     "phantomjs": "^1.9.2-6",
     "rimraf": "~2.2.2",
-    "sinon": "^1.14.1",
+    "sinon": "1.16.1",
     "uglify-js": "~2.4.0",
     "unreleased": "^0.1.0",
     "zuul": "https://github.com/jfromaniello/zuul/tarball/phantom_custom_port",
