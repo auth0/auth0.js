@@ -161,9 +161,10 @@ describe('Auth0 - User And Passwords', function () {
       auth0.signup({
         connection: 'tests',
         username:   'pepo@example.com',
-        password:   '12345'
+        password:   '12345',
+        auto_login: false
       }, function (err) {
-        expect(err.status).to.equal(500);
+        expect(err.status).to.equal(401);
         expect(err.message).to.exist;
         expect(err.details).to.exist;
         done();
