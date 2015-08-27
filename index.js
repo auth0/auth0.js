@@ -1041,20 +1041,26 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
       return callback(new LoginError(err), null, null, null, null, null);
     }
 
-    if (result && result.id_token) {
+    if (!result) {
+      return callback(new LoginError('Something went wrong'), null, null, null, null, null);
+    }
+
+    if (result.id_token) {
       return self.getProfile(result.id_token, function (err, profile) {
         callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
       });
     }
 
-    // Case we've found an error
-    return callback(result && result.err ?
-                    new LoginError(result.err.status,
-                                   result.err && result.err.details ?
-                                     result.err.details :
-                                     result.err) :
-                    new LoginError('Something went wrong'),
-            null, null, null, null, null);
+    if (result.err) {
+      return callback(new LoginError(result.err.status, result.err.details || result.err), null, null, null, null, null);
+    }
+
+    // odd case for sso_dbconnection_popup
+    if (result.error || result.error_description) {
+      return callback(new LoginError(result.status, result.details || result), null, null, null, null, null);
+    }
+
+    return callback(new LoginError('Something went wrong'), null, null, null, null, null);
   });
 
   popup.focus();
