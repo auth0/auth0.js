@@ -1036,30 +1036,35 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
       }
     }
   }, function (err, result) {
+    // Winchan always returns string errors, we wrap them inside Error objects
     if (err) {
-      // Winchan always returns string errors, we wrap them inside Error objects
       return callback(new LoginError(err), null, null, null, null, null);
     }
 
+    // Handle edge case with generic error
     if (!result) {
       return callback(new LoginError('Something went wrong'), null, null, null, null, null);
     }
 
+    // Handle profile retrieval from id_token and respond
     if (result.id_token) {
       return self.getProfile(result.id_token, function (err, profile) {
         callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
       });
     }
 
+    // Case where the error is returned at an `err` property from the result
     if (result.err) {
       return callback(new LoginError(result.err.status, result.err.details || result.err), null, null, null, null, null);
     }
 
-    // odd case for sso_dbconnection_popup
-    if (result.error || result.error_description) {
+    // Case for sso_dbconnection_popup returning error at result.error instead of result.err
+    if (result.error) {
+      if (null == result.status && 'unauthorized' === result.error) result.status = 401;
       return callback(new LoginError(result.status, result.details || result), null, null, null, null, null);
     }
 
+    // Case we couldn't match any error, we return a generic one
     return callback(new LoginError('Something went wrong'), null, null, null, null, null);
   });
 
