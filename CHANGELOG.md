@@ -1,3 +1,22 @@
+## [6.6.0] - 2015-08-28
+
+### Fixed
+
+- [] Remove force of status from winchan response handlers (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/ca696f063198fde169f144bd6ed3eebd8d354207
+- [] Add 401 status inside LoginError when code is `unauthorized` (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/7cfbf6e0fd58c5a226658762711965d469264cb6
+- [] Fix bump version script (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/37a463d8ab5b68cef6bb0a8ac1fbc99572f20750
+- [] Highly improve error handling for winchan.open on loginWithPopup (social conns) (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/5950b9206c54c3e02ec9a3f29664d9233dc684d0
+- [] More clear handling. And adding 401 status when unauthorized (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/fda60bb60422e1a377f4a0eda9affebbb6eec235
+- [] Highly improve winchan errors handling. Consider also cases from rules errors not considered before (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/b4b7a14e1bf421736bdf10a68e060d9036a45eb0
+- [] Fix purge script (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/ce67919ebdcd604c63999e350248fa60513b0c41
+
 ## [6.5.1] - 2015-08-04
 
 ### Fixed
