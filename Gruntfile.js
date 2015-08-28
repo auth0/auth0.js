@@ -132,24 +132,43 @@ module.exports = function(grunt) {
         ]
       }
     },
-    /* Purge FASTLY cache. */
-    fastly: {
-      options: {
-        key:  process.env.FASTLY_KEY,
-        host: process.env.FASTLY_HOST
-      },
-      purge: {
+    http: {
+      purge_js: {
         options: {
-          urls: [
-            'w2/auth0-' + pkg.version   + '.min.js',
-            'w2/auth0-' + pkg.version   + '.js',
-            'w2/auth0-' + major_version + '.js',
-            'w2/auth0-' + major_version + '.min.js',
-            'w2/auth0-' + minor_version + '.js',
-            'w2/auth0-' + minor_version + '.min.js'
-          ]
-        },
+          url: process.env.CDN_ROOT + '/w2/auth0-' + pkg.version + '.js',
+          method: 'DELETE'
+        }
       },
+      purge_js_min: {
+        options: {
+          url: process.env.CDN_ROOT + '/w2/auth0-' + pkg.version + '.min.js',
+          method: 'DELETE'
+        }
+      },
+      purge_major_js: {
+        options: {
+          url: process.env.CDN_ROOT + '/w2/auth0-' + major_version + '.js',
+          method: 'DELETE'
+        }
+      },
+      purge_major_js_min: {
+        options: {
+          url: process.env.CDN_ROOT + '/w2/auth0-' + major_version + '.min.js',
+          method: 'DELETE'
+        }
+      },
+      purge_minor_js: {
+        options: {
+          url: process.env.CDN_ROOT + '/w2/auth0-' + minor_version + '.js',
+          method: 'DELETE'
+        }
+      },
+      purge_minor_js_min: {
+        options: {
+          url: process.env.CDN_ROOT + '/w2/auth0-' + minor_version + '.min.js',
+          method: 'DELETE'
+        }
+      }
     }
   });
 
@@ -166,5 +185,7 @@ module.exports = function(grunt) {
   grunt.registerTask("integration",   ["exec:test-integration"]);
   grunt.registerTask("phantom",       ["exec:test-phantom"]);
 
-  grunt.registerTask("cdn",           ["build", "copy:release", "aws_s3", "fastly:purge"]);
+  grunt.registerTask('purge_cdn',     ['http:purge_js', 'http:purge_js_min', 'http:purge_major_js', 'http:purge_major_js_min', 'http:purge_minor_js', 'http:purge_minor_js_min']);
+
+  grunt.registerTask("cdn",           ["build", "copy:release", "aws_s3", "purge_cdn"]);
 };
