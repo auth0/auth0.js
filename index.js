@@ -940,7 +940,6 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
 
     // Case for sso_dbconnection_popup returning error at result.error instead of result.err
     if (result.error) {
-      if (null == result.status && 'unauthorized' === result.error) result.status = 401;
       return callback(new LoginError(result.status, result.details || result), null, null, null, null, null);
     }
 
@@ -1077,7 +1076,6 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
 
     // Case for sso_dbconnection_popup returning error at result.error instead of result.err
     if (result.error) {
-      if (null == result.status && 'unauthorized' === result.error) result.status = 401;
       return callback(new LoginError(result.status, result.details || result), null, null, null, null, null);
     }
 
