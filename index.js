@@ -288,7 +288,7 @@ Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
 
       return resp.status === 200 ?
         callback(null, resp.user) :
-        fail(resp.status, resp.error);
+        fail(resp.status, resp.err || resp.error);
     });
   }
 
@@ -535,9 +535,9 @@ Auth0.prototype.signup = function (options, callback) {
       if (err) {
         return fail(0, err);
       }
-      return resp.status == 200 ?
-              success() :
-              fail(resp.status, resp.error);
+
+      return resp.status == 200 ? success() :
+              fail(resp.status, resp.err || resp.error);
     });
   }
 
@@ -592,7 +592,7 @@ Auth0.prototype.changePassword = function (options, callback) {
       }
       return resp.status == 200 ?
               callback(null, resp.message) :
-              fail(resp.status, resp.err);
+              fail(resp.status, resp.err || resp.error);
     });
   }
 
