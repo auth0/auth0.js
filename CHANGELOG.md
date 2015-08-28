@@ -1,3 +1,48 @@
+## [6.5.1] - 2015-08-04
+
+### Fixed
+
+- [] Fix some case where when handling with JSONP (IE9 by default) error handling will fail expecting other variable for the error (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/5dd14cd487a0483da2f16532ea9c3e8d192fdb4b
+- [] Fix package.json version for sinon (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/46c8b063bf36a4d76df912b4a08d82ee3d1c1aa3
+- [] Fix tests (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/8602777a81868d731ecd77114ce38ce841ea8ec5
+- [] Merge pull request #104 from auth0/fix-signup-jsonp-error (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/82413689f4631bbc10e3d4df8525d3ef1bf27797
+- [] the other way (`German Lena`)
+  https://github.com/auth0/auth0.js/commit/7c861c0e96e19f3923b94f6126fcdb35d3ded480
+- [] lets support both err and error (`German Lena`)
+  https://github.com/auth0/auth0.js/commit/0a1bb94e9908ab0e2221c2a9fdc11a793b1895e2
+- [] fix jsonp error response for signup: wrong field name (`German Lena`)
+  https://github.com/auth0/auth0.js/commit/c6f33ea991a2faff897140e8f305a646633b369b
+- [] Merge pull request #102 from auth0/add-popup-mode-warning-in-README (`Matias Woloski`)
+  https://github.com/auth0/auth0.js/commit/0cfda913b66ed66c3dbd6859c22f62a74113d3eb
+- [] Add Popup Mode warning in README (`twistedstream`)
+  https://github.com/auth0/auth0.js/commit/48cf137e3ec26592edda4de51e5b9e50caf8ead9
+- [] Merge pull request #101 from auth0/enhance-processing-the-callback-section-in-README (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/4588149a91ceebef6d5085c3cd6b8bf5402c2431
+- [] More tweaks (`twistedstream`)
+  https://github.com/auth0/auth0.js/commit/de1216b122111c1f24095b4143372760d1affdbc
+- [] Merge branch 'master' into enhance-processing-the-callback-section-in-README (`twistedstream`)
+  https://github.com/auth0/auth0.js/commit/242491ca06242885cdb4a4f1a51146a1f04cea17
+- [] Cleanup of new Processing the Callback content (`twistedstream`)
+  https://github.com/auth0/auth0.js/commit/d712f2215da75d4610c029549bb10508f26b69b4
+- [] add region to gruntfile (`José F. Romaniello`)
+  https://github.com/auth0/auth0.js/commit/7fb9ae4efa6dcf206fa2e0687c6b0150dbd21306
+- [] First draft of more detailed description (`twistedstream`)
+  https://github.com/auth0/auth0.js/commit/caad175a494594d8aa2171e8fb28effea05d4d17
+- [] Update sms code example to use `login` (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/fe1d13d41d1b46553564d00e61c10034b52ac5f1
+- [] Merge pull request #100 from auth0/examples-tasks (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/0db5f69bf9166fcb34b44cdc5afdbc72cef859ba
+- [] Move build to the beginning in examples tasks (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/2a441ef92f4d9c129aae05c1d727811daf8e5ee9
+- [] Correct sso default value in README (`Rodrigo López Dato`)
+  https://github.com/auth0/auth0.js/commit/5f29bce47ef1af297ff490932078b100b51c9535
+- [] Update CHANGELOG.md (`Alberto Pose`)
+  https://github.com/auth0/auth0.js/commit/e8e8a7e15aa8d404b0955edfe7b08de918dad333
+
 ## [6.5.0] - 2015-08-04
 
 ### Added
