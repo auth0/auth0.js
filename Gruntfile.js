@@ -5,7 +5,7 @@ var minor_version = pkg.version.replace(/\.(\d)*$/, '');
 var major_version = pkg.version.replace(/\.(\d)*\.(\d)*$/, '');
 var path = require('path');
 
-function  rename_release (v) {
+function rename_release (v) {
   return function (d, f) {
     var dest = path.join(d, f.replace(/(\.min)?\.js$/, '-'+ v + "$1.js"));
     return dest;
@@ -15,22 +15,23 @@ function  rename_release (v) {
 module.exports = function(grunt) {
   grunt.initConfig({
     connect: {
-      test: {
+      dev: {
         options: {
+          base:  ["example", "build", "."],
           hostname: '0.0.0.0',
           port: 9999
         }
       },
       example: {
         options: {
-          base:  "example",
+          base:  ["example", "build", "."],
           hostname: '0.0.0.0',
           port: 3000
         }
       },
       example_https: {
         options: {
-          base:  "example",
+          base:  ["example", "build", "."],
           port:  3000,
           protocol: 'https',
           hostname: '*',
@@ -59,11 +60,6 @@ module.exports = function(grunt) {
       }
     },
     copy: {
-      example: {
-        files: {
-          'example/auth0.js': 'build/auth0.js',
-        }
-      },
       release: {
         files: [
           { expand: true, flatten: true, src: 'build/*', dest: 'release/', rename: rename_release(pkg.version) },
@@ -73,7 +69,7 @@ module.exports = function(grunt) {
       }
     },
     clean: {
-      build: ["release/", "build/", "example/auth0.js"],
+      build: ["release/", "build/"],
     },
     watch: {
       another: {
@@ -177,11 +173,11 @@ module.exports = function(grunt) {
     if (key !== "grunt" && key.indexOf("grunt") === 0) grunt.loadNpmTasks(key);
   }
 
-  grunt.registerTask("build",         ["clean", "browserify:dist", "uglify:min", "copy:example"]);
+  grunt.registerTask("build",         ["clean", "browserify:dist", "uglify:min"]);
   grunt.registerTask("example",       ["build", "connect:example", "watch"]);
   grunt.registerTask("example_https", ["build", "connect:example_https", "watch"]);
 
-  grunt.registerTask("dev",           ["build", "connect:test", "watch"]);
+  grunt.registerTask("dev",           ["build", "connect:dev", "watch"]);
   grunt.registerTask("integration",   ["exec:test-integration"]);
   grunt.registerTask("phantom",       ["exec:test-phantom"]);
 
