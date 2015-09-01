@@ -126,7 +126,8 @@
                         auto_login: false
                     }, function (err, profile, id_token, access_token) {
                         if (err) return alert('Something went wrong: ' + err.message);
-                        alert('hello ' + profile.name);
+                        if (profile) return alert('hello ' + profile.name);
+                        return alert('success signup without login!')
                     });
                 });
             </script>
