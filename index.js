@@ -491,37 +491,49 @@ Auth0.prototype.signup = function (options, callback) {
     options.sso = true;
   }
 
+  if (!checkIfSet(options, 'auto_login')) {
+    options.auto_login = true;
+  }
+
   var popup;
 
-  if (options.popup  && !this._getCallbackOnLocationHash(options)) {
+  if (options.popup && !this._getCallbackOnLocationHash(options)) {
     popup = this._buildPopupWindow(options);
   }
 
-  if (options.popup  && options.sso) {
+  if (options.popup && options.sso) {
     popup = this._buildPopupWindow(options);
   }
 
   function success () {
-    if (popup && popup.kill) {
+    if (options.auto_login) {
+      return self.login(options, callback);
+    }
+
+    // FIXME: we should actually not open a popup
+    // if we are not doing auto_login after it
+    if (popup && 'function' === typeof popup.kill) {
       popup.kill();
     }
-    if ('auto_login' in options && !options.auto_login) {
-      if (callback) {
-        callback();
-      }
-      return;
+
+    if ('function' === typeof callback) {
+      return callback();
     }
-    self.login(options, callback);
   }
 
   function fail (status, resp) {
     var error = new LoginError(status, resp);
-    if (popup && popup.kill) {
+
+    // FIXME: we should actually not open a popup
+    // if we are not doing auto_login after it
+    if (popup && 'function' === typeof popup.kill) {
       popup.kill();
     }
-    if (callback) {
+
+    if ('function' === typeof callback) {
       return callback(error);
     }
+
     throw error;
   }
 
@@ -1228,7 +1240,7 @@ Auth0.prototype._buildPopupWindow = function (options, url) {
                           { width: 500, height: 600 },
                           (options.popupOptions || {})));
 
-  this._current_popup = window.open(url || 'about:blank', 'auth0_signup_popup',popupOptions);
+  this._current_popup = window.open(url || 'about:blank', 'auth0_signup_popup', popupOptions);
 
   var self = this;
 

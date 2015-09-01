@@ -121,7 +121,9 @@
                         connection: 'tests',
                         username: $('.signup-username').val(),
                         password: $('.signup-password').val(),
-                        sso: false
+                        sso: true,
+                        popup: true,
+                        auto_login: false
                     }, function (err, profile, id_token, access_token) {
                         if (err) return alert('Something went wrong: ' + err.message);
                         alert('hello ' + profile.name);
