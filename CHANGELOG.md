@@ -1,3 +1,18 @@
+## [6.6.1] - 2015-08-28
+
+### Fixed
+
+- [] Update example for signup (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/8b060242d63fd6a77d24a5456698ddbaf69e1a3a
+- [] Fix issue with double opened popups when doing signup (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/7b9c1e6ee415fe4a53b1393147e97a6f5d99dbd5
+- [] Update example so it doesn't make your eyes bleed (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/f747483286608679bfd80b3cbc7d790deebd04c6
+- [] Fix gruntfile and example html (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/aa6528135cdaff6812ff8df6d13f70b61e106849
+- [] Fix purge_cdn command (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/35d8d9e9ba3eea6a520c39b96536dffd48faa1d9
+
 ## [6.6.0] - 2015-08-28
 
 ### Fixed
