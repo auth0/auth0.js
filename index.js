@@ -264,7 +264,7 @@ Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
   }
 
   // the scope was just openid
-  var self = this;
+  var _this = this;
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/tokeninfo';
@@ -497,7 +497,7 @@ Auth0.prototype.signup = function (options, callback) {
   var popup;
 
   var will_popup = options.auto_login && options.popup
-    && (!this._getCallbackOnLocationHash(options)|| options.sso);
+    && (!this._getCallbackOnLocationHash(options) || options.sso);
 
   if (will_popup) {
     popup = this._buildPopupWindow(options);
@@ -772,7 +772,7 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
   }
 
   var mobileCallbackURL = joinUrl('https:', this._domain, '/mobile');
-  var self = this;
+  var _this = this;
   var qs = [
     this._getMode(options),
     options,
@@ -815,7 +815,7 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
     if ( event.url && !(event.url.indexOf(mobileCallbackURL + '#') === 0 ||
                        event.url.indexOf(mobileCallbackURL + '?') === 0)) { return; }
 
-    var result = self.parseHash(event.url.slice(mobileCallbackURL.length));
+    var result = _this.parseHash(event.url.slice(mobileCallbackURL.length));
 
     if (!result) {
       callback(new Error('Error parsing hash'), null, null, null, null);
@@ -824,7 +824,7 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
     }
 
     if (result.id_token) {
-      self.getProfile(result.id_token, function (err, profile) {
+      _this.getProfile(result.id_token, function (err, profile) {
         callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
       });
       answered = true;
@@ -1091,7 +1091,7 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
  */
 
 Auth0.prototype.loginWithResourceOwner = function (options, callback) {
-  var self = this;
+  var _this = this;
   var query = xtend(
     this._getMode(options),
     options,
@@ -1113,7 +1113,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
   }
 
   function enrichGetProfile(resp, callback) {
-    self.getProfile(resp.id_token, function (err, profile) {
+    _this.getProfile(resp.id_token, function (err, profile) {
       callback(err, profile, resp.id_token, resp.access_token, resp.state, resp.refresh_token);
     });
   }
@@ -1156,7 +1156,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
  */
 
 Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
-  var self = this;
+  var _this = this;
   var query = this._buildAuthorizationParameters([
       { scope: 'openid' },
       options,
@@ -1169,7 +1169,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   var url = joinUrl(protocol, domain, endpoint);
 
   function enrichGetProfile(resp, callback) {
-    self.getProfile(resp.id_token, function (err, profile) {
+    _this.getProfile(resp.id_token, function (err, profile) {
       callback(err, profile, resp.id_token, resp.access_token, resp.state, resp.refresh_token);
     });
   }
@@ -1264,7 +1264,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
     return this.loginWithResourceOwner(options, callback);
   }
 
-  var self = this;
+  var _this = this;
   var popup;
 
   // TODO We should deprecate this, really hacky and confuses people.
@@ -1306,7 +1306,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
         var error = new LoginError(resp.status, resp.error);
         return callback(error);
       }
-      self._renderAndSubmitWSFedForm(options, resp.form);
+      _this._renderAndSubmitWSFedForm(options, resp.form);
     });
   }
 
@@ -1325,7 +1325,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
     headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
-      self._renderAndSubmitWSFedForm(options, resp);
+      _this._renderAndSubmitWSFedForm(options, resp);
     },
     error: function (err) {
       if (popup && popup.kill) {
