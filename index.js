@@ -470,18 +470,17 @@ Auth0.prototype.parseHash = function (hash) {
  */
 
 Auth0.prototype.signup = function (options, callback) {
-  var self = this;
+  var _this = this;
 
-  var query = xtend(
-    this._getMode(options),
-    options,
-    {
-      client_id: this._clientID,
-      redirect_uri: this._getCallbackURL(options),
-      username: trim(options.username || ''),
-      email: trim(options.email || options.username || ''),
-      tenant: this._domain.split('.')[0]
-    });
+  var opts = {
+    client_id: this._clientID,
+    redirect_uri: this._getCallbackURL(options),
+    username: trim(options.username || ''),
+    email: trim(options.email || options.username || ''),
+    tenant: this._domain.split('.')[0]
+  };
+
+  var query = xtend(this._getMode(options), options, opts);
 
   this._configureOfflineMode(query);
 
@@ -497,23 +496,16 @@ Auth0.prototype.signup = function (options, callback) {
 
   var popup;
 
-  if (options.popup && !this._getCallbackOnLocationHash(options)) {
-    popup = this._buildPopupWindow(options);
-  }
+  var will_popup = options.auto_login && options.popup
+    && (!this._getCallbackOnLocationHash(options)|| options.sso);
 
-  if (options.popup && options.sso) {
+  if (will_popup) {
     popup = this._buildPopupWindow(options);
   }
 
   function success () {
     if (options.auto_login) {
-      return self.login(options, callback);
-    }
-
-    // FIXME: we should actually not open a popup
-    // if we are not doing auto_login after it
-    if (popup && 'function' === typeof popup.kill) {
-      popup.kill();
+      return _this.login(options, callback);
     }
 
     if ('function' === typeof callback) {
@@ -524,8 +516,7 @@ Auth0.prototype.signup = function (options, callback) {
   function fail (status, resp) {
     var error = new LoginError(status, resp);
 
-    // FIXME: we should actually not open a popup
-    // if we are not doing auto_login after it
+    // when failed we want the popup closed if opened
     if (popup && 'function' === typeof popup.kill) {
       popup.kill();
     }
@@ -733,8 +724,9 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
  */
 
 Auth0.prototype._computePopupPosition = function (options) {
-  var width = options.width;
-  var height = options.height;
+  options = options || {};
+  var width = options.width || 500;
+  var height = options.height || 600;
 
   var screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
   var screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
@@ -892,42 +884,34 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
  */
 
 Auth0.prototype.loginWithPopup = function(options, callback) {
-  var self = this;
+  var _this = this;
+
   if (!callback) {
     throw new Error('popup mode should receive a mandatory callback');
   }
 
-  var qs = [
-    this._getMode(options),
-    options,
-    {
-      client_id: this._clientID,
-      owp: true
-    }
-  ];
+  var qs = [this._getMode(options), options, { client_id: this._clientID, owp: true }];
 
-  if ( this._sendClientInfo ) {
+  if (this._sendClientInfo) {
     qs.push({ auth0Client: this._getClientInfoString() });
   }
 
   var query = this._buildAuthorizeQueryString(qs);
-
   var popupUrl = joinUrl('https:', this._domain, '/authorize?' + query);
 
-  var popupOptions = xtend(
-    self._computePopupPosition({
-      width: (options.popupOptions && options.popupOptions.width) || 500,
-      height: (options.popupOptions && options.popupOptions.height) || 600
-  }),
-    options.popupOptions);
+  var popupPosition = this._computePopupPosition(options.popupOptions);
+  var popupOptions = xtend(popupPosition, options.popupOptions);
 
-
-  // TODO Errors should be LoginError for consistency
   var popup = WinChan.open({
     url: popupUrl,
     relay_url: 'https://' + this._domain + '/relay.html',
     window_features: stringifyPopupSettings(popupOptions)
   }, function (err, result) {
+    // Eliminate `_current_popup` reference manually because
+    // Winchan removes `.kill()` method from window and also
+    // doesn't call `.kill()` by itself
+    _this._current_popup = null;
+
     // Winchan always returns string errors, we wrap them inside Error objects
     if (err) {
       return callback(new LoginError(err), null, null, null, null, null);
@@ -940,7 +924,7 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
 
     // Handle profile retrieval from id_token and respond
     if (result.id_token) {
-      return self.getProfile(result.id_token, function (err, profile) {
+      return _this.getProfile(result.id_token, function (err, profile) {
         callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
       });
     }
@@ -986,14 +970,14 @@ Auth0.prototype._shouldAuthenticateWithCordovaPlugin = function(connection) {
 
 Auth0.prototype._socialPhonegapLogin = function(options, callback) {
   var socialAuthentication = this._cordovaSocialPlugins[options.connection];
-  var self = this;
+  var _this = this;
   socialAuthentication(options.connection_scope, function(error, accessToken, extras) {
     if (error) {
       callback(error, null, null, null, null);
       return;
     }
     var loginOptions = xtend({ access_token: accessToken }, options, extras);
-    self.loginWithSocialAccessToken(loginOptions, callback);
+    _this.loginWithSocialAccessToken(loginOptions, callback);
   });
 };
 
@@ -1037,15 +1021,10 @@ Auth0.prototype._phonegapFacebookLogin = function(scopes, callback) {
  * @private
  */
 Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
-  var self = this;
-  var popupOptions = xtend(
-    self._computePopupPosition({
-      width: (options.popupOptions && options.popupOptions.width) || 500,
-      height: (options.popupOptions && options.popupOptions.height) || 600
-  }),
-    options.popupOptions);
+  var _this = this;
+  var popupPosition = this._computePopupPosition(options.popupOptions);
+  var popupOptions = xtend(popupPosition, options.popupOptions);
 
-  // TODO Refactor this with the other winchan logic for loginWithPopup.
   var popup = WinChan.open({
     url: 'https://' + this._domain + '/sso_dbconnection_popup/' + this._clientID,
     relay_url: 'https://' + this._domain + '/relay.html',
@@ -1064,6 +1043,11 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
       }
     }
   }, function (err, result) {
+    // Eliminate `_current_popup` reference manually because
+    // Winchan removes `.kill()` method from window and also
+    // doesn't call `.kill()` by itself
+    _this._current_popup = null;
+
     // Winchan always returns string errors, we wrap them inside Error objects
     if (err) {
       return callback(new LoginError(err), null, null, null, null, null);
@@ -1076,7 +1060,7 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
 
     // Handle profile retrieval from id_token and respond
     if (result.id_token) {
-      return self.getProfile(result.id_token, function (err, profile) {
+      return _this.getProfile(result.id_token, function (err, profile) {
         callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
       });
     }
@@ -1236,13 +1220,14 @@ Auth0.prototype._buildPopupWindow = function (options, url) {
     return this._current_popup;
   }
 
-  var popupOptions = stringifyPopupSettings(xtend(
-                          { width: 500, height: 600 },
-                          (options.popupOptions || {})));
+  url = url || 'about:blank'
 
-  this._current_popup = window.open(url || 'about:blank', 'auth0_signup_popup', popupOptions);
+  var _this = this;
+  var defaults = { width: 500, height: 600 };
+  var opts = xtend(defaults, options.popupOptions || {});
+  var popupOptions = stringifyPopupSettings(opts);
 
-  var self = this;
+  this._current_popup = window.open(url, 'auth0_signup_popup', popupOptions);
 
   if (!this._current_popup) {
     throw new Error('Popup window cannot not been created. Disable popup blocker or make sure to call Auth0 login or singup on an UI event.');
@@ -1250,7 +1235,7 @@ Auth0.prototype._buildPopupWindow = function (options, url) {
 
   this._current_popup.kill = function () {
     this.close();
-    delete self._current_popup;
+    _this._current_popup = null;
   };
 
   return this._current_popup;
