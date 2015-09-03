@@ -1,3 +1,16 @@
+## [6.6.2] - 2015-09-02
+
+### Fixed
+
+- [] Updated tests to run faster in latest 3 versions of browsers (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/7ac1ffd2327c89e386e28e8a10b17d0e961de2cb
+- [] Merge pull request #107 from auth0/fix/signup-popup (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/fd73f249181508ab2153d5f64929fba76faf56b5
+- [] Some codestyle changes (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/0f9cf8415460acddd9936e30a1e044c592d29c5e
+- [] Little refactor for popup opener when auto_login mode on signup (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/065c9e6cb2f950545c11bbcd8bd1d7b0004380ae
+
 ## [6.6.1] - 2015-08-28
 
 ### Fixed
