@@ -65,6 +65,6 @@
     "uglify-js": "~2.4.0",
     "unreleased": "^0.1.0",
     "zuul": "^3.4.0",
-    "zuul-ngrok": "^2.0.1"
+    "zuul-ngrok": "^3.0.0"
   }
 }
