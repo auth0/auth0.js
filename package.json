@@ -64,7 +64,7 @@
     "sinon": "1.16.1",
     "uglify-js": "~2.4.0",
     "unreleased": "^0.1.0",
-    "zuul": "https://github.com/jfromaniello/zuul/tarball/phantom_custom_port",
+    "zuul": "^3.4.0",
     "zuul-ngrok": "^2.0.1"
   }
 }
