@@ -1,3 +1,10 @@
+## [6.6.3] - 2015-09-03
+
+### Fixed
+
+- [] create a new popup window if the current one is closed (`José F. Romaniello`)
+  https://github.com/auth0/auth0.js/commit/9dd323e344957b5ec3b3f0fa8d0f83aaad747aaf
+
 ## [6.6.2] - 2015-09-02
 
 ### Fixed
