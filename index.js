@@ -1216,7 +1216,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
  */
 
 Auth0.prototype._buildPopupWindow = function (options, url) {
-  if (this._current_popup) {
+  if (this._current_popup && !this._current_popup.closed) {
     return this._current_popup;
   }
 
