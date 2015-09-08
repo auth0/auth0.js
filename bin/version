@@ -6,7 +6,14 @@ var fs = require('fs');
 
 function run(cmd, done) {
   var exec = require('child_process').exec;
-  var proc = exec(cmd, done);
+  var proc = exec(cmd, function (err) {
+    if (err) {
+      run('git checkout .', function () {
+        process.exit(1);
+      });
+    }
+    done();
+  });
   proc.stdout.pipe(process.stdout);
   proc.stderr.pipe(process.stderr);
 }
@@ -14,6 +21,8 @@ function run(cmd, done) {
 try {
   var rootDir = path.resolve(__dirname, '..');
   var res = bump(rootDir, process.argv.pop());
+
+  fs.writeFileSync(__dirname + '/../version.json', JSON.stringify({ version: res.version }));
 
   unreleased(res.version, rootDir, 'auth0/auth0.js', function (err, changelog) {
     if (err) { return process.exit(1); }
@@ -27,14 +36,12 @@ try {
     fs.writeSync(fd, data, 0, data.length); //append old data
     fs.close(fd);
 
-    run('git commit -am "release: ' + res.version + '"', function (err) {
-      if (err) {
-        run('git checkout .', function () {
-          process.exit(1);
-        });
-      }
-      process.exit(0);
+    run('git add -A', function () {
+      run('git commit -am "release: ' + res.version + '"', function () {
+        process.exit(0);
+      });
     });
+
   });
 
 } catch (err) {
