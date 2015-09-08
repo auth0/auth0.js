@@ -1,3 +1,10 @@
+## [6.6.4] - 2015-09-07
+
+### Fixed
+
+- [] remove packageify - closes #99 (`José F. Romaniello`)
+  https://github.com/auth0/auth0.js/commit/39acefc412d48f438f278197bb75e52e188a5608
+
 ## [6.6.3] - 2015-09-03
 
 ### Fixed
