@@ -676,9 +676,8 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
     options.sso = true;
   }
 
-  if (typeof options.phone !== 'undefined' ||
-      typeof options.passcode !== 'undefined') {
-    return this.loginWithPhoneNumber(options, callback);
+  if (typeof options.passcode !== 'undefined') {
+    return this.loginWithPasscode(options, callback);
   }
 
   if (typeof options.username !== 'undefined' ||
@@ -694,6 +693,10 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
     return this.loginWithPopup(options, callback);
   }
 
+  this._authorize(options);
+};
+
+Auth0.prototype._authorize = function(options) {
   var qs = [
     this._getMode(options),
     options,
@@ -1343,31 +1346,41 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
  * @param {Function} callback
  * @method loginWithPhoneNumber
  */
-Auth0.prototype.loginWithPhoneNumber = function (options, callback) {
+Auth0.prototype.loginWithPasscode = function (options, callback) {
 
-  if ('function' !== typeof callback) {
-    throw new Error('callback is required for phone number authentication');
+  if (options.email == null && options.phoneNumber == null) {
+    throw new Error('email or phoneNumber is required for authentication');
   }
 
-  if (null == options.phone) {
-    throw new Error('phone is required for authentication');
-  }
-
-  if (null == options.passcode) {
+  if (options.passcode == null) {
     throw new Error('passcode is required for authentication');
   }
 
-  var opts = xtend(options, {
-    connection: 'sms',
-    username: options.phone,
-    password: options.passcode
-  });
+  options.connection = options.email == null ? 'sms' : 'email';
 
-  opts.sso = false;
-  delete opts.phone;
-  delete opts.passcode;
+  if (callback && callback.length > 1) {
+    options = xtend(options, {
+      username: options.email == null ? options.phoneNumber : options.email,
+      password: options.passcode,
+      sso: false
+    });
 
-  this.loginWithResourceOwner(opts, callback);
+    delete options.email;
+    delete options.phoneNumber;
+    delete options.passcode;
+
+    return this.loginWithResourceOwner(options, callback);
+  }
+
+  if (options.phoneNumber) {
+    options.phone_number = options.phoneNumber;
+    delete options.phoneNumber;
+  }
+
+  options.verification_code = options.passcode;
+  delete options.passcode;
+
+  this._authorize(options);
 };
 
 // TODO Document me

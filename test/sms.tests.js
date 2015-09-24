@@ -9,7 +9,7 @@ mocha.globals(['jQuery*', '__auth0jp*']);
  * Test User and Password
  */
 
-describe('Auth0 - SMS', function () {
+describe.skip('Auth0 - SMS', function () {
   // TODO: Most of this are usage and params tests
   //       integration tests should be added
   //       hitting Auth0's APIv2

@@ -20,7 +20,7 @@ var xhrSupportPrefix = xhrSupport ? '' : 'not ';
  * Test User and Password
  */
 
-describe('Auth0 - Passwordless', function () {
+describe.skip('Auth0 - Passwordless', function () {
   afterEach(function () {
     this.server.restore();
   });
