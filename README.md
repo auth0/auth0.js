@@ -153,13 +153,17 @@ Passwordless authentication allows users to log in by receiving a one-time passw
 
 #### With Email
 
-Once you have configured a passwordless `email` connection, you can request a link to be sent via email that will allow the receiver to sign in to your application.
+Once you have configured a passwordless `email` connection, you can request a link or a code to be sent via email that will allow the receiver to sign in to your application.
+
+
+##### Link
 
 ```js
 $('.request-email-link').click(function (ev) {
   ev.preventDefault();
 
-  auth0.startPasswordless({ email: $('.email-input').val() }, function (err) {
+  var email = $('.email-input').val();
+  auth0.requestMagiclink(email, function (err) {
     if (err) {
       alert(err.error_description);
       return;
@@ -170,48 +174,104 @@ $('.request-email-link').click(function (ev) {
 });
 ```
 
+##### Code
+
+```js
+$('.request-email-code').click(function (ev) {
+  ev.preventDefault();
+
+  auth0.requestEmailCode({
+    email: $('.email-input').val()
+  }, function (err) {
+    if (err) {
+      alert(err.error_description);
+      return;
+    }
+    // the request was successful and you should receive
+    // an email with the code at the specified address
+  });
+});
+```
+
+Once you receive the code you can call `verifyEmailCode` to authenticate the user using an `email` and a `code` and obtain the user's information such as its profile.
+
+```js
+auth0.verifyEmailCode({
+  email: $('.email-input').val(),
+  code: $('.email-code-input').val()
+}, function (err, profile, id_token, access_token, state, refresh_token) {
+  if (err) {
+    alert("something went wrong: " + err.error_description);
+    return;
+  }
+  console.log(profile, id_token, access_token, state, refresh_token);
+});
+```
+
+If you provided a `callbackURL` parameter when constructing the Auth0 instance, a redirect will be performed:
+
+```js
+auth0.verifyEmailCode(auth0.verifyEmailCode({
+  email: $('.email-input').val(),
+  code: $('.email-code-input').val()
+}, function (err) {
+  if (err) {
+    alert("something went wrong: " + err.error_description);
+    return;
+  }
+});
+```
+
 #### With SMS
 
 First you must activate and configure your passwordless [Twilio](https://twilio.com) connection in our [dashboard](https://manage.auth0.com/#/connections/passwordless).
 
-After that you can request a passcode to be sent via SMS to a phone number. Ensure the phone number has the proper [full-length format](https://www.twilio.com/help/faq/phone-numbers/how-do-i-format-phone-numbers-to-work-internationally) `phoneNumber`.
+After that you can request a passcode to be sent via SMS to a phone number. Ensure the phone number has the proper [full-length format](https://www.twilio.com/help/faq/phone-numbers/how-do-i-format-phone-numbers-to-work-internationally).
+
 
 ```js
-// request a passcode sent via sms to `phoneNumber`
-// using Twilio's configured connection
 $('.request-sms-code').click(function (ev) {
   ev.preventDefault();
 
-  auth0.startPasswordless({
+  auth0.requestSMSCode({
     phoneNumber: $('.phone-input').val()
   }, function (err) {
     if (err) {
       alert(err.error_description);
       return;
     }
-    // the request was successful and you should
-    // receive the passcode to the specified phone
+    // the request was successful and you should receive
+    // a SMS with the code at the specified phone number
   });
 });
 ```
 
-Once you receive the code you follow using `.login()` to authenticate the user using `phone` and `passcode`.
+Once you receive the code you can call `verifySMSCode` to authenticate the user using an `phoneNumber` and a `code` and obtain the user's information such as its profile.
 
 ```js
-//submit the passcode to authenticate the phone
-$('.submit-sms-code').click(function (ev) {
-  ev.preventDefault();
+auth0.verifySMSCode({
+  phoneNumber: $('.phone-input').val(),
+  code: $('.sms-code-input').val()
+}, function (err, profile, id_token, access_token, state, refresh_token) {
+  if (err) {
+    alert("something went wrong: " + err.error_description);
+    return;
+  }
+  console.log(profile, id_token, access_token, state, refresh_token);
+});
+```
 
-  auth0.login({
-    phone: $('.phone-input').val(),
-    passcode: $('.sms-code-input').val()
-  }, function (err, profile, id_token, access_token, state, refresh_token) {
-    if (err) {
-      alert("something went wrong: " + err.message);
-      return;
-    }
-    console.log(profile, id_token, access_token, state, refresh_token);
-  });
+If you provided a `callbackURL` parameter when constructing the Auth0 instance, a redirect will be performed:
+
+```js
+auth0.verifySMSCode(auth0.verifyEmailCode({
+  phoneNumber: $('.phone-input').val(),
+  code: $('.sms-code-input').val()
+}, function (err) {
+  if (err) {
+    alert("something went wrong: " + err.error_description);
+    return;
+  }
 });
 ```
 
