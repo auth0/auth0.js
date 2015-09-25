@@ -162,8 +162,9 @@ Once you have configured a passwordless `email` connection, you can request a li
 $('.request-email-link').click(function (ev) {
   ev.preventDefault();
 
-  var email = $('.email-input').val();
-  auth0.requestMagiclink(email, function (err) {
+  auth0.requestMagiclink({
+    email: $('.email-input').val()
+  }, function (err) {
     if (err) {
       alert(err.error_description);
       return;
