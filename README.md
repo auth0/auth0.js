@@ -209,7 +209,7 @@ auth0.verifyEmailCode({
 });
 ```
 
-If you provided a `callbackURL` parameter when constructing the Auth0 instance, a redirect will be performed:
+If you provide a `callbackURL` parameter when constructing the Auth0 instance, a redirect will be performed and the callback will only be invoked in the case of an error (notice it takes a single argument).
 
 ```js
 auth0.verifyEmailCode(auth0.verifyEmailCode({
@@ -262,10 +262,10 @@ auth0.verifySMSCode({
 });
 ```
 
-If you provided a `callbackURL` parameter when constructing the Auth0 instance, a redirect will be performed:
+If you provide a `callbackURL` parameter when constructing the Auth0 instance, a redirect will be performed and the callback will only be invoked in the case of an error (notice it takes a single argument).
 
 ```js
-auth0.verifySMSCode(auth0.verifyEmailCode({
+auth0.verifySMSCode({
   phoneNumber: $('.phone-input').val(),
   code: $('.sms-code-input').val()
 }, function (err) {
