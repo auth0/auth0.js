@@ -149,6 +149,7 @@ function Auth0 (options) {
 
   this._clientID = options.clientID;
   this._callbackURL = options.callbackURL || document.location.href;
+  this._shouldRedirect = !!options.callbackURL;
   this._domain = options.domain;
   this._callbackOnLocationHash = false || options.callbackOnLocationHash;
   this._cordovaSocialPlugins = {
@@ -676,9 +677,8 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
     options.sso = true;
   }
 
-  if (typeof options.phone !== 'undefined' ||
-      typeof options.passcode !== 'undefined') {
-    return this.loginWithPhoneNumber(options, callback);
+  if (typeof options.passcode !== 'undefined') {
+    return this.loginWithPasscode(options, callback);
   }
 
   if (typeof options.username !== 'undefined' ||
@@ -694,6 +694,10 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
     return this.loginWithPopup(options, callback);
   }
 
+  this._authorize(options);
+};
+
+Auth0.prototype._authorize = function(options) {
   var qs = [
     this._getMode(options),
     options,
@@ -1343,31 +1347,118 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
  * @param {Function} callback
  * @method loginWithPhoneNumber
  */
-Auth0.prototype.loginWithPhoneNumber = function (options, callback) {
+Auth0.prototype.loginWithPasscode = function (options, callback) {
 
-  if ('function' !== typeof callback) {
-    throw new Error('callback is required for phone number authentication');
+  if (options.email == null && options.phoneNumber == null) {
+    throw new Error('email or phoneNumber is required for authentication');
   }
 
-  if (null == options.phone) {
-    throw new Error('phone is required for authentication');
-  }
-
-  if (null == options.passcode) {
+  if (options.passcode == null) {
     throw new Error('passcode is required for authentication');
   }
 
-  var opts = xtend(options, {
-    connection: 'sms',
-    username: options.phone,
-    password: options.passcode
+  options.connection = options.email == null ? 'sms' : 'email';
+
+  if (!this._shouldRedirect) {
+    options = xtend(options, {
+      username: options.email == null ? options.phoneNumber : options.email,
+      password: options.passcode,
+      sso: false
+    });
+
+    delete options.email;
+    delete options.phoneNumber;
+    delete options.passcode;
+
+    return this.loginWithResourceOwner(options, callback);
+  }
+
+  var verifyOptions = {connection: options.connection};
+
+  if (options.phoneNumber) {
+    options.phone_number = options.phoneNumber;
+    delete options.phoneNumber;
+
+    verifyOptions.phone_number = options.phone_number;
+  }
+
+  if (options.email) {
+    verifyOptions.email = options.email;
+  }
+
+  options.verification_code = options.passcode;
+  delete options.passcode;
+
+  verifyOptions.verification_code = options.verification_code;
+
+  var _this = this;
+  this._verify(verifyOptions, function(error) {
+    if (error) {
+      return callback(error);
+    }
+    _this._verify_redirect(options);
   });
+};
 
-  opts.sso = false;
-  delete opts.phone;
-  delete opts.passcode;
+Auth0.prototype._verify = function(options, callback) {
+  var protocol = 'https:';
+  var domain = this._domain;
+  var endpoint = '/passwordless/verify';
+  var url = joinUrl(protocol, domain, endpoint);
 
-  this.loginWithResourceOwner(opts, callback);
+  var data = options;
+
+  if (this._useJSONP) {
+    if (this._sendClientInfo) {
+      data['auth0Client'] = this._getClientInfoString();
+    }
+
+    return jsonp(url + '?' + qs.stringify(data), jsonpOpts, function (err, resp) {
+      if (err) {
+        return callback(new Error(0 + ': ' + err.toString()));
+      }
+      // /**/ typeof __auth0jp0 === 'function' && __auth0jp0({"status":400});
+      return resp.status === 200 ? callback(null, true) : callback({status: resp.status});
+    });
+  }
+
+  return reqwest({
+    url:          same_origin(protocol, domain) ? endpoint : url,
+    method:       'post',
+    headers:      this._getClientInfoHeader(),
+    crossOrigin:  !same_origin(protocol, domain),
+    data:         data
+  })
+  .fail(function (err) {
+    try {
+      callback(JSON.parse(err.responseText));
+    } catch (e) {
+      var error = new Error(err.status + '(' + err.statusText + '): ' + err.responseText);
+      error.statusCode = err.status;
+      error.error = err.statusText;
+      error.message = err.responseText;
+      callback(error);
+    }
+  })
+  .then(function (result) {
+    callback(null, result);
+  });
+}
+
+Auth0.prototype._verify_redirect = function(options) {
+  var qs = [
+    this._getMode(options),
+    options,
+    {
+      client_id: this._clientID,
+      redirect_uri: this._getCallbackURL(options)
+    }
+  ];
+
+  var query = this._buildAuthorizeQueryString(qs);
+  var url = joinUrl('https:', this._domain, '/passwordless/verify_redirect?' + query);
+
+  this._redirect(url);
 };
 
 // TODO Document me
@@ -1601,40 +1692,6 @@ Auth0.prototype.getConnections = function (callback) {
 };
 
 /**
- * Send SMS to do passwordless authentication
- *
- * @example
- *
- *     auth0.requestSMSCode(apiToken, phoneNumber, function (err, result) {
- *       if (err) return console.log(err.message);
- *       console.log(result);
- *     });
- *
- * @method requestSMSCode
- * @param {Object} options
- * @param {Function} callback
- */
-
-Auth0.prototype.requestSMSCode = function (options, callback) {
-  if (console && 'function' === typeof console.warn) {
-    console.warn("`requestSMSCode` is deprected, please use `startPasswordless` instead");
-  }
-
-  if ('object' !== typeof options) {
-    throw new Error('An options object is required');
-  }
-  if ('function' !== typeof callback) {
-    throw new Error('A callback function is required');
-  }
-
-  assert_required(options, 'phone');
-  options.phoneNumber = options.phone;
-  delete options.phone;
-
-  return this.startPasswordless(options, callback);
-};
-
-/**
  * Send email or SMS to do passwordless authentication
  *
  * @example
@@ -1722,6 +1779,31 @@ Auth0.prototype.startPasswordless = function (options, callback) {
   .then(function (result) {
     callback(null, result);
   });
+};
+
+Auth0.prototype.requestMagicLink = function(attrs, cb) {
+  return this.startPasswordless(attrs, cb);
+};
+
+Auth0.prototype.requestEmailCode = function(attrs, cb) {
+  attrs.send = "code";
+  return this.startPasswordless(attrs, cb);
+};
+
+Auth0.prototype.verifyEmailCode = function(attrs, cb) {
+  attrs.passcode = attrs.code;
+  delete attrs.code;
+  return this.login(attrs, cb);
+};
+
+Auth0.prototype.requestSMSCode = function(attrs, cb) {
+  return this.startPasswordless(attrs, cb);
+};
+
+Auth0.prototype.verifySMSCode = function(attrs, cb) {
+  attrs.passcode = attrs.code;
+  delete attrs.code;
+  return this.login(attrs, cb);
 };
 
 /**
