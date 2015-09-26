@@ -1,3 +1,10 @@
+## [6.7.1] - 2015-09-26
+
+### Fixed
+
+- [] Consider callback options when sending magiclink (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/e7ec405f001618791f958c3ed37ecf15cff3aaa1
+
 ## [6.7.0] - 2015-09-08
 
 ### Fixed
