@@ -1736,6 +1736,16 @@ Auth0.prototype.startPasswordless = function (options, callback) {
     if (options.authParams) {
       data.authParams = options.authParams;
     }
+
+    if (this._shouldRedirect && !options.send || options.send === "link") {
+      if (!data.authParams) {
+        data.authParams = {};
+      }
+
+      data.authParams.redirect_uri = this._callbackURL;
+      data.authParams.response_type = this._callbackOnLocationHash ? "token" : "code";
+    }
+
     if (options.send) {
       data.send = options.send;
     }
