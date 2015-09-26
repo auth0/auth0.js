@@ -1,3 +1,20 @@
+## [6.7.0] - 2015-09-08
+
+### Fixed
+
+- [] Merge pull request #110 from auth0/passwordless-redirect (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/df02ebc7300080c0e470fa94a37dbcffc0505e7d
+- [] New passwordless API (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/f4cdf13f5669586bab4776afc7ab78282c1ebc8e
+- [] Fix call to requestMagicLink in README (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/12988494c8733af41a30011f6040930c21fb70a7
+- [] Doc in README new passwordless API (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/16ac0bc003bd11b5bb9bc056c75e3ef1b034bed7
+- [] Fix tests (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/47e6380e37dbebcc1e52c1318dc2ffa78ed0be9a
+- [] WIP to allow redirect mode for passwordless login (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/6a6db948ce8bba6e052e47cc99f319bfdc20aaab
+
 ## [6.6.4] - 2015-09-07
 
 ### Fixed
