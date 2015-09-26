@@ -267,16 +267,6 @@ describe('Auth0 - Passwordless', function () {
       });
     });
 
-    it('should throw if called without callback', function (done) {
-      var auth0 = this.auth0;
-      expect(function () {
-        auth0.loginWithPasscode({ phoneNumber: '+123123123123', passcode: '123123' });
-      }).to.throwError(function (err) {
-        expect(err.message).to.contain('callback');
-        done();
-      });
-    });
-
     it.skip('should fallback calling .loginWithResourceOwner() with correct options', function (done) {
       this.auth0.loginWithResourceOwner = function (options, callback) {
         expect(options.sso).to.be(false);
@@ -300,41 +290,43 @@ describe('Auth0 - Passwordless', function () {
   });
 
   describe('.login()', function() {
-    describe('successful login (xhr ' + xhrSupportPrefix + ' supported)', function() {
-      beforeEach(function() {
-        this.passcode = '123456';
-        this.server.respondWith('POST', 'https://' + this.domain + '/oauth/ro', [
-          200,
-          { 'Content-Type': 'application/json' },
-          '{}'
-        ]);
-        // XXX Avoid fetching the profile
-        this.auth0.getProfile = function(id_token, callback) {
-          return callback(null, {});
-        }
-      });
-
-      it('should send the expected parameters', function (done) {
-        // TODO test JSONP request
-        if (!xhrSupport) return done();
-
-        this.auth0.login({ phoneNumber: this.phoneNumber, passcode: this.passcode }, function (err, profile) {
-          expect(err).to.be(null);
-          done();
+    describe('/oauth/ro', function() {
+      describe('successful login (xhr ' + xhrSupportPrefix + ' supported)', function() {
+        beforeEach(function() {
+          this.passcode = '123456';
+          this.server.respondWith('POST', 'https://' + this.domain + '/oauth/ro', [
+            200,
+            { 'Content-Type': 'application/json' },
+            '{}'
+          ]);
+          // XXX Avoid fetching the profile
+          this.auth0.getProfile = function(id_token, callback) {
+            return callback(null, {});
+          }
         });
 
-        var requestData = parseRequestBody(this.server.requests[0]);
-        expect(requestData.client_id).to.be(this.clientID);
-        expect(requestData.connection).to.be('sms');
-        expect(requestData.grant_type).to.be('password');
-        expect(requestData.username).to.be(this.phoneNumber);
-        expect(requestData.password).to.be(this.passcode);
-        expect(requestData.scope).to.be('openid');
-        expect(requestData.sso).to.be('false');
-        expect(requestData.phone).to.be(undefined);
-        expect(requestData.passcode).to.be(undefined);
+        it('should send the expected parameters', function (done) {
+          // TODO test JSONP request
+          if (!xhrSupport) return done();
 
-        this.server.respond();
+          this.auth0.login({ phoneNumber: this.phoneNumber, passcode: this.passcode }, function (err, profile) {
+            expect(err).to.be(null);
+            done();
+          });
+
+          var requestData = parseRequestBody(this.server.requests[0]);
+          expect(requestData.client_id).to.be(this.clientID);
+          expect(requestData.connection).to.be('sms');
+          expect(requestData.grant_type).to.be('password');
+          expect(requestData.username).to.be(this.phoneNumber);
+          expect(requestData.password).to.be(this.passcode);
+          expect(requestData.scope).to.be('openid');
+          expect(requestData.sso).to.be('false');
+          expect(requestData.phoneNumber).to.be(undefined);
+          expect(requestData.passcode).to.be(undefined);
+
+          this.server.respond();
+        });
       });
     });
   });
