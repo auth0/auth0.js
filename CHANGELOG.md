@@ -1,3 +1,10 @@
+## [6.7.2] - 2015-09-26
+
+### Fixed
+
+- [] Properly set response_type in requestMagicLink (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/8895643c1e9b5ce54c69501620ce3ae1d1801404
+
 ## [6.7.1] - 2015-09-26
 
 ### Fixed
