@@ -1737,13 +1737,14 @@ Auth0.prototype.startPasswordless = function (options, callback) {
       data.authParams = options.authParams;
     }
 
-    if (this._shouldRedirect && !options.send || options.send === "link") {
+    if (!options.send || options.send === "link") {
       if (!data.authParams) {
         data.authParams = {};
       }
 
       data.authParams.redirect_uri = this._callbackURL;
-      data.authParams.response_type = this._callbackOnLocationHash ? "token" : "code";
+      data.authParams.response_type = this._shouldRedirect && !this._callbackOnLocationHash ?
+        "code" : "token";
     }
 
     if (options.send) {
