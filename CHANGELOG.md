@@ -1,3 +1,10 @@
+## [6.7.3] - 2015-09-29
+
+### Fixed
+
+- [] Consider aud arrays when decoding the id token (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/922556437da51f2a5b77613be2c156ae9a065c84
+
 ## [6.7.2] - 2015-09-26
 
 ### Fixed
