@@ -360,7 +360,21 @@ describe('Auth0', function () {
 
     });
 
-    it('should return an error if aud is invalid', function () {
+    it('should be able to parse an aud array', function () {
+      var hash = '#access_token=jFxsZUQTJXXwcwIm&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xvZ2luLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExODMwNDIzMTY0MDMwMTY4NTU3OSIsImF1ZCI6WyIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsIjFKUTgyR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIl0sImV4cCI6MTM4MDI1ODc1OCwiaWF0IjoxMzgwMjIyNzU4LCJjbGllbnRJRCI6IjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIiwiZW1haWwiOiJqb3NlLnJvbWFuaWVsbG9AcXJhZnRsYWJzLmNvbSIsImZhbWlseV9uYW1lIjoiUm9tYW5pZWxsbyIsImdlbmRlciI6Im1hbGUiLCJnaXZlbl9uYW1lIjoiSm9zZSIsImlkZW50aXRpZXMiOlt7ImFjY2Vzc190b2tlbiI6InlhMjkuQUhFUzZaVEpZZkJzd2tTRW1FNmE0NkpaR2FYMVdSanNma1M3eVZvNUVzT3ZLSllYZ3p6RGZfWVIiLCJwcm92aWRlciI6Imdvb2dsZS1vYXV0aDIiLCJ1c2VyX2lkIjoiMTE4MzA0MjMxNjQwMzAxNjg1NTc5IiwiY29ubmVjdGlvbiI6Imdvb2dsZS1vYXV0aDIiLCJpc1NvY2lhbCI6dHJ1ZX1dLCJsb2NhbGUiOiJlbiIsIm5hbWUiOiJKb3NlIFJvbWFuaWVsbG8iLCJuaWNrbmFtZSI6Impvc2Uucm9tYW5pZWxsbyIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLXBfNXVMMUwxZHZFL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUJRL2lQSEVENGo5cW5ZL3Bob3RvLmpwZyIsInVzZXJfaWQiOiJnb29nbGUtb2F1dGgyfDExODMwNDIzMTY0MDMwMTY4NTU3OSJ9.9j4aVz2Kx5pdY8dxdu59tNe8xxNAXa4b2_IPgpCW0wA&token_type=bearer&state=Ttct3tBlHDhRnXCv';
+
+      var auth0 = new Auth0({
+        clientID:     '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        callbackURL:  'https://myapp.com/callback',
+        domain:       'login.auth0.com'
+      });
+
+      var result = auth0.parseHash(hash);
+      expect(result.error).to.not.be.ok();
+      expect(result.error_description).to.not.be.ok();
+    });
+
+    it('should return an error if aud string is invalid', function () {
       var hash = '#access_token=jFxsZUQTJXXwcwIm&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xvZ2luLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExODMwNDIzMTY0MDMwMTY4NTU3OSIsImF1ZCI6IjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIiwiZXhwIjoxMzgwMjU4NzU4LCJpYXQiOjEzODAyMjI3NTgsImNsaWVudElEIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJlbWFpbCI6Impvc2Uucm9tYW5pZWxsb0BxcmFmdGxhYnMuY29tIiwiZmFtaWx5X25hbWUiOiJSb21hbmllbGxvIiwiZ2VuZGVyIjoibWFsZSIsImdpdmVuX25hbWUiOiJKb3NlIiwiaWRlbnRpdGllcyI6W3siYWNjZXNzX3Rva2VuIjoieWEyOS5BSEVTNlpUSllmQnN3a1NFbUU2YTQ2SlpHYVgxV1Jqc2ZrUzd5Vm81RXNPdktKWVhnenpEZl9ZUiIsInByb3ZpZGVyIjoiZ29vZ2xlLW9hdXRoMiIsInVzZXJfaWQiOiIxMTgzMDQyMzE2NDAzMDE2ODU1NzkiLCJjb25uZWN0aW9uIjoiZ29vZ2xlLW9hdXRoMiIsImlzU29jaWFsIjp0cnVlfV0sImxvY2FsZSI6ImVuIiwibmFtZSI6Ikpvc2UgUm9tYW5pZWxsbyIsIm5pY2tuYW1lIjoiam9zZS5yb21hbmllbGxvIiwicGljdHVyZSI6Imh0dHBzOi8vbGg2Lmdvb2dsZXVzZXJjb250ZW50LmNvbS8tcF81dUwxTDFkdkUvQUFBQUFBQUFBQUkvQUFBQUFBQUFBQlEvaVBIRUQ0ajlxblkvcGhvdG8uanBnIiwidXNlcl9pZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0MjMxNjQwMzAxNjg1NTc5In0.Qrhrkp7hCYFyN_Ax9yVPKztuJNFHjnGbyUfLJsccLGU&token_type=bearer&state=Ttct3tBlHDhRnXCv';
 
       var auth0 = new Auth0({
@@ -372,7 +386,20 @@ describe('Auth0', function () {
       var result = auth0.parseHash(hash);
       expect(result.error).to.be.equal('invalid_token');
       expect(result.error_description).to.be.equal('The clientID configured (wrong) does not match with the clientID set in the token (0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup).');
+    });
 
+    it('should return an error if aud array is invalid', function () {
+      var hash = '#access_token=jFxsZUQTJXXwcwIm&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xvZ2luLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExODMwNDIzMTY0MDMwMTY4NTU3OSIsImF1ZCI6WyIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsIjFKUTgyR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIl0sImV4cCI6MTM4MDI1ODc1OCwiaWF0IjoxMzgwMjIyNzU4LCJjbGllbnRJRCI6IjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIiwiZW1haWwiOiJqb3NlLnJvbWFuaWVsbG9AcXJhZnRsYWJzLmNvbSIsImZhbWlseV9uYW1lIjoiUm9tYW5pZWxsbyIsImdlbmRlciI6Im1hbGUiLCJnaXZlbl9uYW1lIjoiSm9zZSIsImlkZW50aXRpZXMiOlt7ImFjY2Vzc190b2tlbiI6InlhMjkuQUhFUzZaVEpZZkJzd2tTRW1FNmE0NkpaR2FYMVdSanNma1M3eVZvNUVzT3ZLSllYZ3p6RGZfWVIiLCJwcm92aWRlciI6Imdvb2dsZS1vYXV0aDIiLCJ1c2VyX2lkIjoiMTE4MzA0MjMxNjQwMzAxNjg1NTc5IiwiY29ubmVjdGlvbiI6Imdvb2dsZS1vYXV0aDIiLCJpc1NvY2lhbCI6dHJ1ZX1dLCJsb2NhbGUiOiJlbiIsIm5hbWUiOiJKb3NlIFJvbWFuaWVsbG8iLCJuaWNrbmFtZSI6Impvc2Uucm9tYW5pZWxsbyIsInBpY3R1cmUiOiJodHRwczovL2xoNi5nb29nbGV1c2VyY29udGVudC5jb20vLXBfNXVMMUwxZHZFL0FBQUFBQUFBQUFJL0FBQUFBQUFBQUJRL2lQSEVENGo5cW5ZL3Bob3RvLmpwZyIsInVzZXJfaWQiOiJnb29nbGUtb2F1dGgyfDExODMwNDIzMTY0MDMwMTY4NTU3OSJ9.9j4aVz2Kx5pdY8dxdu59tNe8xxNAXa4b2_IPgpCW0wA&token_type=bearer&state=Ttct3tBlHDhRnXCv';
+
+      var auth0 = new Auth0({
+        clientID:     'wrong',
+        callbackURL:  'https://myapp.com/callback',
+        domain:       'login.auth0.com'
+      });
+
+      var result = auth0.parseHash(hash);
+      expect(result.error).to.be.equal('invalid_token');
+      expect(result.error_description).to.be.equal('The clientID configured (wrong) does not match with the clientID set in the token (0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup, 1JQ82GSd6PuoRYJ3DXKdiXCUUdGmBbup).');
     });
 
     it('should be able to parse an error', function () {

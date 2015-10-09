@@ -439,9 +439,10 @@ Auth0.prototype.parseHash = function (hash) {
   };
 
   // aud should be the clientID
-  if (prof.aud !== this._clientID) {
+  var audiences = is_array(prof.aud) ? prof.aud : [ prof.aud ];
+  if (audiences.indexOf(this._clientID) === -1) {
     return invalidJwt(
-      'The clientID configured (' + this._clientID + ') does not match with the clientID set in the token (' + prof.aud + ').');
+      'The clientID configured (' + this._clientID + ') does not match with the clientID set in the token (' + audiences.join(', ') + ').');
   }
 
   // iss should be the Auth0 domain (i.e.: https://contoso.auth0.com/)
