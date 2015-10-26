@@ -1650,22 +1650,41 @@ Auth0.prototype.logout = function (query) {
  */
 
 Auth0.prototype.getSSOData = function (withActiveDirectories, callback) {
+  if (this._useJSONP || use_jsonp()) {
+    setTimeout(function() {
+      callback(null, {sso: false});
+    }, 17);
+    return;
+  }
+
   if (typeof withActiveDirectories === 'function') {
     callback = withActiveDirectories;
     withActiveDirectories = false;
   }
 
-  var url = joinUrl('https:', this._domain, '/user/ssodata');
+  var protocol = 'https:';
+  var domain = this._domain;
+  var endpoint = '/user/ssodata';
+  var url = joinUrl(protocol, domain, endpoint);
+  var sameOrigin = same_origin(protocol, domain);
+  var data = {};
 
   if (withActiveDirectories) {
-    url += '?' + qs.stringify({ldaps: 1, client_id: this._clientID});
+    data = {ldaps: 1, client_id: this._clientID};
   }
 
-  // override timeout
-  var jsonpOptions = xtend({}, jsonpOpts, { timeout: 3000 });
-
-  return jsonp(url, jsonpOptions, function (err, resp) {
-    callback(null, err ? {sso:false} : resp); // Always return OK, regardless of any errors
+  return reqwest({
+    url:             sameOrigin ? endpoint : url,
+    method:          'get',
+    type:            'json',
+    data:            data,
+    crossOrigin:     !sameOrigin,
+    withCredentials: !sameOrigin,
+    timeout:         3000
+  }).fail(function() {
+    callback(null, {sso: false}); // Always return OK, regardless of any errors
+  }).then(function(resp) {
+    callback(null, resp);
   });
 };
 
