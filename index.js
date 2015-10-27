@@ -1650,16 +1650,16 @@ Auth0.prototype.logout = function (query) {
  */
 
 Auth0.prototype.getSSOData = function (withActiveDirectories, callback) {
+  if (typeof withActiveDirectories === 'function') {
+    callback = withActiveDirectories;
+    withActiveDirectories = false;
+  }
+
   if (this._useJSONP || use_jsonp()) {
     setTimeout(function() {
       callback(null, {sso: false});
     }, 17);
     return;
-  }
-
-  if (typeof withActiveDirectories === 'function') {
-    callback = withActiveDirectories;
-    withActiveDirectories = false;
   }
 
   var protocol = 'https:';
