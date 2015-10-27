@@ -1,4 +1,11 @@
-## [6.7.5] - 2015-10-19
+## [6.7.6] - 2016-10-26
+
+### Fixed
+
+- [] Revert changes from v6.7.5 as they are breaking appliance customers who are not on the latest version of Auth0 (`Peter Stromquist`)
+  https://github.com/auth0/auth0.js/commit/25a41e57d5ecb250b9b994891b8b9628bcdc2210
+
+## [6.7.5] - 2015-10-26
 
 ### Fixed
 
