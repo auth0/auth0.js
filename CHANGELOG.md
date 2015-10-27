@@ -1,3 +1,10 @@
+## [6.7.5] - 2015-10-19
+
+### Fixed
+
+- [] Disallow jsonp to get SSO data (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/344c4a91ebf447fe91f5c443ab7389fdac759415
+
 ## [6.7.4] - 2015-10-09
 
 ### Fixed
