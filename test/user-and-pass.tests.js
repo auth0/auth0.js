@@ -6,6 +6,13 @@ mocha.timeout(60000);
 mocha.globals(['jQuery*', '__auth0jp*']);
 
 /**
+ * XHR support variables
+ */
+
+var xhrSupport = !(new Auth0({clientID: "clientID", domain: "domain"}))._useJSONP;
+var xhrSupportPrefix = xhrSupport ? '' : 'not ';
+
+/**
  * Test User and Password
  */
 
@@ -330,7 +337,10 @@ describe('Auth0 - User And Passwords', function () {
       });
     });
 
-    it('should present a proper error message for password strength errors', function(done) {
+    it('should present a proper error message for password strength errors (xhr ' + xhrSupportPrefix + ' supported)', function(done) {
+      // TODO test JSONP request
+      if (!xhrSupport) return done();
+
        var server = sinon.fakeServer.create();
 
        var response = {
