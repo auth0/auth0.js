@@ -1,3 +1,14 @@
+## [6.7.7] - 2015-11-30
+
+### Fixed
+
+- [] Merge pull request #123 from auth0/password-strength-error (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/4ce134121257ddfecd5822eb6d2c986683a12dc8
+- [] Disable password strength error test for JSONP (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/20aae0a953c948f013afd7842f97d1b897bc8fb4
+- [] Fix password strength error message, closes #122 (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/2a3d60814fec559de969fe87754828500e593f38
+
 ## [6.7.6] - 2016-10-26
 
 ### Fixed
