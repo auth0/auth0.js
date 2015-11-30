@@ -6,6 +6,13 @@ mocha.timeout(60000);
 mocha.globals(['jQuery*', '__auth0jp*']);
 
 /**
+ * XHR support variables
+ */
+
+var xhrSupport = !(new Auth0({clientID: "clientID", domain: "domain"}))._useJSONP;
+var xhrSupportPrefix = xhrSupport ? '' : 'not ';
+
+/**
  * Test User and Password
  */
 
@@ -329,6 +336,49 @@ describe('Auth0 - User And Passwords', function () {
         done();
       });
     });
+
+    it('should present a proper error message for password strength errors (xhr ' + xhrSupportPrefix + ' supported)', function(done) {
+      // TODO test JSONP request
+      if (!xhrSupport) return done();
+
+       var server = sinon.fakeServer.create();
+
+       var response = {
+         "name": "PasswordStrengthError",
+         "code": "invalid_password",
+         "description": {
+           "rules": [{
+             "message": "At least %d characters in length",
+             "format": [6],
+             "code": "lengthAtLeast",
+             "verified": false
+           }],
+           "verified": false
+         },
+         "statusCode":400
+       };
+
+       server.respondWith('POST', 'https://' + auth0._domain + '/dbconnections/change_password',[
+         400,
+         { 'Content-Type': 'application/json' },
+         JSON.stringify(response)
+       ]);
+
+       auth0.changePassword({
+         connection: 'tests',
+         username:   'johnfoo@contoso.com',
+         password:   '12345'
+       }, function (err) {
+         expect(err).to.not.be(null);
+         expect(err.message).to.be("Password is not strong enough.");
+         expect(err.details).to.eql(response);
+         done();
+       });
+
+
+       server.respond();
+       server.restore();
+    })
   });
 
   describe('Validate User', function () {
