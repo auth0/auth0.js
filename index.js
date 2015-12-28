@@ -166,7 +166,7 @@ function Auth0 (options) {
  * @property {String} version
  */
 
-Auth0.version = require('./version.json').version;
+Auth0.version = require('./version').str;
 
 /**
  * Export client info object
