@@ -179,6 +179,17 @@ Auth0.clientInfo = { name: 'auth0.js', version: Auth0.version };
 
 
 /**
+ * Wraps calls to window.open so it can be overriden in Electron.
+ *
+ * In Electron, window.open returns an object which provides limited control
+ * over the opened window (see
+ * http://electron.atom.io/docs/v0.36.0/api/window-open/).
+ */
+Auth0.prototype.openWindow = function(url, name, options) {
+  return window.open(url, name, stringifyPopupSettings(options));
+}
+
+/**
  * Redirect current location to `url`
  *
  * @param {String} url
@@ -803,9 +814,7 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
   delete popupOptions.width;
   delete popupOptions.height;
 
-
-
-  var ref = window.open(popupUrl, '_blank', stringifyPopupSettings(popupOptions));
+  var ref = this.openWindow(popupUrl, '_blank', popupOptions);
   var answered = false;
 
   function errorHandler(event) {
