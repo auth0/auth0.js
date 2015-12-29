@@ -1275,7 +1275,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
   // be set on the InAppBrowser browser. That's why the browser where the app runs
   // won't get the sso cookie. Therefore, we don't allow username password using
   // popup with sso: true in Cordova/Phonegap and we default to resource owner auth.
-  if (callback && callback.length > 1 && (!options.sso || window.cordova || window.electron)) {
+  if (callback && callback.length > 1 && (!options.sso || window.cordova)) {
     return this.loginWithResourceOwner(options, callback);
   }
 
