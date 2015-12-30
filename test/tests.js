@@ -563,7 +563,7 @@ describe('Auth0', function () {
     });
   });
 
-  describe('getDelegationToken', function () {
+  describe.skip('getDelegationToken', function () {
     var auth0 = Auth0({
       domain:      'samples.auth0.com',
       callbackURL: 'http://localhost:3000/',
