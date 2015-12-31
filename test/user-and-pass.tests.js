@@ -75,7 +75,7 @@ describe('Auth0 - User And Passwords', function () {
       it('should return refresh_token after successfull authentication with offline_mode', function (done) {
         auth0.login({
           connection: 'tests',
-          username: 'johnfoo@gmail.com',
+          username: 'johnfoo+1@gmail.com',
           password: '12345',
           offline_mode: true,
           sso: false
@@ -93,7 +93,7 @@ describe('Auth0 - User And Passwords', function () {
       it('should trim username before login', function (done) {
         auth0.login({
           connection: 'tests',
-          username: '    johnfoo@gmail.com     ',
+          username: '    johnfoo+2@gmail.com     ',
           password: '12345',
           sso:      false
         }, function (err, profile, id_token, access_token) {
@@ -125,7 +125,7 @@ describe('Auth0 - User And Passwords', function () {
       it('should call the callback with err when the connection doesn\'t exists', function (done) {
         auth0.login({
           connection: 'testsw3eeasdsadsa',
-          username: 'testttt@wrong.com',
+          username: 'testtttt@wrong.com',
           password: '12345'
         }, function (err) {
           expect(err.status).to.equal(404);
