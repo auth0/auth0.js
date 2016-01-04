@@ -84,40 +84,38 @@ function checkIfSet(obj, key) {
 }
 
 function handleRequestError(err, callback) {
-  var er = err;
+  var status = err.status;
+  var responseText = 'string' === typeof err.responseText ? err.responseText : err;
+
   var isAffectedIEVersion = isInternetExplorer() === 10 || isInternetExplorer() === 11;
-  var zeroStatus = (!er.status || er.status === 0);
+  var zeroStatus = (!status || status === 0);
 
   var onLine = !!window.navigator.onLine;
 
   // Request failed because we are offline.
   if (zeroStatus && !onLine ) {
-    er = {};
-    er.status = 0;
-    er.responseText = {
+    status = 0;
+    responseText = {
       code: 'offline'
     };
   // http://stackoverflow.com/questions/23229723/ie-10-11-cors-status-0
   // XXX IE10 when a request fails in CORS returns status code 0
   // See: http://caniuse.com/#search=navigator.onLine
   } else if (zeroStatus && isAffectedIEVersion) {
-    er = {};
-    er.status = 401;
-    er.responseText = {
+    status = 401;
+    responseText = {
       code: 'invalid_user_password'
     };
   // If not IE10/11 and not offline it means that Auth0 host is unreachable:
   // Connection Timeout or Connection Refused.
   } else if (zeroStatus) {
-    er = {};
-    er.status = 0;
-    er.responseText = {
+    status = 0;
+    responseText = {
       code: 'connection_refused_timeout'
     };
-  } else {
-    er.responseText = err;
   }
-  var error = new LoginError(er.status, er.responseText);
+
+  var error = new LoginError(status, responseText);
   callback(error);
 }
 
