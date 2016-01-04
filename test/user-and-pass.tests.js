@@ -9,7 +9,7 @@ mocha.globals(['jQuery*', '__auth0jp*']);
  * XHR support variables
  */
 
-var xhrSupport = !(new Auth0({clientID: "clientID", domain: "domain"}))._useJSONP;
+var xhrSupport = !(new Auth0({clientID: 'clientID', domain: 'domain'}))._useJSONP;
 var xhrSupportPrefix = xhrSupport ? '' : 'not ';
 
 /**
@@ -344,18 +344,18 @@ describe('Auth0 - User And Passwords', function () {
        var server = sinon.fakeServer.create();
 
        var response = {
-         "name": "PasswordStrengthError",
-         "code": "invalid_password",
-         "description": {
-           "rules": [{
-             "message": "At least %d characters in length",
-             "format": [6],
-             "code": "lengthAtLeast",
-             "verified": false
+         'name': 'PasswordStrengthError',
+         'code': 'invalid_password',
+         'description': {
+           'rules': [{
+             'message': 'At least %d characters in length',
+             'format': [6],
+             'code': 'lengthAtLeast',
+             'verified': false
            }],
-           "verified": false
+           'verified': false
          },
-         "statusCode":400
+         'statusCode':400
        };
 
        server.respondWith('POST', 'https://' + auth0._domain + '/dbconnections/change_password',[
@@ -370,7 +370,7 @@ describe('Auth0 - User And Passwords', function () {
          password:   '12345'
        }, function (err) {
          expect(err).to.not.be(null);
-         expect(err.message).to.be("Password is not strong enough.");
+         expect(err.message).to.eql('Password is not strong enough.');
          expect(err.details).to.eql(response);
          done();
        });
