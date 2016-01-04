@@ -4,9 +4,9 @@ tunnel:
   authtoken: 5P5swTMSDDRlnMBkBWJt
   proto: https
 scripts:
-  - "/test/support/config.js"
   - "/node_modules/expect.js/expect.js"
   - "/node_modules/sinon/pkg/sinon-1.16.1.js"
+  - "/test/support/config.js"
   - "/build/auth0.js"
 browsers:
   - name: chrome
