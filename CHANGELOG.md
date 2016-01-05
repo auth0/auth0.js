@@ -1,3 +1,30 @@
+## [6.8.0] - 2016-01-05
+
+### Fixed
+
+- [] Merge pull request #124 from auth0/support-auth0-libs (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/842c8b8d7fdb1aae41a2c62cc6564114d0e81f64
+- [] bump zuul@3.6.0 (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/2a0c38f4899455b639a4a1cef4b8409567e50d2f
+- [] Codestyle tests (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/64073b0747b3453c58af8a924782e8370946035a
+- [] Update zuul on package.json (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/3a601315f845797bb980403b35f3e65b18a5ef0a
+- [] Refactor handleRequestError (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/362f74a30af32e2a2218d4edfe1ada5c9e972d81
+- [] Avoid rate limit in tests (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/302ba23a721d5f93a1175b21e6cf0a715031dbb7
+- [] Temporarily skip delegation tests (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/fd3d41a0c1abb6a19108c105bc8bc32781455836
+- [] Enable sso user/pass login in popup for Electron (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/7c998cddf16694badb0ad0e96276aae77957fd57
+- [] Extract openWindow fn so it can be monkey-patched (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/4a68ef69e1781ec448db067081bcf2eff5d529f0
+- [] Store version in a js file (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/3dcfa406e3c9a5ad244da3b0c9e8f64bed658a34
+- [] Check for electron like we check for cordova (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/70b8cca1d61d19bbdc8bc05a6c2e79d20941c4e5
+
 ## [6.7.7] - 2015-11-30
 
 ### Fixed
