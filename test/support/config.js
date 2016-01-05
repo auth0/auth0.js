@@ -1,3 +1,4 @@
+/* jshint unused: false */
 function forceLogout (domain, callback) {
   var endpoint = 'https://' + domain + '/logout';
 
@@ -11,9 +12,11 @@ function forceLogout (domain, callback) {
   }
 
   function iframeloaded () {
-    if (iframe.src !== endpoint) throw new Error('Could not load logout endpoint via iFrame');
+    if (iframe.src !== endpoint) {
+      throw new Error('Could not load logout endpoint via iFrame');
+    }
     callback();
-  };
+  }
 
   iframe.src = endpoint;
   document.body.appendChild(iframe);

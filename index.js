@@ -84,40 +84,38 @@ function checkIfSet(obj, key) {
 }
 
 function handleRequestError(err, callback) {
-  var er = err;
+  var status = err.status;
+  var responseText = 'string' === typeof err.responseText ? err.responseText : err;
+
   var isAffectedIEVersion = isInternetExplorer() === 10 || isInternetExplorer() === 11;
-  var zeroStatus = (!er.status || er.status === 0);
+  var zeroStatus = (!status || status === 0);
 
   var onLine = !!window.navigator.onLine;
 
   // Request failed because we are offline.
   if (zeroStatus && !onLine ) {
-    er = {};
-    er.status = 0;
-    er.responseText = {
+    status = 0;
+    responseText = {
       code: 'offline'
     };
   // http://stackoverflow.com/questions/23229723/ie-10-11-cors-status-0
   // XXX IE10 when a request fails in CORS returns status code 0
   // See: http://caniuse.com/#search=navigator.onLine
   } else if (zeroStatus && isAffectedIEVersion) {
-    er = {};
-    er.status = 401;
-    er.responseText = {
+    status = 401;
+    responseText = {
       code: 'invalid_user_password'
     };
   // If not IE10/11 and not offline it means that Auth0 host is unreachable:
   // Connection Timeout or Connection Refused.
   } else if (zeroStatus) {
-    er = {};
-    er.status = 0;
-    er.responseText = {
+    status = 0;
+    responseText = {
       code: 'connection_refused_timeout'
     };
-  } else {
-    er.responseText = err;
   }
-  var error = new LoginError(er.status, er.responseText);
+
+  var error = new LoginError(status, responseText);
   callback(error);
 }
 
@@ -166,7 +164,7 @@ function Auth0 (options) {
  * @property {String} version
  */
 
-Auth0.version = require('./version.json').version;
+Auth0.version = require('./version').str;
 
 /**
  * Export client info object
@@ -177,6 +175,17 @@ Auth0.version = require('./version.json').version;
 
 Auth0.clientInfo = { name: 'auth0.js', version: Auth0.version };
 
+
+/**
+ * Wraps calls to window.open so it can be overriden in Electron.
+ *
+ * In Electron, window.open returns an object which provides limited control
+ * over the opened window (see
+ * http://electron.atom.io/docs/v0.36.0/api/window-open/).
+ */
+Auth0.prototype.openWindow = function(url, name, options) {
+  return window.open(url, name, stringifyPopupSettings(options));
+}
 
 /**
  * Redirect current location to `url`
@@ -688,7 +697,7 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
     return this.loginWithUsernamePassword(options, callback);
   }
 
-  if (!!window.cordova) {
+  if (!!window.cordova || !!window.electron) {
     return this.loginPhonegap(options, callback);
   }
 
@@ -803,9 +812,7 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
   delete popupOptions.width;
   delete popupOptions.height;
 
-
-
-  var ref = window.open(popupUrl, '_blank', stringifyPopupSettings(popupOptions));
+  var ref = this.openWindow(popupUrl, '_blank', popupOptions);
   var answered = false;
 
   function errorHandler(event) {
