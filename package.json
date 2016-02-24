@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "test": "grunt integration",
+    "deploy": "./bin/deploy",
     "example": "grunt example",
     "phantom": "grunt phantom",
     "build": "grunt build",
