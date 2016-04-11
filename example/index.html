@@ -96,7 +96,7 @@
                 $('.login-db').click(function (e) {
                     e.preventDefault();
                     auth0.login({
-                        connection: 'tests',
+                        connection: 'Username-Password-Authentication',
                         username: $('.login-username').val(),
                         password: $('.login-password').val(),
                         sso: false
@@ -118,7 +118,7 @@
                 $('.signup-db').click(function (e) {
                     e.preventDefault();
                     auth0.signup({
-                        connection: 'tests',
+                        connection: 'Username-Password-Authentication',
                         username: $('.signup-username').val(),
                         password: $('.signup-password').val(),
                         sso: true,
@@ -143,7 +143,7 @@
                 $('.validate-db').click(function (e) {
                     e.preventDefault();
                     auth0.validateUser({
-                        connection: 'tests',
+                        connection: 'Username-Password-Authentication',
                         username: $('.validate-username').val(),
                         password: $('.validate-password').val()
                     }, function (err, profile, id_token, access_token) {
