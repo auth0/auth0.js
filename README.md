@@ -463,13 +463,15 @@ And if you don't want that redirect to occur (i.e. you have a Single Page App), 
   $('.change_password').click(function () {
     auth0.changePassword({
       connection: 'db-conn',
-      username:   'foo@bar.com',
-      password:   'blabla' // new password
+      username:   'foo@bar.com'
     }, function (err, resp) {
       console.log(err.message);
     });
   });
 ```
+
+This request will always return a 200, even if the user doesn't exist.
+The user will receive an email with a link to reset their password.
 
 ### Delegation Token Request
 
