@@ -27,7 +27,6 @@
   "license": "MIT",
   "dependencies": {
     "Base64": "~0.1.3",
-    "debug": "~1.0.4",
     "json-fallback": "0.0.1",
     "jsonp": "~0.0.4",
     "qs": "git+https://github.com/jfromaniello/node-querystring.git#fix_ie7_bug_with_arrays",
