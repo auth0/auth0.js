@@ -2,7 +2,7 @@
 
 # Auth0.js
 [![NPM version][npm-image]][npm-url]
-[![Build status][strider-image]][strider-url]
+[![Build status][travis-image]][travis-url]
 [![Test coverage][coveralls-image]][coveralls-url]
 [![Dependency Status][david-image]][david-url]
 [![License][license-image]][license-url]
@@ -612,8 +612,8 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE.txt) f
 
 [npm-image]: https://img.shields.io/npm/v/auth0-js.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/auth0-js
-[strider-image]: https://ci.auth0.com/auth0/auth0.js/badge
-[strider-url]: https://ci.auth0.com/auth0/auth0.js
+[travis-image]: https://travis-ci.org/auth0/auth0.js.svg?branch=master
+[travis-url]: https://travis-ci.org/auth0/auth0.js
 [coveralls-image]: https://img.shields.io/coveralls/auth0/auth0.js.svg?style=flat-square
 [coveralls-url]: https://coveralls.io/r/auth0/auth0.js?branch=master
 [david-image]: http://img.shields.io/david/auth0/auth0.js.svg?style=flat-square

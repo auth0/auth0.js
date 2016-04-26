@@ -178,10 +178,14 @@ module.exports = function(grunt) {
   grunt.registerTask("example_https", ["build", "connect:example_https", "watch"]);
 
   grunt.registerTask("dev",           ["build", "connect:dev", "watch"]);
-  grunt.registerTask("integration",   ["exec:test-integration"]);
-  grunt.registerTask("phantom",       ["exec:test-phantom"]);
+  grunt.registerTask("integration",   ["build", "exec:test-integration"]);
+  grunt.registerTask("phantom",       ["build", "exec:test-phantom"]);
 
   grunt.registerTask('purge_cdn',     ['http:purge_js', 'http:purge_js_min', 'http:purge_major_js', 'http:purge_major_js_min', 'http:purge_minor_js', 'http:purge_minor_js_min']);
 
   grunt.registerTask("cdn",           ["build", "copy:release", "aws_s3", "purge_cdn"]);
+
+  grunt.registerTask('ci', function() {
+    grunt.task.run(process.env.SAUCE_USERNAME ? 'integration' : 'phantom');
+  });
 };
