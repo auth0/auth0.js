@@ -12,6 +12,7 @@
     "browser"
   ],
   "scripts": {
+    "ci": "grunt ci",
     "test": "grunt integration",
     "deploy": "./bin/deploy",
     "example": "grunt example",
