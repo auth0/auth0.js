@@ -1,3 +1,40 @@
+## [6.8.1] - 2016-04-26
+
+### Fixed
+
+- [] Merge pull request #145 from auth0/remove-debug (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/ec22f2fa0f004a7fe5a272f5ba3faa07c7820446
+- [] Merge pull request #144 from auth0/upgrade-zuul (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/320541cae28c9f6fc8f4d13f877f117a00fb3498
+- [] Merge pull request #143 from auth0/introduce-travis-ci (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/ea2356df5ba32023132c3468b55d8242d2c6595c
+- [] Upgrade zuul (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/076e398c523931ccab44466575bf322af099c453
+- [] Fix slack notification (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/9badf6f8006a82a5ce02a99fe5a279fc8bb9ea94
+- [] Remove unused debug dep (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/02083a808afe83dbf0f24cc22eb84833a1f9a1c8
+- [] Introduce travis ci (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/41df1cf1efa8125a40560aca13e6c3be71deb755
+- [] Merge pull request #142 from rolodato/patch-1 (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/799dd5ba7e01d00f19a73c465d95f3c262914c16
+- [] Update readme to v2 password reset flow (`Rodrigo López Dato`)
+  https://github.com/auth0/auth0.js/commit/bb4e815acaf9369f74a7a0c1b9477d0a0c0036fa
+- [] Specify full and minified version in script src (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/3cb596fa972e0e54428e1b65c5734800b502ffb4
+- [] Merge pull request #133 from auth0/test-ignore-bower (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/b4213c0c70a2284791aab023fba3c92e7b18c47b
+- [] Ignore test dir in bower.json (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/65a2f2c7bb3f40a849aa104a82754a54c5318382
+- [] Merge pull request #132 from auth0/add/npm-run-deploy (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/205021810f461efaaa26e9bc0b39974666277d92
+- [] Update package.json (`Cristian Douce`)
+  https://github.com/auth0/auth0.js/commit/0b89e460e45df1ca6ea42ebda6904c7bd98dc8e2
+- [] Merge pull request #130 from aguerere/patch-1 (`José F. Romaniello`)
+  https://github.com/auth0/auth0.js/commit/ef07a4f0066645efdc03f3e1ce0146239f8e7261
+- [] Update and rename LICENSE.txt to LICENSE (`Alberto Güerere`)
+  https://github.com/auth0/auth0.js/commit/0b0096fd2dc65de1dd09af6be726128bef1dd1c9
+
 ## [6.8.0] - 2016-01-05
 
 ### Fixed
@@ -831,4 +868,3 @@
 ## [0.0.3] - 2013-09-26
 - [c05c4f7] add support for db connections user&pass (`José F. Romaniello`)
 - [c11a97c] base64 url decode id_token (`José F. Romaniello`)
-
