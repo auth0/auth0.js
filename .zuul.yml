@@ -1,8 +1,7 @@
 ui: mocha-bdd
 tunnel:
   type: ngrok
-  authtoken: 5P5swTMSDDRlnMBkBWJt
-  proto: https
+  authtoken: LsVZFxFqgxA4h7ibWV9V_iuA9afbQwaSnGqH9dApL
 scripts:
   - "/node_modules/expect.js/expect.js"
   - "/node_modules/sinon/pkg/sinon-1.16.1.js"
