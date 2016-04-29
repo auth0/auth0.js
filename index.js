@@ -838,7 +838,7 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
 
     if (result.id_token) {
       _this.getProfile(result.id_token, function (err, profile) {
-        callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
+        callback(err, profile, prepareResult(result));
       });
       answered = true;
       return ref.close();
@@ -938,7 +938,7 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
     // Handle profile retrieval from id_token and respond
     if (result.id_token) {
       return _this.getProfile(result.id_token, function (err, profile) {
-        callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
+        callback(err, profile, prepareResult(result));
       });
     }
 
@@ -1074,7 +1074,7 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
     // Handle profile retrieval from id_token and respond
     if (result.id_token) {
       return _this.getProfile(result.id_token, function (err, profile) {
-        callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
+        callback(err, profile, prepareResult(result));
       });
     }
 
@@ -1127,7 +1127,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
 
   function enrichGetProfile(resp, callback) {
     _this.getProfile(resp.id_token, function (err, profile) {
-      callback(err, profile, resp.id_token, resp.access_token, resp.state, resp.refresh_token);
+      callback(err, profile, prepareResult(resp));
     });
   }
 
@@ -1183,7 +1183,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
 
   function enrichGetProfile(resp, callback) {
     _this.getProfile(resp.id_token, function (err, profile) {
-      callback(err, profile, resp.id_token, resp.access_token, resp.state, resp.refresh_token);
+      callback(err, profile, prepareResult(resp));
     });
   }
 
@@ -1825,6 +1825,12 @@ Auth0.prototype.verifySMSCode = function(attrs, cb) {
   delete attrs.code;
   return this.login(attrs, cb);
 };
+
+function prepareResult(result) {
+  return !result || typeof result !== "object"
+    ? undefined
+    : result;
+}
 
 /**
  * Expose `Auth0` constructor
