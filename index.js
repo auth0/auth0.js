@@ -837,9 +837,7 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
     }
 
     if (result.id_token) {
-      _this.getProfile(result.id_token, function (err, profile) {
-        callback(err, profile, prepareResult(result));
-      });
+      setTimeout(function() { callback(null, prepareResult(result)) }, 0);
       answered = true;
       return ref.close();
     }
@@ -937,9 +935,7 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
 
     // Handle profile retrieval from id_token and respond
     if (result.id_token) {
-      return _this.getProfile(result.id_token, function (err, profile) {
-        callback(err, profile, prepareResult(result));
-      });
+      return callback(null, prepareResult(result));
     }
 
     // Case where the error is returned at an `err` property from the result
@@ -1073,9 +1069,7 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
 
     // Handle profile retrieval from id_token and respond
     if (result.id_token) {
-      return _this.getProfile(result.id_token, function (err, profile) {
-        callback(err, profile, prepareResult(result));
-      });
+      return callback(null, prepareResult(result));
     }
 
     // Case where the error is returned at an `err` property from the result
@@ -1126,9 +1120,8 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
   }
 
   function enrichGetProfile(resp, callback) {
-    _this.getProfile(resp.id_token, function (err, profile) {
-      callback(err, profile, prepareResult(resp));
-    });
+    // TODO: we don't need enrichGetProfile anymore
+    callback(null, prepareResult(resp));
   }
 
   if (this._useJSONP) {
@@ -1182,9 +1175,8 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   var url = joinUrl(protocol, domain, endpoint);
 
   function enrichGetProfile(resp, callback) {
-    _this.getProfile(resp.id_token, function (err, profile) {
-      callback(err, profile, prepareResult(resp));
-    });
+    // TODO: we don't need enrichGetProfile anymore
+    callback(null, prepareResult(resp));
   }
 
   if (this._useJSONP) {
