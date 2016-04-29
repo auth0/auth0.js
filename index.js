@@ -1119,11 +1119,6 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
     query['auth0Client'] = this._getClientInfoString();
   }
 
-  function enrichGetProfile(resp, callback) {
-    // TODO: we don't need enrichGetProfile anymore
-    callback(null, prepareResult(resp));
-  }
-
   if (this._useJSONP) {
     return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
       if (err) {
@@ -1133,7 +1128,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
         var error = new LoginError(resp.status, resp.error);
         return callback(error);
       }
-      enrichGetProfile(resp, callback);
+      callback(null, prepareResult(resp));
     });
   }
 
@@ -1145,7 +1140,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
     headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
-      enrichGetProfile(resp, callback);
+      callback(null, prepareResult(resp));
     },
     error: function (err) {
       handleRequestError(err, callback);
@@ -1174,11 +1169,6 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   var endpoint = '/oauth/access_token';
   var url = joinUrl(protocol, domain, endpoint);
 
-  function enrichGetProfile(resp, callback) {
-    // TODO: we don't need enrichGetProfile anymore
-    callback(null, prepareResult(resp));
-  }
-
   if (this._useJSONP) {
     return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
       if (err) {
@@ -1188,7 +1178,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
         var error = new LoginError(resp.status, resp.error);
         return callback(error);
       }
-      enrichGetProfile(resp, callback);
+      callback(null, prepareResult(resp));
     });
   }
 
@@ -1200,7 +1190,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
     headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
-      enrichGetProfile(resp, callback);
+      callback(null, prepareResult(resp));
     },
     error: function (err) {
       handleRequestError(err, callback);
