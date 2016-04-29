@@ -462,11 +462,11 @@ Auth0.prototype.parseHash = function (hash) {
   }
 
   return {
-    profile: prof,
-    id_token: id_token,
-    access_token: parsed_qs.access_token,
-    state: parsed_qs.state,
-    refresh_token: refresh_token
+    accessToken: parsed_qs.access_token,
+    idToken: id_token,
+    profile: prof, // TODO: this is not the profile and is not provided in popup mode
+    refreshToken: refresh_token,
+    state: parsed_qs.state
   };
 };
 
@@ -1829,7 +1829,12 @@ Auth0.prototype.verifySMSCode = function(attrs, cb) {
 function prepareResult(result) {
   return !result || typeof result !== "object"
     ? undefined
-    : result;
+    : {
+        accessToken: result.access_token,
+        idToken: result.id_token,
+        refreshToken: result.refresh_token,
+        state: result.state
+      };
 }
 
 /**
