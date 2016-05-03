@@ -464,7 +464,7 @@ Auth0.prototype.parseHash = function (hash) {
   return {
     accessToken: parsed_qs.access_token,
     idToken: id_token,
-    profile: prof, // TODO: this is not the profile and is not provided in popup mode
+    profile: prof, // TODO: this is not the profile
     refreshToken: refresh_token,
     state: parsed_qs.state
   };
@@ -837,7 +837,7 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
     }
 
     if (result.id_token) {
-      setTimeout(function() { callback(null, prepareResult(result)) }, 0);
+      setTimeout(function() { callback(null, _this._prepareResult(result)) }, 0);
       answered = true;
       return ref.close();
     }
@@ -935,7 +935,7 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
 
     // Handle profile retrieval from id_token and respond
     if (result.id_token) {
-      return callback(null, prepareResult(result));
+      return callback(null, _this._prepareResult(result));
     }
 
     // Case where the error is returned at an `err` property from the result
@@ -1069,7 +1069,7 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
 
     // Handle profile retrieval from id_token and respond
     if (result.id_token) {
-      return callback(null, prepareResult(result));
+      return callback(null, _this._prepareResult(result));
     }
 
     // Case where the error is returned at an `err` property from the result
@@ -1128,7 +1128,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
         var error = new LoginError(resp.status, resp.error);
         return callback(error);
       }
-      callback(null, prepareResult(resp));
+      callback(null, _this._prepareResult(resp));
     });
   }
 
@@ -1140,7 +1140,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
     headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
-      callback(null, prepareResult(resp));
+      callback(null, _this._prepareResult(resp));
     },
     error: function (err) {
       handleRequestError(err, callback);
@@ -1178,7 +1178,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
         var error = new LoginError(resp.status, resp.error);
         return callback(error);
       }
-      callback(null, prepareResult(resp));
+      callback(null, _this._prepareResult(resp));
     });
   }
 
@@ -1190,7 +1190,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
     headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
-      callback(null, prepareResult(resp));
+      callback(null, _this._prepareResult(resp));
     },
     error: function (err) {
       handleRequestError(err, callback);
@@ -1808,15 +1808,22 @@ Auth0.prototype.verifySMSCode = function(attrs, cb) {
   return this.login(attrs, cb);
 };
 
-function prepareResult(result) {
-  return !result || typeof result !== "object"
-    ? undefined
-    : {
-        accessToken: result.access_token,
-        idToken: result.id_token,
-        refreshToken: result.refresh_token,
-        state: result.state
-      };
+Auth0.prototype._prepareResult = function(result) {
+  if (!result || typeof result !== "object") {
+    return;
+  }
+
+  var idTokenData = result.profile
+    ? result.profile
+    : this.decodeJwt(result.id_token);
+
+  return {
+    accessToken: result.access_token,
+    idToken: result.id_token,
+    profile: idTokenData,
+    refreshToken: result.refresh_token,
+    state: result.state
+  };
 }
 
 /**

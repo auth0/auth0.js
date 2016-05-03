@@ -20,6 +20,8 @@ var xhrSupportPrefix = xhrSupport ? '' : 'not ';
  * Test User and Password
  */
 
+var idToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2xvZ2luLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExODMwNDIzMTY0MDMwMTY4NTU3OSIsImF1ZCI6IjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIiwiZXhwIjoxMzgwMjU4NzU4LCJpYXQiOjEzODAyMjI3NTgsImNsaWVudElEIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJlbWFpbCI6Impvc2Uucm9tYW5pZWxsb0BxcmFmdGxhYnMuY29tIiwiZmFtaWx5X25hbWUiOiJSb21hbmllbGxvIiwiZ2VuZGVyIjoibWFsZSIsImdpdmVuX25hbWUiOiJKb3NlIiwiaWRlbnRpdGllcyI6W3siYWNjZXNzX3Rva2VuIjoieWEyOS5BSEVTNlpUSllmQnN3a1NFbUU2YTQ2SlpHYVgxV1Jqc2ZrUzd5Vm81RXNPdktKWVhnenpEZl9ZUiIsInByb3ZpZGVyIjoiZ29vZ2xlLW9hdXRoMiIsInVzZXJfaWQiOiIxMTgzMDQyMzE2NDAzMDE2ODU1NzkiLCJjb25uZWN0aW9uIjoiZ29vZ2xlLW9hdXRoMiIsImlzU29jaWFsIjp0cnVlfV0sImxvY2FsZSI6ImVuIiwibmFtZSI6Ikpvc2UgUm9tYW5pZWxsbyIsIm5pY2tuYW1lIjoiam9zZS5yb21hbmllbGxvIiwicGljdHVyZSI6Imh0dHBzOi8vbGg2Lmdvb2dsZXVzZXJjb250ZW50LmNvbS8tcF81dUwxTDFkdkUvQUFBQUFBQUFBQUkvQUFBQUFBQUFBQlEvaVBIRUQ0ajlxblkvcGhvdG8uanBnIiwidXNlcl9pZCI6Imdvb2dsZS1vYXV0aDJ8MTE4MzA0MjMxNjQwMzAxNjg1NTc5In0";
+
 describe('Auth0 - Passwordless', function () {
   afterEach(function () {
     this.server.restore();
@@ -297,7 +299,7 @@ describe('Auth0 - Passwordless', function () {
           this.server.respondWith('POST', 'https://' + this.domain + '/oauth/ro', [
             200,
             { 'Content-Type': 'application/json' },
-            '{}'
+            '{"id_token": "' + idToken + '"}'
           ]);
           // XXX Avoid fetching the profile
           this.auth0.getProfile = function(id_token, callback) {
@@ -309,7 +311,7 @@ describe('Auth0 - Passwordless', function () {
           // TODO test JSONP request
           if (!xhrSupport) return done();
 
-          this.auth0.login({ phoneNumber: this.phoneNumber, passcode: this.passcode }, function (err, profile) {
+          this.auth0.login({ phoneNumber: this.phoneNumber, passcode: this.passcode }, function (err, result) {
             expect(err).to.be(null);
             done();
           });
