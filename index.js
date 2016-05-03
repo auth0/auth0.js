@@ -464,7 +464,7 @@ Auth0.prototype.parseHash = function (hash) {
   return {
     accessToken: parsed_qs.access_token,
     idToken: id_token,
-    profile: prof, // TODO: this is not the profile
+    idTokenData: prof,
     refreshToken: refresh_token,
     state: parsed_qs.state
   };
@@ -1820,7 +1820,7 @@ Auth0.prototype._prepareResult = function(result) {
   return {
     accessToken: result.access_token,
     idToken: result.id_token,
-    profile: idTokenData,
+    idTokenData: idTokenData,
     refreshToken: result.refresh_token,
     state: result.state
   };
