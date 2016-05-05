@@ -1808,6 +1808,43 @@ Auth0.prototype.verifySMSCode = function(attrs, cb) {
   return this.login(attrs, cb);
 };
 
+/**
+ * Returns the ISO 3166-1 code for the country where the request is
+ * originating.
+ *
+ * Fails if the request has to be made using JSONP.
+ *
+ * @private
+ */
+Auth0.prototype.getUserCountry = function(cb) {
+  var protocol = 'https:';
+  var domain = this._domain;
+  var endpoint = "/user/geoloc/country";
+  var url = joinUrl(protocol, domain, endpoint);
+
+  if (this._useJSONP) {
+    var error = new Error("The user's country can't be obtained using JSONP");
+    setTimeout(function() { cb(error) }, 0);
+    return;
+  }
+
+  reqwest({
+    url: same_origin(protocol, domain) ? endpoint : url,
+    method: "get",
+    type: "json",
+    headers: this._getClientInfoHeader(),
+    crossOrigin: !same_origin(protocol, domain),
+    success: function(resp) {
+      cb(null, resp.country_code)
+    },
+    error: function(err) {
+      var error = new Error("There was an error in the request that obtains the user's country");
+      error.cause = err;
+      cb(error);
+    }
+  });
+}
+
 Auth0.prototype._prepareResult = function(result) {
   if (!result || typeof result !== "object") {
     return;
