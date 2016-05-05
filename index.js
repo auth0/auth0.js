@@ -1044,7 +1044,7 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
       clientID:               this._clientID,
       options: {
         // TODO What happens with i18n?
-        username:   options.username,
+        username:   trim(options.username || options.email || ''),
         password:   options.password,
         connection: options.connection,
         state:      options.state,
