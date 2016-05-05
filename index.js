@@ -462,11 +462,11 @@ Auth0.prototype.parseHash = function (hash) {
   }
 
   return {
-    profile: prof,
-    id_token: id_token,
-    access_token: parsed_qs.access_token,
-    state: parsed_qs.state,
-    refresh_token: refresh_token
+    accessToken: parsed_qs.access_token,
+    idToken: id_token,
+    idTokenPayload: prof,
+    refreshToken: refresh_token,
+    state: parsed_qs.state
   };
 };
 
@@ -837,9 +837,7 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
     }
 
     if (result.id_token) {
-      _this.getProfile(result.id_token, function (err, profile) {
-        callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
-      });
+      setTimeout(function() { callback(null, _this._prepareResult(result)) }, 0);
       answered = true;
       return ref.close();
     }
@@ -937,9 +935,7 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
 
     // Handle profile retrieval from id_token and respond
     if (result.id_token) {
-      return _this.getProfile(result.id_token, function (err, profile) {
-        callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
-      });
+      return callback(null, _this._prepareResult(result));
     }
 
     // Case where the error is returned at an `err` property from the result
@@ -1073,9 +1069,7 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
 
     // Handle profile retrieval from id_token and respond
     if (result.id_token) {
-      return _this.getProfile(result.id_token, function (err, profile) {
-        callback(err, profile, result.id_token, result.access_token, result.state, result.refresh_token);
-      });
+      return callback(null, _this._prepareResult(result));
     }
 
     // Case where the error is returned at an `err` property from the result
@@ -1125,12 +1119,6 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
     query['auth0Client'] = this._getClientInfoString();
   }
 
-  function enrichGetProfile(resp, callback) {
-    _this.getProfile(resp.id_token, function (err, profile) {
-      callback(err, profile, resp.id_token, resp.access_token, resp.state, resp.refresh_token);
-    });
-  }
-
   if (this._useJSONP) {
     return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
       if (err) {
@@ -1140,7 +1128,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
         var error = new LoginError(resp.status, resp.error);
         return callback(error);
       }
-      enrichGetProfile(resp, callback);
+      callback(null, _this._prepareResult(resp));
     });
   }
 
@@ -1152,7 +1140,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
     headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
-      enrichGetProfile(resp, callback);
+      callback(null, _this._prepareResult(resp));
     },
     error: function (err) {
       handleRequestError(err, callback);
@@ -1181,12 +1169,6 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   var endpoint = '/oauth/access_token';
   var url = joinUrl(protocol, domain, endpoint);
 
-  function enrichGetProfile(resp, callback) {
-    _this.getProfile(resp.id_token, function (err, profile) {
-      callback(err, profile, resp.id_token, resp.access_token, resp.state, resp.refresh_token);
-    });
-  }
-
   if (this._useJSONP) {
     return jsonp(url + '?' + qs.stringify(query), jsonpOpts, function (err, resp) {
       if (err) {
@@ -1196,7 +1178,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
         var error = new LoginError(resp.status, resp.error);
         return callback(error);
       }
-      enrichGetProfile(resp, callback);
+      callback(null, _this._prepareResult(resp));
     });
   }
 
@@ -1208,7 +1190,7 @@ Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
     headers: this._getClientInfoHeader(),
     crossOrigin: !same_origin(protocol, domain),
     success: function (resp) {
-      enrichGetProfile(resp, callback);
+      callback(null, _this._prepareResult(resp));
     },
     error: function (err) {
       handleRequestError(err, callback);
@@ -1825,6 +1807,24 @@ Auth0.prototype.verifySMSCode = function(attrs, cb) {
   delete attrs.code;
   return this.login(attrs, cb);
 };
+
+Auth0.prototype._prepareResult = function(result) {
+  if (!result || typeof result !== "object") {
+    return;
+  }
+
+  var idTokenPayload = result.profile
+    ? result.profile
+    : this.decodeJwt(result.id_token);
+
+  return {
+    accessToken: result.access_token,
+    idToken: result.id_token,
+    idTokenPayload: idTokenPayload,
+    refreshToken: result.refresh_token,
+    state: result.state
+  };
+}
 
 /**
  * Expose `Auth0` constructor

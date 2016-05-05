@@ -24,7 +24,7 @@ If you are using [browserify](http://browserify.org/) install with `npm i auth0-
 
 > Note: The following examples use jQuery, but auth0.js is not tied to jQuery and any library can be used with it.
 
-### Initialize:
+### Initialize
 
 Construct a new instance of the Auth0 client as follows:
 
@@ -42,7 +42,7 @@ Construct a new instance of the Auth0 client as follows:
 </script>
 ```
 
-### Login:
+### Login
 
 This method can be called as indifferently as `signin` or `login`.
 Triggers the login on any of your active identity provider as follows:
@@ -78,14 +78,14 @@ Triggers the login on any of your active identity provider as follows:
     });
   });
 
-  //trigger login with a db connection and avoid the redirect (best experience for SPA)
+  //trigger login with a db connection and avoid the redirect
   $('.login-dbconn').click(function () {
     auth0.login({
       connection: 'db-conn',
       username:   $('.username').val(),
       password:   $('.password').val(),
     },
-    function (err, profile, id_token, access_token) {
+    function (err, result) {
       // store in cookies
     });
   });
@@ -100,12 +100,12 @@ Triggers the login on any of your active identity provider as follows:
         width: 450,
         height: 800
       }
-    }, function(err, profile, id_token, access_token, state) {
+    }, function(err, result) {
       if (err) {
         alert("something went wrong: " + err.message);
         return;
       }
-      alert('hello ' + profile.name);
+      alert('Hello!');
     });
   });
 ```
@@ -140,9 +140,9 @@ $('.login-dbconn').click(function () {
       password:   $('.password').val(),
       scope: 'openid offline_access'
     },
-    function (err, profile, id_token, access_token, state, refresh_token) {
+    function (err, result) {
       // store in cookies
-      // refresh_token is sent because offline_access is set as a scope
+      // result.refreshToken is sent because offline_access is set as a scope
     });
   });
 ```
@@ -194,25 +194,25 @@ $('.request-email-code').click(function (ev) {
 });
 ```
 
-Once you receive the code you can call `verifyEmailCode` to authenticate the user using an `email` and a `code` and obtain the user's information such as its profile.
+Once you receive the code you can call `verifyEmailCode` to authenticate the user using an `email` and a `code`.
 
 ```js
 auth0.verifyEmailCode({
   email: $('.email-input').val(),
   code: $('.email-code-input').val()
-}, function (err, profile, id_token, access_token, state, refresh_token) {
+}, function (err, result) {
   if (err) {
     alert("something went wrong: " + err.error_description);
     return;
   }
-  console.log(profile, id_token, access_token, state, refresh_token);
+  alert('Hello');
 });
 ```
 
 If you provide a `callbackURL` parameter when constructing the Auth0 instance, a redirect will be performed and the callback will only be invoked in the case of an error (notice it takes a single argument).
 
 ```js
-auth0.verifyEmailCode(auth0.verifyEmailCode({
+auth0.verifyEmailCode({
   email: $('.email-input').val(),
   code: $('.email-code-input').val()
 }, function (err) {
@@ -247,18 +247,18 @@ $('.request-sms-code').click(function (ev) {
 });
 ```
 
-Once you receive the code you can call `verifySMSCode` to authenticate the user using an `phoneNumber` and a `code` and obtain the user's information such as its profile.
+Once you receive the code you can call `verifySMSCode` to authenticate the user using an `phoneNumber` and a `code`.
 
 ```js
 auth0.verifySMSCode({
   phoneNumber: $('.phone-input').val(),
   code: $('.sms-code-input').val()
-}, function (err, profile, id_token, access_token, state, refresh_token) {
+}, function (err, result) {
   if (err) {
     alert("something went wrong: " + err.error_description);
     return;
   }
-  console.log(profile, id_token, access_token, state, refresh_token);
+  alert("Hello");
 });
 ```
 
@@ -275,6 +275,23 @@ auth0.verifySMSCode({
   }
 });
 ```
+
+### User Profile
+
+The `getProfile` method allows you to obtain the user information after a successful login, and validates the JSON Web Token.
+
+```js
+auth0.getProfile(idToken, function (err, profile) {
+  if(err) {
+    // handle error
+    return;
+  }
+
+  alert('hello ' + profile.name);
+});
+```
+
+How do you get hold of the `idToken` depends on the mode you are using to log in. See below for examples for [redirect](#single-page-apps) and [popup](#popup-mode) modes.
 
 ### Processing the Callback
 
@@ -300,12 +317,14 @@ If you're building a SPA (Single Page Application) and using Redirect Mode, then
 $(function () {
   var result = auth0.parseHash(window.location.hash);
 
-  //use result.id_token to call your rest api
+  //use result.idToken to call your rest api
 
-  if (result && result.id_token) {
-    auth0.getProfile(result.id_token, function (err, profile) {
+  if (result && result.idToken) {
+    // optionally fetch user profile
+    auth0.getProfile(result.idToken, function (err, profile) {
       alert('hello ' + profile.name);
     });
+
     // If offline_access was a requested scope
     // You can grab the result.refresh_token here
 
@@ -360,13 +379,18 @@ auth0.login({
   popup: true,
   connection: 'google-oauth2'
 },
-function(err, profile, id_token, access_token, state) {
+function(err, result) {
   if (err) {
     // Handle the error!
     return;
   }
 
   // Success!
+
+  // optionally fetch user profile
+  auth0.getProfile(result.idToken, function (err, profile) {
+    alert('hello ' + profile.name);
+  });
 });
 ```
 
@@ -401,7 +425,7 @@ auth0.login({
   username:   $('.username').val(),
   password:   $('.password').val(),
 },
-function(err, profile, id_token, access_token, state) {
+function(err, result) {
   if (err) {
     // Handle the error!
     return;
@@ -420,7 +444,7 @@ auth0.login({
   connection: 'db-conn',
   popup: true
 },
-function(err, profile, id_token, access_token, state) {
+function(err, result) {
   if (err) {
     // Handle the error!
     return;
@@ -446,14 +470,14 @@ auth0.login({
   connection: 'db-conn',
   sso: false,
   username:   $('.username').val(),
-  password:   $('.password').val()  
+  password:   $('.password').val()
 },
 function(err) {
   // this only gets called if there was a login error
 });
 ```
 
-If the login succeeds, Auth0 will redirect to your `callbackURL` and if it fails, control will be given to the `callback`.  
+If the login succeeds, Auth0 will redirect to your `callbackURL` and if it fails, control will be given to the `callback`.
 
 And if you don't want that redirect to occur (i.e. you have a Single Page App), you can use a `callback` argument that takes the additional parameters (like what's shown in [Popup Mode](#popup-mode)), and control will go to your callback function with a failed or successful login.
 
@@ -483,11 +507,11 @@ If you just want to get a new token for an addon that you've activated, you can 
 var options = {
   id_token: "your id token", // The id_token you have now
   api: 'firebase', // This defaults to the first active addon if any or you can specify this
-  "scope": "openid profile"		    // default: openid
+  "scope": "openid profile"         // default: openid
 };
 
 auth0.getDelegationToken(options, function (err, delegationResult) {
-	// Call your API using delegationResult.id_token
+    // Call your API using delegationResult.id_token
 });
 ```
 

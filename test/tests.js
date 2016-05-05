@@ -322,9 +322,9 @@ describe('Auth0', function () {
       });
 
       var result = auth0.parseHash(hash);
-      expect(result.profile.name).to.eql('Jose Romaniello');
-      expect(result.access_token).to.eql('jFxsZUQTJXXwcwIm');
-      expect(result.refresh_token).to.eql('gonto');
+      expect(result.idTokenPayload.name).to.eql('Jose Romaniello');
+      expect(result.accessToken).to.eql('jFxsZUQTJXXwcwIm');
+      expect(result.refreshToken).to.eql('gonto');
       expect(result.state).to.eql('Ttct3tBlHDhRnXCv');
 
     });
@@ -339,8 +339,8 @@ describe('Auth0', function () {
       });
 
       var result = auth0.parseHash(hash);
-      expect(result.profile.name).to.eql('Jose Romaniello');
-      expect(result.access_token).to.eql('jFxsZUQTJXXwcwIm');
+      expect(result.idTokenPayload.name).to.eql('Jose Romaniello');
+      expect(result.accessToken).to.eql('jFxsZUQTJXXwcwIm');
       expect(result.state).to.eql('Ttct3tBlHDhRnXCv');
 
     });
