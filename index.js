@@ -464,7 +464,7 @@ Auth0.prototype.parseHash = function (hash) {
   return {
     accessToken: parsed_qs.access_token,
     idToken: id_token,
-    idTokenData: prof,
+    idTokenPayload: prof,
     refreshToken: refresh_token,
     state: parsed_qs.state
   };
@@ -1813,14 +1813,14 @@ Auth0.prototype._prepareResult = function(result) {
     return;
   }
 
-  var idTokenData = result.profile
+  var idTokenPayload = result.profile
     ? result.profile
     : this.decodeJwt(result.id_token);
 
   return {
     accessToken: result.access_token,
     idToken: result.id_token,
-    idTokenData: idTokenData,
+    idTokenPayload: idTokenPayload,
     refreshToken: result.refresh_token,
     state: result.state
   };
