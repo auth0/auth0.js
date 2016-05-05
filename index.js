@@ -487,10 +487,13 @@ Auth0.prototype.signup = function (options, callback) {
   var opts = {
     client_id: this._clientID,
     redirect_uri: this._getCallbackURL(options),
-    username: trim(options.username || ''),
     email: trim(options.email || options.username || ''),
     tenant: this._domain.split('.')[0]
   };
+
+  if (typeof options.username === 'string') {
+     opts.username = trim(options.username);
+   }
 
   var query = xtend(this._getMode(options), options, opts);
 
