@@ -585,8 +585,7 @@ Auth0.prototype.changePassword = function (options, callback) {
     tenant:         this._domain.split('.')[0],
     client_id:      this._clientID,
     connection:     options.connection,
-    username:       trim(options.username || ''),
-    email:          trim(options.email || options.username || ''),
+    email:          trim(options.email || '')
   };
 
   if (typeof options.password === "string") {
