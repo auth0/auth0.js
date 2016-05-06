@@ -306,10 +306,9 @@ describe('Auth0 - User And Passwords', function () {
   describe('Change Password', function () {
     // TODO: add a test to check that the user can provide a username or email, when `requires_username` is enabled
 
-    it('should fail when the username is null', function (done) {
+    it('should fail when there is no email', function (done) {
       auth0.changePassword({
         connection: 'tests',
-        username:   null,
         password:   '12345'
       }, function (err) {
         expect(err.status).to.equal(400);
@@ -323,18 +322,7 @@ describe('Auth0 - User And Passwords', function () {
     it('should return OK after successfull operation', function (done) {
       auth0.changePassword({
         connection: 'tests',
-        username:   'johnfoo@contoso.com',
-        password:   '12345'
-      }, function (err) {
-        expect(err).to.be(null);
-        done();
-      });
-    });
-
-    it('should trim username before operation', function (done) {
-      auth0.changePassword({
-        connection: 'tests',
-        username:     '    johnfoo@gmail.com    ',
+        email:      'johnfoo@contoso.com',
         password:   '12345'
       }, function (err) {
         expect(err).to.be(null);
@@ -371,7 +359,7 @@ describe('Auth0 - User And Passwords', function () {
 
        auth0.changePassword({
          connection: 'tests',
-         username:   'johnfoo@contoso.com',
+         email:      'johnfoo@contoso.com',
          password:   '12345'
        }, function (err) {
          expect(err).to.not.be(null);
