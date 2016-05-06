@@ -487,10 +487,13 @@ Auth0.prototype.signup = function (options, callback) {
   var opts = {
     client_id: this._clientID,
     redirect_uri: this._getCallbackURL(options),
-    username: trim(options.username || ''),
     email: trim(options.email || options.username || ''),
     tenant: this._domain.split('.')[0]
   };
+
+  if (typeof options.username === 'string') {
+     opts.username = trim(options.username);
+   }
 
   var query = xtend(this._getMode(options), options, opts);
 
@@ -582,11 +585,12 @@ Auth0.prototype.changePassword = function (options, callback) {
     tenant:         this._domain.split('.')[0],
     client_id:      this._clientID,
     connection:     options.connection,
-    username:       trim(options.username || ''),
-    email:          trim(options.email || options.username || ''),
-    password:       options.password
+    email:          trim(options.email || '')
   };
 
+  if (typeof options.password === "string") {
+    query.password = options.password;
+  }
 
   function fail (status, resp) {
     var error = new LoginError(status, resp);
@@ -1044,7 +1048,7 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
       clientID:               this._clientID,
       options: {
         // TODO What happens with i18n?
-        username:   options.username,
+        username:   trim(options.username || options.email || ''),
         password:   options.password,
         connection: options.connection,
         state:      options.state,
