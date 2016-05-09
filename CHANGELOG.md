@@ -1,3 +1,33 @@
+## [7.0.0] - 2016-05-09
+
+### Changed
+
+- The user profile is no longer fetched automatically after a
+  successul login in popup mode and the authentication result object
+  has been normalized for both modes (#150)
+  - Most of the properties of the `parseHash` return value have been
+    renamed:
+    - `access_token` to `accessToken`
+    - `id_token` to `idToken`
+    - `profile` to `idTokenPayload`
+    - `refresh_token` to `refreshToken`
+    - `error` and `state` remain the same
+  - The callbacks passed to `login*` methods now take just two
+    arguments: `error` and `result`. The `result` object will have the
+    same structure as the return value of `parseHash`.
+  - To fetch the profile after a successul login in popup mode you can
+    `getProfile` in the authentication callback.
+- The `getSSOData` method now uses XHR instead of JSONP. An error will
+  be provided to the callback if you call this method on a client that
+  it is configured to use JSONP (#152)
+
+### Fixed
+
+- Fixes a bug that prevented logging in with an email using a database
+  connection with SSO enabled and avoid sending uneeded params to the
+  API (#153)
+
+
 ## [6.8.1] - 2016-04-26
 
 ### Fixed
