@@ -1677,6 +1677,8 @@ Auth0.prototype.getSSOData = function (withActiveDirectories, cb) {
 
   if (this._useJSONP) {
     var jsonpOptions = xtend({}, jsonpOpts, { timeout: 3000 });
+    data['auth0Client'] = this._getClientInfoString();
+    url += '?' + qs.stringify(data);
 
     return jsonp(url, jsonpOptions, function (err, resp) {
       cb(null, err ? noResult : resp);
