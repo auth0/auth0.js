@@ -1,3 +1,16 @@
+## [6.8.3] - 2016-05-10
+
+### Fixed
+
+- [] Merge pull request #158 from auth0/v6-sso-ad (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/fd635159bc56b1ce644f21093896a8d433e42ec0
+- [] Include active directory data in SSO request (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/21ae5a49b7276b076fd0e7351c9493e1d1663598
+- [] Merge pull request #157 from auth0/v6-fix-get-sso-data (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/b4b2c1aec2ef72fa5fc559eb90125c04f54f923c
+- [] Fix SSO data (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/1bd5b6248dd7a4b08fb0b7f1a856eb3dd4e09afc
+
 ## [6.8.2] - 2016-05-10
 
 ### Fixed
