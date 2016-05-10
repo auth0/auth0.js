@@ -1664,12 +1664,6 @@ Auth0.prototype.getSSOData = function (withActiveDirectories, cb) {
 
   var noResult = {sso: false};
 
-  if (this._useJSONP) {
-    var error = new Error("The SSO data can't be obtained using JSONP");
-    setTimeout(function() { cb(error, noResult) }, 0);
-    return;
-  }
-
   var protocol = 'https:';
   var domain = this._domain;
   var endpoint = '/user/ssodata';
@@ -1679,6 +1673,14 @@ Auth0.prototype.getSSOData = function (withActiveDirectories, cb) {
 
   if (withActiveDirectories) {
     data = {ldaps: 1, client_id: this._clientID};
+  }
+
+  if (this._useJSONP) {
+    var jsonpOptions = xtend({}, jsonpOpts, { timeout: 3000 });
+
+    return jsonp(url, jsonpOptions, function (err, resp) {
+      cb(null, err ? noResult : resp);
+    });
   }
 
   reqwest({
