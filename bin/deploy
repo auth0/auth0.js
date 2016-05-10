@@ -13,13 +13,14 @@ else
     echo "Deploying $VERSION to git"
 
     LAST_COMMIT=$(git log -1 --pretty=%B)
+    LAST_COMMIT_HASH=$(git rev-parse HEAD)
     git checkout -b dist
     grep -v '^build$' .gitignore > /tmp/.gitignore
     mv /tmp/.gitignore .gitignore
     git add --force build/*
     git commit -am "$TAG_NAME"
     git tag "$TAG_NAME" -m "$LAST_COMMIT"
-    git checkout master
+    git checkout "$LAST_COMMIT_HASH"
     git push origin $TAG_NAME
     git branch -D dist
 fi
@@ -30,7 +31,7 @@ if [ ! -z "$NPM_EXISTS" ]; then
     echo "There is already a version $VERSION in npm. Skiping npm publish."
 else
     echo "Deploying $VERSION to npm"
-    npm publish
+    npm publish --tag support
 fi
 
 CDN_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" https://cdn.auth0.com/w2/auth0-$VERSION.min.js | grep 200 || true)
