@@ -1653,26 +1653,48 @@ Auth0.prototype.logout = function (query) {
  *
  * @method getSSOData
  * @param {Boolean} withActiveDirectories
- * @param {Function} callback
+ * @param {Function} cb
  */
 
-Auth0.prototype.getSSOData = function (withActiveDirectories, callback) {
+Auth0.prototype.getSSOData = function (withActiveDirectories, cb) {
   if (typeof withActiveDirectories === 'function') {
-    callback = withActiveDirectories;
+    cb = withActiveDirectories;
     withActiveDirectories = false;
   }
 
-  var url = joinUrl('https:', this._domain, '/user/ssodata');
+  var noResult = {sso: false};
 
-  if (withActiveDirectories) {
-    url += '?' + qs.stringify({ldaps: 1, client_id: this._clientID});
+  if (this._useJSONP) {
+    var error = new Error("The SSO data can't be obtained using JSONP");
+    setTimeout(function() { cb(error, noResult) }, 0);
+    return;
   }
 
-  // override timeout
-  var jsonpOptions = xtend({}, jsonpOpts, { timeout: 3000 });
+  var protocol = 'https:';
+  var domain = this._domain;
+  var endpoint = '/user/ssodata';
+  var url = joinUrl(protocol, domain, endpoint);
+  var sameOrigin = same_origin(protocol, domain);
+  var data = {};
 
-  return jsonp(url, jsonpOptions, function (err, resp) {
-    callback(null, err ? {sso:false} : resp); // Always return OK, regardless of any errors
+  if (withActiveDirectories) {
+    data = {ldaps: 1, client_id: this._clientID};
+  }
+
+  reqwest({
+    url:             sameOrigin ? endpoint : url,
+    method:          'get',
+    type:            'json',
+    data:            data,
+    crossOrigin:     !sameOrigin,
+    withCredentials: !sameOrigin,
+    timeout:         3000
+  }).fail(function(err) {
+    var error = new Error("There was an error in the request that obtains the user's country");
+    error.cause = err;
+    cb(null, noResult);
+  }).then(function(resp) {
+    cb(null, resp);
   });
 };
 
