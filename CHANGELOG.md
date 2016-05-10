@@ -1,3 +1,16 @@
+## [6.8.2] - 2016-05-10
+
+### Fixed
+
+- [] Merge pull request #156 from auth0/v6-xhr-sso-data (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/894cfed5f91e6f7503bd5ca6815ef4e167597ff2
+- [] Add v6 to travis.yml's branches (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/5e0dc7bb79f493aed0cbbd53f34693860465058a
+- [] Update deploy script for support releases (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/2ac26953cd54e9aba6706d9066f9009f72c6c060
+- [] Stop obtaining SSO data with JSONP (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/443974582184301e85cbd2feb567b3ee3592241a
+
 ## [6.8.1] - 2016-04-26
 
 ### Fixed
