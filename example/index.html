@@ -14,11 +14,18 @@
             callbackOnLocationHash: true
         });
 
+        var pwdless = new Auth0({
+          domain: 'pwdlessdemo.auth0.com',
+          callbackURL: window.location.href,
+          clientID: 'Gcs1jSu5FAFpDrPe0jrqGpfbTEkzCk15',
+          callbackOnLocationHash: true
+        });
+
         // callback redirect?
         var result = auth0.parseHash(window.location.hash);
-        if (result && result.id_token) {
+        if (result && result.idToken) {
             // This will execute on redirect callback
-            auth0.getProfile(result.id_token, function (err, profile) {
+            auth0.getProfile(result.idToken, function (err, profile) {
               window.location.hash = "";
               if (err) {
                 return alert('error fetching profile: ' + JSON.stringify(err));
@@ -57,11 +64,17 @@
                             width: 450,
                             height: 600
                         }
-                    }, function(err, profile, id_token, access_token, state) {
+                    }, function(err, result) {
                         if (err) {
-                            return alert("something went wrong: " + (err.message || err.error));
+                          return alert("something went wrong: " + (err.message || err.error));
                         }
-                        alert('hello ' + profile.name);
+
+                        auth0.getProfile(result.idToken, function (err, profile) {
+                          if (err) {
+                            return alert('error fetching profile: ' + JSON.stringify(err));
+                          }
+                          alert('hello ' + profile.name);
+                        });
                     });
                 });
 
@@ -75,11 +88,17 @@
                             location: 'no',
                             toolbar: 'no'
                         }
-                    }, function(err, profile, id_token, access_token, state) {
+                    }, function(err, result) {
                         if (err) {
                             return alert("something went wrong: " + (err.message || err.error));
                         }
-                        alert('hello ' + profile.name);
+
+                        auth0.getProfile(result.idToken, function (err, profile) {
+                          if (err) {
+                            return alert('error fetching profile: ' + JSON.stringify(err));
+                          }
+                          alert('hello ' + profile.name);
+                        });
                     });
                 });
 
@@ -100,9 +119,14 @@
                         username: $('.login-username').val(),
                         password: $('.login-password').val(),
                         sso: false
-                    }, function (err, profile, id_token, access_token) {
-                        if (err) return alert('Something went wrong: ' + err.message);
+                    }, function (err, result) {
+                      if (err) return alert('Something went wrong: ' + err.message);
+                      auth0.getProfile(result.idToken, function (err, profile) {
+                        if (err) {
+                          return alert('error fetching profile: ' + JSON.stringify(err));
+                        }
                         alert('hello ' + profile.name);
+                      });
                     });
                 });
             </script>
@@ -124,9 +148,8 @@
                         sso: true,
                         popup: true,
                         auto_login: false
-                    }, function (err, profile, id_token, access_token) {
+                    }, function (err) {
                         if (err) return alert('Something went wrong: ' + err.message);
-                        if (profile) return alert('hello ' + profile.name);
                         return alert('success signup without login!')
                     });
                 });
@@ -146,10 +169,10 @@
                         connection: 'tests',
                         username: $('.validate-username').val(),
                         password: $('.validate-password').val()
-                    }, function (err, profile, id_token, access_token) {
+                    }, function (err, result) {
                         if (err) return alert('Something went wrong: ' + err.message);
-                        if (profile) return alert('User exists and password is correct!');
-                        return alert('User not found or incorrect password.');
+                        var message = result ? 'Valid user/pass' : 'Invalid user/pass';
+                        alert(message);
                     });
                 });
             </script>
@@ -163,9 +186,10 @@
             <script type="text/javascript">
                 $('.request-email-link').click(function (e) {
                     e.preventDefault();
-                    auth0.startPasswordless({ email: $('.email-input').val() }, function (err, result) {
-                        if (err) return alert("something went wrong: " + err.message);
-                        console.log(result);
+                    pwdless.startPasswordless({ email: $('.email-input').val() }, function (err, result) {
+                      if (err) return alert("something went wrong: " + err.message);
+                      alert('Passwordless flow started');
+                      console.log(result);
                     });
                 });
             </script>
@@ -179,11 +203,12 @@
             <script type="text/javascript">
                 $('.request-sms-code').click(function (e) {
                     e.preventDefault();
-                    auth0.startPasswordless({
+                    pwdless.startPasswordless({
                         phoneNumber: $('.phone-input').val()
                     }, function (err, result) {
-                        if (err) return alert("something went wrong: " + err.message);
-                        console.log(result);
+                         if (err) return alert("something went wrong: " + err.message);
+                         alert('Passwordless flow started');
+                         console.log(result);
                     });
                 });
             </script>
@@ -193,14 +218,19 @@
             <script type="text/javascript">
                 $('.submit-sms-code').click(function (e) {
                     e.preventDefault();
-                    auth0.login({
+                     pwdless.login({
                         username: $('.phone-input').val(),
                         password: $('.sms-code-input').val(),
                         connection: 'sms',
                         sso: false
-                    }, function (err, profile, id_token, access_token, state, refresh_token) {
+                    }, function (err, result) {
                         if (err) return alert("something went wrong: " + err.message);
-                        console.log(profile, id_token, access_token, state, refresh_token);
+                        pwdless.getProfile(result.idToken, function (err, profile) {
+                          if (err) {
+                            return alert('error fetching profile: ' + JSON.stringify(err));
+                          }
+                          alert('hello ' + profile.name);
+                        });
                     });
                 });
             </script>
