@@ -1,3 +1,10 @@
+## [7.0.1] - 2016-05-12
+
+### Fixed
+
+- Provide the error object to the callback instead of `null` when the
+  request made by `getSSOData` fails (#162)
+
 ## [7.0.0] - 2016-05-09
 
 ### Changed
