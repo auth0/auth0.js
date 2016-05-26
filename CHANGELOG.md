@@ -1,3 +1,10 @@
+## [7.0.2] - 2016-05-26
+
+### Fixed
+
+- Fix the error message that is provided when the request that obtains
+  the user's SSO data fails (#167)
+
 ## [7.0.1] - 2016-05-12
 
 ### Fixed
