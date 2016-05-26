@@ -1676,7 +1676,7 @@ Auth0.prototype.getSSOData = function (withActiveDirectories, cb) {
     withCredentials: !sameOrigin,
     timeout:         3000
   }).fail(function(err) {
-    var error = new Error("There was an error in the request that obtains the user's country");
+    var error = new Error("There was an error in the request that obtains the user's SSO data.");
     error.cause = err;
     cb(error, noResult);
   }).then(function(resp) {
