@@ -278,7 +278,7 @@ auth0.verifySMSCode({
 
 ### User Profile
 
-The `getProfile` method allows you to obtain the user information after a successful login, and validates the JSON Web Token.
+The `getProfile` method allows you to obtain the user information after a successful login.
 
 ```js
 auth0.getProfile(idToken, function (err, profile) {
@@ -290,6 +290,7 @@ auth0.getProfile(idToken, function (err, profile) {
   alert('hello ' + profile.name);
 });
 ```
+
 
 How do you get hold of the `idToken` depends on the mode you are using to log in. See below for examples for [redirect](#single-page-apps) and [popup](#popup-mode) modes.
 
