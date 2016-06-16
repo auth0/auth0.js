@@ -840,11 +840,19 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
       return ref.close();
     }
 
-    if (result.id_token) {
-      setTimeout(function() { callback(null, _this._prepareResult(result)) }, 0);
+    // parseHash returns idToken, NOT id_token
+    // if (result.id_token) {
+    //   setTimeout(function() { callback(null, _this._prepareResult(result)) }, 0);
+    //   answered = true;
+    //   return ref.close();
+    // }
+
+    if (result.idToken) {
+      callback(null, result);
       answered = true;
       return ref.close();
     }
+
 
     // Case where we've found an error
     callback(new Error(result.err || result.error || 'Something went wrong'), null, null, null, null);
