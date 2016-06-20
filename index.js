@@ -821,9 +821,9 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
 
   function errorHandler(event) {
     if (answered) { return; }
-    callback(new Error(event.message), null, null, null, null);
     answered = true;
-    return ref.close();
+    ref.close();
+    callback(new Error(event.message), null);
   }
 
   function startHandler(event) {
@@ -835,39 +835,34 @@ Auth0.prototype.loginPhonegap = function (options, callback) {
     var result = _this.parseHash(event.url.slice(mobileCallbackURL.length));
 
     if (!result) {
-      callback(new Error('Error parsing hash'), null, null, null, null);
       answered = true;
-      return ref.close();
+      ref.close();
+      callback(new Error('Error parsing hash'), null);
+      return;
     }
 
-    // parseHash returns idToken, NOT id_token
-    // if (result.id_token) {
-    //   setTimeout(function() { callback(null, _this._prepareResult(result)) }, 0);
-    //   answered = true;
-    //   return ref.close();
-    // }
-
     if (result.idToken) {
-      callback(null, result);
       answered = true;
-      return ref.close();
+      ref.close();
+      callback(null, result);
+      return;
     }
 
 
     // Case where we've found an error
-    callback(new Error(result.err || result.error || 'Something went wrong'), null, null, null, null);
     answered = true;
-    return ref.close();
+    ref.close();
+    callback(new Error(result.err || result.error || 'Something went wrong'), null);
   }
 
   function exitHandler() {
     if (answered) { return; }
 
-    callback(new Error('Browser window closed'), null, null, null, null);
-
     ref.removeEventListener('loaderror', errorHandler);
     ref.removeEventListener('loadstart', startHandler);
     ref.removeEventListener('exit', exitHandler);
+
+    callback(new Error('Browser window closed'), null);
   }
 
   ref.addEventListener('loaderror', errorHandler);
