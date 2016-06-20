@@ -9,10 +9,10 @@ scripts:
   - "/build/auth0.js"
 browsers:
   - name: chrome
-    version: -2..latest
+    version: latest
   - name: safari
-    version: -2..latest
+    version: latest
   - name: firefox
-    version: -2..latest
+    version: latest
   - name: ie
-    version: 8..latest
+    version: latest

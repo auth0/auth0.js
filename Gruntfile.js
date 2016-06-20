@@ -79,7 +79,7 @@ module.exports = function(grunt) {
     },
     exec: {
       'test-integration': {
-        cmd: 'node_modules/.bin/zuul -- test/*.js',
+        cmd: 'node_modules/.bin/zuul --concurrency 1 -- test/*.js',
         stdout: true,
         stderr: true
       },
