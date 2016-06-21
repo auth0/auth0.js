@@ -1,3 +1,20 @@
+## [7.0.3] - 2016-05-26
+
+### Fixed
+
+- [] Merge pull request #173 from auth0/improve-cordova-callbacks (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/2d32a69a2430d12d282cb6b458ee300a728c2755
+- [] Zuul no longer works with all browsers at once (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/ae9df38418ec9c7d00e9e0697ed4f7db7c7d5cbc
+- [] Safer callback execution in cordova (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/c4b68c6bdf9ef2c7d9b0acacc5c85c597e55eee1
+- [] Merge pull request #172 from cosemansp/master (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/f54fa932e599aab88bd320d20552ac6344d1fbfa
+- [] fix issue with 'Something went wrong' error on device (`Peter Cosemans`)
+  https://github.com/auth0/auth0.js/commit/328d41dae40631433172bd046bdf5f4e973e1567
+- [] Update getProfile doc in README (`Gabriel Andretta`)
+  https://github.com/auth0/auth0.js/commit/6f3791f3187f0298d6436ae5e95cc14219e66e9d
+
 ## [7.0.2] - 2016-05-26
 
 ### Fixed
