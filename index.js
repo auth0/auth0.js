@@ -247,8 +247,16 @@ Auth0.prototype._renderAndSubmitWSFedForm = function (options, formHtml) {
  */
 
 Auth0.prototype._getMode = function (options) {
+
+  var scope;
+  if (typeof(options.scope) != "undefined") {
+    scope = { scope: 'openid' };
+  }else {
+    scope = options.scope
+  }
+
   return {
-    scope: 'openid',
+    scope: scope,
     response_type: this._getCallbackOnLocationHash(options) ? 'token' : 'code'
   };
 };
@@ -1165,8 +1173,15 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
 
 Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   var _this = this;
+  var scope;
+  if (typeof(options.scope) != "undefined") {
+    scope = { scope: 'openid' };
+  }else {
+    scope = options.scope
+  }
+
   var query = this._buildAuthorizationParameters([
-      { scope: 'openid' },
+      scope,
       options,
       { client_id: this._clientID }
     ]);
