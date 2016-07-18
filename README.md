@@ -490,7 +490,12 @@ And if you don't want that redirect to occur (i.e. you have a Single Page App), 
       connection: 'db-conn',
       username:   'foo@bar.com'
     }, function (err, resp) {
-      console.log(err.message);
+      if(err){
+        console.log(err.message);
+      }else{
+        console.log(resp);
+      }
+      
     });
   });
 ```
