@@ -221,7 +221,7 @@ Auth0.prototype._redirect = function (url) {
   global.window.location = url;
 };
 
-Auth0.prototype._getCallbackOnLocationHash = function(options) {
+Auth0.prototype._getResponseType = function(options) {
   var responseType = this._responseType;
 
   if (!this._providedResponseType
@@ -237,7 +237,11 @@ Auth0.prototype._getCallbackOnLocationHash = function(options) {
     responseType = options.responseType;
   }
 
-  return responseType !== "code";
+  return responseType;
+};
+
+Auth0.prototype._getCallbackOnLocationHash = function(options) {
+  return this._getResponseType(options) !== "code";
 };
 
 Auth0.prototype._getCallbackURL = function(options) {
@@ -286,7 +290,7 @@ Auth0.prototype._renderAndSubmitWSFedForm = function (options, formHtml) {
 Auth0.prototype._getMode = function (options) {
   return {
     scope: 'openid',
-    response_type: this._getCallbackOnLocationHash(options) ? 'token' : 'code'
+    response_type: this._getResponseType(options)
   };
 };
 
