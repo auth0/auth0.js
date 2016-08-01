@@ -150,7 +150,30 @@ function Auth0 (options) {
   this._callbackURL = options.callbackURL || document.location.href;
   this._shouldRedirect = !!options.callbackURL;
   this._domain = options.domain;
-  this._callbackOnLocationHash = false || options.callbackOnLocationHash;
+
+  if (options.hasOwnProperty("callbackOnLocationHash")) {
+    this._providedCallbackOnLocationHash = true;
+    this._responseType =
+      callbackOnLocationHashToResponseType(options.callbackOnLocationHash);
+  }
+
+  if (options.hasOwnProperty("responseType")
+       && !this._providedCallbackOnLocationHash) {
+    this._providedResponseType = true;
+    this._responseType = options.responseType;
+  }
+
+  if (options.hasOwnProperty("responseType")
+       && this._providedCallbackOnLocationHash
+       && console
+       && console.warn) {
+    console.warn("Ignoring responseType option because callbackOnLocationHash was already provided. Both can't be used at the same time.");
+  }
+
+  if (!this._providedCallbackOnLocationHash && !this._providedResponseType) {
+    this._responseType = "code";
+  }
+
   this._cordovaSocialPlugins = {
     facebook: this._phonegapFacebookLogin
   };
@@ -199,8 +222,22 @@ Auth0.prototype._redirect = function (url) {
 };
 
 Auth0.prototype._getCallbackOnLocationHash = function(options) {
-  return (options && typeof options.callbackOnLocationHash !== 'undefined') ?
-    options.callbackOnLocationHash : this._callbackOnLocationHash;
+  var responseType = this._responseType;
+
+  if (!this._providedResponseType
+       && options
+       && options.hasOwnProperty("callbackOnLocationHash")) {
+    responseType =
+      callbackOnLocationHashToResponseType(options.callbackOnLocationHash);
+  }
+
+  if (!this._providedCallbackOnLocationHash
+       && options
+       && options.hasOwnProperty("responseType")) {
+    responseType = options.responseType;
+  }
+
+  return responseType !== "code";
 };
 
 Auth0.prototype._getCallbackURL = function(options) {
@@ -1890,6 +1927,10 @@ Auth0.prototype._prepareResult = function(result) {
     refreshToken: result.refresh_token,
     state: result.state
   };
+}
+
+function callbackOnLocationHashToResponseType(x) {
+  return x ? "token" : "code";
 }
 
 /**
