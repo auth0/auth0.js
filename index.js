@@ -150,42 +150,8 @@ function Auth0 (options) {
   this._callbackURL = options.callbackURL || document.location.href;
   this._shouldRedirect = !!options.callbackURL;
   this._domain = options.domain;
-
-  if (options.hasOwnProperty("callbackOnLocationHash")) {
-    this._providedCallbackOnLocationHash = true;
-    this._responseType =
-      callbackOnLocationHashToResponseType(options.callbackOnLocationHash);
-  }
-
-  if (options.hasOwnProperty("responseType")
-       && !this._providedCallbackOnLocationHash) {
-    this._providedResponseType = true;
-    this._responseType = options.responseType;
-  }
-
-  if (options.hasOwnProperty("responseType")
-       && this._providedCallbackOnLocationHash
-       && console
-       && console.warn) {
-    console.warn("Ignoring responseType option because callbackOnLocationHash was already provided. Both can't be used at the same time.");
-  }
-
-  if (!this._providedCallbackOnLocationHash && !this._providedResponseType) {
-    this._responseType = "code";
-  }
-
-  if (options.hasOwnProperty("responseMode")
-       && !this._providedCallbackOnLocationHash) {
-    this._responseMode = options.responseMode;
-  }
-
-  if (options.hasOwnProperty("responseMode")
-       && this._providedCallbackOnLocationHash
-       && console
-       && console.warn) {
-    console.warn("Ignoring responseMode option because callbackOnLocationHash was already provided. Both can't be used at the same time.");
-  }
-
+  this._responseType = this._parseResponseType(options, true) || "code";
+  this._responseMode = this._parseResponseMode(options, true);
   this._cordovaSocialPlugins = {
     facebook: this._phonegapFacebookLogin
   };
@@ -233,23 +199,8 @@ Auth0.prototype._redirect = function (url) {
   global.window.location = url;
 };
 
-Auth0.prototype._getResponseType = function(options) {
-  var responseType = this._responseType;
-
-  if (!this._providedResponseType
-       && options
-       && options.hasOwnProperty("callbackOnLocationHash")) {
-    responseType =
-      callbackOnLocationHashToResponseType(options.callbackOnLocationHash);
-  }
-
-  if (!this._providedCallbackOnLocationHash
-       && options
-       && options.hasOwnProperty("responseType")) {
-    responseType = options.responseType;
-  }
-
-  return responseType;
+Auth0.prototype._getResponseType = function(opts) {
+  return this._parseResponseType(opts) || this._responseType;
 };
 
 Auth0.prototype._getCallbackOnLocationHash = function(options) {
@@ -257,15 +208,8 @@ Auth0.prototype._getCallbackOnLocationHash = function(options) {
 };
 
 Auth0.prototype._getResponseMode = function(opts) {
-  var responseMode = this._responseMode;
-
-  if (!this._providedCallbackOnLocationHash
-       && opts
-       && opts.hasOwnProperty("responseMode")) {
-    responseMode = opts.responseMode;
-  }
-
-  return responseMode === "form_post"
+  var result = this._parseResponseMode(opts) || this._responseMode;
+  return result === "form_post"
     ? "form_post"
     : null;
 };
@@ -314,10 +258,17 @@ Auth0.prototype._renderAndSubmitWSFedForm = function (options, formHtml) {
  */
 
 Auth0.prototype._getMode = function (options) {
-  return {
+  var result = {
     scope: 'openid',
     response_type: this._getResponseType(options)
   };
+
+  var responseMode = this._getResponseMode(options);
+  if (responseMode) {
+    result.response_mode = responseMode;
+  }
+
+  return result;
 };
 
 Auth0.prototype._configureOfflineMode = function(options) {
@@ -1959,8 +1910,94 @@ Auth0.prototype._prepareResult = function(result) {
   };
 }
 
+Auth0.prototype._parseResponseType = function(opts, setFlags) {
+  if (!opts) opts = {};
+
+  if (setFlags
+       && !this._providedResponseOptions
+       && opts.hasOwnProperty("callbackOnLocationHash")) {
+    this._providedCallbackOnLocationHash = true;
+  }
+
+  if (setFlags
+       && !this._providedCallbackOnLocationHash
+       && opts.hasOwnProperty("responseType")) {
+    this._providedResponseOptions = true;
+  }
+
+  if (!this._providedCallbackOnLocationHash
+       && !this._providedResponseOptions
+       && opts.hasOwnProperty("callbackOnLocationHash")
+       && opts.hasOwnProperty("responseType")) {
+    warn("The responseType option will be ignored. Both callbackOnLocationHash and responseType options were provided and they can't be used together.");
+  }
+
+  if (this._providedCallbackOnLocationHash
+       && opts.hasOwnProperty("responseType")) {
+    warn("The responseType option will be ignored. The callbackOnLocationHash option was provided to the constructor and they can't be mixed.");
+  }
+
+  if (this._providedResponseOptions
+       && opts.hasOwnProperty("callbackOnLocationHash")) {
+    warn("The callbackOnLocationHash option will be ignored. The responseType option was provided to the constructor and they can't be mixed.");
+  }
+
+  var result = undefined;
+
+  if (!this._providedResponseOptions
+       && null != opts.callbackOnLocationHash) {
+    result = callbackOnLocationHashToResponseType(opts.callbackOnLocationHash);
+  }
+
+  // TODO: validate responseType
+  if (!this._providedCallbackOnLocationHash
+       && !opts.hasOwnProperty("callbackOnLocationHash")
+       && null != opts.responseType) {
+    result = opts.responseType;
+  }
+
+  return result;
+}
+
+Auth0.prototype._parseResponseMode = function(opts, setFlags) {
+  if (!opts) opts = {};
+
+  if (setFlags
+       && !this._providedCallbackOnLocationHash
+       && opts.hasOwnProperty("responseMode")) {
+    this._providedResponseOptions = true;
+  }
+
+  if (this._providedCallbackOnLocationHash
+       && opts.hasOwnProperty("responseMode")) {
+    warn("The responseMode option will be ignored. The callbackOnLocationHash option was provided to the constructor and they can't be mixed.");
+  }
+
+  if (!this._providedCallbackOnLocationHash
+       && !this._providedResponseOptions
+       && opts.hasOwnProperty("callbackOnLocationHash")
+       && opts.hasOwnProperty("responseMode")) {
+    warn("The responseMode option will be ignored. Both callbackOnLocationHash and responseMode options were provided and they can't be used together.");
+  }
+
+  var result = undefined;
+
+  // TODO: validate responseMode
+  if (!this._providedCallbackOnLocationHash && null != opts.responseMode) {
+    result = opts.responseMode;
+  }
+
+  return result;
+}
+
 function callbackOnLocationHashToResponseType(x) {
   return x ? "token" : "code";
+}
+
+function warn(str) {
+  if (console && console.warn) {
+    console.warn(str);
+  }
 }
 
 /**
