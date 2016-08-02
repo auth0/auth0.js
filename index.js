@@ -174,6 +174,18 @@ function Auth0 (options) {
     this._responseType = "code";
   }
 
+  if (options.hasOwnProperty("responseMode")
+       && !this._providedCallbackOnLocationHash) {
+    this._responseMode = options.responseMode;
+  }
+
+  if (options.hasOwnProperty("responseMode")
+       && this._providedCallbackOnLocationHash
+       && console
+       && console.warn) {
+    console.warn("Ignoring responseMode option because callbackOnLocationHash was already provided. Both can't be used at the same time.");
+  }
+
   this._cordovaSocialPlugins = {
     facebook: this._phonegapFacebookLogin
   };
@@ -242,6 +254,20 @@ Auth0.prototype._getResponseType = function(options) {
 
 Auth0.prototype._getCallbackOnLocationHash = function(options) {
   return this._getResponseType(options) !== "code";
+};
+
+Auth0.prototype._getResponseMode = function(opts) {
+  var responseMode = this._responseMode;
+
+  if (!this._providedCallbackOnLocationHash
+       && opts
+       && opts.hasOwnProperty("responseMode")) {
+    responseMode = opts.responseMode;
+  }
+
+  return responseMode === "form_post"
+    ? "form_post"
+    : null;
 };
 
 Auth0.prototype._getCallbackURL = function(options) {
