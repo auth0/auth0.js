@@ -204,7 +204,8 @@ Auth0.prototype._getResponseType = function(opts) {
 };
 
 Auth0.prototype._getCallbackOnLocationHash = function(options) {
-  return this._getResponseType(options) !== "code";
+  return this._getResponseMode(options) !== "form_post"
+    && this._getResponseType(options) !== "code";
 };
 
 Auth0.prototype._getResponseMode = function(opts) {
