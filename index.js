@@ -1942,6 +1942,13 @@ Auth0.prototype._parseResponseType = function(opts, setFlags) {
     warn("The callbackOnLocationHash option will be ignored. The responseType option was provided to the constructor and they can't be mixed.");
   }
 
+  if (!this._providedCallbackOnLocationHash
+       && !opts.hasOwnProperty("callbackOnLocationHash")
+       && opts.responseType
+       && !validResponseType(opts.responseType)) {
+    warn("The responseType option will be ignored. Its valid values are \"code\", \"id_token\", \"token\" or any combination of them.");
+  }
+
   var result = undefined;
 
   if (!this._providedResponseOptions
@@ -1949,10 +1956,10 @@ Auth0.prototype._parseResponseType = function(opts, setFlags) {
     result = callbackOnLocationHashToResponseType(opts.callbackOnLocationHash);
   }
 
-  // TODO: validate responseType
   if (!this._providedCallbackOnLocationHash
        && !opts.hasOwnProperty("callbackOnLocationHash")
-       && null != opts.responseType) {
+       && opts.responseType
+       && validResponseType(opts.responseType)) {
     result = opts.responseType;
   }
 
@@ -1982,8 +1989,14 @@ Auth0.prototype._parseResponseMode = function(opts, setFlags) {
 
   var result = undefined;
 
-  // TODO: validate responseMode
-  if (!this._providedCallbackOnLocationHash && null != opts.responseMode) {
+  if (!this._providedCallbackOnLocationHash
+       && opts.responseMode
+       && !validResponseMode(opts.responseMode)) {
+    warn("The responseMode option will be ignored. Its only valid value is \"form_post\".");
+  }
+
+  if (!this._providedCallbackOnLocationHash
+       && validResponseMode(opts.responseMode)) {
     result = opts.responseMode;
   }
 
@@ -1993,6 +2006,24 @@ Auth0.prototype._parseResponseMode = function(opts, setFlags) {
 function callbackOnLocationHashToResponseType(x) {
   return x ? "token" : "code";
 }
+
+function validResponseType(str) {
+  if (typeof str !== "string") return false;
+
+  var RESPONSE_TYPES = ["code", "id_token", "token"];
+  var parts = str.split(" ");
+
+  for (var i = 0; i < parts.length; i++) {
+    if (RESPONSE_TYPES.indexOf(parts[i]) === -1) return false;
+  }
+
+  return parts.length >= 1;
+}
+
+function validResponseMode(str) {
+  return str === "form_post";
+}
+
 
 function warn(str) {
   if (console && console.warn) {
