@@ -665,8 +665,13 @@ describe('Auth0', function () {
     });
 
     it('should add offline mode', function () {
-      var queryString = Auth0.prototype._buildAuthorizeQueryString([
-        Auth0.prototype._getMode(), { scope: 'openid offline_access'}
+      var c = new Auth0({
+        clientID: "1",
+         domain: "example.auth0.com",
+         sendSDKClientInfo: false
+       });
+      var queryString = c._buildAuthorizeQueryString([
+        c._getMode(), { scope: 'openid offline_access'}
       ], []);
       expect(queryString).to.equal('scope=openid%20offline_access&response_type=code&device=Browser');
     });
