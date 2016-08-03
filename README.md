@@ -509,6 +509,32 @@ var auth0 = new Auth0({
 
 Both `responseType` and `responseMode` options were added in version `7.2.0`. In previous versions, a subset of the functionality of this options was available through `callbackOnLocationHash`. `responseType: 'code'` is equivalent to `callbackOnLocationHash: false` and `responseType: 'token'` is equivalent to `callbackOnLocationHash: true`. The `callbackOnLocationHash` option is still available for compatibility reasons, but it has been deprecated and will be removed in version `8.0.0`. Also note that is not possible to use `callbackOnLocationHash` and `responseType` at the same time.
 
+```js
+// The next two snippets are equivalent, and a code will be included in the
+// callbackURL after a successful login
+var auth0 = new Auth0({
+  // ...
+  responseType: 'code'
+});
+
+var auth0 = new Auth0({
+  // ...
+  callbackOnLocationHash: false
+});
+
+// The next two snippets are equivalent, and a token will be included in the
+// callbackURL after a successful login
+var auth0 = new Auth0({
+  // ...
+  responseType: 'token'
+});
+
+var auth0 = new Auth0({
+  // ...
+  callbackOnLocationHash: true
+});
+```
+
 ### Change Password (database connections):
 
 ```js
