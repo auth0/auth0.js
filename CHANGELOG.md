@@ -1,3 +1,9 @@
+## [7.0.4] - 2016-08-08
+
+### Fixed
+
+- Stop sending client header when has been disabled (#182)
+
 ## [7.0.3] - 2016-06-21
 
 ### Fixed
