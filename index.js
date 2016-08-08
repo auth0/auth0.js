@@ -214,9 +214,9 @@ Auth0.prototype._getClientInfoString = function () {
 };
 
 Auth0.prototype._getClientInfoHeader = function () {
-  return {
-    'Auth0-Client': this._getClientInfoString()
-  };
+  return this._sendClientInfo
+    ? { 'Auth0-Client': this._getClientInfoString() }
+    : {};
 };
 
 /**
