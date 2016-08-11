@@ -440,51 +440,54 @@ Auth0.prototype.decodeJwt = function (jwt) {
 
 Auth0.prototype.parseHash = function (hash) {
   hash = hash || window.location.hash;
-  var parsed_qs;
-  if (hash.match(/error/)) {
-    hash = hash.substr(1).replace(/^\//, '');
-    parsed_qs = qs.parse(hash);
+  hash = hash.substr(1).replace(/^\//, '');
+  var parsed_qs = qs.parse(hash);
+  if (parsed_qs.hasOwnProperty('error')) {
     var err = {
       error: parsed_qs.error,
       error_description: parsed_qs.error_description
     };
     return err;
   }
-  if(!hash.match(/access_token/)) {
-    // Invalid hash URL
+
+  if (!parsed_qs.hasOwnProperty('access_token')
+       && !parsed_qs.hasOwnProperty('id_token')
+       && !parsed_qs.hasOwnProperty('refresh_token')) {
     return null;
   }
-  hash = hash.substr(1).replace(/^\//, '');
-  parsed_qs = qs.parse(hash);
-  var id_token = parsed_qs.id_token;
-  var refresh_token = parsed_qs.refresh_token;
-  var prof = this.decodeJwt(id_token);
-  var invalidJwt = function (error) {
-    var err = {
-      error: 'invalid_token',
-      error_description: error
+
+  var prof;
+
+  if (parsed_qs.id_token) {
+    var invalidJwt = function (error) {
+      var err = {
+        error: 'invalid_token',
+        error_description: error
+      };
+      return err;
     };
-    return err;
-  };
 
-  // aud should be the clientID
-  var audiences = is_array(prof.aud) ? prof.aud : [ prof.aud ];
-  if (index_of(audiences, this._clientID) === -1) {
-    return invalidJwt(
-      'The clientID configured (' + this._clientID + ') does not match with the clientID set in the token (' + audiences.join(', ') + ').');
-  }
+    prof = this.decodeJwt(parsed_qs.id_token);
 
-  // iss should be the Auth0 domain (i.e.: https://contoso.auth0.com/)
-  if (prof.iss && prof.iss !== 'https://' + this._domain + '/') {
-    return invalidJwt(
-      'The domain configured (https://' + this._domain + '/) does not match with the domain set in the token (' + prof.iss + ').');
+    // aud should be the clientID
+    var audiences = is_array(prof.aud) ? prof.aud : [ prof.aud ];
+    if (index_of(audiences, this._clientID) === -1) {
+      return invalidJwt(
+        'The clientID configured (' + this._clientID + ') does not match with the clientID set in the token (' + audiences.join(', ') + ').');
+    }
+
+    // iss should be the Auth0 domain (i.e.: https://contoso.auth0.com/)
+    if (prof.iss && prof.iss !== 'https://' + this._domain + '/') {
+      return invalidJwt(
+        'The domain configured (https://' + this._domain + '/) does not match with the domain set in the token (' + prof.iss + ').');
+    }
   }
 
   return {
     accessToken: parsed_qs.access_token,
-    idToken: id_token,
+    idToken: parsed_qs.id_token,
     idTokenPayload: prof,
-    refreshToken: refresh_token,
+    refreshToken: parsed_qs.refresh_token,
     state: parsed_qs.state
   };
 };
