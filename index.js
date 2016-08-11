@@ -442,11 +442,17 @@ Auth0.prototype.parseHash = function (hash) {
   hash = hash || window.location.hash;
   hash = hash.substr(1).replace(/^\//, '');
   var parsed_qs = qs.parse(hash);
+
   if (parsed_qs.hasOwnProperty('error')) {
     var err = {
       error: parsed_qs.error,
       error_description: parsed_qs.error_description
     };
+
+    if (parsed_qs.state) {
+      err.state = parsed_qs.state;
+    }
+
     return err;
   }
 
