@@ -1,1 +1,1 @@
-module.exports = { str: "7.0.4" };
+module.exports = { str: "7.1.0" };
