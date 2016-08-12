@@ -1,3 +1,13 @@
+## [7.1.0] - 2016-08-12
+
+### Added
+
+- Add `responseType` and `responseMode` options (#180)
+  - `responseType` should be used instead of `callbackOnLocationHash`, its
+     possible values are `"token"`, `"code"` and `"id_token"`.
+  - `responseMode` only allows `"form_post"`, which overrides the default
+     response mode for the given response type.
+
 ## [7.0.4] - 2016-08-08
 
 ### Fixed
