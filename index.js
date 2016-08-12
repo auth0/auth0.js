@@ -150,7 +150,8 @@ function Auth0 (options) {
   this._callbackURL = options.callbackURL || document.location.href;
   this._shouldRedirect = !!options.callbackURL;
   this._domain = options.domain;
-  this._callbackOnLocationHash = false || options.callbackOnLocationHash;
+  this._responseType = this._parseResponseType(options, true) || "code";
+  this._responseMode = this._parseResponseMode(options, true);
   this._cordovaSocialPlugins = {
     facebook: this._phonegapFacebookLogin
   };
@@ -198,9 +199,20 @@ Auth0.prototype._redirect = function (url) {
   global.window.location = url;
 };
 
+Auth0.prototype._getResponseType = function(opts) {
+  return this._parseResponseType(opts) || this._responseType;
+};
+
 Auth0.prototype._getCallbackOnLocationHash = function(options) {
-  return (options && typeof options.callbackOnLocationHash !== 'undefined') ?
-    options.callbackOnLocationHash : this._callbackOnLocationHash;
+  return this._getResponseMode(options) !== "form_post"
+    && this._getResponseType(options) !== "code";
+};
+
+Auth0.prototype._getResponseMode = function(opts) {
+  var result = this._parseResponseMode(opts) || this._responseMode;
+  return result === "form_post"
+    ? "form_post"
+    : null;
 };
 
 Auth0.prototype._getCallbackURL = function(options) {
@@ -247,10 +259,17 @@ Auth0.prototype._renderAndSubmitWSFedForm = function (options, formHtml) {
  */
 
 Auth0.prototype._getMode = function (options) {
-  return {
+  var result = {
     scope: 'openid',
-    response_type: this._getCallbackOnLocationHash(options) ? 'token' : 'code'
+    response_type: this._getResponseType(options)
   };
+
+  var responseMode = this._getResponseMode(options);
+  if (responseMode) {
+    result.response_mode = responseMode;
+  }
+
+  return result;
 };
 
 Auth0.prototype._configureOfflineMode = function(options) {
@@ -421,51 +440,60 @@ Auth0.prototype.decodeJwt = function (jwt) {
 
 Auth0.prototype.parseHash = function (hash) {
   hash = hash || window.location.hash;
-  var parsed_qs;
-  if (hash.match(/error/)) {
-    hash = hash.substr(1).replace(/^\//, '');
-    parsed_qs = qs.parse(hash);
+  hash = hash.substr(1).replace(/^\//, '');
+  var parsed_qs = qs.parse(hash);
+
+  if (parsed_qs.hasOwnProperty('error')) {
     var err = {
       error: parsed_qs.error,
       error_description: parsed_qs.error_description
     };
+
+    if (parsed_qs.state) {
+      err.state = parsed_qs.state;
+    }
+
     return err;
   }
-  if(!hash.match(/access_token/)) {
-    // Invalid hash URL
+
+  if (!parsed_qs.hasOwnProperty('access_token')
+       && !parsed_qs.hasOwnProperty('id_token')
+       && !parsed_qs.hasOwnProperty('refresh_token')) {
     return null;
   }
-  hash = hash.substr(1).replace(/^\//, '');
-  parsed_qs = qs.parse(hash);
-  var id_token = parsed_qs.id_token;
-  var refresh_token = parsed_qs.refresh_token;
-  var prof = this.decodeJwt(id_token);
-  var invalidJwt = function (error) {
-    var err = {
-      error: 'invalid_token',
-      error_description: error
+
+  var prof;
+
+  if (parsed_qs.id_token) {
+    var invalidJwt = function (error) {
+      var err = {
+        error: 'invalid_token',
+        error_description: error
+      };
+      return err;
     };
-    return err;
-  };
 
-  // aud should be the clientID
-  var audiences = is_array(prof.aud) ? prof.aud : [ prof.aud ];
-  if (index_of(audiences, this._clientID) === -1) {
-    return invalidJwt(
-      'The clientID configured (' + this._clientID + ') does not match with the clientID set in the token (' + audiences.join(', ') + ').');
-  }
+    prof = this.decodeJwt(parsed_qs.id_token);
 
-  // iss should be the Auth0 domain (i.e.: https://contoso.auth0.com/)
-  if (prof.iss && prof.iss !== 'https://' + this._domain + '/') {
-    return invalidJwt(
-      'The domain configured (https://' + this._domain + '/) does not match with the domain set in the token (' + prof.iss + ').');
+    // aud should be the clientID
+    var audiences = is_array(prof.aud) ? prof.aud : [ prof.aud ];
+    if (index_of(audiences, this._clientID) === -1) {
+      return invalidJwt(
+        'The clientID configured (' + this._clientID + ') does not match with the clientID set in the token (' + audiences.join(', ') + ').');
+    }
+
+    // iss should be the Auth0 domain (i.e.: https://contoso.auth0.com/)
+    if (prof.iss && prof.iss !== 'https://' + this._domain + '/') {
+      return invalidJwt(
+        'The domain configured (https://' + this._domain + '/) does not match with the domain set in the token (' + prof.iss + ').');
+    }
   }
 
   return {
     accessToken: parsed_qs.access_token,
-    idToken: id_token,
+    idToken: parsed_qs.id_token,
     idTokenPayload: prof,
-    refreshToken: refresh_token,
+    refreshToken: parsed_qs.refresh_token,
     state: parsed_qs.state
   };
 };
@@ -1890,6 +1918,127 @@ Auth0.prototype._prepareResult = function(result) {
     refreshToken: result.refresh_token,
     state: result.state
   };
+}
+
+Auth0.prototype._parseResponseType = function(opts, setFlags) {
+  if (!opts) opts = {};
+
+  if (setFlags
+       && !this._providedResponseOptions
+       && opts.hasOwnProperty("callbackOnLocationHash")) {
+    this._providedCallbackOnLocationHash = true;
+  }
+
+  if (setFlags
+       && !this._providedCallbackOnLocationHash
+       && opts.hasOwnProperty("responseType")) {
+    this._providedResponseOptions = true;
+  }
+
+  if (!this._providedCallbackOnLocationHash
+       && !this._providedResponseOptions
+       && opts.hasOwnProperty("callbackOnLocationHash")
+       && opts.hasOwnProperty("responseType")) {
+    warn("The responseType option will be ignored. Both callbackOnLocationHash and responseType options were provided and they can't be used together.");
+  }
+
+  if (this._providedCallbackOnLocationHash
+       && opts.hasOwnProperty("responseType")) {
+    warn("The responseType option will be ignored. The callbackOnLocationHash option was provided to the constructor and they can't be mixed.");
+  }
+
+  if (this._providedResponseOptions
+       && opts.hasOwnProperty("callbackOnLocationHash")) {
+    warn("The callbackOnLocationHash option will be ignored. The responseType option was provided to the constructor and they can't be mixed.");
+  }
+
+  if (!this._providedCallbackOnLocationHash
+       && !opts.hasOwnProperty("callbackOnLocationHash")
+       && opts.responseType
+       && !validResponseType(opts.responseType)) {
+    warn("The responseType option will be ignored. Its valid values are \"code\", \"id_token\", \"token\" or any combination of them.");
+  }
+
+  var result = undefined;
+
+  if (!this._providedResponseOptions
+       && null != opts.callbackOnLocationHash) {
+    result = callbackOnLocationHashToResponseType(opts.callbackOnLocationHash);
+  }
+
+  if (!this._providedCallbackOnLocationHash
+       && !opts.hasOwnProperty("callbackOnLocationHash")
+       && opts.responseType
+       && validResponseType(opts.responseType)) {
+    result = opts.responseType;
+  }
+
+  return result;
+}
+
+Auth0.prototype._parseResponseMode = function(opts, setFlags) {
+  if (!opts) opts = {};
+
+  if (setFlags
+       && !this._providedCallbackOnLocationHash
+       && opts.hasOwnProperty("responseMode")) {
+    this._providedResponseOptions = true;
+  }
+
+  if (this._providedCallbackOnLocationHash
+       && opts.hasOwnProperty("responseMode")) {
+    warn("The responseMode option will be ignored. The callbackOnLocationHash option was provided to the constructor and they can't be mixed.");
+  }
+
+  if (!this._providedCallbackOnLocationHash
+       && !this._providedResponseOptions
+       && opts.hasOwnProperty("callbackOnLocationHash")
+       && opts.hasOwnProperty("responseMode")) {
+    warn("The responseMode option will be ignored. Both callbackOnLocationHash and responseMode options were provided and they can't be used together.");
+  }
+
+  var result = undefined;
+
+  if (!this._providedCallbackOnLocationHash
+       && opts.responseMode
+       && !validResponseMode(opts.responseMode)) {
+    warn("The responseMode option will be ignored. Its only valid value is \"form_post\".");
+  }
+
+  if (!this._providedCallbackOnLocationHash
+       && validResponseMode(opts.responseMode)) {
+    result = opts.responseMode;
+  }
+
+  return result;
+}
+
+function callbackOnLocationHashToResponseType(x) {
+  return x ? "token" : "code";
+}
+
+function validResponseType(str) {
+  if (typeof str !== "string") return false;
+
+  var RESPONSE_TYPES = ["code", "id_token", "token"];
+  var parts = str.split(" ");
+
+  for (var i = 0; i < parts.length; i++) {
+    if (RESPONSE_TYPES.indexOf(parts[i]) === -1) return false;
+  }
+
+  return parts.length >= 1;
+}
+
+function validResponseMode(str) {
+  return str === "form_post";
+}
+
+
+function warn(str) {
+  if (console && console.warn) {
+    console.warn(str);
+  }
 }
 
 /**
