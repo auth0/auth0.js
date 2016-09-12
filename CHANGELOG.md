@@ -1,3 +1,23 @@
+## [7.2.0](https://github.com/auth0/lock/tree/7.2.0) (2016-09-12)
+[Full Changelog](https://github.com/auth0/lock/compare/7.1.0...7.2.0)
+
+**Closed issues:**
+- Logout function is using deprecated endpoint [\#190](https://github.com/auth0/auth0.js/issues/190)
+- Remove dependency on unmaintained query-string module [\#184](https://github.com/auth0/auth0.js/issues/184)
+- Security Vulnerability in indirect dependency "Negotiator" [\#178](https://github.com/auth0/auth0.js/issues/178)
+- reqwest version used expect a window object [\#170](https://github.com/auth0/auth0.js/issues/170) 
+- Use new v2/logout endpoint [\#74](https://github.com/auth0/auth0.js/issues/74)
+
+
+**Added:**
+- Allow to use v2 logout endpoint [\#201](https://github.com/auth0/auth0.js/pull/201) ([hzalaz](https://github.com/hzalaz))
+
+**Changed:**
+- Bump to latest reqwest@2.0.5 [\#202](https://github.com/auth0/auth0.js/pull/202) ([cristiandouce](https://github.com/cristiandouce))
+- Use qs@6.2.1 instead nore-querystring fork [\#200](https://github.com/auth0/auth0.js/pull/200) ([hzalaz](https://github.com/hzalaz))
+- Bump winchan version [\#199](https://github.com/auth0/auth0.js/pull/199) ([cristiandouce](https://github.com/cristiandouce))
+
+
 ## [7.1.0] - 2016-08-12
 
 ### Added
