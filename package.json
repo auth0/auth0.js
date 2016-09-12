@@ -30,7 +30,7 @@
     "Base64": "~0.1.3",
     "json-fallback": "0.0.1",
     "jsonp": "~0.0.4",
-    "qs": "git+https://github.com/jfromaniello/node-querystring.git#fix_ie7_bug_with_arrays",
+    "qs": "^6.2.1",
     "reqwest": "^1.1.4",
     "trim": "~0.0.1",
     "winchan": "^0.1.1",
