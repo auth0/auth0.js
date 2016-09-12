@@ -541,7 +541,7 @@ var auth0 = new Auth0({
   $('.change_password').click(function () {
     auth0.changePassword({
       connection: 'db-conn',
-      username:   'foo@bar.com'
+      email:   'foo@bar.com'
     }, function (err, resp) {
       console.log(err.message);
     });
