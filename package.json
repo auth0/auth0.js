@@ -33,7 +33,7 @@
     "qs": "git+https://github.com/jfromaniello/node-querystring.git#fix_ie7_bug_with_arrays",
     "reqwest": "^1.1.4",
     "trim": "~0.0.1",
-    "winchan": "^0.1.1",
+    "winchan": "auth0/winchan#v0.1.2",
     "xtend": "~2.1.1"
   },
   "devDependencies": {
