@@ -1647,7 +1647,7 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
  */
 
 Auth0.prototype.logout = function (query) {
-  var url = joinUrl('https:', this._domain, '/logout');
+  var url = joinUrl('https:', this._domain, '/v2/logout');
   if (query) {
     url += '?' + qs.stringify(query);
   }
