@@ -31,7 +31,7 @@
     "json-fallback": "0.0.1",
     "jsonp": "~0.0.4",
     "qs": "^6.2.1",
-    "reqwest": "^1.1.4",
+    "reqwest": "2.0.5",
     "trim": "~0.0.1",
     "winchan": "auth0/winchan#v0.1.2",
     "xtend": "~2.1.1"
