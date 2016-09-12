@@ -310,7 +310,7 @@ describe('Auth0', function () {
     })
   });
 
-  describe.only('parseHash', function () {
+  describe('parseHash', function () {
     context('response_type=token + scope=openid offline_access + state', function() {
       before(function() {
         var hash = '#access_token=AdyWpLVbQi2GA0fy&refresh_token=8m8M2Dk7BWsmpyumpguR4ZVKpZDy6bhFrZacaq6kmEVtt&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2duYW5kcmV0dGEuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDU3MmNhOWYzMGRjMjhkOGQ3YmY3MzRhYSIsImF1ZCI6Iks2bkFFT2dFZVN3b2dDR3Y2TjZtOXdOZlFodmJGQW0wIiwiZXhwIjoxNDcwOTYzOTQyLCJpYXQiOjE0NzA5Mjc5NDJ9.KcxIWhnTHeL_kNwUq74ef3REOCFDxiOH_NiNMqNNZks&token_type=Bearer&state=hello';
