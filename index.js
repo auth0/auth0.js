@@ -1642,15 +1642,34 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
  *     auth0.logout({returnTo: 'http://logout'});
  *     // redirects to -> 'https://yourapp.auth0.com/logout?returnTo=http://logout'
  *
+ * @example
+ *
+ *     auth0.logout(null, {version: 'v2'});
+ *     // redirects to -> 'https://yourapp.auth0.com/v2/logout'
+ *
+ * @example
+ *
+ *     auth0.logout({returnTo: 'http://logout'}, {version: 2});
+ *     // redirects to -> 'https://yourapp.auth0.com/v2/logout?returnTo=http://logout'
+ *
  * @method logout
  * @param {Object} query
  */
 
-Auth0.prototype.logout = function (query) {
-  var url = joinUrl('https:', this._domain, '/logout');
+Auth0.prototype.logout = function (query, options) {
+  var pathName = '/logout';
+  options = options || {};
+
+  if (options.version == 'v2') {
+    pathName = '/v2' + pathName
+  }
+
+  var url = joinUrl('https:', this._domain, pathName);
+
   if (query) {
     url += '?' + qs.stringify(query);
   }
+
   this._redirect(url);
 };
 
