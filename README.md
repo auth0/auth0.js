@@ -543,7 +543,12 @@ var auth0 = new Auth0({
       connection: 'db-conn',
       email:   'foo@bar.com'
     }, function (err, resp) {
-      console.log(err.message);
+      if(err){
+        console.log(err.message);
+      }else{
+        console.log(resp);
+      }
+      
     });
   });
 ```
