@@ -969,7 +969,7 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
     }
 
     // Handle profile retrieval from id_token and respond
-    if (result.id_token) {
+    if (result.access_token || result.id_token) {
       return callback(null, _this._prepareResult(result));
     }
 
@@ -1926,14 +1926,12 @@ Auth0.prototype._prepareResult = function(result) {
     return;
   }
 
-  var idTokenPayload = result.profile
-    ? result.profile
-    : this.decodeJwt(result.id_token);
+  var decodedIdToken = result.id_token ? this.decodeJwt(result.id_token) : undefined;
 
   return {
     accessToken: result.access_token,
     idToken: result.id_token,
-    idTokenPayload: idTokenPayload,
+    idTokenPayload: result.profile || decodedIdToken,
     refreshToken: result.refresh_token,
     state: result.state
   };
