@@ -1,3 +1,10 @@
+## [7.2.1](https://github.com/auth0/lock/tree/7.2.1) (2016-09-23)
+[Full Changelog](https://github.com/auth0/lock/compare/7.2.0...7.2.1)
+
+**Fixed**
+- Fix popup mode when no id_token is returned [\#206](https://github.com/auth0/auth0.js/pull/206) ([rolodato](https://github.com/rolodato))
+
+
 ## [7.2.0](https://github.com/auth0/lock/tree/7.2.0) (2016-09-12)
 [Full Changelog](https://github.com/auth0/lock/compare/7.1.0...7.2.0)
 
