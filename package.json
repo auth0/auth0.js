@@ -33,7 +33,7 @@
     "qs": "^6.2.1",
     "reqwest": "2.0.5",
     "trim": "~0.0.1",
-    "winchan": "auth0/winchan#v0.1.2",
+    "winchan": "0.1.4",
     "xtend": "~2.1.1"
   },
   "devDependencies": {
