@@ -1810,8 +1810,7 @@ Auth0.prototype.startPasswordless = function (options, callback) {
       }
 
       data.authParams.redirect_uri = options.callbackURL || this._callbackURL;
-      data.authParams.response_type = this._getResponseType(options);//this._shouldRedirect && !this._callbackOnLocationHash ?
-        // "code" : "token";
+      data.authParams.response_type = this._getResponseType(options);
     }
 
     if (options.send) {
