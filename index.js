@@ -1069,7 +1069,7 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
   var popupPosition = this._computePopupPosition(options.popupOptions);
   var popupOptions = xtend(popupPosition, options.popupOptions);
 
-  var popup = WinChan.open({
+  var winchanOptions = {
     url: 'https://' + this._domain + '/sso_dbconnection_popup/' + this._clientID,
     relay_url: 'https://' + this._domain + '/relay.html',
     window_features: stringifyPopupSettings(popupOptions),
@@ -1086,7 +1086,13 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
         scope:      options.scope
       }
     }
-  }, function (err, result) {
+  };
+
+  if (options._csrf) {
+    winchanOptions.params.options._csrf = options._csrf;
+  }
+
+  var popup = WinChan.open(winchanOptions, function (err, result) {
     // Eliminate `_current_popup` reference manually because
     // Winchan removes `.kill()` method from window and also
     // doesn't call `.kill()` by itself
