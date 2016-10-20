@@ -1,3 +1,9 @@
+## [6.8.4] - 2016-10-20
+
+### Fixed
+- [] Merge pull request #221 from auth0/fix-pass-csrf-token-sso (`Hernan Zalazar`)
+  https://github.com/auth0/auth0.js/commit/39dbeb5c9891ffb4989042adf605c88755a91c42
+
 ## [6.8.3] - 2016-05-10
 
 ### Fixed
