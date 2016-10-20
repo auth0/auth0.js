@@ -1,3 +1,16 @@
+# Change Log
+
+## [7.3.0](https://github.com/auth0/lock/tree/7.3.0) (2016-10-20)
+[Full Changelog](https://github.com/auth0/lock/compare/7.2.1...7.3.0)
+
+**Changed**
+- Add CSRF token when using popup mode and user and pass login [\#218](https://github.com/auth0/auth0.js/pull/218) ([hernanhht](https://github.com/hernanhht))
+- Bump winchan@0.1.4 [\#213](https://github.com/auth0/auth0.js/pull/213) ([cristiandouce](https://github.com/cristiandouce))
+
+**Fixed**
+- Use response_type on startPasswordless [\#217](https://github.com/auth0/auth0.js/pull/217) ([glena](https://github.com/glena))
+
+
 ## [7.2.1](https://github.com/auth0/lock/tree/7.2.1) (2016-09-23)
 [Full Changelog](https://github.com/auth0/lock/compare/7.2.0...7.2.1)
 
@@ -12,7 +25,7 @@
 - Logout function is using deprecated endpoint [\#190](https://github.com/auth0/auth0.js/issues/190)
 - Remove dependency on unmaintained query-string module [\#184](https://github.com/auth0/auth0.js/issues/184)
 - Security Vulnerability in indirect dependency "Negotiator" [\#178](https://github.com/auth0/auth0.js/issues/178)
-- reqwest version used expect a window object [\#170](https://github.com/auth0/auth0.js/issues/170) 
+- reqwest version used expect a window object [\#170](https://github.com/auth0/auth0.js/issues/170)
 - Use new v2/logout endpoint [\#74](https://github.com/auth0/auth0.js/issues/74)
 
 
