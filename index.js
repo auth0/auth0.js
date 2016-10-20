@@ -1038,22 +1038,28 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
   var popupPosition = this._computePopupPosition(options.popupOptions);
   var popupOptions = xtend(popupPosition, options.popupOptions);
 
+  var payload = {
+    // TODO What happens with i18n?
+    username:   options.username,
+    password:   options.password,
+    connection: options.connection,
+    state:      options.state,
+    scope:      options.scope
+  };
+
+  if (options._csrf) {
+    payload._csrf = options._csrf;
+  }
+
   var popup = WinChan.open({
     url: 'https://' + this._domain + '/sso_dbconnection_popup/' + this._clientID,
     relay_url: 'https://' + this._domain + '/relay.html',
     window_features: stringifyPopupSettings(popupOptions),
     popup: this._current_popup,
     params: {
-      domain:                 this._domain,
-      clientID:               this._clientID,
-      options: {
-        // TODO What happens with i18n?
-        username:   options.username,
-        password:   options.password,
-        connection: options.connection,
-        state:      options.state,
-        scope:      options.scope
-      }
+      domain:   this._domain,
+      clientID: this._clientID,
+      options:  payload
     }
   }, function (err, result) {
     // Eliminate `_current_popup` reference manually because
