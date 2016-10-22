@@ -440,7 +440,7 @@ Auth0.prototype.decodeJwt = function (jwt) {
 
 Auth0.prototype.parseHash = function (hash) {
   hash = hash || window.location.hash;
-  hash = hash.substr(1).replace(/^\//, '');
+  hash = hash.replace(/^#?\//, '');
   var parsed_qs = qs.parse(hash);
 
   if (parsed_qs.hasOwnProperty('error')) {
