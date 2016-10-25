@@ -1092,6 +1092,10 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
     winchanOptions.params.options._csrf = options._csrf;
   }
 
+  if (options.device) {
+    winchanOptions.params.options.device = options.device;
+  }
+
   var popup = WinChan.open(winchanOptions, function (err, result) {
     // Eliminate `_current_popup` reference manually because
     // Winchan removes `.kill()` method from window and also
