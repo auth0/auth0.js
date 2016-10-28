@@ -590,6 +590,8 @@ auth0.getDelegationToken(options, function (err, delegationResult) {
 
 ### Refresh token
 
+> This methods will be deprecated soon. Use `silentAuthentication` instead
+
 If you want to refresh your existing (not expired) token, you can just do the following:
 
 ```js
@@ -604,6 +606,61 @@ If you want to refresh your existing (expired) token, if you have the refresh_to
 auth0.refreshToken(refresh_token, function (err, delegationResult) {
   // Get here the new delegationResult.id_token
 });
+```
+
+### Silent Authentication
+
+If you want to fetch a new token because your existing token is expired (or soon to expire), you can fetch a new one doing the following:
+
+```js
+auth0.silentAuthentication({}, function(err, result){
+  // Get here the new result.id_token
+})
+```
+
+This by default will use the callback url defined in the constructor. If this callback url is the same that handle the regular authentication callback, you will need to have in mind that you will need to handle the case where the user is already loged in and reached that path again.
+
+If you want to use a different one, you can send the new `callbackURL` in the options param:
+
+```js
+auth0.silentAuthentication({
+    callbackURL: "https://.../silentCallback"
+  }, function(err, result){
+  // Get here the new result.id_token
+})
+```
+
+There are two ways this method works. The default behaviour will try to parse the callback url hash, but it also support `webMessage` where the callback page will `postMessage` the authentication result. 
+
+```js
+auth0.silentAuthentication({
+    useWebMessage:true, 
+    callbackURL: "https://.../silentCallback"
+  }, function(err, result){
+  // Get here the new result.id_token
+})
+```
+
+An example of the callback page is the following:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="/auth0.js"></script>
+    <script type="text/javascript">
+        var auth0 = new Auth0({
+          domain:       'mine.auth0.com',
+          clientID:     '...'
+        });
+        var result = auth0.parseHash(window.location.hash);
+        if (result) {
+          parent.postMessage(result, "https://.../"); //The second parameter should be your domain
+        }
+    </script>
+  </head>
+  <body></body>
+</html>
 ```
 
 ### Validate User
