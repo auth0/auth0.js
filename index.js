@@ -1670,13 +1670,13 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
  * @param {function} callback
  */
 Auth0.prototype.silentAuthentication = function (options, callback) {
-  var useWebMessage = options.useWebMessage || false;
+  var usePostMessage = options.usePostMessage || false;
   
-  delete options.useWebMessage;
+  delete options.usePostMessage;
 
   options = xtend(options, {prompt:'none'});
-  var handler = new SilentAuthenticationHandler(this._buildAuthorizeUrl(options));
-  handler.login(callback, useWebMessage);
+  var handler = new SilentAuthenticationHandler(this, this._buildAuthorizeUrl(options));
+  handler.login(callback, usePostMessage);
 };
 
 /**

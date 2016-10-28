@@ -630,11 +630,11 @@ auth0.silentAuthentication({
 })
 ```
 
-There are two ways this method works. The default behaviour will try to parse the callback url hash, but it also support `webMessage` where the callback page will `postMessage` the authentication result. 
+There are two ways this method works. The default behaviour will try to parse the callback url hash, but it also support `postMessage` to send the authentication result from the callback page back to the sdk. 
 
 ```js
 auth0.silentAuthentication({
-    useWebMessage:true, 
+    usePostMessage:true, 
     callbackURL: "https://.../silentCallback"
   }, function(err, result){
   // Get here the new result.id_token
