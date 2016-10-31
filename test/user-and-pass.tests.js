@@ -237,7 +237,7 @@ describe('Auth0 - User And Passwords', function () {
           sso: false
         }, function (err, result) {
           expect(err).to.be(null);
-          auth0.getProfile(result.idToken, function(err, profile) {
+          auth0.getUserInfo(result.accessToken, function(err, profile) {
             expect(err).to.be(null);
             expect(profile).to.have.property('username');
             expect(profile).to.have.property('email');

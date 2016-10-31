@@ -25,7 +25,7 @@
         var result = auth0.parseHash(window.location.hash);
         if (result && result.idToken) {
             // This will execute on redirect callback
-            auth0.getProfile(result.idToken, function (err, profile) {
+            auth0.getUserInfo(result.accessToken, function (err, profile) {
               window.location.hash = "";
               if (err) {
                 return alert('error fetching profile: ' + JSON.stringify(err));
@@ -69,7 +69,7 @@
                           return alert("something went wrong: " + (err.message || err.error));
                         }
 
-                        auth0.getProfile(result.idToken, function (err, profile) {
+                        auth0.getUserInfo(result.accessToken, function (err, profile) {
                           if (err) {
                             return alert('error fetching profile: ' + JSON.stringify(err));
                           }
@@ -93,7 +93,7 @@
                             return alert("something went wrong: " + (err.message || err.error));
                         }
 
-                        auth0.getProfile(result.idToken, function (err, profile) {
+                        auth0.getUserInfo(result.accessToken, function (err, profile) {
                           if (err) {
                             return alert('error fetching profile: ' + JSON.stringify(err));
                           }
@@ -121,7 +121,7 @@
                         sso: false
                     }, function (err, result) {
                       if (err) return alert('Something went wrong: ' + err.message);
-                      auth0.getProfile(result.idToken, function (err, profile) {
+                      auth0.getUserInfo(result.accessToken, function (err, profile) {
                         if (err) {
                           return alert('error fetching profile: ' + JSON.stringify(err));
                         }
@@ -225,7 +225,7 @@
                         sso: false
                     }, function (err, result) {
                         if (err) return alert("something went wrong: " + err.message);
-                        pwdless.getProfile(result.idToken, function (err, profile) {
+                        pwdless.getUserInfo(result.accessToken, function (err, profile) {
                           if (err) {
                             return alert('error fetching profile: ' + JSON.stringify(err));
                           }
