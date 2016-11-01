@@ -29,7 +29,7 @@ If you are using [browserify](http://browserify.org/) install with `npm i auth0-
 Construct a new instance of the Auth0 client as follows:
 
 ```html
-<script src="//cdn.auth0.com/w2/auth0-7.3.0.min.js"></script>
+<script src="//cdn.auth0.com/w2/auth0-7.4.0.min.js"></script>
 <script type="text/javascript">
   var auth0 = new Auth0({
     domain:       'mine.auth0.com',
