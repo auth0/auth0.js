@@ -21,6 +21,8 @@ var json_parse        = require('./lib/json-parse');
 var LoginError        = require('./lib/LoginError');
 var use_jsonp         = require('./lib/use_jsonp');
 
+var SilentAuthenticationHandler = require('./lib/SilentAuthenticationHandler');
+
 /**
  * Check if running in IE.
  *
@@ -705,6 +707,21 @@ Auth0.prototype._buildAuthorizationParameters = function(args, blacklist) {
   return query;
 };
 
+Auth0.prototype._buildAuthorizeUrl = function(options) {
+  var qs = [
+    this._getMode(options),
+    options,
+    {
+      client_id: this._clientID,
+      redirect_uri: this._getCallbackURL(options)
+    }
+  ];
+
+  var query = this._buildAuthorizeQueryString(qs);
+
+  return joinUrl('https:', this._domain, '/authorize?' + query);
+}
+
 /**
  * Login user
  *
@@ -741,18 +758,7 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
 };
 
 Auth0.prototype._authorize = function(options) {
-  var qs = [
-    this._getMode(options),
-    options,
-    {
-      client_id: this._clientID,
-      redirect_uri: this._getCallbackURL(options)
-    }
-  ];
-
-  var query = this._buildAuthorizeQueryString(qs);
-
-  var url = joinUrl('https:', this._domain, '/authorize?' + query);
+  var url = this._buildAuthorizeUrl(options);
 
   if (options.popup) {
     this._buildPopupWindow(options, url);
@@ -1636,6 +1642,41 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
       }
     }
   });
+};
+
+/**
+ * Fetches a new id_token/access_token from Auth0
+ *
+ * @example
+ *
+ *     auth0.silentAuthentication({}, function(error, result) {
+ *        if (error) {
+ *          console.log(error); 
+ *        }
+ *        // result.id_token
+ *     });
+ *
+ * @example
+ *
+ *     auth0.silentAuthentication({callbackUrl: "https://site.com/silentCallback"}, function(error, result) {
+ *        if (error) {
+ *          console.log(error); 
+ *        }
+ *        // result.id_token
+ *     });
+ *
+ * @method silentAutnetication
+ * @param {Object} options
+ * @param {function} callback
+ */
+Auth0.prototype.silentAuthentication = function (options, callback) {
+  var usePostMessage = options.usePostMessage || false;
+  
+  delete options.usePostMessage;
+
+  options = xtend(options, {prompt:'none'});
+  var handler = new SilentAuthenticationHandler(this, this._buildAuthorizeUrl(options));
+  handler.login(callback, usePostMessage);
 };
 
 /**
