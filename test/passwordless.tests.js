@@ -302,7 +302,7 @@ describe('Auth0 - Passwordless', function () {
             '{"id_token": "' + idToken + '"}'
           ]);
           // XXX Avoid fetching the profile
-          this.auth0.getProfile = function(id_token, callback) {
+          this.auth0.getUserInfo = function(access_token, callback) {
             return callback(null, {});
           }
         });

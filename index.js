@@ -291,6 +291,8 @@ Auth0.prototype._configureOfflineMode = function(options) {
 
 Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
 
+  console.warn("DEPRECATION NOTICE: This method will be soon deprecated, use `getUserInfo` instead.")
+
   if (!(profile && !profile.user_id)) {
     return callback(null, profile);
   }
@@ -330,6 +332,56 @@ Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
     type:         'json',
     crossOrigin:  !same_origin(protocol, domain),
     data:         {id_token: id_token}
+  }).fail(function (err) {
+    fail(err.status, err.responseText);
+  }).then(function (userinfo) {
+    callback(null, userinfo);
+  });
+
+};
+
+/**
+ * Get user information from API
+ *
+ * @param {Object} profile
+ * @param {String} id_token
+ * @param {Function} callback
+ * @private
+ */
+
+Auth0.prototype.getUserInfo = function (access_token, callback) {
+
+  if ('function' !== typeof callback) {
+    throw new Error('A callback function is required');
+  }
+  if (!access_token || typeof access_token !== 'string') {
+    return callback(new Error('Invalid token'));
+  }
+
+  var _this = this;
+  var protocol = 'https:';
+  var domain = this._domain;
+  var endpoint = '/userinfo';
+  var url = joinUrl(protocol, domain, endpoint);
+
+  var fail = function (status, description) {
+    var error = new Error(status + ': ' + (description || ''));
+
+    // These two properties are added for compatibility with old versions (no Error instance was returned)
+    error.error = status;
+    error.error_description = description;
+
+    callback(error);
+  };
+
+  return reqwest({
+    url:          same_origin(protocol, domain) ? endpoint : url,
+    method:       'post',
+    type:         'json',
+    crossOrigin:  !same_origin(protocol, domain),
+    headers: {
+      'Authorization': 'Bearer ' + access_token
+    }
   }).fail(function (err) {
     fail(err.status, err.responseText);
   }).then(function (userinfo) {

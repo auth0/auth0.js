@@ -736,7 +736,7 @@ describe('Auth0', function () {
 
   });
 
-  describe('getProfile', function () {
+  describe('getUserInfo', function () {
     describe('when called with an object', function () {
       it('should call the callback with error', function (done) {
         var auth0 = new Auth0({
@@ -745,7 +745,7 @@ describe('Auth0', function () {
           domain:       'aaa.auth0.com'
         });
 
-        auth0.getProfile({foo: 'bar'}, function (err) {
+        auth0.getUserInfo({foo: 'bar'}, function (err) {
           expect(err.message).to.eql('Invalid token');
           done();
         });
@@ -760,7 +760,7 @@ describe('Auth0', function () {
           domain:       'aaa.auth0.com'
         });
 
-        auth0.getProfile(null, function (err) {
+        auth0.getUserInfo(null, function (err) {
           expect(err.message).to.eql('Invalid token');
           done();
         });
@@ -769,27 +769,7 @@ describe('Auth0', function () {
 
     describe('from token', function () {
 
-      it('should be able to decode the id_token (if scope=openid profile)', function (done) {
-        var auth0 = Auth0({
-          clientID:     '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-          callbackURL:  'https://myapp.com/callback',
-          domain:       'mdocs.auth0.com'
-        });
-
-        var result = {
-          id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjEzOTM5ODMwNDEsImlhdCI6MTM5Mzk0NzA0MSwiY2xpZW50SUQiOiIwSFA3MUdTZDZQdW9SWUozRFhLZGlYQ1VVZEdtQmJ1cCIsImNyZWF0ZWRfYXQiOiJUdWUgTWFyIDA0IDIwMTQgMTU6MzA6NDEgR01UKzAwMDAgKFVUQykiLCJlbWFpbCI6ImpvaG5mb29AZ21haWwuY29tIiwiZmFtaWx5X25hbWUiOiJGb28iLCJnaXZlbl9uYW1lIjoiSm9obiIsImlkZW50aXRpZXMiOlt7InVzZXJfaWQiOiI0QVpERjU2Nzg5IiwicHJvdmlkZXIiOiJhdXRoMCIsImNvbm5lY3Rpb24iOiJ0ZXN0cyIsImlzU29jaWFsIjpmYWxzZX1dLCJuYW1lIjoiSm9obiBGb28iLCJuaWNrbmFtZSI6ImpvaG5mb28iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zZWN1cmUuZ3JhdmF0YXIuY29tL2F2YXRhci8zOGZhMDAyNDIzYmQ4Yzk0MWM2ZWQwNTg4YjYwZmZlZD9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZzc2wuZ3N0YXRpYy5jb20lMkZzMiUyRnByb2ZpbGVzJTJGaW1hZ2VzJTJGc2lsaG91ZXR0ZTgwLnBuZyIsInVzZXJfaWQiOiJhdXRoMHw0QVpERjU2Nzg5IiwibG9naW5Db3VudCI6NywiZm9vIjoiYmFyIn0.sktOHRTH76nylw4qYkv9mFSSV-33I9-75CdT10caJko'
-        };
-
-        auth0.getProfile(result.id_token, function (err, profile) {
-          expect(profile.name).to.eql('John Foo');
-          expect(profile.foo).to.eql('bar');
-          expect(profile.identities.length).to.eql(1);
-          done();
-        });
-
-      });
-
-      it('should be able to take the id_token (scope=openid) and call getUserInfo', function (done) {
+      it('should be able to fetch the profile from auth0', function (done) {
         var auth0 = Auth0({
           clientID:     '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
           callbackURL:  'https://myapp.com/callback',
@@ -797,19 +777,35 @@ describe('Auth0', function () {
         });
 
         var parseHashResult = {
-          id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjEzOTM5ODMwMDQsImlhdCI6MTM5Mzk0NzAwNH0.Hh7S4HIPCITag5b0VVF52AA4bWPgVFI2wzgamNzjxUA'
+          access_token: 'EwmMATEAtRwfu2bJ'
         };
 
-        auth0._getUserInfo = function (profile, id_token, callback) {
-          expect(profile.sub).to.eql('auth0|4AZDF56789');
-          expect(id_token).to.eql(parseHashResult.id_token);
+        auth0.getUserInfo = function (access_token, callback) {
+          expect(access_token).to.eql(parseHashResult.access_token);
           done();
         };
 
-        auth0.getProfile(parseHashResult.id_token, function () {});
+        auth0.getUserInfo(parseHashResult.access_token, function () {});
       });
 
     });
+  });
+
+  it('should fail when an invalid token is sent to the server', function (done) {
+
+    var auth0 = Auth0({
+      clientID:     '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+      callbackURL:  'https://myapp.com/callback',
+      domain:       'mdocs.auth0.com'
+    });
+      
+    auth0.getUserInfo("invalid token", function(err, profile) {
+      expect(profile).to.be(undefined);
+      expect(err).to.have.property('error');
+      expect(err).to.have.property('error_description');
+      done();
+    });
+
   });
 
   describe('getSSOData', function () {
@@ -862,7 +858,6 @@ describe('Auth0', function () {
         api: 'auth0'
       }, function (err, delegationResult) {
         if (err) {
-          console.log(err);
           throw new Error(err.message);
         }
         expect(delegationResult.id_token).to.exist;
