@@ -1,5 +1,12 @@
 # Change Log
 
+## [7.4.0](https://github.com/auth0/lock/tree/7.4.0) (2016-11-01)
+[Full Changelog](https://github.com/auth0/lock/compare/7.3.0...7.4.0)
+
+**Added**
+- Add userinfo and tokeninfo to auth0.js [\#227](https://github.com/auth0/auth0.js/pull/227) ([glena](https://github.com/glena))
+- Handle fetching new tokens (aka refresh of tokens) using authorize prompt none in an iframe [\#226](https://github.com/auth0/auth0.js/pull/226) ([glena](https://github.com/glena))
+
 ## [7.3.0](https://github.com/auth0/lock/tree/7.3.0) (2016-10-20)
 [Full Changelog](https://github.com/auth0/lock/compare/7.2.1...7.3.0)
 
