@@ -6,11 +6,18 @@
  * Those who use browserify will install with npm and require the module,
  * the package.json file points to index.js.
  */
-var Auth0 = require('./index');
+var authentication = require('./authentication');
+var management = require('./management');
+var webAuth = require('./webAuth');
+var auth0Namespace = {
+  authentication: authentication,
+  management: management,
+  webAuth: webAuth
+};
 
 //use amd or just throught to window object.
 if (typeof global.window.define == 'function' && global.window.define.amd) {
-  global.window.define('auth0', function () { return Auth0; });
+  global.window.define('auth0', function () { return auth0Namespace; });
 } else if (global.window) {
-  global.window.Auth0 = Auth0;
+  global.window.auth0 = auth0Namespace;
 }
