@@ -25,3 +25,6 @@ release
 
 build
 example/auth0.js
+
+.gitignore
+coverage
