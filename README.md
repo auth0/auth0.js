@@ -1,5 +1,7 @@
 #Auth0.js
 
+[![codecov.io](http://codecov.io/github/auth0/auth0.js/coverage.svg?branch=v8)](http://codecov.io/github/auth0/auth0.js/coverage.svg?branch=v8)
+
 ## WebAuth
 
 ### Initialize
