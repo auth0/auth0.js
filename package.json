@@ -16,6 +16,7 @@
     "build": "gulp build",
     "test": "mocha test/**/*.test.js",
     "test:coverage": "istanbul cover _mocha -R test/**/*",
+    "ci": "istanbul cover _mocha --report lcovonly -R test/**/*; codecov",
     "lint": "eslint ./src ./test"
   },
   "repository": {
@@ -30,6 +31,7 @@
     "url-join": "^1.1.0"
   },
   "devDependencies": {
+    "codecov": "^1.0.1",
     "eslint": "3.7.1",
     "eslint-config-auth0-base": "6.0.0",
     "eslint-plugin-import": "1.16.0",
