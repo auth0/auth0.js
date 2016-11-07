@@ -15,7 +15,9 @@ UsernamePassword.prototype.login = function (options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'usernamepassword', 'login');
 
-  options.username = options.username || email; // eslint-disable-line
+  options.username = options.username || options.email; // eslint-disable-line
+
+  options = objectHelper.blacklist(options, ['email']); // eslint-disable-line
 
   body = objectHelper.merge(this.baseOptions, [
     'client_id',
@@ -42,10 +44,6 @@ UsernamePassword.prototype.callback = function (formHtml, options) {
   div = document.createElement('div');
   div.innerHTML = formHtml;
   form = document.body.appendChild(div).children[0];
-
-  if (options.popup) { // review
-    form.target = 'auth0_signup_popup';
-  }
 
   form.submit();
 };

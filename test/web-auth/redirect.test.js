@@ -13,6 +13,7 @@ describe('auth0.WebAuth.redirect', function () {
   context('login', function () {
     afterEach(function () {
       request.post.restore();
+      UsernamePassword.prototype.getWindowDocument.restore();
     });
 
     it('should authenticate the user, render the callback form and submit it', function (done) {
@@ -41,7 +42,7 @@ describe('auth0.WebAuth.redirect', function () {
         });
       });
 
-      UsernamePassword.prototype.getWindowDocument = function () {
+      stub(UsernamePassword.prototype, 'getWindowDocument', function (message) {
         return {
           createElement: function () {
             return {}
@@ -57,7 +58,7 @@ describe('auth0.WebAuth.redirect', function () {
             }
           }
         };
-      };
+      });
 
       var configuration = {
         domain: 'me.auth0.com',
@@ -75,6 +76,66 @@ describe('auth0.WebAuth.redirect', function () {
         scope: 'openid'
       }, function (err) {
         console.log(err);
+      });
+    });
+  });
+
+  context('login', function () {
+    afterEach(function () {
+      request.post.restore();
+    });
+
+    it('should propagate the error', function (done) {
+      stub(request, 'post', function (url) {
+        expect(url).to.be('https://me.auth0.com/usernamepassword/login');
+        return new RequestMock({
+          body: {
+            client_id: '0HP71GSd6PuoRY',
+            connection: 'tests',
+            password: '1234',
+            redirect_uri: 'http://localhost:3000/example/',
+            response_type: 'token',
+            scope: 'openid',
+            tenant: 'me',
+            username: 'me@example.com'
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            'Auth0-Client': telemetryInfo
+          },
+          cb: function (cb) {
+            cb({
+              'name': 'ValidationError',
+              'code': 'invalid_user_password',
+              'description': 'Wrong email or password.',
+              'statusCode': 400
+            });
+          }
+        });
+      });
+
+      var configuration = {
+        domain: 'me.auth0.com',
+        redirect_uri: 'http://localhost:3000/example/',
+        client_id: '0HP71GSd6PuoRY',
+        response_type: 'token'
+      };
+
+      var auth0 = new WebAuth(configuration);
+
+      auth0.redirect.login({
+        connection: 'tests',
+        email: 'me@example.com',
+        password: '1234',
+        scope: 'openid'
+      }, function (err) {
+        expect(err).to.eql({
+          'name': 'ValidationError',
+          'code': 'invalid_user_password',
+          'description': 'Wrong email or password.',
+          'statusCode': 400
+        });
+        done();
       });
     });
   });

@@ -9,7 +9,7 @@ Redirect.prototype.login = function (options, cb) {
   var usernamePassword = new UsernamePassword(this.baseOptions);
   usernamePassword.login(options, function (err, data) {
     if (err) {
-      cb(err);
+      return cb(err);
     }
     usernamePassword.callback(data, {});
   });

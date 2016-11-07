@@ -1,3 +1,4 @@
+var information = require('../helper/information');
 var IframeHandler = require('./iframe-handler');
 
 function SilentAuthenticationHandler(auth0, authenticationUrl, timeout) {
@@ -8,7 +9,7 @@ function SilentAuthenticationHandler(auth0, authenticationUrl, timeout) {
 }
 
 SilentAuthenticationHandler.prototype.timeoutCallback = function () {
-  console.error('Timeout during silent authentication.');
+  information.error('Timeout during authentication renew.');
 };
 
 SilentAuthenticationHandler.prototype.login = function (usePostMessage, callback) {

@@ -1,4 +1,8 @@
 var expect = require('expect.js');
+var IframeHandler = require('../../src/web-auth/iframe-handler');
+var information = require('../../src/helper/information');
+var stub = require('sinon').stub;
+
 var WebAuth = require('../../src/web-auth');
 
 describe('auth0.WebAuth', function () {
@@ -89,6 +93,36 @@ describe('auth0.WebAuth', function () {
         error_description: 'the_error_description',
         state: 'some_state'
       });
+    });
+  });
+
+  context('renewAuth', function () {
+    after(function(){
+      IframeHandler.prototype.init.restore();
+    });
+
+    it('it should pass the correct authorize url', function (done) {
+      stub(information, 'error', function(message) {
+        expect(message).to.be('Timeout during authentication renew.');
+        done();
+      });
+
+      stub(IframeHandler.prototype, 'init', function(message) {
+        expect(this.url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http://page.com/callback&prompt=none');
+        this.timeoutCallback();
+      });
+
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirect_uri: 'http://page.com/callback',
+        client_id: '...',
+        response_type: 'token',
+        _sendTelemetry: false
+      });
+
+      var options = {};
+
+      webAuth.renewAuth(options, function (err, data) {});
     });
   });
 });

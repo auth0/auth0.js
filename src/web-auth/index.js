@@ -93,7 +93,6 @@ WebAuth.prototype.renewAuth = function (options, cb) {
   var params = objectHelper.merge(this.baseOptions, [
     'client_id',
     'redirect_uri',
-    'tenant',
     'response_type'
   ]).with(options);
 

@@ -44,7 +44,15 @@ function check(o, config, attributes) {
  * @public
  */
 function isArray(array) {
+  if (this.supportsIsArray()) {
+    return Array.isArray(array);
+  }
+
   return toString.call(array) === '[object Array]';
+}
+
+function supportsIsArray() {
+  return (Array.isArray != null);
 }
 
 module.exports = {
@@ -52,5 +60,6 @@ module.exports = {
   attribute: attribute,
   variable: variable,
   value: value,
-  isArray: (Array.isArray != null) ? Array.isArray : isArray
+  isArray: isArray,
+  supportsIsArray: supportsIsArray
 };
