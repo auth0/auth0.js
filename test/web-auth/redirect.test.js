@@ -4,6 +4,7 @@ var request = require('superagent');
 
 var RequestMock = require('../mock/request-mock');
 var UsernamePassword = require('../../src/web-auth/username-password');
+var redirect = require('../../src/helper/redirect');
 var WebAuth = require('../../src/web-auth');
 var RequestBuilder = require('../../src/helper/request-builder');
 
@@ -325,4 +326,54 @@ describe('auth0.WebAuth.redirect', function () {
       });
     });
   });
+
+  context('passwordlessVerify', function() {
+    before(function () {
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        client_id: '...',
+        redirect_uri: 'http://page.com/callback',
+        response_type: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function () {
+      request.post.restore();
+      redirect.redirect.restore();
+    });
+
+    it('should verify the code and redirect to the passwordless verify page', function(done){
+      stub(redirect, 'redirect', function (url) {
+        expect(url).to.be("https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http://page.com/callback&connection=the_connection&phone_number=123456&verification_code=abc");
+        done();
+      });
+
+      stub(request, 'post', function (url) {
+        expect(url).to.be('https://me.auth0.com/passwordless/verify');
+        return new RequestMock({
+          body: {
+            connection: 'the_connection',
+            phone_number: '123456',
+            verification_code: 'abc'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function (cb) {
+            cb(null, {
+              body: {}
+            });
+          }
+        });
+      });
+
+      this.auth0.redirect.passwordlessVerify({
+        connection: 'the_connection',
+        phone_number: '123456',
+        type: 'sms',
+        verification_code: 'abc'
+      }, function (err) {});
+    });
+  })
 });

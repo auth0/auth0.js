@@ -1,3 +1,4 @@
+var redirect = require('../helper/redirect');
 var UsernamePassword = require('./username-password');
 
 function Redirect(authentication, options) {
@@ -29,8 +30,14 @@ Redirect.prototype.signupAndLogin = function (options, cb) {
   });
 };
 
-Redirect.prototype.passwordlessVerify = function () {
-
+Redirect.prototype.passwordlessVerify = function (options, cb) {
+  var _this = this;
+  this.authentication.passwordless.verify(options, function (err) {
+    if (err) {
+      return cb(err);
+    }
+    redirect.redirect(_this.authentication.passwordless.buildVerifyUrl(options));
+  });
 };
 
 module.exports = Redirect;
