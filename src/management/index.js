@@ -12,12 +12,13 @@ function Management(options) {
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
     _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
   });
-
-  options.headers = { Authorization: 'Bearer ' + options.token };
   /* eslint-enable */
 
-  this.request = new RequestBuilder(options);
   this.baseOptions = options;
+
+  this.baseOptions.headers = { Authorization: 'Bearer ' + this.baseOptions.token };
+
+  this.request = new RequestBuilder(this.baseOptions);
   this.baseOptions.rootUrl = urljoin('https://' + this.baseOptions.domain, 'api', 'v2');
 }
 

@@ -4,7 +4,7 @@ function wrapCallback(cb) {
       return cb(err);
     }
 
-    return cb(null, data.body);
+    return cb(null, data.body || data.text);
   };
 }
 

@@ -24,7 +24,7 @@ RequestBuilder.prototype.setCommonConfiguration = function (ongoingRequest) {
 RequestBuilder.prototype.getTelemetryData = function () {
   var clientInfo = this._telemetryInfo || { name: 'auth0.js', version: version.raw };
   var jsonClientInfo = JSON.stringify(clientInfo);
-  return base64Url(jsonClientInfo);
+  return base64Url.encode(jsonClientInfo);
 };
 
 RequestBuilder.prototype.get = function (url) {

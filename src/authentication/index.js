@@ -1,7 +1,7 @@
 var urljoin = require('url-join');
 
 var RequestBuilder = require('../helper/request-builder');
-var qsBuilder = require('../helper/qs-builder');
+var qs = require('../helper/qs');
 var objectHelper = require('../helper/object');
 var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
@@ -19,21 +19,24 @@ function Authentication(options) {
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
     _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
   });
-
-  options._sendTelemetry = options._sendTelemetry === false ? options._sendTelemetry : true;
   /* eslint-enable */
 
-  this.request = new RequestBuilder(options);
   this.baseOptions = options;
+
+  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ?
+                                        this.baseOptions._sendTelemetry : true;
+
   this.baseOptions.rootUrl = 'https://' + this.baseOptions.domain;
 
-  this.passwordless = new PasswordlessAuthentication(options);
-  this.dbConnection = new DBConnection(options);
+  this.request = new RequestBuilder(this.baseOptions);
+
+  this.passwordless = new PasswordlessAuthentication(this.request, this.baseOptions);
+  this.dbConnection = new DBConnection(this.request, this.baseOptions);
 }
 
 Authentication.prototype.buildAuthorizeUrl = function (options) {
   var params;
-  var qs;
+  var qString;
 
   assert.check(options, {
     optional: true,
@@ -52,14 +55,14 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
     params.auth0Client = this.request.getTelemetryData();
   }
 
-  qs = qsBuilder(params);
+  qString = qs.build(params);
 
-  return urljoin(this.baseOptions.rootUrl, 'authorize', '?' + qs);
+  return urljoin(this.baseOptions.rootUrl, 'authorize', '?' + qString);
 };
 
 Authentication.prototype.buildLogoutUrl = function (options) {
   var params;
-  var qs;
+  var qString;
 
   assert.check(options, {
     optional: true,
@@ -75,9 +78,9 @@ Authentication.prototype.buildLogoutUrl = function (options) {
     params.auth0Client = this.request.getTelemetryData();
   }
 
-  qs = qsBuilder(params);
+  qString = qs.build(params);
 
-  return urljoin(this.baseOptions.rootUrl, 'v2', 'logout', '?' + qs);
+  return urljoin(this.baseOptions.rootUrl, 'v2', 'logout', '?' + qString);
 };
 
 Authentication.prototype.ro = function (options, cb) {

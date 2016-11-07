@@ -1,13 +1,12 @@
 var urljoin = require('url-join');
 
-var RequestBuilder = require('../helper/request-builder');
 var objectHelper = require('../helper/object');
 var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 
-function DBConnection(options) {
+function DBConnection(request, options) {
   this.baseOptions = options;
-  this.request = new RequestBuilder(options);
+  this.request = request;
 }
 
 DBConnection.prototype.signup = function (options, cb) {

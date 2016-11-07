@@ -17,7 +17,7 @@
     "test": "mocha test/**/*.test.js",
     "test:coverage": "istanbul cover _mocha -R test/**/*",
     "ci": "istanbul cover _mocha --report lcovonly -R test/**/*; codecov",
-    "lint": "eslint ./src ./test"
+    "lint": "eslint ./src"
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,7 @@
     "eslint-plugin-import": "1.16.0",
     "expect.js": "^0.2.0",
     "gulp": "^3.9.1",
+    "gulp-util": "^3.0.7",
     "istanbul": "^0.4.5",
     "mocha": "^3.1.2",
     "sinon": "^1.17.6",
