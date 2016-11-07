@@ -15,11 +15,21 @@ Redirect.prototype.login = function (options, cb) {
   });
 };
 
-Redirect.prototype.passwordlessVerify = function () {
-
+Redirect.prototype.signup = function (options, cb) {
+  this.authentication.dbConnection.signup(options, cb);
 };
 
-Redirect.prototype.signup = function () {
+Redirect.prototype.signupAndLogin = function (options, cb) {
+  var _this = this;
+  this.authentication.dbConnection.signup(options, function (err) {
+    if (err) {
+      return cb(err);
+    }
+    _this.login(options, cb);
+  });
+};
+
+Redirect.prototype.passwordlessVerify = function () {
 
 };
 

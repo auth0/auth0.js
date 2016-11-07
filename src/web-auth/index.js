@@ -104,10 +104,13 @@ WebAuth.prototype.renewAuth = function (options, cb) {
   handler.login(usePostMessage, cb);
 };
 
+WebAuth.prototype.changePassword = function (options, cb) {
+  this.authentication.dbConnection.changePassword(options, cb);
+};
+
 // passwordlessStart
 // popup.login
 // popup.passwordlessVerify
 // popup.signup
-// changePassword
 
 module.exports = WebAuth;

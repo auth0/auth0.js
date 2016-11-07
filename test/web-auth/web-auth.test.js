@@ -1,7 +1,11 @@
 var expect = require('expect.js');
+var stub = require('sinon').stub;
+var request = require('superagent');
+
 var IframeHandler = require('../../src/web-auth/iframe-handler');
 var information = require('../../src/helper/information');
-var stub = require('sinon').stub;
+
+var RequestMock = require('../mock/request-mock');
 
 var WebAuth = require('../../src/web-auth');
 
@@ -123,6 +127,77 @@ describe('auth0.WebAuth', function () {
       var options = {};
 
       webAuth.renewAuth(options, function (err, data) {});
+    });
+  });
+
+  context('change password', function () {
+    before(function () {
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        client_id: '...',
+        redirect_uri: 'http://page.com/callback',
+        response_type: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function () {
+      request.post.restore();
+    });
+
+    it('should call db-connection changePassword with all the options', function (done) {
+      stub(request, 'post', function (url) {
+        expect(url).to.be('https://me.auth0.com/dbconnection/change_password');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            connection: 'the_connection',
+            email: 'me@example.com'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function (cb) {
+            cb(null, {});
+          }
+        });
+      });
+
+      this.auth0.changePassword({
+        connection: 'the_connection',
+        email: 'me@example.com'
+      }, function (err) {
+        expect(err).to.be(null);
+        done();
+      });
+    });
+
+    it('should call db-connection changePassword should ignore password option', function (done) {
+      stub(request, 'post', function (url) {
+        expect(url).to.be('https://me.auth0.com/dbconnection/change_password');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            connection: 'the_connection',
+            email: 'me@example.com'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function (cb) {
+            cb(null, {});
+          }
+        });
+      });
+
+      this.auth0.changePassword({
+        connection: 'the_connection',
+        email: 'me@example.com',
+        password: '123456'
+      }, function (err) {
+        expect(err).to.be(null);
+        done();
+      });
     });
   });
 });
