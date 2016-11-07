@@ -2,8 +2,11 @@ var assert = require('../helper/assert');
 var error = require('../helper/error');
 var jwt = require('../helper/jwt');
 var qs = require('../helper/qs');
+var objectHelper = require('../helper/object');
 var Authentication = require('../authentication');
 var Redirect = require('./redirect');
+var SilentAuthenticationHandler = require('./silent-authentication-handler');
+
 
 function WebAuth(options) {
   /* eslint-disable */
@@ -84,12 +87,28 @@ WebAuth.prototype.parseHash = function (hash) {
   };
 };
 
+WebAuth.prototype.renewAuth = function (options, cb) {
+  var handler;
+  var usePostMessage = options.usePostMessage || false;
+  var params = objectHelper.merge(this.baseOptions, [
+    'client_id',
+    'redirect_uri',
+    'tenant',
+    'response_type'
+  ]).with(options);
+
+  params.prompt = 'none';
+
+  objectHelper.blacklist(options, ['usePostMessage', 'tenant']);
+
+  handler = new SilentAuthenticationHandler(this, this.authentication.buildAuthorizeUrl(params));
+  handler.login(usePostMessage, cb);
+};
+
 // passwordlessStart
 // popup.login
 // popup.passwordlessVerify
 // popup.signup
 // changePassword
-// parseHash
-// renewAuth
 
 module.exports = WebAuth;
