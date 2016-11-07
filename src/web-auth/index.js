@@ -108,7 +108,10 @@ WebAuth.prototype.changePassword = function (options, cb) {
   this.authentication.dbConnection.changePassword(options, cb);
 };
 
-// passwordlessStart
+WebAuth.prototype.passwordlessStart = function (options, cb) {
+  this.authentication.passwordless.start(options, cb);
+};
+
 // popup.login
 // popup.passwordlessVerify
 // popup.signup
