@@ -1,19 +1,19 @@
 var webpack = require('webpack');
 var path = require('path');
-var SmartBannerPlugin = require("smart-banner-webpack-plugin");
-var UnminifiedWebpackPlugin = require("unminified-webpack-plugin");
+var SmartBannerPlugin = require('smart-banner-webpack-plugin');
+var UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 var version = require('./src/version.js').raw;
 
 module.exports = {
-  devtool: "source-map",
+  devtool: 'source-map',
   entry: './src/index.js',
   output: { 
-    path: path.join(__dirname, "../build"), 
+    path: path.join(__dirname, '../build'), 
     filename: 'auth0.min.js',
     library: ['auth0']
   },
   resolve: {
-    extensions: ["", ".webpack.js", ".web.js", ".js"]
+    extensions: ['', '.webpack.js', '.web.js', '.js']
   },
   progress: true,
   watchOptions: {
@@ -44,7 +44,7 @@ module.exports = {
     }),
     new UnminifiedWebpackPlugin(),
     new SmartBannerPlugin(
-      `[filename] v${version}\n\nAuthor: Auth0\nDate: ${new Date().toLocaleString()}\nLicense: MIT\n`,
+      `[filename] v${version}\n\nAuthor: Auth0\nDate: ${new Date().toLocaleString()}\nLicense: MIT\n`, // eslint-disable-line
       { raw: false, entryOnly: true }
     )
   ]

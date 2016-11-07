@@ -14,10 +14,10 @@ var telemetryInfo = (new RequestBuilder({})).getTelemetryData();
 describe('auth0.authentication', function () {
   describe('initialization', function () {
 
-    it('should check that options is passed', function() { 
+    it('should check that options is passed', function() {
       expect(function() {
         var auth0 = new Authentication();
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('options parameter is not valid');
       });
     })
@@ -25,7 +25,7 @@ describe('auth0.authentication', function () {
     it('should check that domain is set', function() {
       expect(function() {
         var auth0 = new Authentication({client_id:'...'});
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('domain option is required');
       });
     })
@@ -33,7 +33,7 @@ describe('auth0.authentication', function () {
     it('should check that client_id is set', function() {
       expect(function() {
         var auth0 = new Authentication({domain: 'me.auth0.com'});
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('client_id option is required');
       });
     })
@@ -43,7 +43,7 @@ describe('auth0.authentication', function () {
 
     before(function() {
       this.auth0 = new Authentication({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         client_id: '...',
         redirect_uri: 'http://page.com/callback',
         response_type: 'code',
@@ -51,21 +51,21 @@ describe('auth0.authentication', function () {
       });
     });
 
-    it('should check that options is valid', function() { 
+    it('should check that options is valid', function() {
       expect(() => {
         this.auth0.buildAuthorizeUrl('asdfasdfds');
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('options parameter is not valid');
       });
     })
 
-    it('should return a url using the default settings', function() { 
+    it('should return a url using the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl();
 
       expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http://page.com/callback');
     })
 
-    it('should return a url using overriding the default settings', function() { 
+    it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl({
         response_type: 'token',
         redirect_uri: 'http://anotherpage.com/callback2',
@@ -79,14 +79,14 @@ describe('auth0.authentication', function () {
   context('buildAuthorizeUrl with Telemetry', function () {
     before(function() {
       this.auth0 = new Authentication({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         client_id: '...',
         redirect_uri: 'http://page.com/callback',
         response_type: 'code'
       });
     });
 
-    it('should return a url using overriding the default settings', function() { 
+    it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl({
         response_type: 'token',
         redirect_uri: 'http://anotherpage.com/callback2',
@@ -101,7 +101,7 @@ describe('auth0.authentication', function () {
 
     before(function() {
       this.auth0 = new Authentication({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         client_id: '...',
         redirect_uri: 'http://page.com/callback',
         response_type: 'code',
@@ -109,21 +109,21 @@ describe('auth0.authentication', function () {
       });
     });
 
-    it('should check that options is valid', function() { 
+    it('should check that options is valid', function() {
       expect(() => {
         this.auth0.buildLogoutUrl('asdfasdfds');
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('options parameter is not valid');
       });
     })
 
-    it('should return a url using the default settings', function() { 
+    it('should return a url using the default settings', function() {
       var url = this.auth0.buildLogoutUrl();
 
       expect(url).to.be('https://me.auth0.com/v2/logout?client_id=...');
     })
 
-    it('should ignore the client_id', function() { 
+    it('should ignore the client_id', function() {
       var url = this.auth0.buildLogoutUrl({
         client_id: undefined,
       });
@@ -131,7 +131,7 @@ describe('auth0.authentication', function () {
       expect(url).to.be('https://me.auth0.com/v2/logout?');
     })
 
-    it('should return a url using overriding the default settings', function() { 
+    it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildLogoutUrl({
         client_id: '123',
         returnTo: 'http://page.com',
@@ -145,14 +145,14 @@ describe('auth0.authentication', function () {
   context('buildLogoutUrl with Telemetry', function () {
     before(function() {
       this.auth0 = new Authentication({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         client_id: '123',
         redirect_uri: 'http://page.com/callback',
         response_type: 'code'
       });
     });
 
-    it('should return a url using overriding the default settings', function() { 
+    it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildLogoutUrl({
         client_id: '123',
         returnTo: 'http://page.com',
@@ -166,7 +166,7 @@ describe('auth0.authentication', function () {
   context('userInfo', function () {
     before(function() {
       this.auth0 = new Authentication({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         client_id: '...',
         redirect_uri: 'http://page.com/callback',
         response_type: 'code',
@@ -178,7 +178,7 @@ describe('auth0.authentication', function () {
       request.get.restore();
     })
 
-    it('should call userinfo with the access token', function(done) { 
+    it('should call userinfo with the access token', function(done) {
       stub(request, 'get', function(url) {
         expect(url).to.be('https://me.auth0.com/userinfo')
         return new RequestMock({
@@ -187,7 +187,7 @@ describe('auth0.authentication', function () {
             'Authorization': 'Bearer abcd1234'
           },
           cb: function(cb) {
-            cb(null, { 
+            cb(null, {
               body: {
                 user_id: '...',
                 provider: 'auth0',
@@ -215,7 +215,7 @@ describe('auth0.authentication', function () {
   context('delegation', function () {
     before(function() {
       this.auth0 = new Authentication({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         client_id: '...',
         redirect_uri: 'http://page.com/callback',
         response_type: 'code',
@@ -227,7 +227,7 @@ describe('auth0.authentication', function () {
       request.post.restore();
     })
 
-    it('should call delegation with all the options', function(done) { 
+    it('should call delegation with all the options', function(done) {
       stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/delegation')
         return new RequestMock({
@@ -241,7 +241,7 @@ describe('auth0.authentication', function () {
             'Content-Type': 'application/json'
           },
           cb: function(cb) {
-            cb(null, { 
+            cb(null, {
               body: {
                 'token_type': 'Bearer',
                 'expires_in': 36000,

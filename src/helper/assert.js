@@ -1,3 +1,5 @@
+var toString = Object.prototype.toString;
+
 function attribute(o, attr, type, text) {
   if (o && typeof o[attr] !== type) {
     throw new Error(text);
@@ -34,9 +36,21 @@ function check(o, config, attributes) {
   }
 }
 
+/**
+ * Wrap `Array.isArray` Polyfill for IE9
+ * source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray
+ *
+ * @param {Array} array
+ * @public
+ */
+function isArray(array) {
+  return toString.call(array) === '[object Array]';
+}
+
 module.exports = {
   check: check,
   attribute: attribute,
   variable: variable,
-  value: value
+  value: value,
+  isArray: (Array.isArray != null) ? Array.isArray : isArray
 };

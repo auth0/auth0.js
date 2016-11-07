@@ -1,40 +1,44 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Auth0.js Demo Examples</title>
     <link rel="stylesheet" type="text/css" href="//cdn.auth0.com/styleguide/1/index.css">
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="/build/auth0.js"></script>
-    
+    <script src="/auth0.js"></script>
+
     <script type="text/javascript">
-        var authentication = new auth0.Authentication({
-            domain:      'mdocs.auth0.com',
-            redirect_uri: window.location.href,
-            client_id:    '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
-        });
+    var webAuth = new auth0.WebAuth({
+      domain: 'mdocs.auth0.com',
+      redirect_uri: window.location.href,
+      client_id: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+      response_type: 'token'
+    });
+
+    console.log(webAuth.parseHash());
+
     </script>
-</head>
-<body class="container">
+  </head>
+  <body class="container">
     <div class="row">
-        <div class="col-xs-12">
-            <input class="login-username" value="johnfoo@gmail.com" />
-            <input type="password" class="login-password" value="1234" />
-            <input type="button" class="login-db" value="login" />
-            <script type="text/javascript">
-                $('.login-db').click(function (e) {
-                    e.preventDefault();
-                    authentication.ro({
-                        connection: 'tests',
-                        username: $('.login-username').val(),
-                        password: $('.login-password').val(),
-                        scope: 'openid'
-                    }, function(err, data) {
-                        console.log(err, data);
-                    });
-                });
-            </script>
-        </div>
+      <div class="col-xs-12">
+        <input class="login-username" value="johnfoo@gmail.com" />
+        <input type="password" class="login-password" value="1234" />
+        <input type="button" class="login-db" value="login" />
+        <script type="text/javascript">
+        $('.login-db').click(function (e) {
+          e.preventDefault();
+          webAuth.redirect.login({
+            connection: 'tests',
+            username: $('.login-username').val(),
+            password: $('.login-password').val(),
+            scope: 'openid'
+          }, function (err) {
+            console.log(err);
+          });
+        });
+        </script>
+      </div>
     </div>
-</body>
+  </body>
 </html>

@@ -1,32 +1,24 @@
 var gulp = require('gulp');
-var webpack = require('webpack-stream');
+var gutil = require('gulp-util');
+var webpack = require('webpack');
+var WebpackDevServer = require('webpack-dev-server');
 
-const webpackConfig = require("./webpack.config.js");
-const webpackProdConfig = require("./webpack.prod.config.js");
+var webpackConfig = require('./webpack.config.js');
+var webpackProdConfig = require('./webpack.prod.config.js');
 
-gulp.task('dev', function() {
+gulp.task('build', function () {
   return gulp.src('src/index.js')
-    .pipe(webpack( webpackConfig ))
+    .pipe(webpack(webpackProdConfig))
     .pipe(gulp.dest('build/'));
 });
 
-gulp.task('build', function() {
-  return gulp.src('src/index.js')
-    .pipe(webpack( webpackProdConfig ))
-    .pipe(gulp.dest('build/'));
-});
+gulp.task('dev', function () {
+  var compiler = webpack(webpackConfig);
 
-gulp.task("webpack-dev-server", function(callback) {
-    // Start a webpack-dev-server
-    var compiler = webpack(webpackConfig);
-
-    new WebpackDevServer(compiler, {
-    }).listen(8080, "localhost", function(err) {
-        if(err) throw new gutil.PluginError("webpack-dev-server", err);
-        // Server listening
-        gutil.log("[webpack-dev-server]", "http://localhost:8080/webpack-dev-server/index.html");
-
-        // keep the server alive or continue?
-        // callback();
-    });
+  new WebpackDevServer(compiler, {}).listen(3000, 'localhost', function (err) {
+    if (err) {
+      throw new gutil.PluginError('webpack-dev-server', err);
+    }
+    gutil.log('[webpack-dev-server]', 'http://localhost:3000/example/index.html');
+  });
 });
