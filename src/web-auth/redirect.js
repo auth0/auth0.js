@@ -1,4 +1,4 @@
-var redirect = require('../helper/redirect');
+var windowHelper = require('../helper/window');
 var UsernamePassword = require('./username-password');
 
 function Redirect(authentication, options) {
@@ -36,7 +36,7 @@ Redirect.prototype.passwordlessVerify = function (options, cb) {
     if (err) {
       return cb(err);
     }
-    redirect.redirect(_this.authentication.passwordless.buildVerifyUrl(options));
+    windowHelper.redirect(_this.authentication.passwordless.buildVerifyUrl(options));
   });
 };
 

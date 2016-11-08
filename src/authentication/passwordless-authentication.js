@@ -14,6 +14,19 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
   var params;
   var qString;
 
+  /* eslint-disable */
+  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
+    connection: { type: 'string', message: 'connection option is required' },
+    type: { type: 'string', message: 'type option is required', values: ['sms', 'email'],
+            value_message: 'type is not valid ([email,sms])' },
+    verification_code: { type: 'string', message: 'verification_code option is required' },
+    phone_number: { required: true, type: 'string', message: 'phone_number option is required',
+            condition: function (o) { return o.type === 'sms'; } },
+    email: { required: true, type: 'string', message: 'email option is required',
+            condition: function (o) { return o.type === 'email'; } }
+  });
+  /* eslint-enable */
+
   assert.check(options, {
     optional: true,
     type: 'object',
@@ -24,7 +37,7 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
     'client_id',
     'response_type',
     'redirect_uri'
-  ]).with(options || {});
+  ]).with(options);
 
   params = objectHelper.blacklist(params, ['type']);
 

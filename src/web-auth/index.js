@@ -2,6 +2,7 @@ var assert = require('../helper/assert');
 var error = require('../helper/error');
 var jwt = require('../helper/jwt');
 var qs = require('../helper/qs');
+var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
 var Authentication = require('../authentication');
 var Redirect = require('./redirect');
@@ -33,13 +34,14 @@ function WebAuth(options) {
 }
 
 WebAuth.prototype.parseHash = function (hash) {
-  var hashStr;
   var parsedQs;
   var err;
   var prof;
   var audiences;
 
-  hashStr = hash || window.location.hash;
+  var _window = windowHelper.getWindow();
+
+  var hashStr = hash || _window.location.hash;
   hashStr = hashStr.replace(/^#?\/?/, '');
 
   parsedQs = qs.parse(hashStr);

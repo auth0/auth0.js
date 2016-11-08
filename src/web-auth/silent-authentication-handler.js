@@ -1,5 +1,5 @@
 var information = require('../helper/information');
-var IframeHandler = require('./iframe-handler');
+var IframeHandler = require('../helper/iframe-handler');
 
 function SilentAuthenticationHandler(auth0, authenticationUrl, timeout) {
   this.auth0 = auth0;

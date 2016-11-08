@@ -1,3 +1,5 @@
+var windowHelper = require('../helper/window');
+
 function IframeHandler(options) {
   this.auth0 = options.auth0;
   this.url = options.url;
@@ -14,8 +16,9 @@ function IframeHandler(options) {
 
 IframeHandler.prototype.init = function () {
   var _this = this;
+  var _window = windowHelper.getWindow();
 
-  this.iframe = document.createElement('iframe');
+  this.iframe = _window.document.createElement('iframe');
   this.iframe.style.display = 'none';
   this.iframe.src = this.url;
 
@@ -25,7 +28,7 @@ IframeHandler.prototype.init = function () {
       _this.messageEventListener(e);
     };
 
-    window.addEventListener('message', this.transientMessageEventListener, false);
+    _window.addEventListener('message', this.transientMessageEventListener, false);
   } else {
     // Workaround to avoid using bind that does not work in IE8
     this.transientEventListener = function () {
@@ -35,7 +38,7 @@ IframeHandler.prototype.init = function () {
     this.iframe.addEventListener('load', this.transientEventListener, false);
   }
 
-  document.body.appendChild(this.iframe);
+  _window.document.body.appendChild(this.iframe);
 
   this.timeoutHandle = setTimeout(function () {
     _this.timeoutHandler();
@@ -43,8 +46,8 @@ IframeHandler.prototype.init = function () {
 };
 
 IframeHandler.prototype.messageEventListener = function (e) {
-  this.callbackHandler(e.data);
   this.destroy();
+  this.callbackHandler(e.data);
 };
 
 IframeHandler.prototype.loadEventListener = function () {
@@ -53,8 +56,8 @@ IframeHandler.prototype.loadEventListener = function () {
     return;
   }
 
-  this.callbackHandler(result);
   this.destroy();
+  this.callbackHandler(result);
 };
 
 IframeHandler.prototype.callbackHandler = function (result) {
@@ -69,26 +72,25 @@ IframeHandler.prototype.callbackHandler = function (result) {
 };
 
 IframeHandler.prototype.timeoutHandler = function () {
+  this.destroy();
   if (this.timeoutCallback) {
     this.timeoutCallback();
   }
-  this.destroy();
 };
 
 IframeHandler.prototype.destroy = function () {
   var _this = this;
 
-  if (this.timeoutHandle) {
-    clearTimeout(this.timeoutHandle);
-  }
+  clearTimeout(this.timeoutHandle);
 
   this._destroyTimeout = setTimeout(function () {
+    var _window = windowHelper.getWindow();
     if (_this.usePostMessage) {
-      window.removeEventListener('message', _this.transientMessageEventListener, false);
+      _window.removeEventListener('message', _this.transientMessageEventListener, false);
     } else {
       _this.iframe.removeEventListener('load', _this.transientEventListener, false);
     }
-    document.body.removeChild(_this.iframe);
+    _window.document.body.removeChild(_this.iframe);
   }, 0);
 };
 
