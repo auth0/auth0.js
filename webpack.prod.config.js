@@ -4,13 +4,17 @@ var SmartBannerPlugin = require('smart-banner-webpack-plugin');
 var UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 var version = require('./src/version.js').raw;
 
+var CustomVarLibraryNamePlugin = require('webpack-custom-var-library-name-plugin');
+
 module.exports = {
   devtool: 'source-map',
-  entry: './src/index.js',
+  entry: {
+    auth0: './src/index.js'
+  },
   output: {
     path: path.join(__dirname, '../build'),
-    filename: 'auth0.min.js',
-    library: 'auth0',
+    filename: '[name].min.js',
+    library: 'auth0-js',
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
@@ -32,6 +36,9 @@ module.exports = {
     reasons: true
   },
   plugins: [
+    new CustomVarLibraryNamePlugin({
+      name: 'auth0'
+    }),
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': JSON.stringify('production')

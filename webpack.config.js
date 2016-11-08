@@ -2,13 +2,14 @@ var path = require('path');
 
 module.exports = {
   devtool: 'eval',
-  entry: './src/index.js',
+  entry: {
+    auth0: './src/index.js'
+  },
   output: {
     path: path.join(__dirname, '../build'),
-    filename: 'auth0.js',
+    filename: '[name].js',
     library: 'auth0',
-    libraryTarget: 'umd',
-    umdNamedDefine: true
+    libraryTarget: 'var'
   },
   resolve: {
     extensions: ['', '.webpack.js', '.web.js', '.js']
