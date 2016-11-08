@@ -7,10 +7,12 @@ var version = require('./src/version.js').raw;
 module.exports = {
   devtool: 'source-map',
   entry: './src/index.js',
-  output: { 
-    path: path.join(__dirname, '../build'), 
+  output: {
+    path: path.join(__dirname, '../build'),
     filename: 'auth0.min.js',
-    library: ['auth0']
+    library: 'auth0',
+    libraryTarget: 'umd',
+    umdNamedDefine: true
   },
   resolve: {
     extensions: ['', '.webpack.js', '.web.js', '.js']
@@ -38,7 +40,7 @@ module.exports = {
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
-    new webpack.optimize.UglifyJsPlugin({ 
+    new webpack.optimize.UglifyJsPlugin({
       compress: { warnings: false, screw_ie8: true },
       comments: false
     }),

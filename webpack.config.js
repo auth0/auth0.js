@@ -6,7 +6,9 @@ module.exports = {
   output: {
     path: path.join(__dirname, '../build'),
     filename: 'auth0.js',
-    library: ['auth0']
+    library: 'auth0',
+    libraryTarget: 'umd',
+    umdNamedDefine: true
   },
   resolve: {
     extensions: ['', '.webpack.js', '.web.js', '.js']
