@@ -17,7 +17,7 @@
         min-height: 300px;
       }
       h2 {
-        margin: 0 0 20px;
+        margin: 20px 0;
       }
       code span {
         color:red;
@@ -85,8 +85,20 @@
         </div>
 
         <div>
+          <h2>Login with social connections:</h2>
+          <input type="button" class="login-facebook" value="Facebook" />
+          <input type="button" class="login-twitter" value="Twitter" />
+          <input type="button" class="login-github" value="Github" />
+        </div>
+
+        <div>
           <h2>Renew authentication:</h2>
-          <input type="button" class="renew-auth" value="renew" />
+          <input type="button" class="renew-auth" value="Renew" />
+        </div>
+
+        <div>
+          <h2>SSO Logout:</h2>
+          <input type="button" class="logout" value="Logout" />
         </div>
 
       </div>
@@ -135,6 +147,26 @@
       }, function (err) {
         htmlConsole.dump({err: err, data: data}, 'error');
       });
+    });
+
+    $('.login-facebook').click(function (e) {
+      e.preventDefault();
+      webAuth.redirect.authorize({ connection: 'facebook' });
+    });
+
+    $('.login-twitter').click(function (e) {
+      e.preventDefault();
+      webAuth.redirect.authorize({ connection: 'twitter' });
+    });
+
+    $('.login-github').click(function (e) {
+      e.preventDefault();
+      webAuth.redirect.authorize({ connection: 'github' });
+    });
+
+    $('.logout').click(function (e) {
+      e.preventDefault();
+      webAuth.redirect.logout({ returnTo: 'http://localhost:3000/example' });
     });
 
     $('.renew-auth').click(function (e) {

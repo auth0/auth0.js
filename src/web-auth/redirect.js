@@ -6,6 +6,14 @@ function Redirect(authentication, options) {
   this.authentication = authentication;
 }
 
+Redirect.prototype.authorize = function (options) {
+  windowHelper.redirect(this.authentication.buildAuthorizeUrl(options));
+};
+
+Redirect.prototype.logout = function (options) {
+  windowHelper.redirect(this.authentication.buildLogoutUrl(options));
+};
+
 Redirect.prototype.login = function (options, cb) {
   var usernamePassword = new UsernamePassword(this.baseOptions);
   usernamePassword.login(options, function (err, data) {
