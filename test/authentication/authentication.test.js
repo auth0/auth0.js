@@ -62,7 +62,7 @@ describe('auth0.authentication', function () {
     it('should return a url using the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl();
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http://page.com/callback');
+      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback');
     })
 
     it('should return a url using overriding the default settings', function() {
@@ -72,7 +72,7 @@ describe('auth0.authentication', function () {
         prompt: 'none'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http://anotherpage.com/callback2&prompt=none');
+      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none');
     })
   })
 
@@ -93,7 +93,7 @@ describe('auth0.authentication', function () {
         prompt: 'none'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http://anotherpage.com/callback2&prompt=none&auth0Client=' + telemetryInfo);
+      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&auth0Client=' + telemetryInfo);
     })
   })
 
@@ -138,7 +138,7 @@ describe('auth0.authentication', function () {
         federated: ''
       });
 
-      expect(url).to.be('https://me.auth0.com/v2/logout?client_id=123&returnTo=http://page.com&federated=');
+      expect(url).to.be('https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated=');
     })
   })
 
@@ -159,7 +159,7 @@ describe('auth0.authentication', function () {
         federated: ''
       });
 
-      expect(url).to.be('https://me.auth0.com/v2/logout?client_id=123&returnTo=http://page.com&federated=&auth0Client=' + telemetryInfo);
+      expect(url).to.be('https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated=&auth0Client=' + telemetryInfo);
     })
   })
 

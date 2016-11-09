@@ -162,7 +162,7 @@ describe('auth0.WebAuth', function () {
       });
 
       stub(IframeHandler.prototype, 'init', function(message) {
-        expect(this.url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http://page.com/callback&prompt=none');
+        expect(this.url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&prompt=none');
         this.timeoutCallback();
       });
 

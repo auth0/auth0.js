@@ -344,7 +344,7 @@ describe('auth0.WebAuth.redirect', function () {
 
     it('should verify the code and redirect to the passwordless verify page', function(done){
       stub(windowHelper, 'redirect', function (url) {
-        expect(url).to.be("https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http://page.com/callback&connection=the_connection&phone_number=123456&verification_code=abc&auth0Client=" + telemetryInfo);
+        expect(url).to.be("https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&auth0Client=" + telemetryInfo);
         done();
       });
 
@@ -395,7 +395,7 @@ describe('auth0.WebAuth.redirect', function () {
 
     it('should verify the code and redirect to the passwordless verify page', function(done){
       stub(windowHelper, 'redirect', function (url) {
-        expect(url).to.be("https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http://page.com/callback&connection=the_connection&phone_number=123456&verification_code=abc");
+        expect(url).to.be("https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc");
         done();
       });
 
@@ -476,4 +476,28 @@ describe('auth0.WebAuth.redirect', function () {
       });
     });
   });
+
+  describe('authenticate', function () {
+    beforeEach(function() {
+      global.window = { location: '' };
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        client_id: '...',
+        redirect_uri: 'http://page.com/callback',
+        response_type: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    it('it should redirect to authorize', function () {
+      this.auth0.redirect.authorize({connection: 'facebook'})
+      expect(global.window.location).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=facebook');
+    });
+
+    it('it should redirect to logout', function () {
+      this.auth0.redirect.logout({redirect_to: 'http://example.com/logout'})
+      expect(global.window.location).to.be('https://me.auth0.com/v2/logout?client_id=...&redirect_to=http%3A%2F%2Fexample.com%2Flogout');
+    });
+  });
+
 });
