@@ -8,7 +8,6 @@ var Authentication = require('../authentication');
 var Redirect = require('./redirect');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
 
-
 function WebAuth(options) {
   /* eslint-disable */
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {

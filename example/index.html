@@ -3,60 +3,152 @@
   <head>
     <title>Auth0.js Demo Examples</title>
     <link rel="stylesheet" type="text/css" href="//cdn.auth0.com/styleguide/1/index.css">
-
+    <script src="/webpack-dev-server.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="/auth0.js"></script>
-
+    <style>
+      .row {
+        margin:10px 0;
+      }
+      pre {
+        margin: 0 0 10px 0;
+      }
+      code {
+        min-height: 300px;
+      }
+      h2 {
+        margin: 0 0 20px;
+      }
+      code span {
+        color:red;
+      }
+      code details {
+        padding: 5px;
+        border-radius: 4px;
+      }
+      code details p {
+        margin: 5px 0 0 0;
+      }
+      code details.error {
+        background: rgba(255,0,0,0.1);
+      }
+      #clear-console {
+        cursor: pointer;
+      }
+    </style>
     <script type="text/javascript">
-    var webAuth = new auth0.WebAuth({
-      domain: 'mdocs.auth0.com',
-      redirect_uri: 'http://localhost:3000/example',
-      client_id: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-      response_type: 'token'
-    });
+    function HTMLConsole(options) {
+      this.ele = $(options.selector);
+    }
 
-    console.log(webAuth.parseHash());
+    HTMLConsole.prototype.clear = function () {
+      this.ele.html('');
+    };
 
-    window.location.hash = '';
+    HTMLConsole.prototype.dump = function (o, className) {
+      className = className || '';
 
+      function replacer(key, value) {
+        if (typeof value === 'object') {
+          return value;
+        }
+        return '<span>' + value + '</span>';
+      }
+
+      var plainStr = JSON.stringify(o).substr(0,50);
+      var str = JSON.stringify(o, replacer, 4);
+      var html = '<details class="'+ className +'">' +
+                  '<summary>' + plainStr + '</summary>' +
+                  '<p>' + str + '</p>' +
+                  '</details>';
+
+      this.ele.append(html);
+
+      this.ele.find('details').removeAttr('open');
+      this.ele.find('details').last().attr('open', true);
+    };
     </script>
   </head>
   <body class="container">
 
     <div class="row">
       <div class="col-xs-12">
-        <input class="login-username" value="johnfoo@gmail.com" />
-        <input type="password" class="login-password" value="1234" />
-        <input type="button" class="login-db" value="login" />
-        <script type="text/javascript">
-        $('.login-db').click(function (e) {
-          e.preventDefault();
-          webAuth.redirect.login({
-            connection: 'tests',
-            username: $('.login-username').val(),
-            password: $('.login-password').val(),
-            scope: 'openid'
-          }, function (err) {
-            console.log(err);
-          });
-        });
-        </script>
+        <h1>Auth0.JS playground</h1>
+      </div>
+      <div class="col-xs-6">
+
+        <div>
+          <h2>Login with database connection:</h2>
+          <input class="login-username" value="johnfoo@gmail.com" />
+          <input type="password" class="login-password" value="1234" />
+          <input type="button" class="login-db" value="login" />
+        </div>
+
+        <div>
+          <h2>Renew authentication:</h2>
+          <input type="button" class="renew-auth" value="renew" />
+        </div>
+
+      </div>
+      <div class="col-xs-6">
+        <h2>Console:</h2>
+        <pre><code id="console"></code></pre>
+        <div class="text-right"><i id="clear-console" aria-hidden="true" class="icon-budicon-498 icon"></i></div>
       </div>
     </div>
 
-     <div class="row">
-      <div class="col-xs-12">
-        <input type="button" class="renew-auth" value="renew" />
-        <script type="text/javascript">
-        $('.renew-auth').click(function (e) {
-          e.preventDefault();
-          webAuth.renewAuth({}, function (err,data) {
-            console.log(err, data);
-          });
-        });
-        </script>
-      </div>
-    </div>
+    <script type="text/javascript">
+    var htmlConsole = new HTMLConsole({
+      selector: '#console'
+    });
+
+    var webAuth = new auth0.WebAuth({
+      domain: 'auth0-tests-auth0js.auth0.com',
+      redirect_uri: 'http://localhost:3000/example',
+      client_id: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
+      response_type: 'token'
+    });
+
+    var hash = webAuth.parseHash();
+    if (hash) {
+      htmlConsole.dump(hash);
+      window.location.hash = '';
+    }
+
+    $('#clear-console').click(function () {
+      $('#clear-console').removeClass('icon-budicon-498');
+      $('#clear-console').addClass('icon-budicon-495');
+      htmlConsole.clear();
+      setTimeout(function () {
+        $('#clear-console').removeClass('icon-budicon-495');
+        $('#clear-console').addClass('icon-budicon-498');
+      }, 250)
+    });
+
+    $('.login-db').click(function (e) {
+      e.preventDefault();
+      webAuth.redirect.login({
+        connection: 'tests',
+        username: $('.login-username').val(),
+        password: $('.login-password').val(),
+        scope: 'openid'
+      }, function (err) {
+        htmlConsole.dump({err: err, data: data}, 'error');
+      });
+    });
+
+    $('.renew-auth').click(function (e) {
+      e.preventDefault();
+      webAuth.renewAuth({usePostMessage: true, redirect_uri: 'http://localhost:3000/example/callback.html'}, function (err, data) {
+          if (err) {
+            htmlConsole.dump(err, 'error');
+          } else {
+            htmlConsole.dump(data);
+          }
+        }
+      );
+    });
+    </script>
 
   </body>
 </html>

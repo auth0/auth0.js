@@ -29,7 +29,6 @@ module.exports = {
   watch: false,
   keepalive: false,
   inline: false,
-  hot: false,
   stats: {
     colors: true,
     modules: true,
