@@ -1,7 +1,7 @@
 function build(params) {
   return Object.keys(params).reduce(function (arr, key) {
     if (typeof params[key] !== 'undefined') {
-      arr.push(key + '=' + params[key]);
+      arr.push(key + '=' + encodeURIComponent(params[key]));
     }
     return arr;
   }, []).join('&');

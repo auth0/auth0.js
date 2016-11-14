@@ -2,11 +2,11 @@ var assert = require('../helper/assert');
 var error = require('../helper/error');
 var jwt = require('../helper/jwt');
 var qs = require('../helper/qs');
+var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
 var Authentication = require('../authentication');
 var Redirect = require('./redirect');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
-
 
 function WebAuth(options) {
   /* eslint-disable */
@@ -33,13 +33,14 @@ function WebAuth(options) {
 }
 
 WebAuth.prototype.parseHash = function (hash) {
-  var hashStr;
   var parsedQs;
   var err;
   var prof;
   var audiences;
 
-  hashStr = hash || window.location.hash;
+  var _window = windowHelper.getWindow();
+
+  var hashStr = hash || _window.location.hash;
   hashStr = hashStr.replace(/^#?\/?/, '');
 
   parsedQs = qs.parse(hashStr);
@@ -104,10 +105,16 @@ WebAuth.prototype.renewAuth = function (options, cb) {
   handler.login(usePostMessage, cb);
 };
 
-// passwordlessStart
+WebAuth.prototype.changePassword = function (options, cb) {
+  this.authentication.dbConnection.changePassword(options, cb);
+};
+
+WebAuth.prototype.passwordlessStart = function (options, cb) {
+  this.authentication.passwordless.start(options, cb);
+};
+
 // popup.login
 // popup.passwordlessVerify
 // popup.signup
-// changePassword
 
 module.exports = WebAuth;

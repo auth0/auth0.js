@@ -25,6 +25,8 @@ DBConnection.prototype.signup = function (options, cb) {
   body = objectHelper.merge(this.baseOptions, ['client_id'])
                 .with(options);
 
+  body = objectHelper.blacklist(body, ['scope']);
+
   this.request
     .post(url)
     .send(body)

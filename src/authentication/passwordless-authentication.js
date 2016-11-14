@@ -2,12 +2,54 @@ var urljoin = require('url-join');
 
 var objectHelper = require('../helper/object');
 var assert = require('../helper/assert');
+var qs = require('../helper/qs');
 var responseHandler = require('../helper/response-handler');
 
 function PasswordlessAuthentication(request, options) {
   this.baseOptions = options;
   this.request = request;
 }
+
+PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
+  var params;
+  var qString;
+
+  /* eslint-disable */
+  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
+    connection: { type: 'string', message: 'connection option is required' },
+    type: { type: 'string', message: 'type option is required', values: ['sms', 'email'],
+            value_message: 'type is not valid ([email,sms])' },
+    verification_code: { type: 'string', message: 'verification_code option is required' },
+    phone_number: { required: true, type: 'string', message: 'phone_number option is required',
+            condition: function (o) { return o.type === 'sms'; } },
+    email: { required: true, type: 'string', message: 'email option is required',
+            condition: function (o) { return o.type === 'email'; } }
+  });
+  /* eslint-enable */
+
+  assert.check(options, {
+    optional: true,
+    type: 'object',
+    message: 'options parameter is not valid'
+  });
+
+  params = objectHelper.merge(this.baseOptions, [
+    'client_id',
+    'response_type',
+    'redirect_uri'
+  ]).with(options);
+
+  params = objectHelper.blacklist(params, ['type']);
+
+  // eslint-disable-next-line
+  if (this.baseOptions._sendTelemetry) {
+    params.auth0Client = this.request.getTelemetryData();
+  }
+
+  qString = qs.build(params);
+
+  return urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify_redirect', '?' + qString);
+};
 
 PasswordlessAuthentication.prototype.start = function (options, cb) {
   var url;
@@ -48,12 +90,12 @@ PasswordlessAuthentication.prototype.verify = function (options, cb) {
   /* eslint-disable */
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     connection: { type: 'string', message: 'connection option is required' },
-    type: { type: 'string', message: 'type option is required', values: ['sms', 'email'], 
+    type: { type: 'string', message: 'type option is required', values: ['sms', 'email'],
             value_message: 'type is not valid ([email,sms])' },
     verification_code: { type: 'string', message: 'verification_code option is required' },
-    phone_number: { required: true, type: 'string', message: 'phone_number option is required', 
+    phone_number: { required: true, type: 'string', message: 'phone_number option is required',
             condition: function (o) { return o.type === 'sms'; } },
-    email: { required: true, type: 'string', message: 'email option is required', 
+    email: { required: true, type: 'string', message: 'email option is required',
             condition: function (o) { return o.type === 'email'; } }
   });
   /* eslint-enable */

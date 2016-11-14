@@ -1,12 +1,21 @@
+var webpack = require('webpack');
+
 var path = require('path');
 
 module.exports = {
   devtool: 'eval',
-  entry: './src/index.js',
+  entry: {
+    auth0: [
+      // 'webpack-hot-middleware/client',
+      './src/index.js'
+    ]
+  },
   output: {
     path: path.join(__dirname, '../build'),
-    filename: 'auth0.js',
-    library: ['auth0']
+    filename: '[name].js',
+    library: 'auth0',
+    libraryTarget: 'var',
+    publicPath: 'http://localhost:3000/'
   },
   resolve: {
     extensions: ['', '.webpack.js', '.web.js', '.js']
@@ -18,8 +27,6 @@ module.exports = {
     poll: true
   },
   keepalive: true,
-  inline: true,
-  hot: true,
   stats: {
     colors: true,
     modules: true,
@@ -28,4 +35,8 @@ module.exports = {
   stylus: {
     preferPathResolver: 'webpack'
   }
+  // plugins: [
+  //   new webpack.HotModuleReplacementPlugin(),
+  //   new webpack.NoErrorsPlugin()
+  // ]
 };
