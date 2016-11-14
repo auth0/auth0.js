@@ -651,6 +651,8 @@ auth0.refreshToken(refresh_token, function (err, delegationResult) {
 
 ### Silent Authentication
 
+> Note: This only works when `OAuth 2.0 API Authorization` is enabled in the advanced accounts settings in the [Auth0 Dashboard](https://manage.auth0.com/#/account/advanced). For social connections, using your own app keys is mandatory.
+
 If you want to fetch a new token because your existing token is expired (or soon to expire), you can fetch a new one doing the following:
 
 ```js
