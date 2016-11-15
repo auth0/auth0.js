@@ -27,7 +27,7 @@ describe('helpers assert', function () {
     afterEach(function() {
       assert.supportsIsArray.restore();
     });
-    it('it should show an error in the console', function () {
+    it('should show an error in the console', function () {
       expect(assert.isArray([1, 2, 3])).to.be.ok();
       expect(assert.isArray([])).to.be.ok();
     });

@@ -72,7 +72,7 @@ describe('helpers iframeHandler', function () {
     before(function () {
       this.auth0 = new WebAuth({
         domain: 'mdocs.auth0.com',
-        redirectURI: 'http://example.com/callback',
+        redirectUri: 'http://example.com/callback',
         clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
         responseType: 'token',
         _sendTelemetry: false

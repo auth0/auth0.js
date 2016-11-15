@@ -22,7 +22,7 @@ UsernamePassword.prototype.login = function (options, cb) {
 
   body = objectHelper.merge(this.baseOptions, [
     'clientID',
-    'redirectURI',
+    'redirectUri',
     'tenant',
     'responseType',
     'scope',

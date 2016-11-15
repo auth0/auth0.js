@@ -14,7 +14,7 @@ function WebAuth(options) {
     domain: { type: 'string', message: 'domain option is required' },
     clientID: { type: 'string', message: 'clientID option is required' },
     responseType: { type: 'string', message: 'responseType is not valid' },
-    redirectURI: { type: 'string', message: 'redirectURI is not valid' },
+    redirectUri: { type: 'string', message: 'redirectUri is not valid' },
     scope: { optional: true, type: 'string', message: 'audience is not valid' },
     audience: { optional: true, type: 'string', message: 'scope is not valid' },
     tenant: { optional: true, type: 'string', message: 'tenant option is not valid. Required when using custom domains.' },
@@ -96,7 +96,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
 
   var params = objectHelper.merge(this.baseOptions, [
     'clientID',
-    'redirectURI',
+    'redirectUri',
     'responseType',
     'scope',
     'audience'

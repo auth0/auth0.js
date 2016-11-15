@@ -8,17 +8,17 @@ describe('helpers window', function () {
     global.window.document = { body: {} };
   });
 
-  it('it should redirect', function () {
+  it('should redirect', function () {
     windowHelper.redirect('http://example.com');
     expect(global.window.location).to.be('http://example.com');
   });
 
-  it('it should return the window.document object', function () {
+  it('should return the window.document object', function () {
     var _document = windowHelper.getDocument();
     expect(_document).to.eql({ body: {} });
   });
 
-  it('it should return the window object', function () {
+  it('should return the window object', function () {
     var _window = windowHelper.getWindow();
     expect(_window).to.eql({ document: { body: {} }, location: ''});
   });

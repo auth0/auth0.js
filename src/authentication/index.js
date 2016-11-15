@@ -15,7 +15,7 @@ function Authentication(options) {
     domain: { type: 'string', message: 'domain option is required' },
     clientID: { type: 'string', message: 'clientID option is required' },
     responseType: { optional: true, type: 'string', message: 'responseType is not valid' },
-    redirectURI: { optional: true, type: 'string', message: 'redirectURI is not valid' },
+    redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
     scope: { optional: true, type: 'string', message: 'scope is not valid' },
     audience: { optional: true, type: 'string', message: 'audience is not valid' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
@@ -49,7 +49,7 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
   params = objectHelper.merge(this.baseOptions, [
     'clientID',
     'responseType',
-    'redirectURI',
+    'redirectUri',
     'scope',
     'audience'
   ]).with(options || {});

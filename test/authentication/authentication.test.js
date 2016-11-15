@@ -45,7 +45,7 @@ describe('auth0.authentication', function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
         clientID: '...',
-        redirectURI: 'http://page.com/callback',
+        redirectUri: 'http://page.com/callback',
         responseType: 'code',
         _sendTelemetry: false
       });
@@ -68,7 +68,7 @@ describe('auth0.authentication', function () {
     it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl({
         responseType: 'token',
-        redirectURI: 'http://anotherpage.com/callback2',
+        redirectUri: 'http://anotherpage.com/callback2',
         prompt: 'none'
       });
 
@@ -81,7 +81,7 @@ describe('auth0.authentication', function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
         clientID: '...',
-        redirectURI: 'http://page.com/callback',
+        redirectUri: 'http://page.com/callback',
         responseType: 'code'
       });
     });
@@ -89,7 +89,7 @@ describe('auth0.authentication', function () {
     it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl({
         responseType: 'token',
-        redirectURI: 'http://anotherpage.com/callback2',
+        redirectUri: 'http://anotherpage.com/callback2',
         prompt: 'none'
       });
 
@@ -103,7 +103,7 @@ describe('auth0.authentication', function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
         clientID: '...',
-        redirectURI: 'http://page.com/callback',
+        redirectUri: 'http://page.com/callback',
         responseType: 'code',
         _sendTelemetry: false
       });
@@ -147,7 +147,7 @@ describe('auth0.authentication', function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
         clientID: '123',
-        redirectURI: 'http://page.com/callback',
+        redirectUri: 'http://page.com/callback',
         responseType: 'code'
       });
     });
@@ -168,7 +168,7 @@ describe('auth0.authentication', function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
         clientID: '...',
-        redirectURI: 'http://page.com/callback',
+        redirectUri: 'http://page.com/callback',
         responseType: 'code',
         _sendTelemetry: false
       });
@@ -217,7 +217,7 @@ describe('auth0.authentication', function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
         clientID: '...',
-        redirectURI: 'http://page.com/callback',
+        redirectUri: 'http://page.com/callback',
         responseType: 'code',
         _sendTelemetry: false
       });

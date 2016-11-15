@@ -20,7 +20,7 @@ describe('auth0.WebAuth', function () {
     it('should parse a valid hash', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs.auth0.com',
-        redirectURI: 'http://example.com/callback',
+        redirectUri: 'http://example.com/callback',
         clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
         responseType: 'token'
       });
@@ -45,7 +45,7 @@ describe('auth0.WebAuth', function () {
     it('should parse a valid hash from the location.hash', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs.auth0.com',
-        redirectURI: 'http://example.com/callback',
+        redirectUri: 'http://example.com/callback',
         clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
         responseType: 'token'
       });
@@ -70,7 +70,7 @@ describe('auth0.WebAuth', function () {
     it('should parse a valid hash without id_token', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs.auth0.com',
-        redirectURI: 'http://example.com/callback',
+        redirectUri: 'http://example.com/callback',
         clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
         responseType: 'token'
       });
@@ -89,7 +89,7 @@ describe('auth0.WebAuth', function () {
     it('should fail with an invalid audience', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs.auth0.com',
-        redirectURI: 'http://example.com/callback',
+        redirectUri: 'http://example.com/callback',
         clientID: '0HP71GSd6PuoRYJ3p',
         responseType: 'token'
       });
@@ -105,7 +105,7 @@ describe('auth0.WebAuth', function () {
     it('should fail with an invalid issuer', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs_2.auth0.com',
-        redirectURI: 'http://example.com/callback',
+        redirectUri: 'http://example.com/callback',
         clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
         responseType: 'token'
       });
@@ -122,7 +122,7 @@ describe('auth0.WebAuth', function () {
     it('should fail if there is no token', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs_2.auth0.com',
-        redirectURI: 'http://example.com/callback',
+        redirectUri: 'http://example.com/callback',
         clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
         responseType: 'token'
       });
@@ -135,7 +135,7 @@ describe('auth0.WebAuth', function () {
     it('should parse an error response', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs_2.auth0.com',
-        redirectURI: 'http://example.com/callback',
+        redirectUri: 'http://example.com/callback',
         clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
         responseType: 'token'
       });
@@ -155,7 +155,7 @@ describe('auth0.WebAuth', function () {
       IframeHandler.prototype.init.restore();
     });
 
-    it('it should pass the correct authorize url', function (done) {
+    it('should pass the correct authorize url', function (done) {
       stub(information, 'error', function(message) {
         expect(message).to.be('Timeout during authentication renew.');
         done();
@@ -168,7 +168,7 @@ describe('auth0.WebAuth', function () {
 
       var webAuth = new WebAuth({
         domain: 'me.auth0.com',
-        redirectURI: 'http://page.com/callback',
+        redirectUri: 'http://page.com/callback',
         clientID: '...',
         responseType: 'token',
         scope: 'openid name read:blog',
@@ -187,7 +187,7 @@ describe('auth0.WebAuth', function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
-        redirectURI: 'http://page.com/callback',
+        redirectUri: 'http://page.com/callback',
         responseType: 'code',
         _sendTelemetry: false
       });
@@ -258,7 +258,7 @@ describe('auth0.WebAuth', function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
-        redirectURI: 'http://page.com/callback',
+        redirectUri: 'http://page.com/callback',
         responseType: 'code',
         _sendTelemetry: false
       });

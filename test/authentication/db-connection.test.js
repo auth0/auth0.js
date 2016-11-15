@@ -11,7 +11,7 @@ describe('auth0.authentication', function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
         clientID: '...',
-        redirectURI: 'http://page.com/callback',
+        redirectUri: 'http://page.com/callback',
         responseType: 'code',
         _sendTelemetry: false
       });
@@ -68,7 +68,7 @@ describe('auth0.authentication', function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
         clientID: '...',
-        redirectURI: 'http://page.com/callback',
+        redirectUri: 'http://page.com/callback',
         responseType: 'code',
         _sendTelemetry: false
       });
