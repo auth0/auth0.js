@@ -12,9 +12,11 @@ function WebAuth(options) {
   /* eslint-disable */
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     domain: { type: 'string', message: 'domain option is required' },
-    client_id: { type: 'string', message: 'client_id option is required' },
-    response_type: { type: 'string', message: 'response_type is not valid' },
-    redirect_uri: { type: 'string', message: 'redirect_uri is not valid' },
+    clientID: { type: 'string', message: 'clientID option is required' },
+    responseType: { type: 'string', message: 'responseType is not valid' },
+    redirectURI: { type: 'string', message: 'redirectURI is not valid' },
+    scope: { optional: true, type: 'string', message: 'audience is not valid' },
+    audience: { optional: true, type: 'string', message: 'scope is not valid' },
     tenant: { optional: true, type: 'string', message: 'tenant option is not valid. Required when using custom domains.' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
     _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
@@ -65,9 +67,9 @@ WebAuth.prototype.parseHash = function (hash) {
     prof = jwt.getPayload(parsedQs.id_token);
     // aud should be the clientID
     audiences = assert.isArray(prof.aud) ? prof.aud : [prof.aud];
-    if (audiences.indexOf(this.baseOptions.client_id) === -1) {
+    if (audiences.indexOf(this.baseOptions.clientID) === -1) {
       return error.invalidJwt(
-        'The clientID configured (' + this.baseOptions.client_id + ') does not match ' +
+        'The clientID configured (' + this.baseOptions.clientID + ') does not match ' +
         'with the clientID set in the token (' + audiences.join(', ') + ').');
     }
 
@@ -91,15 +93,26 @@ WebAuth.prototype.parseHash = function (hash) {
 WebAuth.prototype.renewAuth = function (options, cb) {
   var handler;
   var usePostMessage = options.usePostMessage || false;
+
   var params = objectHelper.merge(this.baseOptions, [
-    'client_id',
-    'redirect_uri',
-    'response_type'
+    'clientID',
+    'redirectURI',
+    'responseType',
+    'scope',
+    'audience'
   ]).with(options);
+
+  assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
+    scope: { type: 'string', message: 'scope option is required' },
+    audience: { type: 'string', message: 'audience option is required' }
+  });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   params.prompt = 'none';
 
-  objectHelper.blacklist(options, ['usePostMessage', 'tenant']);
+  params = objectHelper.blacklist(params, ['usePostMessage', 'tenant']);
+
+  params = objectHelper.toSnakeCase(params, ['auth0Client']);
 
   handler = new SilentAuthenticationHandler(this, this.authentication.buildAuthorizeUrl(params));
   handler.login(usePostMessage, cb);

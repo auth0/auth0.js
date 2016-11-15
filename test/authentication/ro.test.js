@@ -15,9 +15,9 @@ describe('auth0.authentication', function () {
     before(function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code'
+        clientID: '...',
+        redirectURI: 'http://page.com/callback',
+        responseType: 'code'
       });
     });
 
@@ -132,7 +132,7 @@ describe('auth0.authentication', function () {
       });
 
       this.auth0.ro({
-        client_id: '123',
+        clientID: '123',
         username: 'the username',
         password: 'the password',
         connection: 'the_connection',

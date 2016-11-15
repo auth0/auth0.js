@@ -19,8 +19,8 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
     connection: { type: 'string', message: 'connection option is required' },
     type: { type: 'string', message: 'type option is required', values: ['sms', 'email'],
             value_message: 'type is not valid ([email,sms])' },
-    verification_code: { type: 'string', message: 'verification_code option is required' },
-    phone_number: { required: true, type: 'string', message: 'phone_number option is required',
+    verificationCode: { type: 'string', message: 'verificationCode option is required' },
+    phoneNumber: { required: true, type: 'string', message: 'phoneNumber option is required',
             condition: function (o) { return o.type === 'sms'; } },
     email: { required: true, type: 'string', message: 'email option is required',
             condition: function (o) { return o.type === 'email'; } }
@@ -34,9 +34,11 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
   });
 
   params = objectHelper.merge(this.baseOptions, [
-    'client_id',
-    'response_type',
-    'redirect_uri'
+    'clientID',
+    'responseType',
+    'redirectURI',
+    'scope',
+    'audience'
   ]).with(options);
 
   params = objectHelper.blacklist(params, ['type']);
@@ -45,6 +47,8 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
   if (this.baseOptions._sendTelemetry) {
     params.auth0Client = this.request.getTelemetryData();
   }
+
+  params = objectHelper.toSnakeCase(params, ['auth0Client']);
 
   qString = qs.build(params);
 
@@ -61,7 +65,7 @@ PasswordlessAuthentication.prototype.start = function (options, cb) {
     connection: { type: 'string', message: 'connection option is required' },
     type: { type: 'string', message: 'type option is required', values: ['sms', 'email'],
             value_message: 'type is not valid ([email,sms])' },
-    phone_number: { required: true, type: 'string', message: 'phone_number option is required',
+    phoneNumber: { required: true, type: 'string', message: 'phoneNumber option is required',
             condition: function (o) { return o.type === 'sms'; } },
     email: { required: true, type: 'string', message: 'email option is required',
             condition: function (o) { return o.type === 'email'; } }
@@ -74,8 +78,10 @@ PasswordlessAuthentication.prototype.start = function (options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'start');
 
-  body = objectHelper.merge(this.baseOptions, ['client_id'])
+  body = objectHelper.merge(this.baseOptions, ['clientID'])
                 .with(cleanOption);
+
+  body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
   this.request
     .post(url)
@@ -92,8 +98,8 @@ PasswordlessAuthentication.prototype.verify = function (options, cb) {
     connection: { type: 'string', message: 'connection option is required' },
     type: { type: 'string', message: 'type option is required', values: ['sms', 'email'],
             value_message: 'type is not valid ([email,sms])' },
-    verification_code: { type: 'string', message: 'verification_code option is required' },
-    phone_number: { required: true, type: 'string', message: 'phone_number option is required',
+    verificationCode: { type: 'string', message: 'verificationCode option is required' },
+    phoneNumber: { required: true, type: 'string', message: 'phoneNumber option is required',
             condition: function (o) { return o.type === 'sms'; } },
     email: { required: true, type: 'string', message: 'email option is required',
             condition: function (o) { return o.type === 'email'; } }
@@ -103,6 +109,8 @@ PasswordlessAuthentication.prototype.verify = function (options, cb) {
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   cleanOption = objectHelper.blacklist(options, ['type']);
+
+  cleanOption = objectHelper.toSnakeCase(cleanOption, ['auth0Client']);
 
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify');
 

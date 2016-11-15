@@ -24,17 +24,17 @@ describe('auth0.authentication', function () {
 
     it('should check that domain is set', function() {
       expect(function() {
-        var auth0 = new Authentication({client_id:'...'});
+        var auth0 = new Authentication({clientID:'...'});
       }).to.throwException(function (e) {
         expect(e.message).to.be('domain option is required');
       });
     })
 
-    it('should check that client_id is set', function() {
+    it('should check that clientID is set', function() {
       expect(function() {
         var auth0 = new Authentication({domain: 'me.auth0.com'});
       }).to.throwException(function (e) {
-        expect(e.message).to.be('client_id option is required');
+        expect(e.message).to.be('clientID option is required');
       });
     })
   })
@@ -44,9 +44,9 @@ describe('auth0.authentication', function () {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectURI: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -67,8 +67,8 @@ describe('auth0.authentication', function () {
 
     it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl({
-        response_type: 'token',
-        redirect_uri: 'http://anotherpage.com/callback2',
+        responseType: 'token',
+        redirectURI: 'http://anotherpage.com/callback2',
         prompt: 'none'
       });
 
@@ -80,16 +80,16 @@ describe('auth0.authentication', function () {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code'
+        clientID: '...',
+        redirectURI: 'http://page.com/callback',
+        responseType: 'code'
       });
     });
 
     it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl({
-        response_type: 'token',
-        redirect_uri: 'http://anotherpage.com/callback2',
+        responseType: 'token',
+        redirectURI: 'http://anotherpage.com/callback2',
         prompt: 'none'
       });
 
@@ -102,9 +102,9 @@ describe('auth0.authentication', function () {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectURI: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -123,9 +123,9 @@ describe('auth0.authentication', function () {
       expect(url).to.be('https://me.auth0.com/v2/logout?client_id=...');
     })
 
-    it('should ignore the client_id', function() {
+    it('should ignore the clientID', function() {
       var url = this.auth0.buildLogoutUrl({
-        client_id: undefined,
+        clientID: undefined,
       });
 
       expect(url).to.be('https://me.auth0.com/v2/logout?');
@@ -133,7 +133,7 @@ describe('auth0.authentication', function () {
 
     it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildLogoutUrl({
-        client_id: '123',
+        clientID: '123',
         returnTo: 'http://page.com',
         federated: ''
       });
@@ -146,15 +146,15 @@ describe('auth0.authentication', function () {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '123',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code'
+        clientID: '123',
+        redirectURI: 'http://page.com/callback',
+        responseType: 'code'
       });
     });
 
     it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildLogoutUrl({
-        client_id: '123',
+        clientID: '123',
         returnTo: 'http://page.com',
         federated: ''
       });
@@ -167,9 +167,9 @@ describe('auth0.authentication', function () {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectURI: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -216,9 +216,9 @@ describe('auth0.authentication', function () {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectURI: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });

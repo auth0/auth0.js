@@ -5,9 +5,9 @@
     <script type="text/javascript">
       var auth0 = new auth0.WebAuth({
         domain: 'auth0-tests-auth0js.auth0.com',
-        redirect_uri: 'http://localhost:3000/example',
-        client_id: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
-        response_type: 'token'
+        redirectURI: 'http://localhost:3000/example',
+        clientID: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
+        responseType: 'token'
       });
       var result = auth0.parseHash(window.location.hash);
       if (result) {

@@ -11,10 +11,10 @@ var Management = require('../../src/management')
 describe('auth0.Management', function () {
   describe('initialization', function () {
 
-    it('should check that options is passed', function() { 
+    it('should check that options is passed', function() {
       expect(function() {
         var auth0 = new Management();
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('options parameter is not valid');
       });
     })
@@ -22,7 +22,7 @@ describe('auth0.Management', function () {
     it('should check that domain is set', function() {
       expect(function() {
         var auth0 = new Management({token:'...'});
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('domain option is required');
       });
     })
@@ -30,7 +30,7 @@ describe('auth0.Management', function () {
     it('should check that token is set', function() {
       expect(function() {
         var auth0 = new Management({domain: 'me.auth0.com'});
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('token option is required');
       });
     })
@@ -40,24 +40,24 @@ describe('auth0.Management', function () {
 
     before(function() {
       this.auth0 = new Management({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         token: '...',
         _sendTelemetry: false
       });
     });
 
-    it('should check that userId is valid', function() { 
+    it('should check that userId is valid', function() {
       expect(() => {
         this.auth0.getUser();
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('userId parameter is not valid');
       });
     })
 
-    it('should check that cb is valid', function() { 
+    it('should check that cb is valid', function() {
       expect(() => {
         this.auth0.getUser('...');
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('cb parameter is not valid');
       });
     })
@@ -67,7 +67,7 @@ describe('auth0.Management', function () {
 
     before(function() {
       this.auth0 = new Management({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         token: 'the_token',
         _sendTelemetry: false
       });
@@ -77,7 +77,7 @@ describe('auth0.Management', function () {
       request.get.restore();
     })
 
-    it('should fetch the user from the api', function(done) { 
+    it('should fetch the user from the api', function(done) {
       stub(request, 'get', function(url) {
         expect(url).to.be('https://me.auth0.com/api/v2/users/auth0|123')
         return new RequestMock({
@@ -111,32 +111,32 @@ describe('auth0.Management', function () {
 
     before(function() {
       this.auth0 = new Management({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         token: '...',
         _sendTelemetry: false
       });
     });
 
-    it('should check that userId is valid', function() { 
+    it('should check that userId is valid', function() {
       expect(() => {
         this.auth0.patchUserMetadata();
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('userId parameter is not valid');
       });
     })
 
-    it('should check that userMetadata is valid', function() { 
+    it('should check that userMetadata is valid', function() {
       expect(() => {
         this.auth0.patchUserMetadata('...');
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('userMetadata parameter is not valid');
       });
     })
 
-    it('should check that cb is valid', function() { 
+    it('should check that cb is valid', function() {
       expect(() => {
         this.auth0.patchUserMetadata('...', {});
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('cb parameter is not valid');
       });
     })
@@ -146,7 +146,7 @@ describe('auth0.Management', function () {
 
     before(function() {
       this.auth0 = new Management({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         token: 'the_token',
         _sendTelemetry: false
       });
@@ -156,7 +156,7 @@ describe('auth0.Management', function () {
       request.patch.restore();
     })
 
-    it('should fetch the user from the api', function(done) { 
+    it('should fetch the user from the api', function(done) {
       stub(request, 'patch', function(url) {
         expect(url).to.be('https://me.auth0.com/api/v2/users/auth0|123')
         return new RequestMock({
@@ -195,32 +195,32 @@ describe('auth0.Management', function () {
 
     before(function() {
       this.auth0 = new Management({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         token: '...',
         _sendTelemetry: false
       });
     });
 
-    it('should check that userId is valid', function() { 
+    it('should check that userId is valid', function() {
       expect(() => {
         this.auth0.linkUsers();
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('userId parameter is not valid');
       });
     })
 
-    it('should check that secondaryUserToken is valid', function() { 
+    it('should check that secondaryUserToken is valid', function() {
       expect(() => {
         this.auth0.linkUsers('...');
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('secondaryUserToken parameter is not valid');
       });
     })
 
-    it('should check that cb is valid', function() { 
+    it('should check that cb is valid', function() {
       expect(() => {
         this.auth0.linkUsers('...', '...');
-      }).to.throwException(function (e) { 
+      }).to.throwException(function (e) {
         expect(e.message).to.be('cb parameter is not valid');
       });
     })
@@ -230,7 +230,7 @@ describe('auth0.Management', function () {
 
     before(function() {
       this.auth0 = new Management({
-        domain: 'me.auth0.com', 
+        domain: 'me.auth0.com',
         token: 'the_token',
         _sendTelemetry: false
       });
@@ -240,7 +240,7 @@ describe('auth0.Management', function () {
       request.post.restore();
     })
 
-    it('should fetch the user from the api', function(done) { 
+    it('should fetch the user from the api', function(done) {
       stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/api/v2/users/twitter|191919191919191/identities')
         return new RequestMock({
@@ -264,7 +264,7 @@ describe('auth0.Management', function () {
                       'name': '',
                       'username': 'johndoe',
                       'given_name': '',
-                      'phone_number': '',
+                      'phoneNumber': '',
                       'phone_verified': false,
                       'family_name': ''
                     },
@@ -289,7 +289,7 @@ describe('auth0.Management', function () {
               'name': '',
               'username': 'johndoe',
               'given_name': '',
-              'phone_number': '',
+              'phoneNumber': '',
               'phone_verified': false,
               'family_name': ''
             },
