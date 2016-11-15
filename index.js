@@ -159,6 +159,9 @@ function Auth0 (options) {
   };
   this._useCordovaSocialPlugins = false || options.useCordovaSocialPlugins;
   this._sendClientInfo = null != options.sendSDKClientInfo ? options.sendSDKClientInfo : true;
+
+  this._scope = options.scope || null;
+  this._audience = options.audience || null;
 }
 
 /**
@@ -765,7 +768,9 @@ Auth0.prototype._buildAuthorizeUrl = function(options) {
     options,
     {
       client_id: this._clientID,
-      redirect_uri: this._getCallbackURL(options)
+      redirect_uri: this._getCallbackURL(options),
+      scope: this._scope,
+      audience: this._audience
     }
   ];
 
@@ -1703,7 +1708,7 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
  *
  *     auth0.silentAuthentication({}, function(error, result) {
  *        if (error) {
- *          console.log(error); 
+ *          console.log(error);
  *        }
  *        // result.id_token
  *     });
@@ -1712,7 +1717,7 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
  *
  *     auth0.silentAuthentication({callbackUrl: "https://site.com/silentCallback"}, function(error, result) {
  *        if (error) {
- *          console.log(error); 
+ *          console.log(error);
  *        }
  *        // result.id_token
  *     });
@@ -1723,7 +1728,7 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
  */
 Auth0.prototype.silentAuthentication = function (options, callback) {
   var usePostMessage = options.usePostMessage || false;
-  
+
   delete options.usePostMessage;
 
   options = xtend(options, {prompt:'none'});
