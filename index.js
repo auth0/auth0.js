@@ -763,14 +763,24 @@ Auth0.prototype._buildAuthorizationParameters = function(args, blacklist) {
 };
 
 Auth0.prototype._buildAuthorizeUrl = function(options) {
+  var constructorOptions = {};
+
+  if (this._scope) {
+    constructorOptions.scope = this._scope;
+  }
+
+  if (this._audience) {
+    constructorOptions.audience = this._audience;
+  }
+
+
   var qs = [
     this._getMode(options),
+    constructorOptions,
     options,
     {
       client_id: this._clientID,
-      redirect_uri: this._getCallbackURL(options),
-      scope: this._scope,
-      audience: this._audience
+      redirect_uri: this._getCallbackURL(options)
     }
   ];
 
