@@ -798,7 +798,7 @@ describe('Auth0', function () {
       callbackURL:  'https://myapp.com/callback',
       domain:       'mdocs.auth0.com'
     });
-      
+
     auth0.getUserInfo("invalid token", function(err, profile) {
       expect(profile).to.be(undefined);
       expect(err).to.have.property('error');
@@ -835,7 +835,7 @@ describe('Auth0', function () {
         expect(conns.length).to.be.above(0);
         expect(conns[0].name).to.eql('Apprenda.com');
         expect(conns[0].strategy).to.eql('adfs');
-        expect(conns[0].status).to.eql(false);
+        expect(conns[0].status).to.eql(true);
         expect(conns[0].domain).to.eql('Apprenda.com');
         done();
       });
