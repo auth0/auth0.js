@@ -130,11 +130,13 @@
     $('#clear-console').click(function () {
       $('#clear-console').removeClass('icon-budicon-498');
       $('#clear-console').addClass('icon-budicon-495');
+
       htmlConsole.clear();
+
       setTimeout(function () {
         $('#clear-console').removeClass('icon-budicon-495');
         $('#clear-console').addClass('icon-budicon-498');
-      }, 250)
+      }, 250);
     });
 
     $('.login-db').click(function (e) {
@@ -151,22 +153,22 @@
 
     $('.login-facebook').click(function (e) {
       e.preventDefault();
-      webAuth.redirect.authorize({ connection: 'facebook' });
+      webAuth.login({ connection: 'facebook' });
     });
 
     $('.login-twitter').click(function (e) {
       e.preventDefault();
-      webAuth.redirect.authorize({ connection: 'twitter' });
+      webAuth.login({ connection: 'twitter' });
     });
 
     $('.login-github').click(function (e) {
       e.preventDefault();
-      webAuth.redirect.authorize({ connection: 'github' });
+      webAuth.login({ connection: 'github' });
     });
 
     $('.logout').click(function (e) {
       e.preventDefault();
-      webAuth.redirect.logout({ returnTo: 'http://localhost:3000/example' });
+      webAuth.logout({ returnTo: 'http://localhost:3000/example' });
     });
 
     $('.renew-auth').click(function (e) {

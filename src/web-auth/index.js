@@ -7,6 +7,7 @@ var objectHelper = require('../helper/object');
 var Authentication = require('../authentication');
 var Redirect = require('./redirect');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
+var windowHelper = require('../helper/window');
 
 function WebAuth(options) {
   /* eslint-disable */
@@ -30,8 +31,8 @@ function WebAuth(options) {
 
   this.baseOptions.tenant = this.baseOptions.domain.split('.')[0];
 
-  this.authentication = new Authentication(this.baseOptions);
-  this.redirect = new Redirect(this.authentication, this.baseOptions);
+  this.client = new Authentication(this.baseOptions);
+  this.redirect = new Redirect(this.client, this.baseOptions);
 }
 
 WebAuth.prototype.parseHash = function (hash) {
@@ -90,10 +91,6 @@ WebAuth.prototype.parseHash = function (hash) {
   };
 };
 
-WebAuth.prototype.login = function (options, cb) {
-  // return this.authentication.login(options, cb);
-};
-
 WebAuth.prototype.renewAuth = function (options, cb) {
   var handler;
   var usePostMessage = !!options.usePostMessage;
@@ -118,25 +115,40 @@ WebAuth.prototype.renewAuth = function (options, cb) {
 
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
 
-  handler = new SilentAuthenticationHandler(this, this.authentication.buildAuthorizeUrl(params));
+  handler = new SilentAuthenticationHandler(this, this.client.buildAuthorizeUrl(params));
   handler.login(usePostMessage, cb);
 };
 
 WebAuth.prototype.changePassword = function (options, cb) {
-  return this.authentication.dbConnection.changePassword(options, cb);
+  return this.client.dbConnection.changePassword(options, cb);
 };
 
 WebAuth.prototype.passwordlessStart = function (options, cb) {
-  return this.authentication.passwordless.start(options, cb);
-};
-
-WebAuth.prototype.passwordlessVerify = function (options, cb) {
-  // return this.authentication.passwordless.loginWithResourceOwner(...);
+  return this.client.passwordless.start(options, cb);
 };
 
 WebAuth.prototype.signup = function (options, cb) {
-  return this.authentication.dbConnection.signup(options, cb);
+  return this.client.dbConnection.signup(options, cb);
 };
+
+WebAuth.prototype.login = function (options) {
+  windowHelper.redirect(this.client.buildAuthorizeUrl(options));
+};
+
+WebAuth.prototype.logout = function (options) {
+  windowHelper.redirect(this.client.buildLogoutUrl(options));
+};
+
+WebAuth.prototype.passwordlessVerify = function (options, cb) {
+  var _this = this;
+  return this.client.passwordless.verify(options, function (err) {
+    if (err) {
+      return cb(err);
+    }
+    windowHelper.redirect(_this.client.passwordless.buildVerifyUrl(options));
+  });
+};
+
 
 // popup.login
 // popup.authorize
