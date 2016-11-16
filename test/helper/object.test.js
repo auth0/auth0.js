@@ -270,4 +270,50 @@ describe('helpers', function () {
       });
     });
   });
+
+  describe('toSnakeCase', function () {
+    it('should change the casing to all the attributes', function () {
+      var object = {
+        attrName1: 'attribute_1',
+        attrName22: 'attribute_2',
+        attrNAME3: 'attribute_3'
+      };
+
+      var newObject = objectHelper.toSnakeCase(object);
+
+      expect(object).to.eql({
+        attrName1: 'attribute_1',
+        attrName22: 'attribute_2',
+        attrNAME3: 'attribute_3'
+      });
+
+      expect(newObject).to.eql({
+        attr_name_1: 'attribute_1',
+        attr_name_22: 'attribute_2',
+        attr_name_3: 'attribute_3'
+      });
+    });
+
+    it('should change the casing to all the attributes that are not blacklisted', function () {
+      var object = {
+        attrName1: 'attribute_1',
+        attrName22: 'attribute_2',
+        attrNAME3: 'attribute_3'
+      };
+
+      var newObject = objectHelper.toSnakeCase(object, ['attrName22']);
+
+      expect(object).to.eql({
+        attrName1: 'attribute_1',
+        attrName22: 'attribute_2',
+        attrNAME3: 'attribute_3'
+      });
+
+      expect(newObject).to.eql({
+        attr_name_1: 'attribute_1',
+        attrName22: 'attribute_2',
+        attr_name_3: 'attribute_3'
+      });
+    });
+  });
 });

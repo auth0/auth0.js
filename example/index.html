@@ -116,9 +116,9 @@
 
     var webAuth = new auth0.WebAuth({
       domain: 'auth0-tests-auth0js.auth0.com',
-      redirect_uri: 'http://localhost:3000/example',
-      client_id: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
-      response_type: 'token'
+      redirectUri: 'http://localhost:3000/example',
+      clientID: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
+      responseType: 'token'
     });
 
     var hash = webAuth.parseHash();
@@ -171,7 +171,7 @@
 
     $('.renew-auth').click(function (e) {
       e.preventDefault();
-      webAuth.renewAuth({usePostMessage: true, redirect_uri: 'http://localhost:3000/example/callback.html'}, function (err, data) {
+      webAuth.renewAuth({usePostMessage: true, scope:'openid', audience:'https://auth0-tests-auth0js.auth0.com/api/v2/', redirectURI: 'http://localhost:3000/example/callback.html'}, function (err, data) {
           if (err) {
             htmlConsole.dump(err, 'error');
           } else {

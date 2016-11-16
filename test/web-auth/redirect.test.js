@@ -16,9 +16,9 @@ describe('auth0.WebAuth.redirect', function () {
     before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -120,9 +120,9 @@ describe('auth0.WebAuth.redirect', function () {
 
       var configuration = {
         domain: 'me.auth0.com',
-        redirect_uri: 'http://localhost:3000/example/',
-        client_id: '0HP71GSd6PuoRY',
-        response_type: 'token'
+        redirectUri: 'http://localhost:3000/example/',
+        clientID: '0HP71GSd6PuoRY',
+        responseType: 'token'
       };
 
       var auth0 = new WebAuth(configuration);
@@ -174,9 +174,9 @@ describe('auth0.WebAuth.redirect', function () {
 
       var configuration = {
         domain: 'me.auth0.com',
-        redirect_uri: 'http://localhost:3000/example/',
-        client_id: '0HP71GSd6PuoRY',
-        response_type: 'token'
+        redirectUri: 'http://localhost:3000/example/',
+        clientID: '0HP71GSd6PuoRY',
+        responseType: 'token'
       };
 
       var auth0 = new WebAuth(configuration);
@@ -202,9 +202,9 @@ describe('auth0.WebAuth.redirect', function () {
     before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -331,9 +331,9 @@ describe('auth0.WebAuth.redirect', function () {
     before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code'
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code'
       });
     });
 
@@ -370,9 +370,9 @@ describe('auth0.WebAuth.redirect', function () {
 
       this.auth0.redirect.passwordlessVerify({
         connection: 'the_connection',
-        phone_number: '123456',
+        phoneNumber: '123456',
         type: 'sms',
-        verification_code: 'abc'
+        verificationCode: 'abc'
       }, function (err) {});
     });
   });
@@ -381,9 +381,9 @@ describe('auth0.WebAuth.redirect', function () {
     before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -420,9 +420,9 @@ describe('auth0.WebAuth.redirect', function () {
 
       this.auth0.redirect.passwordlessVerify({
         connection: 'the_connection',
-        phone_number: '123456',
+        phoneNumber: '123456',
         type: 'sms',
-        verification_code: 'abc'
+        verificationCode: 'abc'
       }, function (err) {});
     });
   });
@@ -430,9 +430,9 @@ describe('auth0.WebAuth.redirect', function () {
     before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -464,9 +464,9 @@ describe('auth0.WebAuth.redirect', function () {
 
       this.auth0.redirect.passwordlessVerify({
         connection: 'the_connection',
-        phone_number: '123456',
+        phoneNumber: '123456',
         type: 'sms',
-        verification_code: 'abc'
+        verificationCode: 'abc'
       }, function (err) {
         expect(err).to.eql({
           error: 'some_error_code',
@@ -482,19 +482,19 @@ describe('auth0.WebAuth.redirect', function () {
       global.window = { location: '' };
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
 
-    it('it should redirect to authorize', function () {
+    it('should redirect to authorize', function () {
       this.auth0.redirect.authorize({connection: 'facebook'})
       expect(global.window.location).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=facebook');
     });
 
-    it('it should redirect to logout', function () {
+    it('should redirect to logout', function () {
       this.auth0.redirect.logout({redirect_to: 'http://example.com/logout'})
       expect(global.window.location).to.be('https://me.auth0.com/v2/logout?client_id=...&redirect_to=http%3A%2F%2Fexample.com%2Flogout');
     });

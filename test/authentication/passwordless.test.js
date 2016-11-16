@@ -12,9 +12,9 @@ describe('auth0.authentication', function () {
     before(function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -73,12 +73,12 @@ describe('auth0.authentication', function () {
       });
     });
 
-    it('should check that phone_number is sent', function () {
+    it('should check that phoneNumber is sent', function () {
       var _this = this;
       expect(function () {
         _this.auth0.passwordless.start({ connection: 'bla', type: 'sms' }, function () {});
       }).to.throwException(function (e) {
-        expect(e.message).to.be('phone_number option is required');
+        expect(e.message).to.be('phoneNumber option is required');
       });
     });
   });
@@ -87,9 +87,9 @@ describe('auth0.authentication', function () {
     before(function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -121,19 +121,19 @@ describe('auth0.authentication', function () {
       });
     });
 
-    it('should check that options.verification_code is passed', function () {
+    it('should check that options.verificationCode is passed', function () {
       var _this = this;
       expect(function () {
         _this.auth0.passwordless.verify({ connection: 'bla', type: 'email' });
       }).to.throwException(function (e) {
-        expect(e.message).to.be('verification_code option is required');
+        expect(e.message).to.be('verificationCode option is required');
       });
     });
 
     it('should check that options.type is valid', function () {
       var _this = this;
       expect(function () {
-        _this.auth0.passwordless.verify({ connection: 'bla', type: 'blabla', verification_code: 'asdfasd' });
+        _this.auth0.passwordless.verify({ connection: 'bla', type: 'blabla', verificationCode: 'asdfasd' });
       }).to.throwException(function (e) {
         expect(e.message).to.be('type is not valid ([email,sms])');
       });
@@ -142,7 +142,7 @@ describe('auth0.authentication', function () {
     it('should check that cb is valid', function () {
       var _this = this;
       expect(function () {
-        _this.auth0.passwordless.verify({ connection: 'bla', type: 'email', verification_code: 'asdfasd', email: 'me@example.com' });
+        _this.auth0.passwordless.verify({ connection: 'bla', type: 'email', verificationCode: 'asdfasd', email: 'me@example.com' });
       }).to.throwException(function (e) {
         expect(e.message).to.be('cb parameter is not valid');
       });
@@ -151,18 +151,18 @@ describe('auth0.authentication', function () {
     it('should check that email is sent', function () {
       var _this = this;
       expect(function () {
-        _this.auth0.passwordless.verify({ connection: 'bla', type: 'email', verification_code: 'asdfasd' }, function () {});
+        _this.auth0.passwordless.verify({ connection: 'bla', type: 'email', verificationCode: 'asdfasd' }, function () {});
       }).to.throwException(function (e) {
         expect(e.message).to.be('email option is required');
       });
     });
 
-    it('should check that phone_number is sent', function () {
+    it('should check that phoneNumber is sent', function () {
       var _this = this;
       expect(function () {
-        _this.auth0.passwordless.verify({ connection: 'bla', type: 'sms', verification_code: 'asdfasd' }, function () {});
+        _this.auth0.passwordless.verify({ connection: 'bla', type: 'sms', verificationCode: 'asdfasd' }, function () {});
       }).to.throwException(function (e) {
-        expect(e.message).to.be('phone_number option is required');
+        expect(e.message).to.be('phoneNumber option is required');
       });
     });
   });
@@ -171,9 +171,9 @@ describe('auth0.authentication', function () {
     before(function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -204,9 +204,9 @@ describe('auth0.authentication', function () {
 
       this.auth0.passwordless.verify({
         connection: 'the_connection',
-        phone_number: '123456',
+        phoneNumber: '123456',
         type: 'sms',
-        verification_code: 'abc'
+        verificationCode: 'abc'
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
@@ -240,7 +240,7 @@ describe('auth0.authentication', function () {
         connection: 'the_connection',
         email: 'me@example.com',
         type: 'email',
-        verification_code: 'abc'
+        verificationCode: 'abc'
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({

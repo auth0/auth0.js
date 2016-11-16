@@ -21,11 +21,15 @@ UsernamePassword.prototype.login = function (options, cb) {
   options = objectHelper.blacklist(options, ['email']); // eslint-disable-line
 
   body = objectHelper.merge(this.baseOptions, [
-    'client_id',
-    'redirect_uri',
+    'clientID',
+    'redirectUri',
     'tenant',
-    'response_type'
+    'responseType',
+    'scope',
+    'audience'
   ]).with(options);
+
+  body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
   this.request
     .post(url)

@@ -72,9 +72,9 @@ describe('helpers iframeHandler', function () {
     before(function () {
       this.auth0 = new WebAuth({
         domain: 'mdocs.auth0.com',
-        redirect_uri: 'http://example.com/callback',
-        client_id: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-        response_type: 'token',
+        redirectUri: 'http://example.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        responseType: 'token',
         _sendTelemetry: false
       });
     });

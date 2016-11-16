@@ -20,9 +20,9 @@ describe('auth0.WebAuth', function () {
     it('should parse a valid hash', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs.auth0.com',
-        redirect_uri: 'http://example.com/callback',
-        client_id: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-        response_type: 'token'
+        redirectUri: 'http://example.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        responseType: 'token'
       });
 
       var data = webAuth.parseHash('#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjpbIjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIl0sImV4cCI6MTQ3ODU2MjI1MywiaWF0IjoxNDc4NTI2MjUzfQ.3x97RcBqXq9UE3isgbPdVlC0XdU7kQrPhaOFR-Fb4TA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'); // eslint-disable-line
@@ -45,9 +45,9 @@ describe('auth0.WebAuth', function () {
     it('should parse a valid hash from the location.hash', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs.auth0.com',
-        redirect_uri: 'http://example.com/callback',
-        client_id: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-        response_type: 'token'
+        redirectUri: 'http://example.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        responseType: 'token'
       });
 
       var data = webAuth.parseHash();
@@ -70,9 +70,9 @@ describe('auth0.WebAuth', function () {
     it('should parse a valid hash without id_token', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs.auth0.com',
-        redirect_uri: 'http://example.com/callback',
-        client_id: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-        response_type: 'token'
+        redirectUri: 'http://example.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        responseType: 'token'
       });
 
       var data = webAuth.parseHash('#access_token=VjubIMBmpgQ2W2&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'); // eslint-disable-line
@@ -89,9 +89,9 @@ describe('auth0.WebAuth', function () {
     it('should fail with an invalid audience', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs.auth0.com',
-        redirect_uri: 'http://example.com/callback',
-        client_id: '0HP71GSd6PuoRYJ3p',
-        response_type: 'token'
+        redirectUri: 'http://example.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3p',
+        responseType: 'token'
       });
 
       var data = webAuth.parseHash('#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'); // eslint-disable-line
@@ -105,9 +105,9 @@ describe('auth0.WebAuth', function () {
     it('should fail with an invalid issuer', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs_2.auth0.com',
-        redirect_uri: 'http://example.com/callback',
-        client_id: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-        response_type: 'token'
+        redirectUri: 'http://example.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        responseType: 'token'
       });
 
       var data = webAuth.parseHash('#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'); // eslint-disable-line
@@ -122,9 +122,9 @@ describe('auth0.WebAuth', function () {
     it('should fail if there is no token', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs_2.auth0.com',
-        redirect_uri: 'http://example.com/callback',
-        client_id: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-        response_type: 'token'
+        redirectUri: 'http://example.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        responseType: 'token'
       });
 
       var data = webAuth.parseHash('#token_type=Bearer&state=theState'); // eslint-disable-line
@@ -135,9 +135,9 @@ describe('auth0.WebAuth', function () {
     it('should parse an error response', function () {
       var webAuth = new WebAuth({
         domain: 'mdocs_2.auth0.com',
-        redirect_uri: 'http://example.com/callback',
-        client_id: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-        response_type: 'token'
+        redirectUri: 'http://example.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        responseType: 'token'
       });
 
       var data = webAuth.parseHash('#error=the_error_code&error_description=the_error_description&state=some_state');
@@ -155,22 +155,24 @@ describe('auth0.WebAuth', function () {
       IframeHandler.prototype.init.restore();
     });
 
-    it('it should pass the correct authorize url', function (done) {
+    it('should pass the correct authorize url', function (done) {
       stub(information, 'error', function(message) {
         expect(message).to.be('Timeout during authentication renew.');
         done();
       });
 
       stub(IframeHandler.prototype, 'init', function(message) {
-        expect(this.url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&prompt=none');
+        expect(this.url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&scope=openid%20name%20read%3Ablog&audience=urn%3Asite%3Ademo%3Ablog&prompt=none');
         this.timeoutCallback();
       });
 
       var webAuth = new WebAuth({
         domain: 'me.auth0.com',
-        redirect_uri: 'http://page.com/callback',
-        client_id: '...',
-        response_type: 'token',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
         _sendTelemetry: false
       });
 
@@ -184,9 +186,9 @@ describe('auth0.WebAuth', function () {
     before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -255,9 +257,9 @@ describe('auth0.WebAuth', function () {
     before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -288,7 +290,7 @@ describe('auth0.WebAuth', function () {
 
       this.auth0.passwordlessStart({
         connection: 'the_connection',
-        phone_number: '123456',
+        phoneNumber: '123456',
         type: 'sms'
       }, function (err, data) {
         expect(err).to.be(null);

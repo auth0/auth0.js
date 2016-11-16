@@ -15,7 +15,7 @@ describe('helpers information', function () {
       console.error.restore();
     });
 
-    it('it should show an error in the console', function () {
+    it('should show an error in the console', function () {
       information.error('some error message');
     });
   });

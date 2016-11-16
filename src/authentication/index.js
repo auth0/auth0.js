@@ -13,9 +13,11 @@ function Authentication(options) {
   /* eslint-disable */
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     domain: { type: 'string', message: 'domain option is required' },
-    client_id: { type: 'string', message: 'client_id option is required' },
-    response_type: { optional: true, type: 'string', message: 'response_type is not valid' },
-    redirect_uri: { optional: true, type: 'string', message: 'redirect_uri is not valid' },
+    clientID: { type: 'string', message: 'clientID option is required' },
+    responseType: { optional: true, type: 'string', message: 'responseType is not valid' },
+    redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
+    scope: { optional: true, type: 'string', message: 'scope is not valid' },
+    audience: { optional: true, type: 'string', message: 'audience is not valid' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
     _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
   });
@@ -45,15 +47,19 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
   });
 
   params = objectHelper.merge(this.baseOptions, [
-    'client_id',
-    'response_type',
-    'redirect_uri'
+    'clientID',
+    'responseType',
+    'redirectUri',
+    'scope',
+    'audience'
   ]).with(options || {});
 
   // eslint-disable-next-line
   if (this.baseOptions._sendTelemetry) {
     params.auth0Client = this.request.getTelemetryData();
   }
+
+  params = objectHelper.toSnakeCase(params, ['auth0Client']);
 
   qString = qs.build(params);
 
@@ -70,13 +76,15 @@ Authentication.prototype.buildLogoutUrl = function (options) {
     message: 'options parameter is not valid'
   });
 
-  params = objectHelper.merge(this.baseOptions, ['client_id'])
+  params = objectHelper.merge(this.baseOptions, ['clientID'])
                 .with(options || {});
 
   // eslint-disable-next-line
   if (this.baseOptions._sendTelemetry) {
     params.auth0Client = this.request.getTelemetryData();
   }
+
+  params = objectHelper.toSnakeCase(params, ['auth0Client', 'returnTo']);
 
   qString = qs.build(params);
 
@@ -91,14 +99,17 @@ Authentication.prototype.ro = function (options, cb) {
     username: { type: 'string', message: 'username option is required' },
     password: { type: 'string', message: 'password option is required' },
     connection: { type: 'string', message: 'connection option is required' },
-    scope: { type: 'string', message: 'scope option is required' }
+    scope: { optional: true, type: 'string', message: 'scope option is required' },
+    audience: { optional: true, type: 'string', message: 'audience option is required' }
   });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   url = urljoin(this.baseOptions.rootUrl, 'oauth', 'ro');
 
-  body = objectHelper.merge(this.baseOptions, ['client_id'])
+  body = objectHelper.merge(this.baseOptions, ['clientID'])
                 .with(options);
+
+  body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
   body.grant_type = body.grant_type || 'password';
 
@@ -133,8 +144,10 @@ Authentication.prototype.delegation = function (options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'delegation');
 
-  body = objectHelper.merge(this.baseOptions, ['client_id'])
+  body = objectHelper.merge(this.baseOptions, ['clientID'])
                 .with(options);
+
+  body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
   this.request
     .post(url)

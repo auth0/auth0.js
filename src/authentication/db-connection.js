@@ -22,10 +22,12 @@ DBConnection.prototype.signup = function (options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'dbconnection', 'signup');
 
-  body = objectHelper.merge(this.baseOptions, ['client_id'])
+  body = objectHelper.merge(this.baseOptions, ['clientID'])
                 .with(options);
 
   body = objectHelper.blacklist(body, ['scope']);
+
+  body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
   this.request
     .post(url)
@@ -45,8 +47,10 @@ DBConnection.prototype.changePassword = function (options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'dbconnection', 'change_password');
 
-  body = objectHelper.merge(this.baseOptions, ['client_id'])
+  body = objectHelper.merge(this.baseOptions, ['clientID'])
                 .with(options, ['email', 'connection']);
+
+  body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
   this.request
     .post(url)

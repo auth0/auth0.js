@@ -1,8 +1,6 @@
 var expect = require('expect.js');
 var stub = require('sinon').stub;
 
-var RequestMock = require('../mock/request-mock');
-
 var request = require('superagent');
 
 var Authentication = require('../../src/authentication');
@@ -12,9 +10,9 @@ describe('auth0.authentication', function () {
     before(function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
@@ -69,9 +67,9 @@ describe('auth0.authentication', function () {
     before(function () {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
-        client_id: '...',
-        redirect_uri: 'http://page.com/callback',
-        response_type: 'code',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
         _sendTelemetry: false
       });
     });
