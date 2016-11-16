@@ -53,7 +53,7 @@ describe('auth0.authentication', function () {
         });
       });
 
-      this.auth0.ro({
+      this.auth0.loginWithResourceOwner({
         username: 'the username',
         password: 'the password',
         connection: 'the_connection',
@@ -91,7 +91,7 @@ describe('auth0.authentication', function () {
         });
       });
 
-      this.auth0.ro({
+      this.auth0.loginWithResourceOwner({
         username: 'the username',
         password: 'the password',
         connection: 'the_connection',
@@ -131,7 +131,7 @@ describe('auth0.authentication', function () {
         });
       });
 
-      this.auth0.ro({
+      this.auth0.loginWithResourceOwner({
         clientID: '123',
         username: 'the username',
         password: 'the password',
