@@ -368,7 +368,7 @@ describe('auth0.WebAuth.redirect', function () {
         });
       });
 
-      this.auth0.redirect.passwordlessVerify({
+      this.auth0.passwordlessVerify({
         connection: 'the_connection',
         phoneNumber: '123456',
         type: 'sms',
@@ -418,7 +418,7 @@ describe('auth0.WebAuth.redirect', function () {
         });
       });
 
-      this.auth0.redirect.passwordlessVerify({
+      this.auth0.passwordlessVerify({
         connection: 'the_connection',
         phoneNumber: '123456',
         type: 'sms',
@@ -462,7 +462,7 @@ describe('auth0.WebAuth.redirect', function () {
         });
       });
 
-      this.auth0.redirect.passwordlessVerify({
+      this.auth0.passwordlessVerify({
         connection: 'the_connection',
         phoneNumber: '123456',
         type: 'sms',
@@ -490,12 +490,12 @@ describe('auth0.WebAuth.redirect', function () {
     });
 
     it('should redirect to authorize', function () {
-      this.auth0.redirect.authorize({connection: 'facebook'})
+      this.auth0.login({connection: 'facebook'})
       expect(global.window.location).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=facebook');
     });
 
     it('should redirect to logout', function () {
-      this.auth0.redirect.logout({redirect_to: 'http://example.com/logout'})
+      this.auth0.logout({redirect_to: 'http://example.com/logout'})
       expect(global.window.location).to.be('https://me.auth0.com/v2/logout?client_id=...&redirect_to=http%3A%2F%2Fexample.com%2Flogout');
     });
   });
