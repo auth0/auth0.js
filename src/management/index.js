@@ -30,7 +30,7 @@ Management.prototype.getUser = function (userId, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'users', userId);
 
-  this.request
+  return this.request
     .get(url)
     .end(responseHandler(cb));
 };
@@ -44,24 +44,24 @@ Management.prototype.patchUserMetadata = function (userId, userMetadata, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'users', userId);
 
-  this.request
+  return this.request
     .patch(url)
     .send({ user_metadata: userMetadata })
     .end(responseHandler(cb));
 };
 
-Management.prototype.linkUsers = function (userId, secondaryUserToken, cb) {
+Management.prototype.linkUser = function (userId, secondaryUserToken, cb) {
   var url;
   /* eslint-disable */
   assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
-  assert.check(secondaryUserToken, { type: 'string', 
+  assert.check(secondaryUserToken, { type: 'string',
     message: 'secondaryUserToken parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
   /* eslint-enable */
 
   url = urljoin(this.baseOptions.rootUrl, 'users', userId, 'identities');
 
-  this.request
+  return this.request
     .post(url)
     .send({ link_with: secondaryUserToken })
     .end(responseHandler(cb));

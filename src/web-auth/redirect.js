@@ -16,7 +16,7 @@ Redirect.prototype.logout = function (options) {
 
 Redirect.prototype.login = function (options, cb) {
   var usernamePassword = new UsernamePassword(this.baseOptions);
-  usernamePassword.login(options, function (err, data) {
+  return usernamePassword.login(options, function (err, data) {
     if (err) {
       return cb(err);
     }
@@ -24,13 +24,9 @@ Redirect.prototype.login = function (options, cb) {
   });
 };
 
-Redirect.prototype.signup = function (options, cb) {
-  this.authentication.dbConnection.signup(options, cb);
-};
-
 Redirect.prototype.signupAndLogin = function (options, cb) {
   var _this = this;
-  this.authentication.dbConnection.signup(options, function (err) {
+  return this.authentication.dbConnection.signup(options, function (err) {
     if (err) {
       return cb(err);
     }
@@ -40,7 +36,7 @@ Redirect.prototype.signupAndLogin = function (options, cb) {
 
 Redirect.prototype.passwordlessVerify = function (options, cb) {
   var _this = this;
-  this.authentication.passwordless.verify(options, function (err) {
+  return this.authentication.passwordless.verify(options, function (err) {
     if (err) {
       return cb(err);
     }
