@@ -16,14 +16,6 @@ Auth0.js is a client-side library for [Auth0](http://auth0.com). It allows you t
 
 The example directory has a ready-to-go app. In order to run it you need [node](http://nodejs.org/) installed, download dependencies with `npm install`, then execute `npm run example` from the root of this project.
 
-## Usage
-
-Take `auth0.js` or `auth0.min.js` from the `/build` directory and import it to your page.
-
-If you are using [browserify](http://browserify.org/) install with `npm i auth0-js --production --save`.
-
-> Note: The following examples use jQuery, but auth0.js is not tied to jQuery and any library can be used with it.
-
 ### Initialize
 
 Construct a new instance of the Auth0 client as follows:
