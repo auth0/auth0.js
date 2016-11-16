@@ -91,7 +91,11 @@ Authentication.prototype.buildLogoutUrl = function (options) {
   return urljoin(this.baseOptions.rootUrl, 'v2', 'logout', '?' + qString);
 };
 
-Authentication.prototype.ro = function (options, cb) {
+Authentication.prototype.login = function (options, cb) {
+  // oauth/token
+};
+
+Authentication.prototype.loginWithResourceOwner = function (options, cb) {
   var url;
   var body;
 
@@ -113,7 +117,7 @@ Authentication.prototype.ro = function (options, cb) {
 
   body.grant_type = body.grant_type || 'password';
 
-  this.request
+  return this.request
     .post(url)
     .send(body)
     .end(responseHandler(cb));
@@ -127,7 +131,7 @@ Authentication.prototype.userInfo = function (accessToken, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'userinfo');
 
-  this.request
+  return this.request
     .get(url)
     .set('Authorization', 'Bearer ' + accessToken)
     .end(responseHandler(cb));
@@ -149,7 +153,7 @@ Authentication.prototype.delegation = function (options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
-  this.request
+  return this.request
     .post(url)
     .send(body)
     .end(responseHandler(cb));

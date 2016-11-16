@@ -52,7 +52,7 @@ describe('auth0.WebAuth.redirect', function () {
         });
       });
 
-      this.auth0.redirect.signup({
+      this.auth0.signup({
         connection: 'the_connection',
         email: 'me@example.com',
         password: '123456'

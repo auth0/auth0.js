@@ -203,7 +203,7 @@ describe('auth0.Management', function () {
 
     it('should check that userId is valid', function() {
       expect(() => {
-        this.auth0.linkUsers();
+        this.auth0.linkUser();
       }).to.throwException(function (e) {
         expect(e.message).to.be('userId parameter is not valid');
       });
@@ -211,7 +211,7 @@ describe('auth0.Management', function () {
 
     it('should check that secondaryUserToken is valid', function() {
       expect(() => {
-        this.auth0.linkUsers('...');
+        this.auth0.linkUser('...');
       }).to.throwException(function (e) {
         expect(e.message).to.be('secondaryUserToken parameter is not valid');
       });
@@ -219,7 +219,7 @@ describe('auth0.Management', function () {
 
     it('should check that cb is valid', function() {
       expect(() => {
-        this.auth0.linkUsers('...', '...');
+        this.auth0.linkUser('...', '...');
       }).to.throwException(function (e) {
         expect(e.message).to.be('cb parameter is not valid');
       });
@@ -277,7 +277,7 @@ describe('auth0.Management', function () {
         });
       });
 
-      this.auth0.linkUsers('twitter|191919191919191', 'the_second_token', function(err, user) {
+      this.auth0.linkUser('twitter|191919191919191', 'the_second_token', function(err, user) {
         expect(err).to.be(null);
         expect(user).to.eql([{
             'connection': 'twitter',

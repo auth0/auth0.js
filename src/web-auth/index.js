@@ -90,9 +90,13 @@ WebAuth.prototype.parseHash = function (hash) {
   };
 };
 
+WebAuth.prototype.login = function (options, cb) {
+  // return this.authentication.login(options, cb);
+};
+
 WebAuth.prototype.renewAuth = function (options, cb) {
   var handler;
-  var usePostMessage = options.usePostMessage || false;
+  var usePostMessage = !!options.usePostMessage;
 
   var params = objectHelper.merge(this.baseOptions, [
     'clientID',
@@ -119,15 +123,24 @@ WebAuth.prototype.renewAuth = function (options, cb) {
 };
 
 WebAuth.prototype.changePassword = function (options, cb) {
-  this.authentication.dbConnection.changePassword(options, cb);
+  return this.authentication.dbConnection.changePassword(options, cb);
 };
 
 WebAuth.prototype.passwordlessStart = function (options, cb) {
-  this.authentication.passwordless.start(options, cb);
+  return this.authentication.passwordless.start(options, cb);
+};
+
+WebAuth.prototype.passwordlessVerify = function (options, cb) {
+  // return this.authentication.passwordless.loginWithResourceOwner(...);
+};
+
+WebAuth.prototype.signup = function (options, cb) {
+  return this.authentication.dbConnection.signup(options, cb);
 };
 
 // popup.login
+// popup.authorize
 // popup.passwordlessVerify
-// popup.signup
+// popup.signupAndLogin
 
 module.exports = WebAuth;
