@@ -81,15 +81,15 @@ RequestBuilder.prototype.getTelemetryData = function () {
 };
 
 RequestBuilder.prototype.get = function (url) {
-  return this.setCommonConfiguration(request.get(url));
+  return new RequestObj(this.setCommonConfiguration(request.get(url)));
 };
 
 RequestBuilder.prototype.post = function (url) {
-  return this.setCommonConfiguration(request.post(url));
+  return new RequestObj(this.setCommonConfiguration(request.post(url)));
 };
 
 RequestBuilder.prototype.patch = function (url) {
-  return this.setCommonConfiguration(request.patch(url));
+  return new RequestObj(this.setCommonConfiguration(request.patch(url)));
 };
 
 module.exports = RequestBuilder;
