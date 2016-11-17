@@ -92,7 +92,45 @@ Authentication.prototype.buildLogoutUrl = function (options) {
 };
 
 Authentication.prototype.login = function (options, cb) {
-  // oauth/token
+  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
+    clientID: { optional: true, type: 'string', message: 'clientID option is required' },
+    username: { optional: true, type: 'string', message: 'username option is required' },
+    password: { optional: true, type: 'string', message: 'password option is required' },
+    scope: { optional: true, type: 'string', message: 'scope option is required' },
+    audience: { optional: true, type: 'string', message: 'audience option is required' }
+  });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  options.grantType = 'password';
+
+  return this.oauthToken(options, cb);
+};
+
+Authentication.prototype.oauthToken = function (options, cb) {
+  var url;
+  var body;
+
+  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
+    grantType: { optional: true, type: 'string', message: 'grantType option is required' }
+  });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  url = urljoin(this.baseOptions.rootUrl, 'oauth', 'token');
+
+  body = objectHelper.merge(this.baseOptions, [
+    'clientID',
+    'scope',
+    'audience'
+  ]).with(options);
+
+  body = objectHelper.toSnakeCase(body, ['auth0Client']);
+
+  body.grant_type = body.grant_type || 'password';
+
+  return this.request
+    .post(url)
+    .send(body)
+    .end(responseHandler(cb));
 };
 
 Authentication.prototype.loginWithResourceOwner = function (options, cb) {
@@ -110,8 +148,11 @@ Authentication.prototype.loginWithResourceOwner = function (options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'oauth', 'ro');
 
-  body = objectHelper.merge(this.baseOptions, ['clientID'])
-                .with(options);
+  body = objectHelper.merge(this.baseOptions, [
+    'clientID',
+    'scope',
+    'audience'
+  ]).with(options);
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
