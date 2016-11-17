@@ -41,11 +41,13 @@
     function HTMLConsole(options) {
       this.ele = $(options.selector);
       this.data = [];
-
+      var _this = this;
       var data;
       if (data = localStorage.getItem("consoleData")) {
         data = JSON.parse(data);
-        data.forEach(this.dumpCallback.bind(this));
+        data.forEach(function(d){
+          _this.dumpCallback(d.error ? d : null, d.error ? null : d);
+        });
       }
     }
 
@@ -154,7 +156,7 @@
 
     var hash = webAuth.parseHash();
     if (hash) {
-      htmlConsole.dumpCallback(hash);
+      htmlConsole.dumpCallback(hash.error ? hash : null, hash.error ? null : hash);
       window.location.hash = '';
     }
 

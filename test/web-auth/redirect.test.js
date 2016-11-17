@@ -165,8 +165,7 @@ describe('auth0.WebAuth.redirect', function () {
             cb({
               'name': 'ValidationError',
               'code': 'invalid_user_password',
-              'description': 'Wrong email or password.',
-              'statusCode': 400
+              'description': 'Wrong email or password.'
             });
           }
         });
@@ -188,10 +187,14 @@ describe('auth0.WebAuth.redirect', function () {
         scope: 'openid'
       }, function (err) {
         expect(err).to.eql({
+          'original': {
+            'name': 'ValidationError',
+            'code': 'invalid_user_password',
+            'description': 'Wrong email or password.'
+          },
           'name': 'ValidationError',
           'code': 'invalid_user_password',
-          'description': 'Wrong email or password.',
-          'statusCode': 400
+          'description': 'Wrong email or password.'
         });
         done();
       });
@@ -233,10 +236,14 @@ describe('auth0.WebAuth.redirect', function () {
             },
             cb: function (cb) {
               cb({
-                'name': 'ValidationError',
-                'code': 'invalid_user_password',
-                'description': 'Wrong email or password.',
-                'statusCode': 400
+                response: {
+                  body: {
+                    'name': 'ValidationError',
+                    'code': 'invalid_user_password',
+                    'description': 'Wrong email or password.'
+                  },
+                  'statusCode': 400
+                }
               });
             }
           });
@@ -274,10 +281,20 @@ describe('auth0.WebAuth.redirect', function () {
       }, function (err, data) {
         expect(data).to.be(undefined);
         expect(err).to.eql({
+          'original': {
+            'response': {
+              'body': {
+                'name': 'ValidationError',
+                'code': 'invalid_user_password',
+                'description': 'Wrong email or password.'
+              },
+              'statusCode': 400
+            }
+          },
           'name': 'ValidationError',
           'code': 'invalid_user_password',
           'description': 'Wrong email or password.',
-          'statusCode': 400
+          'status_code': 400
         });
         done();
       });
@@ -300,10 +317,13 @@ describe('auth0.WebAuth.redirect', function () {
           },
           cb: function (cb) {
             cb({
-              "name":"BadRequestError",
-              "code":"user_exists",
-              "description":"The user already exists.",
-              "statusCode":400
+              response: {
+                "statusCode":400,
+                body: {
+                  "code":"user_exists",
+                  "description":"The user already exists."
+                }
+              }
             });
           }
         });
@@ -317,10 +337,19 @@ describe('auth0.WebAuth.redirect', function () {
       }, function (err, data) {
         expect(data).to.be(undefined);
         expect(err).to.eql({
-          "name":"BadRequestError",
+          original: {
+            response: {
+              "statusCode":400,
+              body: {
+                "code":"user_exists",
+                "description":"The user already exists."
+              }
+            }
+          },
+          "name":null,
           "code":"user_exists",
           "description":"The user already exists.",
-          "statusCode":400
+          "status_code":400
         });
         done();
       });
@@ -469,8 +498,13 @@ describe('auth0.WebAuth.redirect', function () {
         verificationCode: 'abc'
       }, function (err) {
         expect(err).to.eql({
-          error: 'some_error_code',
-          error_description: 'Some error description'
+          original: {
+            error: 'some_error_code',
+            error_description: 'Some error description'
+          },
+          name: null,
+          code: 'some_error_code',
+          description: 'Some error description'
         });
         done();
       });

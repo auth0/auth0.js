@@ -4,7 +4,7 @@ function wrapCallback(cb) {
     if (err) {
       var data = {
         original: err
-      }
+      };
 
       if (err.response && err.response.statusCode) {
         data.status_code = err.response.statusCode;
@@ -18,8 +18,9 @@ function wrapCallback(cb) {
         err = err.response.body;
       }
 
-      data.error = err.error || err.code || err.error_code;
-      data.error_description = err.error_description || err.description || err.error;
+      data.code = err.error || err.code || err.error_code || null;
+      data.description = err.error_description || err.description || err.error || null;
+      data.name = err.name || null;
 
       return cb(data);
     }

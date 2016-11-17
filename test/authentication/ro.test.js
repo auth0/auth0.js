@@ -98,7 +98,15 @@ describe('auth0.authentication', function () {
         scope: 'openid'
       }, function (err, data) {
         expect(data).to.be(undefined);
-        expect(err).to.eql({ error: 'unauthorized', error_description: 'invalid username' });
+        expect(err).to.eql({
+          original: {
+            error: 'unauthorized',
+            error_description: 'invalid username'
+          },
+          code: 'unauthorized',
+          description: 'invalid username',
+          name: null
+        });
         done();
       });
     });
