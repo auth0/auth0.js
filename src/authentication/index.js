@@ -91,7 +91,49 @@ Authentication.prototype.buildLogoutUrl = function (options) {
   return urljoin(this.baseOptions.rootUrl, 'v2', 'logout', '?' + qString);
 };
 
-Authentication.prototype.ro = function (options, cb) {
+Authentication.prototype.login = function (options, cb) {
+  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
+    clientID: { optional: true, type: 'string', message: 'clientID option is required' },
+    username: { optional: true, type: 'string', message: 'username option is required' },
+    password: { optional: true, type: 'string', message: 'password option is required' },
+    scope: { optional: true, type: 'string', message: 'scope option is required' },
+    audience: { optional: true, type: 'string', message: 'audience option is required' }
+  });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  options.grantType = 'password';
+
+  return this.oauthToken(options, cb);
+};
+
+Authentication.prototype.oauthToken = function (options, cb) {
+  var url;
+  var body;
+
+  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
+    grantType: { optional: true, type: 'string', message: 'grantType option is required' }
+  });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  url = urljoin(this.baseOptions.rootUrl, 'oauth', 'token');
+
+  body = objectHelper.merge(this.baseOptions, [
+    'clientID',
+    'scope',
+    'audience'
+  ]).with(options);
+
+  body = objectHelper.toSnakeCase(body, ['auth0Client']);
+
+  body.grant_type = body.grant_type || 'password';
+
+  return this.request
+    .post(url)
+    .send(body)
+    .end(responseHandler(cb));
+};
+
+Authentication.prototype.loginWithResourceOwner = function (options, cb) {
   var url;
   var body;
 
@@ -106,14 +148,17 @@ Authentication.prototype.ro = function (options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'oauth', 'ro');
 
-  body = objectHelper.merge(this.baseOptions, ['clientID'])
-                .with(options);
+  body = objectHelper.merge(this.baseOptions, [
+    'clientID',
+    'scope',
+    'audience'
+  ]).with(options);
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
   body.grant_type = body.grant_type || 'password';
 
-  this.request
+  return this.request
     .post(url)
     .send(body)
     .end(responseHandler(cb));
@@ -127,7 +172,7 @@ Authentication.prototype.userInfo = function (accessToken, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'userinfo');
 
-  this.request
+  return this.request
     .get(url)
     .set('Authorization', 'Bearer ' + accessToken)
     .end(responseHandler(cb));
@@ -149,7 +194,7 @@ Authentication.prototype.delegation = function (options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
-  this.request
+  return this.request
     .post(url)
     .send(body)
     .end(responseHandler(cb));

@@ -52,7 +52,7 @@ describe('auth0.WebAuth.redirect', function () {
         });
       });
 
-      this.auth0.redirect.signup({
+      this.auth0.signup({
         connection: 'the_connection',
         email: 'me@example.com',
         password: '123456'
@@ -165,8 +165,7 @@ describe('auth0.WebAuth.redirect', function () {
             cb({
               'name': 'ValidationError',
               'code': 'invalid_user_password',
-              'description': 'Wrong email or password.',
-              'statusCode': 400
+              'description': 'Wrong email or password.'
             });
           }
         });
@@ -188,10 +187,14 @@ describe('auth0.WebAuth.redirect', function () {
         scope: 'openid'
       }, function (err) {
         expect(err).to.eql({
+          'original': {
+            'name': 'ValidationError',
+            'code': 'invalid_user_password',
+            'description': 'Wrong email or password.'
+          },
           'name': 'ValidationError',
           'code': 'invalid_user_password',
-          'description': 'Wrong email or password.',
-          'statusCode': 400
+          'description': 'Wrong email or password.'
         });
         done();
       });
@@ -233,10 +236,14 @@ describe('auth0.WebAuth.redirect', function () {
             },
             cb: function (cb) {
               cb({
-                'name': 'ValidationError',
-                'code': 'invalid_user_password',
-                'description': 'Wrong email or password.',
-                'statusCode': 400
+                response: {
+                  body: {
+                    'name': 'ValidationError',
+                    'code': 'invalid_user_password',
+                    'description': 'Wrong email or password.'
+                  },
+                  'statusCode': 400
+                }
               });
             }
           });
@@ -274,10 +281,20 @@ describe('auth0.WebAuth.redirect', function () {
       }, function (err, data) {
         expect(data).to.be(undefined);
         expect(err).to.eql({
+          'original': {
+            'response': {
+              'body': {
+                'name': 'ValidationError',
+                'code': 'invalid_user_password',
+                'description': 'Wrong email or password.'
+              },
+              'statusCode': 400
+            }
+          },
           'name': 'ValidationError',
           'code': 'invalid_user_password',
           'description': 'Wrong email or password.',
-          'statusCode': 400
+          'status_code': 400
         });
         done();
       });
@@ -300,10 +317,13 @@ describe('auth0.WebAuth.redirect', function () {
           },
           cb: function (cb) {
             cb({
-              "name":"BadRequestError",
-              "code":"user_exists",
-              "description":"The user already exists.",
-              "statusCode":400
+              response: {
+                "statusCode":400,
+                body: {
+                  "code":"user_exists",
+                  "description":"The user already exists."
+                }
+              }
             });
           }
         });
@@ -317,10 +337,19 @@ describe('auth0.WebAuth.redirect', function () {
       }, function (err, data) {
         expect(data).to.be(undefined);
         expect(err).to.eql({
-          "name":"BadRequestError",
+          original: {
+            response: {
+              "statusCode":400,
+              body: {
+                "code":"user_exists",
+                "description":"The user already exists."
+              }
+            }
+          },
+          "name":null,
           "code":"user_exists",
           "description":"The user already exists.",
-          "statusCode":400
+          "status_code":400
         });
         done();
       });
@@ -368,7 +397,7 @@ describe('auth0.WebAuth.redirect', function () {
         });
       });
 
-      this.auth0.redirect.passwordlessVerify({
+      this.auth0.passwordlessVerify({
         connection: 'the_connection',
         phoneNumber: '123456',
         type: 'sms',
@@ -418,7 +447,7 @@ describe('auth0.WebAuth.redirect', function () {
         });
       });
 
-      this.auth0.redirect.passwordlessVerify({
+      this.auth0.passwordlessVerify({
         connection: 'the_connection',
         phoneNumber: '123456',
         type: 'sms',
@@ -462,15 +491,20 @@ describe('auth0.WebAuth.redirect', function () {
         });
       });
 
-      this.auth0.redirect.passwordlessVerify({
+      this.auth0.passwordlessVerify({
         connection: 'the_connection',
         phoneNumber: '123456',
         type: 'sms',
         verificationCode: 'abc'
       }, function (err) {
         expect(err).to.eql({
-          error: 'some_error_code',
-          error_description: 'Some error description'
+          original: {
+            error: 'some_error_code',
+            error_description: 'Some error description'
+          },
+          name: null,
+          code: 'some_error_code',
+          description: 'Some error description'
         });
         done();
       });
@@ -490,12 +524,12 @@ describe('auth0.WebAuth.redirect', function () {
     });
 
     it('should redirect to authorize', function () {
-      this.auth0.redirect.authorize({connection: 'facebook'})
+      this.auth0.login({connection: 'facebook'})
       expect(global.window.location).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=facebook');
     });
 
     it('should redirect to logout', function () {
-      this.auth0.redirect.logout({redirect_to: 'http://example.com/logout'})
+      this.auth0.logout({redirect_to: 'http://example.com/logout'})
       expect(global.window.location).to.be('https://me.auth0.com/v2/logout?client_id=...&redirect_to=http%3A%2F%2Fexample.com%2Flogout');
     });
   });

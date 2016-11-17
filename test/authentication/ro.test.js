@@ -53,7 +53,7 @@ describe('auth0.authentication', function () {
         });
       });
 
-      this.auth0.ro({
+      this.auth0.loginWithResourceOwner({
         username: 'the username',
         password: 'the password',
         connection: 'the_connection',
@@ -91,14 +91,22 @@ describe('auth0.authentication', function () {
         });
       });
 
-      this.auth0.ro({
+      this.auth0.loginWithResourceOwner({
         username: 'the username',
         password: 'the password',
         connection: 'the_connection',
         scope: 'openid'
       }, function (err, data) {
         expect(data).to.be(undefined);
-        expect(err).to.eql({ error: 'unauthorized', error_description: 'invalid username' });
+        expect(err).to.eql({
+          original: {
+            error: 'unauthorized',
+            error_description: 'invalid username'
+          },
+          code: 'unauthorized',
+          description: 'invalid username',
+          name: null
+        });
         done();
       });
     });
@@ -131,7 +139,7 @@ describe('auth0.authentication', function () {
         });
       });
 
-      this.auth0.ro({
+      this.auth0.loginWithResourceOwner({
         clientID: '123',
         username: 'the username',
         password: 'the password',

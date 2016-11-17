@@ -29,7 +29,7 @@ DBConnection.prototype.signup = function (options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
-  this.request
+  return this.request
     .post(url)
     .send(body)
     .end(responseHandler(cb));
@@ -52,7 +52,7 @@ DBConnection.prototype.changePassword = function (options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
-  this.request
+  return this.request
     .post(url)
     .send(body)
     .end(responseHandler(cb));

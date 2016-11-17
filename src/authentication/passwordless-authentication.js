@@ -83,7 +83,7 @@ PasswordlessAuthentication.prototype.start = function (options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
-  this.request
+  return this.request
     .post(url)
     .send(body)
     .end(responseHandler(cb));
@@ -114,7 +114,7 @@ PasswordlessAuthentication.prototype.verify = function (options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify');
 
-  this.request
+  return this.request
     .post(url)
     .send(cleanOption)
     .end(responseHandler(cb));
