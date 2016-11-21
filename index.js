@@ -798,7 +798,7 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
     options.sso = true;
   }
 
-  if (this._responseType !== 'code' && !options.nonce) {
+  if (this._responseType.indexOf('id_token') > -1 && !options.nonce) {
     if (typeof options.passcode === 'undefined' && (
         ((typeof options.username !== 'undefined' || typeof options.email !== 'undefined') && !callback) ||
         (typeof options.username === 'undefined' && typeof options.email === 'undefined')
@@ -828,7 +828,7 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
     return this.loginWithPopup(options, callback);
   }
 
-  if (!options.nonce) {
+  if (!options.nonce && this._responseType.indexOf('id_token') > -1) {
     throw new Error('nonce is mandatory');
   }
 
@@ -1020,7 +1020,7 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
     throw new Error('popup mode should receive a mandatory callback');
   }
 
-  if (!options.nonce) {
+  if (!options.nonce && this._responseType.indexOf('id_token') > -1) {
     throw new Error('nonce is mandatory');
   }
 
@@ -1157,7 +1157,7 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
   var popupPosition = this._computePopupPosition(options.popupOptions);
   var popupOptions = xtend(popupPosition, options.popupOptions);
 
-  if (!options.nonce) {
+  if (!options.nonce && this._responseType.indexOf('id_token') > -1) {
     throw new Error('nonce is mandatory');
   }
 
@@ -1404,7 +1404,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
     popup = this._buildPopupWindow(options);
   }
 
-  if (!options.nonce) {
+  if (!options.nonce && this._responseType.indexOf('id_token') > -1) {
     throw new Error('nonce is mandatory');
   }
 
