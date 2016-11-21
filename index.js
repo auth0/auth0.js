@@ -6,6 +6,7 @@ var Base64Url         = require('./lib/base64_url');
 var assert_required   = require('./lib/assert_required');
 var is_array          = require('./lib/is-array');
 var index_of          = require('./lib/index-of');
+var nonceGenerator    = require('./lib/nonce-generator');
 
 var qs                = require('qs');
 var xtend             = require('xtend');
@@ -492,7 +493,8 @@ Auth0.prototype.decodeJwt = function (jwt) {
  *
  */
 
-Auth0.prototype.parseHash = function (hash) {
+Auth0.prototype.parseHash = function (hash, options) {
+  options = options || {};
   hash = hash || window.location.hash;
   hash = hash.replace(/^#?\/?/, '');
   var parsed_qs = qs.parse(hash);
@@ -540,6 +542,13 @@ Auth0.prototype.parseHash = function (hash) {
     if (prof.iss && prof.iss !== 'https://' + this._domain + '/') {
       return invalidJwt(
         'The domain configured (https://' + this._domain + '/) does not match with the domain set in the token (' + prof.iss + ').');
+    }
+
+    var nonce = options.nonce || window.localStorage.getItem('nonce');
+    window.localStorage.removeItem('nonce');
+
+    if ((nonce || prof.nonce) && prof.nonce !== nonce) {
+      return invalidJwt('The nonce does not match.');
     }
   }
 
@@ -787,6 +796,12 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
   // By default, options.sso is true
   if (!checkIfSet(options, 'sso')) {
     options.sso = true;
+  }
+
+  if (this._responseType !== 'code' && !options.nonce) {
+    var nonce = nonceGenerator.randomString(16);
+    options.nonce = nonce;
+    window.localStorage.setItem('nonce', nonce);
   }
 
   if (typeof options.passcode !== 'undefined') {
@@ -1703,7 +1718,7 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
  *
  *     auth0.silentAuthentication({}, function(error, result) {
  *        if (error) {
- *          console.log(error); 
+ *          console.log(error);
  *        }
  *        // result.id_token
  *     });
@@ -1712,7 +1727,7 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
  *
  *     auth0.silentAuthentication({callbackUrl: "https://site.com/silentCallback"}, function(error, result) {
  *        if (error) {
- *          console.log(error); 
+ *          console.log(error);
  *        }
  *        // result.id_token
  *     });
@@ -1723,7 +1738,7 @@ Auth0.prototype.getDelegationToken = function (options, callback) {
  */
 Auth0.prototype.silentAuthentication = function (options, callback) {
   var usePostMessage = options.usePostMessage || false;
-  
+
   delete options.usePostMessage;
 
   options = xtend(options, {prompt:'none'});
