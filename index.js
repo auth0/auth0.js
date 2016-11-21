@@ -544,8 +544,8 @@ Auth0.prototype.parseHash = function (hash, options) {
         'The domain configured (https://' + this._domain + '/) does not match with the domain set in the token (' + prof.iss + ').');
     }
 
-    var nonce = options.nonce || window.localStorage.getItem('nonce');
-    window.localStorage.removeItem('nonce');
+    var nonce = options.nonce || window.localStorage.getItem('com.auth0.auth.nonce');
+    window.localStorage.removeItem('com.auth0.auth.nonce');
 
     if ((nonce || prof.nonce) && prof.nonce !== nonce) {
       return invalidJwt('The nonce does not match.');
@@ -799,9 +799,16 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
   }
 
   if (this._responseType !== 'code' && !options.nonce) {
-    var nonce = nonceGenerator.randomString(16);
-    options.nonce = nonce;
-    window.localStorage.setItem('nonce', nonce);
+    if (typeof options.passcode === 'undefined' && (
+        ((typeof options.username !== 'undefined' || typeof options.email !== 'undefined') && !callback) ||
+        (typeof options.username === 'undefined' && typeof options.email === 'undefined')
+        ) ) {
+      var nonce = nonceGenerator.randomString(16);
+      if (nonce) {
+        options.nonce = nonce;
+        window.localStorage.setItem('com.auth0.auth.nonce', nonce);
+      }
+    }
   }
 
   if (typeof options.passcode !== 'undefined') {
@@ -819,6 +826,10 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
 
   if (!!options.popup && this._getCallbackOnLocationHash(options)) {
     return this.loginWithPopup(options, callback);
+  }
+
+  if (!options.nonce) {
+    throw new Error('nonce is mandatory');
   }
 
   this._authorize(options);
@@ -1009,6 +1020,10 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
     throw new Error('popup mode should receive a mandatory callback');
   }
 
+  if (!options.nonce) {
+    throw new Error('nonce is mandatory');
+  }
+
   var qs = [this._getMode(options), options, { client_id: this._clientID, owp: true }];
 
   if (this._sendClientInfo) {
@@ -1141,6 +1156,10 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
   var _this = this;
   var popupPosition = this._computePopupPosition(options.popupOptions);
   var popupOptions = xtend(popupPosition, options.popupOptions);
+
+  if (!options.nonce) {
+    throw new Error('nonce is mandatory');
+  }
 
   var winchanOptions = {
     url: 'https://' + this._domain + '/sso_dbconnection_popup/' + this._clientID,
@@ -1383,6 +1402,10 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
   // TODO We should deprecate this, really hacky and confuses people.
   if (options.popup  && !this._getCallbackOnLocationHash(options)) {
     popup = this._buildPopupWindow(options);
+  }
+
+  if (!options.nonce) {
+    throw new Error('nonce is mandatory');
   }
 
   // When a callback with more than one argument is specified and sso: true then
