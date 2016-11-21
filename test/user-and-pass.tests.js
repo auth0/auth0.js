@@ -114,7 +114,8 @@ describe('Auth0 - User And Passwords', function () {
         auth0.login({
           connection: 'tests',
           username: 'testttt@wrong.com',
-          password: '12345'
+          password: '12345',
+          nonce: '1234'
         }, function (err) {
           expect(err.status).to.equal(401);
           expect(err.details.code).to.equal('invalid_user_password');
@@ -126,7 +127,8 @@ describe('Auth0 - User And Passwords', function () {
         auth0.login({
           connection: 'testsw3eeasdsadsa',
           username: 'testtttt@wrong.com',
-          password: '12345'
+          password: '12345',
+          nonce: '12345'
         }, function (err) {
           expect(err.status).to.equal(404);
           expect(err.message).to.match(/connection not found/ig);
@@ -143,7 +145,8 @@ describe('Auth0 - User And Passwords', function () {
         auth0.login({
           connection: 'tests',
           username: 'johnfoo@gmail.com',
-          password: '12345'
+          password: '12345',
+          nonce: '12345'
         });
       });
 
@@ -261,7 +264,8 @@ describe('Auth0 - User And Passwords', function () {
         auth0.signup({
           connection: 'tests',
           username: 'johnfoo@gmail.com',
-          password: '12345'
+          password: '12345',
+          nonce: '12345'
         }, function (err) {
           done(err);
         });
