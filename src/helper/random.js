@@ -1,9 +1,11 @@
+var windowHelper = require('./window');
+
 function randomString(length) {
   var bytes = new Uint8Array(length);
   var result = [];
   var charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._~';
 
-  var cryptoObj = window.crypto || window.msCrypto;
+  var cryptoObj = windowHelper.getWindow().crypto || windowHelper.getWindow().msCrypto;
   if (!cryptoObj) {
     return null;
   }

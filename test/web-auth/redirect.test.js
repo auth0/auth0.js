@@ -346,7 +346,6 @@ describe('auth0.WebAuth.redirect', function () {
               }
             }
           },
-          "name":null,
           "code":"user_exists",
           "description":"The user already exists.",
           "status_code":400
@@ -502,7 +501,6 @@ describe('auth0.WebAuth.redirect', function () {
             error: 'some_error_code',
             error_description: 'Some error description'
           },
-          name: null,
           code: 'some_error_code',
           description: 'Some error description'
         });

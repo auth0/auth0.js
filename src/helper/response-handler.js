@@ -19,8 +19,11 @@ function wrapCallback(cb) {
       }
 
       data.code = err.error || err.code || err.error_code || null;
-      data.description = err.error_description || err.description || err.error || null;
-      data.name = err.name || null;
+      data.description = err.error_description || err.description || null;
+
+      if (err.name) {
+        data.name = err.name;
+      }
 
       return cb(data);
     }

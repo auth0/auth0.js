@@ -104,8 +104,7 @@ describe('auth0.authentication', function () {
             error_description: 'invalid username'
           },
           code: 'unauthorized',
-          description: 'invalid username',
-          name: null
+          description: 'invalid username'
         });
         done();
       });

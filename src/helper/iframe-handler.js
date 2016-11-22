@@ -1,4 +1,4 @@
-var windowHelper = require('../helper/window');
+var windowHelper = require('./window');
 
 function IframeHandler(options) {
   this.auth0 = options.auth0;
