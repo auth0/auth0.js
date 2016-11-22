@@ -4,6 +4,7 @@ var jwt = require('../helper/jwt');
 var qs = require('../helper/qs');
 var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
+var nonceManager = require('./nonce-manager');
 var Authentication = require('../authentication');
 var Redirect = require('./redirect');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
@@ -35,11 +36,10 @@ function WebAuth(options) {
   this.redirect = new Redirect(this.client, this.baseOptions);
 }
 
-WebAuth.prototype.parseHash = function (hash) {
+WebAuth.prototype.parseHash = function (hash, options) {
   var parsedQs;
   var err;
   var prof;
-  var audiences;
 
   var _window = windowHelper.getWindow();
 
@@ -65,20 +65,9 @@ WebAuth.prototype.parseHash = function (hash) {
   }
 
   if (parsedQs.id_token) {
-    prof = jwt.getPayload(parsedQs.id_token);
-    // aud should be the clientID
-    audiences = assert.isArray(prof.aud) ? prof.aud : [prof.aud];
-    if (audiences.indexOf(this.baseOptions.clientID) === -1) {
-      return error.invalidJwt(
-        'The clientID configured (' + this.baseOptions.clientID + ') does not match ' +
-        'with the clientID set in the token (' + audiences.join(', ') + ').');
-    }
-
-    // iss should be the Auth0 domain (i.e.: https://contoso.auth0.com/)
-    if (prof.iss && prof.iss !== 'https://' + this.baseOptions.domain + '/') {
-      return error.invalidJwt(
-        'The domain configured (https://' + this.baseOptions.domain + '/) does not match ' +
-        'with the domain set in the token (' + prof.iss + ').');
+    prof = this.validateToken(parsedQs.id_token, options);
+    if (prof.error) {
+      return prof;
     }
   }
 
@@ -91,8 +80,39 @@ WebAuth.prototype.parseHash = function (hash) {
   };
 };
 
+WebAuth.prototype.validateToken = function (token, options) {
+  var audiences;
+  var nonce;
+  var token_nonce;
+  var prof = jwt.getPayload(token);
+  // aud should be the clientID
+  audiences = assert.isArray(prof.aud) ? prof.aud : [prof.aud];
+  if (audiences.indexOf(this.baseOptions.clientID) === -1) {
+    return error.invalidJwt(
+      'The clientID configured (' + this.baseOptions.clientID + ') does not match ' +
+      'with the clientID set in the token (' + audiences.join(', ') + ').');
+  }
+
+  nonce = nonceManager.getStoredNonce(this.baseOptions) || options.nonce || null;
+  token_nonce = prof.nonce || null;
+
+  if (nonce !== token_nonce) {
+    return error.invalidJwt('Nonce does not match');
+  }
+
+  // iss should be the Auth0 domain (i.e.: https://contoso.auth0.com/)
+  if (prof.iss && prof.iss !== 'https://' + this.baseOptions.domain + '/') {
+    return error.invalidJwt(
+      'The domain configured (https://' + this.baseOptions.domain + '/) does not match ' +
+      'with the domain set in the token (' + prof.iss + ').');
+  }
+
+  return prof;
+};
+
 WebAuth.prototype.renewAuth = function (options, cb) {
   var handler;
+  var prof;
   var usePostMessage = !!options.usePostMessage;
 
   var params = objectHelper.merge(this.baseOptions, [
@@ -102,6 +122,10 @@ WebAuth.prototype.renewAuth = function (options, cb) {
     'scope',
     'audience'
   ]).with(options);
+
+  if (params.responseType.indexOf('id_token') > -1) {
+    params.nonce = params.nonce || nonceManager.generateNonce(this.baseOptions);
+  }
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
     scope: { type: 'string', message: 'scope option is required' },
@@ -116,7 +140,21 @@ WebAuth.prototype.renewAuth = function (options, cb) {
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
 
   handler = new SilentAuthenticationHandler(this, this.client.buildAuthorizeUrl(params));
-  handler.login(usePostMessage, cb);
+  handler.login(usePostMessage, function (err, data){
+    if (err) {
+      return cb(err);
+    }
+
+    if (data.id_token) {
+      prof = this.validateToken(data.id_token, options);
+      if (prof.error) {
+        cb(prof);
+      }
+      data.idTokenPayload = prof;
+    }
+
+    cb(err, data);
+  });
 };
 
 WebAuth.prototype.changePassword = function (options, cb) {
@@ -132,6 +170,12 @@ WebAuth.prototype.signup = function (options, cb) {
 };
 
 WebAuth.prototype.login = function (options) {
+  var responseType = options.responseType || this.baseOptions.responseType;
+
+  if (responseType.indexOf('id_token') > -1) {
+    options.nonce = options.nonce || nonceManager.generateNonce(this.baseOptions);
+  }
+
   windowHelper.redirect(this.client.buildAuthorizeUrl(options));
 };
 
