@@ -35,7 +35,7 @@ describe('Auth0', function () {
       expect(the_url).to.contain('auth0Client');
     };
 
-    auth0.login({});
+    auth0.login({nonce: '12345'});
 
     done();
   });
@@ -52,7 +52,7 @@ describe('Auth0', function () {
       expect(the_url).to.not.contain('auth0Client');
     };
 
-    auth0.login({});
+    auth0.login({nonce: '12345'});
 
     done();
   });
@@ -66,7 +66,7 @@ describe('Auth0', function () {
     });
 
     expect(function () {
-      auth0.signin({popup: true});
+      auth0.signin({popup: true, nonce: '12345'});
     }).to.throwError(/popup mode should receive a mandatory callback/);
   });
 
@@ -121,6 +121,7 @@ describe('Auth0', function () {
 
     auth0.login({
       connection: 'google-oauth2',
+      nonce: '1234',
       popupOptions: {}
     });
   });
@@ -218,7 +219,7 @@ describe('Auth0', function () {
         done();
       };
 
-      auth0.login({ connection: 'google-oauth2' });
+      auth0.login({ connection: 'google-oauth2', nonce:'12345' });
     });
 
     it('should disable phonegap by default', function () {
@@ -259,7 +260,8 @@ describe('Auth0', function () {
       auth0.login({
         connection: 'google-oauth2',
         callbackOnLocationHash: true,
-        callbackURL: 'https://myapp.com/callback'
+        callbackURL: 'https://myapp.com/callback',
+        nonce:'12345'
       });
     });
 
@@ -288,7 +290,8 @@ describe('Auth0', function () {
       };
 
       auth0.login({
-        connection: 'google-oauth2'
+        connection: 'google-oauth2',
+        nonce:'12345'
       });
     });
 
@@ -305,7 +308,8 @@ describe('Auth0', function () {
       };
 
       auth0.login({
-        connection: 'google-oauth2'
+        connection: 'google-oauth2',
+        nonce:'12345'
       });
     })
   });

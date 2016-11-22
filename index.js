@@ -6,6 +6,7 @@ var Base64Url         = require('./lib/base64_url');
 var assert_required   = require('./lib/assert_required');
 var is_array          = require('./lib/is-array');
 var index_of          = require('./lib/index-of');
+var nonceGenerator    = require('./lib/nonce-generator');
 
 var qs                = require('qs');
 var xtend             = require('xtend');
@@ -495,7 +496,8 @@ Auth0.prototype.decodeJwt = function (jwt) {
  *
  */
 
-Auth0.prototype.parseHash = function (hash) {
+Auth0.prototype.parseHash = function (hash, options) {
+  options = options || {};
   hash = hash || window.location.hash;
   hash = hash.replace(/^#?\/?/, '');
   var parsed_qs = qs.parse(hash);
@@ -543,6 +545,13 @@ Auth0.prototype.parseHash = function (hash) {
     if (prof.iss && prof.iss !== 'https://' + this._domain + '/') {
       return invalidJwt(
         'The domain configured (https://' + this._domain + '/) does not match with the domain set in the token (' + prof.iss + ').');
+    }
+
+    var nonce = options.nonce || window.localStorage.getItem('com.auth0.auth.nonce');
+    window.localStorage.removeItem('com.auth0.auth.nonce');
+
+    if ((nonce || prof.nonce) && prof.nonce !== nonce) {
+      return invalidJwt('The nonce does not match.');
     }
   }
 
@@ -804,6 +813,19 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
     options.sso = true;
   }
 
+  if (this._responseType.indexOf('id_token') > -1 && !options.nonce) {
+    if (typeof options.passcode === 'undefined' && (
+        ((typeof options.username !== 'undefined' || typeof options.email !== 'undefined') && !callback) ||
+        (typeof options.username === 'undefined' && typeof options.email === 'undefined')
+        ) ) {
+      var nonce = nonceGenerator.randomString(16);
+      if (nonce) {
+        options.nonce = nonce;
+        window.localStorage.setItem('com.auth0.auth.nonce', nonce);
+      }
+    }
+  }
+
   if (typeof options.passcode !== 'undefined') {
     return this.loginWithPasscode(options, callback);
   }
@@ -819,6 +841,10 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
 
   if (!!options.popup && this._getCallbackOnLocationHash(options)) {
     return this.loginWithPopup(options, callback);
+  }
+
+  if (!options.nonce && this._responseType.indexOf('id_token') > -1) {
+    throw new Error('nonce is mandatory');
   }
 
   this._authorize(options);
@@ -1009,6 +1035,10 @@ Auth0.prototype.loginWithPopup = function(options, callback) {
     throw new Error('popup mode should receive a mandatory callback');
   }
 
+  if (!options.nonce && this._responseType.indexOf('id_token') > -1) {
+    throw new Error('nonce is mandatory');
+  }
+
   var qs = [this._getMode(options), options, { client_id: this._clientID, owp: true }];
 
   if (this._sendClientInfo) {
@@ -1141,6 +1171,10 @@ Auth0.prototype.loginWithUsernamePasswordAndSSO = function (options, callback) {
   var _this = this;
   var popupPosition = this._computePopupPosition(options.popupOptions);
   var popupOptions = xtend(popupPosition, options.popupOptions);
+
+  if (!options.nonce && this._responseType.indexOf('id_token') > -1) {
+    throw new Error('nonce is mandatory');
+  }
 
   var winchanOptions = {
     url: 'https://' + this._domain + '/sso_dbconnection_popup/' + this._clientID,
@@ -1383,6 +1417,10 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
   // TODO We should deprecate this, really hacky and confuses people.
   if (options.popup  && !this._getCallbackOnLocationHash(options)) {
     popup = this._buildPopupWindow(options);
+  }
+
+  if (!options.nonce && this._responseType.indexOf('id_token') > -1) {
+    throw new Error('nonce is mandatory');
   }
 
   // When a callback with more than one argument is specified and sso: true then
