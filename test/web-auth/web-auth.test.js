@@ -153,14 +153,10 @@ describe('auth0.WebAuth', function () {
   context('renewAuth', function () {
     after(function(){
       IframeHandler.prototype.init.restore();
+      global.window.removeEventListener = function(){};
     });
 
     it('should pass the correct authorize url', function (done) {
-      stub(information, 'error', function(message) {
-        expect(message).to.be('Timeout during authentication renew.');
-        done();
-      });
-
       stub(IframeHandler.prototype, 'init', function(message) {
         expect(this.url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&scope=openid%20name%20read%3Ablog&audience=urn%3Asite%3Ademo%3Ablog&prompt=none');
         this.timeoutCallback();
@@ -178,7 +174,12 @@ describe('auth0.WebAuth', function () {
 
       var options = {};
 
-      webAuth.renewAuth(options, function (err, data) {});
+      webAuth.renewAuth(options, function (err, data) {
+        expect(err.error).to.be('timeout');
+        expect(err.description).to.be('Timeout during authentication renew.');
+        expect(data).to.be(undefined);
+        done();
+      });
     });
   });
 

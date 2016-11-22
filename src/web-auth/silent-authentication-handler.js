@@ -17,7 +17,7 @@ SilentAuthenticationHandler.prototype.login = function (usePostMessage, callback
     timeoutCallback: function () {
       callback({
         error: 'timeout',
-        description: 'The transaction took too much time.'
+        description: 'Timeout during authentication renew.'
       });
     },
     usePostMessage: usePostMessage || false

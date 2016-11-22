@@ -46,6 +46,8 @@ WebAuth.prototype.parseHash = function (hash, options) {
   var hashStr = hash || _window.location.hash;
   hashStr = hashStr.replace(/^#?\/?/, '');
 
+  options = options || {};
+
   parsedQs = qs.parse(hashStr);
 
   if (parsedQs.hasOwnProperty('error')) {
@@ -85,7 +87,9 @@ WebAuth.prototype.validateToken = function (token, options) {
   var nonce;
   var token_nonce;
   var prof = jwt.getPayload(token);
-  // aud should be the clientID
+
+  options = options || {};
+
   audiences = assert.isArray(prof.aud) ? prof.aud : [prof.aud];
   if (audiences.indexOf(this.baseOptions.clientID) === -1) {
     return error.invalidJwt(
