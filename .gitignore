@@ -25,3 +25,5 @@ release
 
 build
 example/auth0.js
+
+.idea/

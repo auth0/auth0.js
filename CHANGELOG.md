@@ -1,5 +1,15 @@
 # Change Log
 
+## [7.5.0](https://github.com/auth0/lock/tree/7.5.0) (2016-11-22)
+[Full Changelog](https://github.com/auth0/lock/compare/7.4.0...7.5.0)
+
+**Closed issues**
+- silentAuthentication does not use auth0 constructor options [\#235](https://github.com/auth0/auth0.js/issues/235)
+
+**Added**
+- Added nonce to mitigate replay attacks [\#242](https://github.com/auth0/auth0.js/pull/242) ([glena](https://github.com/glena))
+- Audience scope constructor options [\#237](https://github.com/auth0/auth0.js/pull/237) ([glena](https://github.com/glena))
+
 ## [7.4.0](https://github.com/auth0/lock/tree/7.4.0) (2016-11-01)
 [Full Changelog](https://github.com/auth0/lock/compare/7.3.0...7.4.0)
 
