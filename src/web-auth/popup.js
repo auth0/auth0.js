@@ -9,6 +9,28 @@ function Popup(client, options) {
   this.client = client;
 }
 
+Popup.prototype.authorize = function (options, cb) {
+  var popup;
+  var url;
+  var relayUrl;
+
+  var params = objectHelper.merge(this.baseOptions, [
+    'clientID',
+    'responseType',
+    'scope',
+    'audience'
+  ]).with(options);
+
+  params.owp = true;
+
+  popup = new PopupHandler();
+
+  url = this.client.buildAuthorizeUrl(params);
+  relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');
+
+  return popup.load(url, relayUrl, {}, responseHandler(cb));
+};
+
 Popup.prototype.login = function (options, cb) {
   var params;
   var popup;
@@ -35,10 +57,6 @@ Popup.prototype.login = function (options, cb) {
   relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');
 
   return popup.load(url, relayUrl, params, responseHandler(cb));
-};
-
-Popup.prototype.authorize = function (options, cb) {
-
 };
 
 Popup.prototype.passwordlessVerify = function (options, cb) {

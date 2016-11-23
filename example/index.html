@@ -132,6 +132,13 @@
         </div>
 
         <div>
+          <h2>Login with social connections (popup):</h2>
+          <input type="button" class="popup-login-facebook" value="Facebook" />
+          <input type="button" class="popup-login-twitter" value="Twitter" />
+          <input type="button" class="popup-login-github" value="Github" />
+        </div>
+
+        <div>
           <h2>Renew authentication:</h2>
           <input type="button" class="renew-auth" value="Renew" />
         </div>
@@ -222,6 +229,21 @@
     $('.login-github').click(function (e) {
       e.preventDefault();
       webAuth.login({ connection: 'github' });
+    });
+
+    $('.popup-login-facebook').click(function (e) {
+      e.preventDefault();
+      webAuth.popup.authorize({ connection: 'facebook' }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+
+    $('.popup-login-twitter').click(function (e) {
+      e.preventDefault();
+      webAuth.popup.authorize({ connection: 'twitter' }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+
+    $('.popup-login-github').click(function (e) {
+      e.preventDefault();
+      webAuth.popup.authorize({ connection: 'github' }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
     $('.logout').click(function (e) {
