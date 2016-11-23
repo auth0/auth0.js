@@ -7,6 +7,7 @@ var objectHelper = require('../helper/object');
 var TransactionManager = require('./transaction-manager');
 var Authentication = require('../authentication');
 var Redirect = require('./redirect');
+var Popup = require('./popup');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
 
 function WebAuth(options) {
@@ -35,6 +36,7 @@ function WebAuth(options) {
 
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this.client, this.baseOptions);
+  this.popup = new Popup(this.client, this.baseOptions);
 }
 
 WebAuth.prototype.parseHash = function (hash, options) {
@@ -199,11 +201,5 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
     return windowHelper.redirect(_this.client.passwordless.buildVerifyUrl(options));
   });
 };
-
-
-// popup.login
-// popup.authorize
-// popup.passwordlessVerify
-// popup.signupAndLogin
 
 module.exports = WebAuth;

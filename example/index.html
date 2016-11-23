@@ -111,6 +111,13 @@
         </div>
 
         <div>
+          <h2>Login with database connection (popup):</h2>
+          <input class="popup-login-username" value="johnfoo@gmail.com" />
+          <input type="password" class="popup-login-password" value="1234" />
+          <input type="button" class="popup-login-db" value="login" />
+        </div>
+
+        <div>
           <h2>Login with database connection (client login):</h2>
           <input class="client-login-username" value="johnfoo@gmail.com" />
           <input type="password" class="client-login-password" value="1234" />
@@ -178,6 +185,16 @@
         connection: 'tests',
         username: $('.login-username').val(),
         password: $('.login-password').val(),
+        scope: 'openid'
+      }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+
+    $('.popup-login-db').click(function (e) {
+      e.preventDefault();
+      webAuth.popup.login({
+        connection: 'tests',
+        username: $('.popup-login-username').val(),
+        password: $('.popup-login-password').val(),
         scope: 'openid'
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });

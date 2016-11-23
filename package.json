@@ -31,7 +31,8 @@
   "dependencies": {
     "Base64": "~0.1.3",
     "superagent": "^2.3.0",
-    "url-join": "^1.1.0"
+    "url-join": "^1.1.0",
+    "winchan": "^0.1.4"
   },
   "devDependencies": {
     "codecov": "^1.0.1",
