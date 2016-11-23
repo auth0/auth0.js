@@ -4,11 +4,10 @@ var jwt = require('../helper/jwt');
 var qs = require('../helper/qs');
 var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
-var nonceManager = require('./nonce-manager');
+var TransactionManager = require('./transaction-manager');
 var Authentication = require('../authentication');
 var Redirect = require('./redirect');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
-var windowHelper = require('../helper/window');
 
 function WebAuth(options) {
   /* eslint-disable */
@@ -32,6 +31,8 @@ function WebAuth(options) {
 
   this.baseOptions.tenant = this.baseOptions.domain.split('.')[0];
 
+  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
+
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this.client, this.baseOptions);
 }
@@ -39,7 +40,7 @@ function WebAuth(options) {
 WebAuth.prototype.parseHash = function (hash, options) {
   var parsedQs;
   var err;
-  var prof;
+  var token;
 
   var _window = windowHelper.getWindow();
 
@@ -67,28 +68,27 @@ WebAuth.prototype.parseHash = function (hash, options) {
   }
 
   if (parsedQs.id_token) {
-    prof = this.validateToken(parsedQs.id_token, options);
-    if (prof.error) {
-      return prof;
+    token = this.validateToken(parsedQs.id_token, parsedQs.state, options);
+    if (token.error) {
+      return token;
     }
   }
 
   return {
     accessToken: parsedQs.access_token,
-    idToken: parsedQs.id_token,
-    idTokenPayload: prof,
+    idToken: parsedQs.id_token || null,
+    idTokenPayload: token ? token.payload || null : null,
+    appStatus: token ? token.appStatus || null : null,
     refreshToken: parsedQs.refresh_token,
     state: parsedQs.state
   };
 };
 
-WebAuth.prototype.validateToken = function (token, options) {
+WebAuth.prototype.validateToken = function (token, state) {
   var audiences;
-  var nonce;
-  var token_nonce;
+  var transaction;
+  var tokenNonce;
   var prof = jwt.getPayload(token);
-
-  options = options || {};
 
   audiences = assert.isArray(prof.aud) ? prof.aud : [prof.aud];
   if (audiences.indexOf(this.baseOptions.clientID) === -1) {
@@ -97,10 +97,10 @@ WebAuth.prototype.validateToken = function (token, options) {
       'with the clientID set in the token (' + audiences.join(', ') + ').');
   }
 
-  nonce = nonceManager.getStoredNonce(this.baseOptions) || options.nonce || null;
-  token_nonce = prof.nonce || null;
+  transaction = this.transactionManager.getStoredTransaction(state);
+  tokenNonce = prof.nonce || null;
 
-  if (nonce !== token_nonce) {
+  if (transaction && tokenNonce && transaction.nonce !== tokenNonce) {
     return error.invalidJwt('Nonce does not match');
   }
 
@@ -111,7 +111,10 @@ WebAuth.prototype.validateToken = function (token, options) {
       'with the domain set in the token (' + prof.iss + ').');
   }
 
-  return prof;
+  return {
+    payload: prof,
+    transaction: transaction
+  };
 };
 
 WebAuth.prototype.renewAuth = function (options, cb) {
@@ -127,9 +130,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
     'audience'
   ]).with(options);
 
-  if (params.responseType.indexOf('id_token') > -1) {
-    params.nonce = params.nonce || nonceManager.generateNonce(this.baseOptions);
-  }
+  params = this.transactionManager.process(params);
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
     scope: { type: 'string', message: 'scope option is required' },
@@ -141,10 +142,8 @@ WebAuth.prototype.renewAuth = function (options, cb) {
 
   params = objectHelper.blacklist(params, ['usePostMessage', 'tenant']);
 
-  params = objectHelper.toSnakeCase(params, ['auth0Client']);
-
   handler = new SilentAuthenticationHandler(this, this.client.buildAuthorizeUrl(params));
-  handler.login(usePostMessage, function (err, data){
+  handler.login(usePostMessage, function (err, data) {
     if (err) {
       return cb(err);
     }
@@ -157,7 +156,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
       data.idTokenPayload = prof;
     }
 
-    cb(err, data);
+    return cb(err, data);
   });
 };
 
@@ -174,13 +173,17 @@ WebAuth.prototype.signup = function (options, cb) {
 };
 
 WebAuth.prototype.login = function (options) {
-  var responseType = options.responseType || this.baseOptions.responseType;
+  var params = objectHelper.merge(this.baseOptions, [
+    'clientID',
+    'responseType',
+    'redirectUri',
+    'scope',
+    'audience'
+  ]).with(options || {});
 
-  if (responseType.indexOf('id_token') > -1) {
-    options.nonce = options.nonce || nonceManager.generateNonce(this.baseOptions);
-  }
+  params = this.transactionManager.process(params);
 
-  windowHelper.redirect(this.client.buildAuthorizeUrl(options));
+  windowHelper.redirect(this.client.buildAuthorizeUrl(params));
 };
 
 WebAuth.prototype.logout = function (options) {
@@ -193,7 +196,7 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
     if (err) {
       return cb(err);
     }
-    windowHelper.redirect(_this.client.passwordless.buildVerifyUrl(options));
+    return windowHelper.redirect(_this.client.passwordless.buildVerifyUrl(options));
   });
 };
 

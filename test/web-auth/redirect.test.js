@@ -72,9 +72,19 @@ describe('auth0.WebAuth.redirect', function () {
     afterEach(function () {
       request.post.restore();
       windowHelper.getDocument.restore();
+      windowHelper.getWindow.restore();
     });
 
     it('should authenticate the user, render the callback form and submit it', function (done) {
+      stub(windowHelper, 'getWindow', function () {
+        return {
+          crypto: {
+            getRandomValues: function() {
+              return [10,11,12,13,14,15,16,17,18,19];
+            }
+          }
+        };
+      });
       stub(request, 'post', function (url) {
         expect(url).to.be('https://me.auth0.com/usernamepassword/login');
         return new RequestMock({
@@ -83,10 +93,12 @@ describe('auth0.WebAuth.redirect', function () {
             connection: 'tests',
             password: '1234',
             redirect_uri: 'http://localhost:3000/example/',
-            response_type: 'token',
+            response_type: 'id_token',
             scope: 'openid',
             tenant: 'me',
-            username: 'me@example.com'
+            username: 'me@example.com',
+            state: 'ABCDEFGHIJ',
+            nonce: 'ABCDEFGHIJ'
           },
           headers: {
             'Content-Type': 'application/json',
@@ -122,7 +134,7 @@ describe('auth0.WebAuth.redirect', function () {
         domain: 'me.auth0.com',
         redirectUri: 'http://localhost:3000/example/',
         clientID: '0HP71GSd6PuoRY',
-        responseType: 'token'
+        responseType: 'id_token'
       };
 
       var auth0 = new WebAuth(configuration);
@@ -141,9 +153,19 @@ describe('auth0.WebAuth.redirect', function () {
   context('login', function () {
     afterEach(function () {
       request.post.restore();
+      windowHelper.getWindow.restore();
     });
 
     it('should propagate the error', function (done) {
+      stub(windowHelper, 'getWindow', function () {
+        return {
+          crypto: {
+            getRandomValues: function() {
+              return [10,11,12,13,14,15,16,17,18,19];
+            }
+          }
+        };
+      });
       stub(request, 'post', function (url) {
         expect(url).to.be('https://me.auth0.com/usernamepassword/login');
         return new RequestMock({
@@ -155,6 +177,7 @@ describe('auth0.WebAuth.redirect', function () {
             response_type: 'token',
             scope: 'openid',
             tenant: 'me',
+            state: 'ABCDEFGHIJ',
             username: 'me@example.com'
           },
           headers: {
@@ -207,8 +230,17 @@ describe('auth0.WebAuth.redirect', function () {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',
-        responseType: 'code',
+        responseType: 'token',
         _sendTelemetry: false
+      });
+      stub(windowHelper, 'getWindow', function () {
+        return {
+          crypto: {
+            getRandomValues: function() {
+              return [10,11,12,13,14,15,16,17,18,19];
+            }
+          }
+        };
       });
     });
 
@@ -216,17 +248,23 @@ describe('auth0.WebAuth.redirect', function () {
       request.post.restore();
     });
 
+    after(function () {
+      windowHelper.getWindow.restore();
+    });
+
     it('should call db-connection signup with all the options', function (done) {
       stub(request, 'post', function (url) {
 
         if (url === 'https://me.auth0.com/usernamepassword/login') {
+
           return new RequestMock({
             body: {
               client_id: '...',
               connection: 'the_connection',
               password: '123456',
+              state: 'ABCDEFGHIJ',
               redirect_uri: 'http://page.com/callback',
-              response_type: 'code',
+              response_type: 'token',
               scope: 'openid',
               tenant: 'me',
               username: 'me@example.com'
@@ -522,8 +560,8 @@ describe('auth0.WebAuth.redirect', function () {
     });
 
     it('should redirect to authorize', function () {
-      this.auth0.login({connection: 'facebook'})
-      expect(global.window.location).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=facebook');
+      this.auth0.login({connection: 'facebook', state: '1234'})
+      expect(global.window.location).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=facebook&state=1234');
     });
 
     it('should redirect to logout', function () {

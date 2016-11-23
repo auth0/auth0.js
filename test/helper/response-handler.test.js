@@ -90,7 +90,7 @@ describe('helpers responseHandler', function () {
       }
     }
 
-    responseHandler(function(err, data) { console.log(err, data);
+    responseHandler(function(err, data) {
       expect(err).to.be(null);
       expect(data).to.eql({
         attr1: 'attribute 1',

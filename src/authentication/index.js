@@ -40,11 +40,7 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
   var params;
   var qString;
 
-  assert.check(options, {
-    optional: true,
-    type: 'object',
-    message: 'options parameter is not valid'
-  });
+  assert.check(options, { type: 'object', message: 'options parameter is not valid' });
 
   params = objectHelper.merge(this.baseOptions, [
     'clientID',
@@ -53,6 +49,20 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
     'scope',
     'audience'
   ]).with(options || {});
+
+  /* eslint-disable */
+  assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
+    clientID: { type: 'string', message: 'clientID option is required' },
+    redirectUri: { type: 'string', message: 'redirectUri option is required' },
+    responseType: { type: 'string', message: 'responseType option is required' },
+    nonce: { type: 'string', message: 'nonce option is required', condition: function(o) {
+      return o.responseType.indexOf('id_token') > -1;
+    } },
+    state: { type: 'string', message: 'state option is required' },
+    scope: { optional: true, type: 'string', message: 'scope option is required' },
+    audience: { optional: true, type: 'string', message: 'audience option is required' }
+  });
+  /* eslint-enable */
 
   // eslint-disable-next-line
   if (this.baseOptions._sendTelemetry) {
@@ -93,13 +103,9 @@ Authentication.prototype.buildLogoutUrl = function (options) {
 
 Authentication.prototype.login = function (options, cb) {
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    clientID: { optional: true, type: 'string', message: 'clientID option is required' },
-    username: { optional: true, type: 'string', message: 'username option is required' },
-    password: { optional: true, type: 'string', message: 'password option is required' },
-    scope: { optional: true, type: 'string', message: 'scope option is required' },
-    audience: { optional: true, type: 'string', message: 'audience option is required' }
+    username: { type: 'string', message: 'username option is required' },
+    password: { type: 'string', message: 'password option is required' }
   });
-  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   options.grantType = 'password';
 
@@ -110,9 +116,7 @@ Authentication.prototype.oauthToken = function (options, cb) {
   var url;
   var body;
 
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    grantType: { optional: true, type: 'string', message: 'grantType option is required' }
-  });
+  assert.check(options, { type: 'object', message: 'options parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   url = urljoin(this.baseOptions.rootUrl, 'oauth', 'token');
@@ -122,6 +126,13 @@ Authentication.prototype.oauthToken = function (options, cb) {
     'scope',
     'audience'
   ]).with(options);
+
+  assert.check(body, { type: 'object', message: 'options parameter is not valid' }, {
+    clientID: { type: 'string', message: 'clientID option is required' },
+    grantType: { type: 'string', message: 'grantType option is required' },
+    scope: { optional: true, type: 'string', message: 'scope option is required' },
+    audience: { optional: true, type: 'string', message: 'audience option is required' }
+  });
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 

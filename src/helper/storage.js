@@ -10,13 +10,15 @@ function getStorage() {
 }
 
 module.exports = {
-  getItem: function (key){
-    return getStorage().getItem(key);
+  getItem: function (key) {
+    var value = getStorage().getItem(key);
+    return JSON.parse(value);
   },
   removeItem: function (key) {
     return getStorage().removeItem(key);
   },
   setItem: function (key, value) {
-    return getStorage().setItem(key, value);
+    var json = JSON.stringify(value);
+    return getStorage().setItem(key, json);
   }
 };
