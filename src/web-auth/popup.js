@@ -60,11 +60,31 @@ Popup.prototype.login = function (options, cb) {
 };
 
 Popup.prototype.passwordlessVerify = function (options, cb) {
+  var _this = this;
+  return this.client.passwordless.verify(options, function (err) {
+    if (err) {
+      return cb(err);
+    }
 
+    options.username = options.phoneNumber || options.email;
+    options.password = options.verificationCode;
+
+    delete options.email;
+    delete options.phoneNumber;
+    delete options.passcode;
+
+    _this.client.loginWithResourceOwner(options, cb);
+  });
 };
 
 Popup.prototype.signupAndLogin = function (options, cb) {
-
+  var _this = this;
+  return this.client.dbConnection.signup(options, function (err) {
+    if (err) {
+      return cb(err);
+    }
+    _this.login(options, cb);
+  });
 };
 
 module.exports = Popup;
