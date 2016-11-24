@@ -79,7 +79,7 @@ WebAuth.prototype.parseHash = function (hash, options) {
   return {
     accessToken: parsedQs.access_token,
     idToken: parsedQs.id_token || null,
-    idTokenPayload: token ? token.payload || null : null,
+    idTokenPayload: token && token.payload ? token.payload : null,
     appStatus: token ? token.appStatus || null : null,
     refreshToken: parsedQs.refresh_token,
     state: parsedQs.state
@@ -182,7 +182,7 @@ WebAuth.prototype.login = function (options) {
     'redirectUri',
     'scope',
     'audience'
-  ]).with(options || {});
+  ]).with(options);
 
   params = this.transactionManager.process(params);
 
