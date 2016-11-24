@@ -123,6 +123,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
   var handler;
   var prof;
   var usePostMessage = !!options.usePostMessage;
+  var _this = this;
 
   var params = objectHelper.merge(this.baseOptions, [
     'clientID',
@@ -151,7 +152,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
     }
 
     if (data.id_token) {
-      prof = this.validateToken(data.id_token, options);
+      prof = _this.validateToken(data.id_token, options);
       if (prof.error) {
         cb(prof);
       }
