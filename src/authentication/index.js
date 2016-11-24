@@ -48,7 +48,7 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
     'redirectUri',
     'scope',
     'audience'
-  ]).with(options || {});
+  ]).with(options);
 
   /* eslint-disable */
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
@@ -138,7 +138,7 @@ Authentication.prototype.oauthToken = function (options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
-  body.grant_type = body.grant_type || 'password';
+  body.grant_type = body.grant_type;
 
   return this.request
     .post(url)

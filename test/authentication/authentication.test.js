@@ -270,4 +270,95 @@ describe('auth0.authentication', function () {
     });
   });
 
+  context('login', function () {
+    before(function() {
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function(){
+      this.auth0.oauthToken.restore();
+    })
+
+    it('should call delegation with all the options', function(done) {
+      stub(this.auth0, 'oauthToken', function(options, cb) {
+        expect(options).to.eql({
+          username: 'someUsername',
+          password: '123456',
+          grantType: 'password'
+        })
+        cb();
+      });
+
+      this.auth0.login({
+        username: 'someUsername',
+        password: '123456'
+      }, function(err, data) {
+        done();
+      })
+    });
+  });
+
+  context('oauthToken', function () {
+    before(function() {
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function(){
+      request.post.restore();
+    })
+
+    it('should allow to login', function(done) {
+      stub(request, 'post', function(url) {
+        expect(url).to.be('https://me.auth0.com/oauth/token')
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            grant_type: 'password',
+            username: 'someUsername',
+            password: '123456'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                'token_type': 'Bearer',
+                'expires_in': 36000,
+                'id_token': 'eyJ...'
+              }
+            });
+          }
+        });
+      });
+
+      this.auth0.oauthToken({
+        username: 'someUsername',
+        password: '123456',
+        grantType: 'password'
+      }, function(err, data) {
+        expect(err).to.be(null);
+        expect(data).to.eql({
+          'token_type': 'Bearer',
+          'expires_in': 36000,
+          'id_token': 'eyJ...'
+        });
+        done();
+      })
+    });
+
+  });
+
 })
