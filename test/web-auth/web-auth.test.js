@@ -37,6 +37,7 @@ describe('auth0.WebAuth', function () {
           iss: 'https://mdocs.auth0.com/',
           sub: 'auth0|4AZDF56789'
         },
+        appStatus: null,
         refreshToken: 'kajshdgfkasdjhgfas',
         state: 'theState'
       });
@@ -62,6 +63,7 @@ describe('auth0.WebAuth', function () {
           iss: 'https://mdocs.auth0.com/',
           sub: 'auth0|4AZDF56789'
         },
+        appStatus: null,
         refreshToken: 'kajshdgfkasdjhgfas',
         state: 'theState'
       });
@@ -79,8 +81,9 @@ describe('auth0.WebAuth', function () {
 
       expect(data).to.eql({
         accessToken: 'VjubIMBmpgQ2W2',
-        idToken: undefined,
-        idTokenPayload: undefined,
+        idToken: null,
+        idTokenPayload: null,
+        appStatus: null,
         refreshToken: 'kajshdgfkasdjhgfas',
         state: 'theState'
       });
@@ -151,18 +154,17 @@ describe('auth0.WebAuth', function () {
   });
 
   context('renewAuth', function () {
+    before(function(){
+      global.window = {};
+      global.window.removeEventListener = function(){};
+    });
     after(function(){
       IframeHandler.prototype.init.restore();
     });
 
     it('should pass the correct authorize url', function (done) {
-      stub(information, 'error', function(message) {
-        expect(message).to.be('Timeout during authentication renew.');
-        done();
-      });
-
       stub(IframeHandler.prototype, 'init', function(message) {
-        expect(this.url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&scope=openid%20name%20read%3Ablog&audience=urn%3Asite%3Ademo%3Ablog&prompt=none');
+        expect(this.url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&scope=openid%20name%20read%3Ablog&audience=urn%3Asite%3Ademo%3Ablog&nonce=123&state=456&prompt=none');
         this.timeoutCallback();
       });
 
@@ -170,15 +172,23 @@ describe('auth0.WebAuth', function () {
         domain: 'me.auth0.com',
         redirectUri: 'http://page.com/callback',
         clientID: '...',
-        responseType: 'token',
+        responseType: 'id_token',
         scope: 'openid name read:blog',
         audience: 'urn:site:demo:blog',
         _sendTelemetry: false
       });
 
-      var options = {};
+      var options = {
+        nonce: '123',
+        state: '456'
+      };
 
-      webAuth.renewAuth(options, function (err, data) {});
+      webAuth.renewAuth(options, function (err, data) {
+        expect(err.error).to.be('timeout');
+        expect(err.description).to.be('Timeout during authentication renew.');
+        expect(data).to.be(undefined);
+        done();
+      });
     });
   });
 

@@ -60,19 +60,20 @@ describe('auth0.authentication', function () {
     })
 
     it('should return a url using the default settings', function() {
-      var url = this.auth0.buildAuthorizeUrl();
+      var url = this.auth0.buildAuthorizeUrl({state:'1234'});
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback');
+      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&state=1234');
     })
 
     it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl({
         responseType: 'token',
         redirectUri: 'http://anotherpage.com/callback2',
-        prompt: 'none'
+        prompt: 'none',
+        state: '1234'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none');
+      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234');
     })
   })
 
@@ -90,10 +91,11 @@ describe('auth0.authentication', function () {
       var url = this.auth0.buildAuthorizeUrl({
         responseType: 'token',
         redirectUri: 'http://anotherpage.com/callback2',
-        prompt: 'none'
+        prompt: 'none',
+        state: '1234'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&auth0Client=' + telemetryInfo);
+      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&auth0Client=' + telemetryInfo);
     })
   })
 

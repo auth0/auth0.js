@@ -13,5 +13,5 @@ function getWindow() {
 module.exports = {
   redirect: redirect,
   getDocument: getDocument,
-  getWindow: getWindow,
+  getWindow: getWindow
 };

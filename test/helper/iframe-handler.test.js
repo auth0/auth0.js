@@ -68,7 +68,7 @@ function stubWindow(event, data) {
 }
 
 describe('helpers iframeHandler', function () {
-  context('it should render the iframe', function() {
+  context('should render the iframe', function() {
     before(function () {
       this.auth0 = new WebAuth({
         domain: 'mdocs.auth0.com',
@@ -129,6 +129,7 @@ describe('helpers iframeHandler', function () {
               iss: 'https://mdocs.auth0.com/',
               sub: 'auth0|4AZDF56789'
             },
+            appStatus: null,
             refreshToken: 'kajshdgfkasdjhgfas',
             state: 'theState'
           });

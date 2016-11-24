@@ -37,7 +37,7 @@ UsernamePassword.prototype.login = function (options, cb) {
     .end(responseHandler(cb));
 };
 
-UsernamePassword.prototype.callback = function (formHtml, options) {
+UsernamePassword.prototype.callback = function (formHtml) {
   var div;
   var form;
   var _document = windowHelper.getDocument();

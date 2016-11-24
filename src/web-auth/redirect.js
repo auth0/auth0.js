@@ -1,18 +1,34 @@
-var windowHelper = require('../helper/window');
 var UsernamePassword = require('./username-password');
+var TransactionManager = require('./transaction-manager');
+var objectHelper = require('../helper/object');
 
 function Redirect(client, options) {
   this.baseOptions = options;
   this.client = client;
+
+  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 }
 
 Redirect.prototype.login = function (options, cb) {
-  var usernamePassword = new UsernamePassword(this.baseOptions);
-  return usernamePassword.login(options, function (err, data) {
+  var usernamePassword;
+
+  var params = objectHelper.merge(this.baseOptions, [
+    'clientID',
+    'redirectUri',
+    'tenant',
+    'responseType',
+    'scope',
+    'audience'
+  ]).with(options);
+
+  params = this.transactionManager.process(params);
+
+  usernamePassword = new UsernamePassword(this.baseOptions);
+  return usernamePassword.login(params, function (err, data) {
     if (err) {
       return cb(err);
     }
-    usernamePassword.callback(data, {});
+    return usernamePassword.callback(data);
   });
 };
 
@@ -22,7 +38,7 @@ Redirect.prototype.signupAndLogin = function (options, cb) {
     if (err) {
       return cb(err);
     }
-    _this.login(options, cb);
+    return _this.login(options, cb);
   });
 };
 

@@ -15,7 +15,7 @@
     "start": "gulp dev",
     "build": "gulp build",
     "test": "mocha test/**/*.test.js",
-    "test:watch": "mocha --watch test/**/*.test.js",
+    "test:watch": "mocha --watch  -R min test/**/*.test.js",
     "test:coverage": "istanbul cover _mocha -R test/**/*",
     "test:ci": "istanbul cover _mocha --report lcovonly -R test/**/*; codecov",
     "lint": "eslint ./src",

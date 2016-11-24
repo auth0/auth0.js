@@ -8,17 +8,18 @@ function SilentAuthenticationHandler(auth0, authenticationUrl, timeout) {
   this.handler = null;
 }
 
-SilentAuthenticationHandler.prototype.timeoutCallback = function () {
-  information.error('Timeout during authentication renew.');
-};
-
 SilentAuthenticationHandler.prototype.login = function (usePostMessage, callback) {
   this.handler = new IframeHandler({
     auth0: this.auth0,
     url: this.authenticationUrl,
     callback: callback,
     timeout: this.timeout,
-    timeoutCallback: this.timeoutCallback,
+    timeoutCallback: function () {
+      callback({
+        error: 'timeout',
+        description: 'Timeout during authentication renew.'
+      });
+    },
     usePostMessage: usePostMessage || false
   });
 
