@@ -165,13 +165,14 @@
       domain: 'auth0-tests-auth0js.auth0.com',
       redirectUri: 'http://localhost:3000/example',
       clientID: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
-      responseType: 'id_token'
+      responseType: 'token'
     });
 
     var hash = webAuth.parseHash();
     if (hash) {
       htmlConsole.dumpCallback(hash.error ? hash : null, hash.error ? null : hash);
       window.location.hash = '';
+      webAuth.client.userInfo(hash.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
     }
 
     $('#clear-console').click(function () {
