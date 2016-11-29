@@ -125,14 +125,16 @@
         </div>
 
         <div>
-          <h2>Login with social connections:</h2>
+          <h2>Login with /authorize:</h2>
+          <input type="button" class="login-hosted" value="Hosted login page" />
           <input type="button" class="login-facebook" value="Facebook" />
           <input type="button" class="login-twitter" value="Twitter" />
           <input type="button" class="login-github" value="Github" />
         </div>
 
         <div>
-          <h2>Login with social connections (popup):</h2>
+          <h2>Login with /authorize (popup):</h2>
+          <input type="button" class="popup-login-hosted" value="Hosted login page" />
           <input type="button" class="popup-login-facebook" value="Facebook" />
           <input type="button" class="popup-login-twitter" value="Twitter" />
           <input type="button" class="popup-login-github" value="Github" />
@@ -222,6 +224,11 @@
       webAuth.login({ connection: 'facebook' });
     });
 
+    $('.login-hosted').click(function (e) {
+      e.preventDefault();
+      webAuth.login({ });
+    });
+
     $('.login-twitter').click(function (e) {
       e.preventDefault();
       webAuth.login({ connection: 'twitter' });
@@ -235,6 +242,11 @@
     $('.popup-login-facebook').click(function (e) {
       e.preventDefault();
       webAuth.popup.authorize({ connection: 'facebook' }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+
+    $('.popup-login-hosted').click(function (e) {
+      e.preventDefault();
+      webAuth.popup.authorize({ }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
     $('.popup-login-twitter').click(function (e) {

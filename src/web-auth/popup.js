@@ -4,10 +4,13 @@ var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 var PopupHandler = require('../helper/popup-handler');
 var objectHelper = require('../helper/object');
+var TransactionManager = require('./transaction-manager');
 
 function Popup(client, options) {
   this.baseOptions = options;
   this.client = client;
+
+  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 }
 
 Popup.prototype.authorize = function (options, cb) {
@@ -25,6 +28,8 @@ Popup.prototype.authorize = function (options, cb) {
   // used by server to render the relay page instead of sending the chunk in the
   // url to the callback
   params.owp = true;
+
+  params = this.transactionManager.process(params);
 
   popup = new PopupHandler();
 
