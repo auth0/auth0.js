@@ -21,8 +21,13 @@ Popup.prototype.authorize = function (options, cb) {
   var params = objectHelper.merge(this.baseOptions, [
     'clientID',
     'scope',
-    'audience'
+    'audience',
+    'responseType'
   ]).with(options);
+
+  assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
+    responseType: { type: 'string', message: 'responseType option is required' }
+  });
 
   // used by server to render the relay page instead of sending the chunk in the
   // url to the callback
@@ -30,9 +35,10 @@ Popup.prototype.authorize = function (options, cb) {
 
   params = this.transactionManager.process(params);
 
+  url = this.client.buildAuthorizeUrl(params);
+
   popup = new PopupHandler();
 
-  url = this.client.buildAuthorizeUrl(params);
   relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');
 
   return popup.load(url, relayUrl, {}, responseHandler(cb));
@@ -57,6 +63,7 @@ Popup.prototype.login = function (options, cb) {
   options = objectHelper.merge(this.baseOptions, [
     'clientID',
     'scope',
+    'domain',
     'audience'
   ]).with(options);
 
