@@ -20,7 +20,6 @@ Popup.prototype.authorize = function (options, cb) {
 
   var params = objectHelper.merge(this.baseOptions, [
     'clientID',
-    'responseType',
     'scope',
     'audience'
   ]).with(options);
@@ -56,12 +55,9 @@ Popup.prototype.login = function (options, cb) {
   /* eslint-enable */
 
   options = objectHelper.merge(this.baseOptions, [
-    'domain',
     'clientID',
     'scope',
-    'audience',
-    'nonce',
-    'state'
+    'audience'
   ]).with(options);
 
   params = objectHelper.pick(options, ['clientID', 'domain']);
