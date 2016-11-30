@@ -177,6 +177,32 @@ Authentication.prototype.loginWithResourceOwner = function (options, cb) {
     .end(responseHandler(cb));
 };
 
+Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
+  var url;
+  var params = '';
+
+  if (typeof withActiveDirectories === 'function') {
+    cb = withActiveDirectories;
+    withActiveDirectories = false;
+  }
+
+  assert.check(withActiveDirectories, { type: 'boolean', message: 'withActiveDirectories parameter is not valid' });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  if (withActiveDirectories) {
+    params = qs.build({
+      ldaps: 1,
+      client_id: this.baseOptions.clientID
+    });
+  }
+
+  url = urljoin(this.baseOptions.rootUrl, 'user', 'ssodata', params);
+
+  return this.request
+    .get(url)
+    .end(responseHandler(cb));
+};
+
 Authentication.prototype.userInfo = function (accessToken, cb) {
   var url;
 
