@@ -4,7 +4,19 @@ var responseHandler = require('../../src/helper/response-handler');
 
 describe('helpers responseHandler', function () {
 
-  it('should return normalized format 1', function () {
+  it('should return default error', function (done) {
+
+    responseHandler(function(err, data) {
+      expect(data).to.be(undefined);
+      expect(err).to.eql({
+        error: 'generic_error',
+        error_description: 'Something went wrong'
+      });
+      done();
+    })(null, null);
+  });
+
+  it('should return normalized format 1', function (done) {
     var assert_err = {};
     assert_err.response = {};
     assert_err.response.statusCode = 400;
@@ -25,10 +37,11 @@ describe('helpers responseHandler', function () {
         description: 'The error description.',
         name: 'SomeName'
       });
+      done();
     })(assert_err, null);
   });
 
-  it('should return normalized format 2', function () {
+  it('should return normalized format 2', function (done) {
     var assert_err = {};
     assert_err.response = {};
     assert_err.response.body = {
@@ -43,10 +56,11 @@ describe('helpers responseHandler', function () {
         code: 'the_error_code',
         description: 'The error description.'
       });
+      done();
     })(assert_err, null);
   });
 
-  it('should return normalized format 2', function () {
+  it('should return normalized format 3', function (done) {
     var assert_err = {};
     assert_err.response = {};
     assert_err.response.body = {
@@ -59,10 +73,11 @@ describe('helpers responseHandler', function () {
         code: null,
         description: null
       });
+      done();
     })(assert_err, null);
   });
 
-  it('should return normalized format 2', function () {
+  it('should return normalized format 4', function (done) {
     var assert_err = {};
     assert_err.response = {};
     assert_err.response.body = {
@@ -77,12 +92,30 @@ describe('helpers responseHandler', function () {
         code: 'the_error_code',
         description: 'The error description.'
       });
+      done();
     })(assert_err, null);
   });
 
+  it('should return normalized format 4', function (done) {
+    var assert_err = {};
+    assert_err.err = {};
+    assert_err.err = {
+      status: 'the_error_code',
+      err: 'The error description.'
+    };
 
+    responseHandler(function(err, data) {
+      expect(data).to.be(undefined);
+      expect(err).to.eql({
+        original: assert_err,
+        code: 'the_error_code',
+        description: 'The error description.'
+      });
+      done();
+    })(assert_err, null);
+  });
 
-  it('should return the data', function () {
+  it('should return the data', function (done) {
     var assert_data = {
       body: {
         attr1: 'attribute 1',
@@ -96,10 +129,11 @@ describe('helpers responseHandler', function () {
         attr1: 'attribute 1',
         attr2: 'attribute 2'
       });
+      done();
     })(null, assert_data);
   });
 
-  it('should return the data 2', function () {
+  it('should return the data 2', function (done) {
     var assert_data = {
       text: 'The reponse message'
     }
@@ -107,6 +141,7 @@ describe('helpers responseHandler', function () {
     responseHandler(function(err, data) {
       expect(err).to.be(null);
       expect(data).to.eql('The reponse message');
+      done();
     })(null, assert_data);
   });
 

@@ -7,6 +7,7 @@ var objectHelper = require('../helper/object');
 var TransactionManager = require('./transaction-manager');
 var Authentication = require('../authentication');
 var Redirect = require('./redirect');
+var Popup = require('./popup');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
 
 function WebAuth(options) {
@@ -35,6 +36,7 @@ function WebAuth(options) {
 
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this.client, this.baseOptions);
+  this.popup = new Popup(this.client, this.baseOptions);
 }
 
 WebAuth.prototype.parseHash = function (hash, options) {
@@ -77,7 +79,7 @@ WebAuth.prototype.parseHash = function (hash, options) {
   return {
     accessToken: parsedQs.access_token,
     idToken: parsedQs.id_token || null,
-    idTokenPayload: token ? token.payload || null : null,
+    idTokenPayload: token && token.payload ? token.payload : null,
     appStatus: token ? token.appStatus || null : null,
     refreshToken: parsedQs.refresh_token,
     state: parsedQs.state
@@ -121,6 +123,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
   var handler;
   var prof;
   var usePostMessage = !!options.usePostMessage;
+  var _this = this;
 
   var params = objectHelper.merge(this.baseOptions, [
     'clientID',
@@ -149,7 +152,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
     }
 
     if (data.id_token) {
-      prof = this.validateToken(data.id_token, options);
+      prof = _this.validateToken(data.id_token, options);
       if (prof.error) {
         cb(prof);
       }
@@ -179,7 +182,7 @@ WebAuth.prototype.login = function (options) {
     'redirectUri',
     'scope',
     'audience'
-  ]).with(options || {});
+  ]).with(options);
 
   params = this.transactionManager.process(params);
 
@@ -199,11 +202,5 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
     return windowHelper.redirect(_this.client.passwordless.buildVerifyUrl(options));
   });
 };
-
-
-// popup.login
-// popup.authorize
-// popup.passwordlessVerify
-// popup.signupAndLogin
 
 module.exports = WebAuth;

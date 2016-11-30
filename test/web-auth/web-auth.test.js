@@ -7,6 +7,7 @@ var information = require('../../src/helper/information');
 
 var RequestMock = require('../mock/request-mock');
 
+var SilentAuthenticationHandler = require('../../src/web-auth/silent-authentication-handler');
 var WebAuth = require('../../src/web-auth');
 
 describe('auth0.WebAuth', function () {
@@ -187,6 +188,92 @@ describe('auth0.WebAuth', function () {
         expect(err.error).to.be('timeout');
         expect(err.description).to.be('Timeout during authentication renew.');
         expect(data).to.be(undefined);
+        done();
+      });
+    });
+  });
+
+  context('renewAuth', function () {
+    beforeEach(function(){
+      global.window = {};
+    });
+
+    afterEach(function () {
+      delete global.window;
+      SilentAuthenticationHandler.prototype.login.restore();
+    });
+
+    it('should validate the token', function (done) {
+      stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
+        cb(null, {
+          id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjpbIjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIl0sImV4cCI6MTQ3ODU2MjI1MywiaWF0IjoxNDc4NTI2MjUzfQ.3x97RcBqXq9UE3isgbPdVlC0XdU7kQrPhaOFR-Fb4TA'
+        })
+      });
+
+      var webAuth = new WebAuth({
+        domain: 'mdocs.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false
+      });
+
+      var options = {
+        nonce: '123',
+        state: '456'
+      };
+
+      webAuth.renewAuth(options, function (err, data) {
+        expect(err).to.be(null);
+        expect(data).to.eql({
+          id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjpbIjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIl0sImV4cCI6MTQ3ODU2MjI1MywiaWF0IjoxNDc4NTI2MjUzfQ.3x97RcBqXq9UE3isgbPdVlC0XdU7kQrPhaOFR-Fb4TA',
+          idTokenPayload:
+          {
+            payload:
+            {
+              iss: 'https://mdocs.auth0.com/',
+              sub: 'auth0|4AZDF56789',
+              aud: [ '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup' ],
+              exp: 1478562253,
+              iat: 1478526253
+            },
+            transaction: null
+          }
+        });
+        done();
+      });
+    });
+
+    it('should validate the token and fail', function (done) {
+      stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
+        cb(null, {
+          id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjpbIjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIl0sImV4cCI6MTQ3ODU2MjI1MywiaWF0IjoxNDc4NTI2MjUzfQ.3x97RcBqXq9UE3isgbPdVlC0XdU7kQrPhaOFR-Fb4TA'
+        })
+      });
+
+      var webAuth = new WebAuth({
+        domain: 'mdocs.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false
+      });
+
+      var options = {
+        nonce: '123',
+        state: '456'
+      };
+
+      webAuth.renewAuth(options, function (err, data) {
+        expect(data).to.be(undefined);
+        expect(err).to.eql({
+          error: 'invalid_token',
+          error_description: 'The clientID configured (...) does not match with the clientID set in the token (0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup).'
+        });
         done();
       });
     });

@@ -111,6 +111,13 @@
         </div>
 
         <div>
+          <h2>Login with database connection (popup):</h2>
+          <input class="popup-login-username" value="johnfoo@gmail.com" />
+          <input type="password" class="popup-login-password" value="1234" />
+          <input type="button" class="popup-login-db" value="login" />
+        </div>
+
+        <div>
           <h2>Login with database connection (client login):</h2>
           <input class="client-login-username" value="johnfoo@gmail.com" />
           <input type="password" class="client-login-password" value="1234" />
@@ -118,10 +125,19 @@
         </div>
 
         <div>
-          <h2>Login with social connections:</h2>
+          <h2>Login with /authorize:</h2>
+          <input type="button" class="login-hosted" value="Hosted login page" />
           <input type="button" class="login-facebook" value="Facebook" />
           <input type="button" class="login-twitter" value="Twitter" />
           <input type="button" class="login-github" value="Github" />
+        </div>
+
+        <div>
+          <h2>Login with /authorize (popup):</h2>
+          <input type="button" class="popup-login-hosted" value="Hosted login page" />
+          <input type="button" class="popup-login-facebook" value="Facebook" />
+          <input type="button" class="popup-login-twitter" value="Twitter" />
+          <input type="button" class="popup-login-github" value="Github" />
         </div>
 
         <div>
@@ -151,13 +167,14 @@
       domain: 'auth0-tests-auth0js.auth0.com',
       redirectUri: 'http://localhost:3000/example',
       clientID: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
-      responseType: 'id_token'
+      responseType: 'token'
     });
 
     var hash = webAuth.parseHash();
     if (hash) {
       htmlConsole.dumpCallback(hash.error ? hash : null, hash.error ? null : hash);
       window.location.hash = '';
+      webAuth.client.userInfo(hash.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
     }
 
     $('#clear-console').click(function () {
@@ -182,6 +199,16 @@
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
+    $('.popup-login-db').click(function (e) {
+      e.preventDefault();
+      webAuth.popup.login({
+        connection: 'tests',
+        username: $('.popup-login-username').val(),
+        password: $('.popup-login-password').val(),
+        scope: 'openid'
+      }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+
     $('.client-login-db').click(function (e) {
       e.preventDefault();
       webAuth.client.login({
@@ -197,6 +224,11 @@
       webAuth.login({ connection: 'facebook' });
     });
 
+    $('.login-hosted').click(function (e) {
+      e.preventDefault();
+      webAuth.login({ });
+    });
+
     $('.login-twitter').click(function (e) {
       e.preventDefault();
       webAuth.login({ connection: 'twitter' });
@@ -205,6 +237,26 @@
     $('.login-github').click(function (e) {
       e.preventDefault();
       webAuth.login({ connection: 'github' });
+    });
+
+    $('.popup-login-facebook').click(function (e) {
+      e.preventDefault();
+      webAuth.popup.authorize({ connection: 'facebook' }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+
+    $('.popup-login-hosted').click(function (e) {
+      e.preventDefault();
+      webAuth.popup.authorize({ }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+
+    $('.popup-login-twitter').click(function (e) {
+      e.preventDefault();
+      webAuth.popup.authorize({ connection: 'twitter' }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+
+    $('.popup-login-github').click(function (e) {
+      e.preventDefault();
+      webAuth.popup.authorize({ connection: 'github' }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
     $('.logout').click(function (e) {
