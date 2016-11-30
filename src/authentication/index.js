@@ -190,7 +190,7 @@ Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   if (withActiveDirectories) {
-    params = qs.build({
+    params = '?' + qs.build({
       ldaps: 1,
       client_id: this.baseOptions.clientID
     });
