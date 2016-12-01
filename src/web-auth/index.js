@@ -153,7 +153,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
     }
 
     if (data.id_token) {
-      prof = _this.validateToken(data.id_token, options);
+      prof = _this.validateToken(data.id_token, options.state);
       if (prof.error) {
         cb(prof);
       }

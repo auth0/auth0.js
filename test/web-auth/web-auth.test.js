@@ -11,6 +11,60 @@ var SilentAuthenticationHandler = require('../../src/web-auth/silent-authenticat
 var WebAuth = require('../../src/web-auth');
 
 describe('auth0.WebAuth', function () {
+  context('nonce validation', function () {
+    after(function(){
+      SilentAuthenticationHandler.prototype.login.restore();
+      delete global.window;
+    })
+
+    before(function(){
+      global.window = {};
+      global.window.localStorage = {};
+      global.window.localStorage.removeItem = function(key) {
+        expect(key).to.be('com.auth0.auth.456');
+      };
+      global.window.localStorage.getItem = function(key) {
+        expect(key).to.be('com.auth0.auth.456');
+        return JSON.stringify({
+          nonce: 'thenonce',
+          appState: null
+        });
+      };
+    })
+
+    it('should fail if the nonce is not valid', function (done) {
+      stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
+        cb(null, {
+          state: '456',
+          id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjpbIjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIl0sIm5vbmNlIjoiYXNhcyIsImV4cCI6MTQ3ODU2MjI1MywiaWF0IjoxNDc4NTI2MjUzfQ.-EUSbYg3ILUtFjlwCY8WyC3MAh9jGwpFN8KVihwrY0M'
+        })
+      });
+
+      var webAuth = new WebAuth({
+        domain: 'mdocs.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false
+      });
+
+      var options = {
+        nonce: '123',
+        state: '456'
+      };
+
+      webAuth.renewAuth(options, function (err, data) {
+        expect(err).to.eql({
+          error: 'invalid_token',
+          error_description: 'Nonce does not match'
+        });
+        expect(data).to.be(undefined);
+        done();
+      });
+    });
+  })
   context('paseHash', function () {
     before(function() {
       global.window = {};
@@ -241,6 +295,36 @@ describe('auth0.WebAuth', function () {
             },
             transaction: null
           }
+        });
+        done();
+      });
+    });
+
+    it('should return the access_token', function (done) {
+      stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
+        cb(null, {
+          access_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1'
+        })
+      });
+
+      var webAuth = new WebAuth({
+        domain: 'mdocs.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        responseType: 'token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false
+      });
+
+      var options = {
+        state: 'asdfasd'
+      };
+
+      webAuth.renewAuth(options, function (err, data) {
+        expect(err).to.be(null);
+        expect(data).to.eql({
+          access_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1'
         });
         done();
       });
