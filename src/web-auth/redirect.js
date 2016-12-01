@@ -17,6 +17,7 @@ Redirect.prototype.login = function (options, cb) {
     'redirectUri',
     'tenant',
     'responseType',
+    'responseMode',
     'scope',
     'audience'
   ]).with(options);

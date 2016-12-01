@@ -15,8 +15,9 @@ function WebAuth(options) {
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     domain: { type: 'string', message: 'domain option is required' },
     clientID: { type: 'string', message: 'clientID option is required' },
-    responseType: { type: 'string', message: 'responseType is not valid' },
-    redirectUri: { type: 'string', message: 'redirectUri is not valid' },
+    responseType: { optional: true, type: 'string', message: 'responseType is not valid' },
+    responseMode: { optional: true, type: 'string', message: 'responseMode is not valid' },
+    redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
     scope: { optional: true, type: 'string', message: 'audience is not valid' },
     audience: { optional: true, type: 'string', message: 'scope is not valid' },
     tenant: { optional: true, type: 'string', message: 'tenant option is not valid. Required when using custom domains.' },
@@ -179,6 +180,7 @@ WebAuth.prototype.login = function (options) {
   var params = objectHelper.merge(this.baseOptions, [
     'clientID',
     'responseType',
+    'responseMode',
     'redirectUri',
     'scope',
     'audience'

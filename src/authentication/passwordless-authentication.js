@@ -36,6 +36,7 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
   params = objectHelper.merge(this.baseOptions, [
     'clientID',
     'responseType',
+    'responseMode',
     'redirectUri',
     'scope',
     'audience'
