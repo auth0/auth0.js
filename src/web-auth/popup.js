@@ -4,6 +4,7 @@ var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 var PopupHandler = require('../helper/popup-handler');
 var objectHelper = require('../helper/object');
+var Warn = require('../helper/warn');
 var TransactionManager = require('./transaction-manager');
 
 function Popup(client, options) {
@@ -11,6 +12,9 @@ function Popup(client, options) {
   this.client = client;
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
+  this.warn = new Warn({
+    disableWarnings: !!options._disableDeprecationWarnings
+  });
 }
 
 Popup.prototype.preload = function (options) {
@@ -62,6 +66,8 @@ Popup.prototype.login = function (options, cb) {
   var popup;
   var url;
   var relayUrl;
+
+  this.warn.warning('popup.login will be soon deprecated.');
 
   /* eslint-disable */
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {

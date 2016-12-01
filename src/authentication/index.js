@@ -5,6 +5,7 @@ var qs = require('../helper/qs');
 var objectHelper = require('../helper/object');
 var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
+var Warn = require('../helper/warn');
 
 var PasswordlessAuthentication = require('./passwordless-authentication');
 var DBConnection = require('./db-connection');
@@ -19,6 +20,7 @@ function Authentication(options) {
     redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
     scope: { optional: true, type: 'string', message: 'scope is not valid' },
     audience: { optional: true, type: 'string', message: 'audience is not valid' },
+    _disableDeprecationWarnings: { optional: true, type: 'boolean', message: '_disableDeprecationWarnings option is not valid' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
     _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
   });
@@ -35,6 +37,10 @@ function Authentication(options) {
 
   this.passwordless = new PasswordlessAuthentication(this.request, this.baseOptions);
   this.dbConnection = new DBConnection(this.request, this.baseOptions);
+
+  this.warn = new Warn({
+    disableWarnings: !!options._disableDeprecationWarnings
+  });
 }
 
 Authentication.prototype.buildAuthorizeUrl = function (options) {
@@ -152,6 +158,8 @@ Authentication.prototype.loginWithResourceOwner = function (options, cb) {
   var url;
   var body;
 
+  this.warn.warning('loginWithResourceOwner will be soon deprecated.');
+
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     username: { type: 'string', message: 'username option is required' },
     password: { type: 'string', message: 'password option is required' },
@@ -182,6 +190,8 @@ Authentication.prototype.loginWithResourceOwner = function (options, cb) {
 Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
   var url;
   var params = '';
+
+  this.warn.warning('getSSOData will be soon deprecated.');
 
   if (typeof withActiveDirectories === 'function') {
     cb = withActiveDirectories;
@@ -222,6 +232,8 @@ Authentication.prototype.userInfo = function (accessToken, cb) {
 Authentication.prototype.delegation = function (options, cb) {
   var url;
   var body;
+
+  this.warn.warning('delegation will be soon deprecated.');
 
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     grant_type: { type: 'string', message: 'grant_type option is required' }
