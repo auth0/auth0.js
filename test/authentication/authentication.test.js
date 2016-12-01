@@ -285,7 +285,7 @@ describe('auth0.authentication', function () {
       this.auth0.oauthToken.restore();
     })
 
-    it('should call delegation with all the options', function(done) {
+    it('should call oauthToken with all the options', function(done) {
       stub(this.auth0, 'oauthToken', function(options, cb) {
         expect(options).to.eql({
           username: 'someUsername',
@@ -359,6 +359,90 @@ describe('auth0.authentication', function () {
       })
     });
 
+  });
+
+  context('getSSOData', function () {
+    before(function() {
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function(){
+      request.get.restore();
+    })
+
+    it('should call ssodata with all the options', function(done) {
+      stub(request, 'get', function(url) {
+        expect(url).to.be('https://me.auth0.com/user/ssodata/')
+        return new RequestMock({
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                sso:false
+              }
+            });
+          }
+        });
+      });
+
+      this.auth0.getSSOData(function(err, data) {
+        expect(err).to.be(null);
+        expect(data).to.eql({
+          sso:false
+        });
+        done();
+      })
+    });
+  });
+
+  context('getSSOData', function () {
+    before(function() {
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function(){
+      request.get.restore();
+    })
+
+    it('should call ssodata with all the ad options', function(done) {
+      stub(request, 'get', function(url) {
+        expect(url).to.be('https://me.auth0.com/user/ssodata?ldaps=1&client_id=...')
+        return new RequestMock({
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                sso:false
+              }
+            });
+          }
+        });
+      });
+
+      this.auth0.getSSOData(true, function(err, data) {
+        expect(err).to.be(null);
+        expect(data).to.eql({
+          sso:false
+        });
+        done();
+      })
+    });
   });
 
 })

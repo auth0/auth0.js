@@ -215,8 +215,12 @@
         connection: 'tests',
         username: $('.client-login-username').val(),
         password: $('.client-login-password').val(),
-        scope: 'openid'
-      }, htmlConsole.dumpCallback.bind(htmlConsole));
+        scope: 'openid profile',
+        audience: 'urn:test'
+      }, function(err, data) {
+        htmlConsole.dumpCallback.bind(htmlConsole)(err, data);
+        this.webAuth.client.userInfo(data.access_token, htmlConsole.dumpCallback.bind(htmlConsole));
+      });
     });
 
     $('.login-facebook').click(function (e) {
