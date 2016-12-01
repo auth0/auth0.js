@@ -9,6 +9,42 @@ var WebAuth = require('../../src/web-auth');
 
 describe('auth0.WebAuth.popup', function () {
 
+  describe('preload should open the popup', function () {
+    before(function(){
+      global.window = {};
+      global.window.screenX = 500;
+      global.window.screenY = 500;
+      global.window.outerWidth = 2000;
+      global.window.outerHeight = 2000;
+
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'id_token',
+        _sendTelemetry: false
+      });
+    });
+
+    after(function(){
+      delete global.window;
+    });
+
+    it('should open the window', function () {
+      global.window.open = function (url, name, windowFeatures) {
+        expect(url).to.eql('about:blank');
+        expect(name).to.eql('auth0_signup_popup');
+        expect(windowFeatures).to.eql('width=500,height=600,left=1250,top=1200');
+
+        return { close: function() {} };
+      };
+
+      var handler = new PopupHandler();
+
+      this.auth0.popup.preload();
+    });
+  });
+
   context('authorize', function () {
     before(function () {
       this.auth0 = new WebAuth({

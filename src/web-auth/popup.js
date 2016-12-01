@@ -15,7 +15,7 @@ function Popup(client, options) {
 
 Popup.prototype.preload = function (options) {
   var popup = new PopupHandler();
-  popup.preload(options);
+  popup.preload(options || {});
   return popup;
 };
 

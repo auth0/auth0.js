@@ -134,4 +134,58 @@ describe('helpers popupHandler', function () {
       });
     });
   });
+
+  describe('preload should open the popup', function () {
+    before(function(){
+      global.window = {};
+      global.window.screenX = 500;
+      global.window.screenY = 500;
+      global.window.outerWidth = 2000;
+      global.window.outerHeight = 2000;
+    });
+
+    after(function(){
+      delete global.window;
+    });
+
+    it('should open the window', function (done) {
+      global.window.open = function (url, name, windowFeatures) {
+        expect(url).to.eql('about:blank');
+        expect(name).to.eql('auth0_signup_popup');
+        expect(windowFeatures).to.eql('width=500,height=600,left=1250,top=1200');
+
+        return { close: function() {
+          done();
+        } };
+      };
+
+      var handler = new PopupHandler();
+
+      var popup = handler.preload({});
+
+      popup.kill();
+    });
+
+    it('should open the window once', function (done) {
+      var counter = 0;
+      global.window.open = function (url, name, windowFeatures) {
+        counter++;
+        expect(url).to.eql('about:blank');
+        expect(counter).to.eql(1);
+        expect(name).to.eql('auth0_signup_popup');
+        expect(windowFeatures).to.eql('width=500,height=600,left=1250,top=1200');
+
+        return { close: function() {
+          done();
+        } };
+      };
+
+      var handler = new PopupHandler();
+
+      var popup = handler.preload({});
+      var popup = handler.preload({});
+
+      popup.kill();
+    });
+  });
 });
