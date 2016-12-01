@@ -13,6 +13,12 @@ function Popup(client, options) {
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 }
 
+Popup.prototype.preload = function (options) {
+  var popup = new PopupHandler();
+  popup.preload(options);
+  return popup;
+};
+
 Popup.prototype.authorize = function (options, cb) {
   var popup;
   var url;
@@ -37,7 +43,11 @@ Popup.prototype.authorize = function (options, cb) {
 
   url = this.client.buildAuthorizeUrl(params);
 
-  popup = new PopupHandler();
+  if (options.popupHandler) {
+    popup = popupHandler;
+  } else {
+    popup = new PopupHandler();
+  }
 
   relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');
 
@@ -72,7 +82,11 @@ Popup.prototype.login = function (options, cb) {
     objectHelper.blacklist(options, ['clientID', 'domain'])
   );
 
-  popup = new PopupHandler();
+  if (options.popupHandler) {
+    popup = popupHandler;
+  } else {
+    popup = new PopupHandler();
+  }
 
   url = urljoin(this.baseOptions.rootUrl, 'sso_dbconnection_popup', options.clientID);
   relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');

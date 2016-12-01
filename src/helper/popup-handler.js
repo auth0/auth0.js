@@ -39,6 +39,27 @@ PopupHandler.prototype.calculatePosition = function (options) {
   return { width: width, height: height, left: left, top: top };
 };
 
+PopupHandler.prototype.preload = function (options) {
+  var _this = this;
+  var popupPosition = this.calculatePosition(options.popupOptions || {});
+  var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
+  var url = options.url || 'about:blank';
+  var windowFeatures = this.stringifyPopupSettings(popupOptions);
+
+  if (this._current_popup && !this._current_popup.closed) {
+    return this._current_popup;
+  }
+
+  this._current_popup = window.open(url, 'auth0_signup_popup', windowFeatures);
+
+  this._current_popup.kill = function () {
+    this.close();
+    _this._current_popup = null;
+  };
+
+  return this._current_popup;
+};
+
 PopupHandler.prototype.load = function (url, relayUrl, options, cb) {
   var popupPosition = this.calculatePosition(options.popupOptions || {});
   var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
