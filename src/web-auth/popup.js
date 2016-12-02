@@ -19,6 +19,13 @@ Popup.prototype.preload = function (options) {
   return popup;
 };
 
+Popup.prototype.getPopupHandler = function (options) {
+  if (options.popupHandler) {
+    return options.popupHandler;
+  }
+  return new PopupHandler();
+};
+
 Popup.prototype.authorize = function (options, cb) {
   var popup;
   var url;
@@ -43,11 +50,7 @@ Popup.prototype.authorize = function (options, cb) {
 
   url = this.client.buildAuthorizeUrl(params);
 
-  if (options.popupHandler) {
-    popup = options.popupHandler;
-  } else {
-    popup = new PopupHandler();
-  }
+  popup = this.getPopupHandler(options);
 
   relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');
 
@@ -70,11 +73,7 @@ Popup.prototype.login = function (options, cb) {
   });
   /* eslint-enable */
 
-  if (options.popupHandler) {
-    popup = options.popupHandler;
-  } else {
-    popup = new PopupHandler();
-  }
+  popup = this.getPopupHandler(options);
 
   options = objectHelper.merge(this.baseOptions, [
     'clientID',

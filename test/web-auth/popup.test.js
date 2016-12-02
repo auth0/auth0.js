@@ -8,6 +8,28 @@ var PopupHandler = require('../../src/helper/popup-handler');
 var WebAuth = require('../../src/web-auth');
 
 describe('auth0.WebAuth.popup', function () {
+  before(function(){
+    this.auth0 = new WebAuth({
+      domain: 'me.auth0.com',
+      clientID: '...',
+      redirectUri: 'http://page.com/callback',
+      responseType: 'id_token',
+      _sendTelemetry: false
+    });
+  });
+
+  describe('getPopupHandler', function () {
+    it('should return a new instance', function () {
+      var handler1 = this.auth0.popup.getPopupHandler({});
+      var handler2 = this.auth0.popup.getPopupHandler({});
+      expect(handler1).to.not.be(handler2);
+    });
+    it('should return not a new instance', function () {
+      var handler1 = this.auth0.popup.getPopupHandler({});
+      var handler2 = this.auth0.popup.getPopupHandler({popupHandler:handler1});
+      expect(handler1).to.be(handler2);
+    });
+  });
 
   describe('preload should open the popup', function () {
     before(function(){
