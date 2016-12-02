@@ -44,7 +44,7 @@ Popup.prototype.authorize = function (options, cb) {
   url = this.client.buildAuthorizeUrl(params);
 
   if (options.popupHandler) {
-    popup = popupHandler;
+    popup = options.popupHandler;
   } else {
     popup = new PopupHandler();
   }
@@ -70,23 +70,23 @@ Popup.prototype.login = function (options, cb) {
   });
   /* eslint-enable */
 
+  if (options.popupHandler) {
+    popup = options.popupHandler;
+  } else {
+    popup = new PopupHandler();
+  }
+
   options = objectHelper.merge(this.baseOptions, [
     'clientID',
     'scope',
     'domain',
     'audience'
-  ]).with(options);
+  ]).with(objectHelper.blacklist(options, ['popupHandler']));
 
   params = objectHelper.pick(options, ['clientID', 'domain']);
   params.options = objectHelper.toSnakeCase(
     objectHelper.blacklist(options, ['clientID', 'domain'])
   );
-
-  if (options.popupHandler) {
-    popup = popupHandler;
-  } else {
-    popup = new PopupHandler();
-  }
 
   url = urljoin(this.baseOptions.rootUrl, 'sso_dbconnection_popup', options.clientID);
   relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');

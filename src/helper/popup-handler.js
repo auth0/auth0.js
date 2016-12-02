@@ -61,6 +61,7 @@ PopupHandler.prototype.preload = function (options) {
 };
 
 PopupHandler.prototype.load = function (url, relayUrl, options, cb) {
+  var _this = this;
   var popupPosition = this.calculatePosition(options.popupOptions || {});
   var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
 
@@ -73,7 +74,7 @@ PopupHandler.prototype.load = function (url, relayUrl, options, cb) {
   };
 
   var popup = WinChan.open(winchanOptions, function (err, data) {
-    this._current_popup = null;
+    _this._current_popup = null;
     return cb(err, data);
   });
 

@@ -114,6 +114,7 @@
           <h2>Login with database connection (popup):</h2>
           <input class="popup-login-username" value="johnfoo@gmail.com" />
           <input type="password" class="popup-login-password" value="1234" />
+          <input type="button" class="popup-login-db-preload" value="preload" />
           <input type="button" class="popup-login-db" value="login" />
         </div>
 
@@ -199,13 +200,22 @@
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
+    var popupHandler;
+
+    $('.popup-login-db-preload').click(function (e) {
+      e.preventDefault();
+      popupHandler = webAuth.popup.preload();
+    });
+
     $('.popup-login-db').click(function (e) {
       e.preventDefault();
+
       webAuth.popup.login({
         connection: 'tests',
         username: $('.popup-login-username').val(),
         password: $('.popup-login-password').val(),
-        scope: 'openid'
+        scope: 'openid',
+        popupHandler: popupHandler
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
