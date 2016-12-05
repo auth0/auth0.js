@@ -20,7 +20,7 @@ DBConnection.prototype.signup = function (options, cb) {
   });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
-  url = urljoin(this.baseOptions.rootUrl, 'dbconnection', 'signup');
+  url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'signup');
 
   body = objectHelper.merge(this.baseOptions, ['clientID'])
                 .with(options);
@@ -45,7 +45,7 @@ DBConnection.prototype.changePassword = function (options, cb) {
   });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
-  url = urljoin(this.baseOptions.rootUrl, 'dbconnection', 'change_password');
+  url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'change_password');
 
   body = objectHelper.merge(this.baseOptions, ['clientID'])
                 .with(options, ['email', 'connection']);

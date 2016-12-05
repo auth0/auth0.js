@@ -396,7 +396,7 @@ describe('auth0.WebAuth.popup', function () {
       });
 
       stub(request, 'post', function (url) {
-        expect(url).to.eql('https://me.auth0.com/dbconnection/signup');
+        expect(url).to.eql('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
           body: {
@@ -433,7 +433,7 @@ describe('auth0.WebAuth.popup', function () {
     it('should propagate signup errors', function (done) {
       stub(request, 'post', function (url) {
 
-        expect(url).to.be('https://me.auth0.com/dbconnection/signup');
+        expect(url).to.be('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
           body: {

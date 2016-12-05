@@ -380,7 +380,7 @@ describe('auth0.WebAuth', function () {
 
     it('should call db-connection changePassword with all the options', function (done) {
       stub(request, 'post', function (url) {
-        expect(url).to.be('https://me.auth0.com/dbconnection/change_password');
+        expect(url).to.be('https://me.auth0.com/dbconnections/change_password');
         return new RequestMock({
           body: {
             client_id: '...',
@@ -407,7 +407,7 @@ describe('auth0.WebAuth', function () {
 
     it('should call db-connection changePassword should ignore password option', function (done) {
       stub(request, 'post', function (url) {
-        expect(url).to.be('https://me.auth0.com/dbconnection/change_password');
+        expect(url).to.be('https://me.auth0.com/dbconnections/change_password');
         return new RequestMock({
           body: {
             client_id: '...',
