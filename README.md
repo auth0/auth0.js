@@ -1,4 +1,4 @@
-#Auth0.js
+# Auth0.js
 
 [![codecov.io](http://codecov.io/github/auth0/auth0.js/coverage.svg?branch=v8)](http://codecov.io/github/auth0/auth0.js/coverage.svg?branch=v8)
 
@@ -8,7 +8,7 @@
 
 ```js
 var auth0 = new auth0.WebAuth({
-  domain: "me.auth0.com",
+  domain: "tenant.auth0.com",
   client_id: "..."
 });
 ```
