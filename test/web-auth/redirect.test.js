@@ -29,7 +29,7 @@ describe('auth0.WebAuth.redirect', function () {
 
     it('should call db-connection signup with all the options', function (done) {
       stub(request, 'post', function (url) {
-        expect(url).to.be('https://me.auth0.com/dbconnection/signup');
+        expect(url).to.be('https://me.auth0.com/dbconnections/signup');
         return new RequestMock({
           body: {
             client_id: '...',
@@ -285,7 +285,7 @@ describe('auth0.WebAuth.redirect', function () {
               });
             }
           });
-        } else if (url === 'https://me.auth0.com/dbconnection/signup'){
+        } else if (url === 'https://me.auth0.com/dbconnections/signup'){
           return new RequestMock({
             body: {
               client_id: '...',
@@ -341,7 +341,7 @@ describe('auth0.WebAuth.redirect', function () {
     it('should propagate signup errors', function (done) {
       stub(request, 'post', function (url) {
 
-        expect(url).to.be('https://me.auth0.com/dbconnection/signup');
+        expect(url).to.be('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
           body: {

@@ -8,6 +8,64 @@ var PopupHandler = require('../../src/helper/popup-handler');
 var WebAuth = require('../../src/web-auth');
 
 describe('auth0.WebAuth.popup', function () {
+  before(function(){
+    this.auth0 = new WebAuth({
+      domain: 'me.auth0.com',
+      clientID: '...',
+      redirectUri: 'http://page.com/callback',
+      responseType: 'id_token',
+      _sendTelemetry: false
+    });
+  });
+
+  describe('getPopupHandler', function () {
+    it('should return a new instance', function () {
+      var handler1 = this.auth0.popup.getPopupHandler({});
+      var handler2 = this.auth0.popup.getPopupHandler({});
+      expect(handler1).to.not.be(handler2);
+    });
+    it('should return not a new instance', function () {
+      var handler1 = this.auth0.popup.getPopupHandler({});
+      var handler2 = this.auth0.popup.getPopupHandler({popupHandler:handler1});
+      expect(handler1).to.be(handler2);
+    });
+  });
+
+  describe('preload should open the popup', function () {
+    before(function(){
+      global.window = {};
+      global.window.screenX = 500;
+      global.window.screenY = 500;
+      global.window.outerWidth = 2000;
+      global.window.outerHeight = 2000;
+
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'id_token',
+        _sendTelemetry: false
+      });
+    });
+
+    after(function(){
+      delete global.window;
+    });
+
+    it('should open the window', function () {
+      global.window.open = function (url, name, windowFeatures) {
+        expect(url).to.eql('about:blank');
+        expect(name).to.eql('auth0_signup_popup');
+        expect(windowFeatures).to.eql('width=500,height=600,left=1250,top=1200');
+
+        return { close: function() {} };
+      };
+
+      var handler = new PopupHandler();
+
+      this.auth0.popup.preload();
+    });
+  });
 
   context('authorize', function () {
     before(function () {
@@ -338,7 +396,7 @@ describe('auth0.WebAuth.popup', function () {
       });
 
       stub(request, 'post', function (url) {
-        expect(url).to.eql('https://me.auth0.com/dbconnection/signup');
+        expect(url).to.eql('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
           body: {
@@ -375,7 +433,7 @@ describe('auth0.WebAuth.popup', function () {
     it('should propagate signup errors', function (done) {
       stub(request, 'post', function (url) {
 
-        expect(url).to.be('https://me.auth0.com/dbconnection/signup');
+        expect(url).to.be('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
           body: {
