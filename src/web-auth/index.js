@@ -21,6 +21,7 @@ function WebAuth(options) {
     scope: { optional: true, type: 'string', message: 'audience is not valid' },
     audience: { optional: true, type: 'string', message: 'scope is not valid' },
     tenant: { optional: true, type: 'string', message: 'tenant option is not valid. Required when using custom domains.' },
+    _disableDeprecationWarnings: { optional: true, type: 'boolean', message: '_disableDeprecationWarnings option is not valid' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
     _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
   });

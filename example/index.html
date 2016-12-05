@@ -52,6 +52,7 @@
     }
 
     HTMLConsole.prototype.clear = function () {
+      this.data = [];
       this.ele.html('');
       localStorage.removeItem("consoleData");
     };

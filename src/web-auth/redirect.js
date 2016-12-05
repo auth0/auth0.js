@@ -1,12 +1,16 @@
 var UsernamePassword = require('./username-password');
 var TransactionManager = require('./transaction-manager');
 var objectHelper = require('../helper/object');
+var Warn = require('../helper/warn');
 
 function Redirect(client, options) {
   this.baseOptions = options;
   this.client = client;
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
+  this.warn = new Warn({
+    disableWarnings: !!options._disableDeprecationWarnings
+  });
 }
 
 Redirect.prototype.login = function (options, cb) {
@@ -21,6 +25,8 @@ Redirect.prototype.login = function (options, cb) {
     'scope',
     'audience'
   ]).with(options);
+
+  this.warn.warning('`webauth.redirect.login` will be soon deprecated, use `webauth.login` instead.');
 
   params = this.transactionManager.process(params);
 
