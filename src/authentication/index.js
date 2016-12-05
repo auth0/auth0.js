@@ -5,6 +5,7 @@ var qs = require('../helper/qs');
 var objectHelper = require('../helper/object');
 var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
+var parametersWhitelist = require('../helper/parameters-whitelist');
 var Warn = require('../helper/warn');
 
 var PasswordlessAuthentication = require('./passwordless-authentication');
@@ -80,6 +81,7 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
   }
 
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
+  params = parametersWhitelist.oauthAuthorizeParams(params);
 
   qString = qs.build(params);
 

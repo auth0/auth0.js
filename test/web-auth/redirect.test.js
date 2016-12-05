@@ -561,7 +561,7 @@ describe('auth0.WebAuth.redirect', function () {
 
     it('should redirect to authorize', function () {
       this.auth0.login({connection: 'facebook', state: '1234'})
-      expect(global.window.location).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=facebook&state=1234');
+      expect(global.window.location).to.be('https://me.auth0.com/authorize?connection=facebook&client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&state=1234');
     });
 
     it('should redirect to logout', function () {

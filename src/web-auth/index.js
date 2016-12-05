@@ -72,7 +72,7 @@ WebAuth.prototype.parseHash = function (hash, options) {
   }
 
   if (parsedQs.id_token) {
-    token = this.validateToken(parsedQs.id_token, parsedQs.state, options);
+    token = this.validateToken(parsedQs.id_token, parsedQs.state || options.state, options.nonce);
     if (token.error) {
       return token;
     }
@@ -88,9 +88,10 @@ WebAuth.prototype.parseHash = function (hash, options) {
   };
 };
 
-WebAuth.prototype.validateToken = function (token, state) {
+WebAuth.prototype.validateToken = function (token, state, nonce) {
   var audiences;
   var transaction;
+  var transactionNonce;
   var tokenNonce;
   var prof = jwt.getPayload(token);
 
@@ -102,9 +103,10 @@ WebAuth.prototype.validateToken = function (token, state) {
   }
 
   transaction = this.transactionManager.getStoredTransaction(state);
+  transactionNonce = (transaction && transaction.nonce) || nonce;
   tokenNonce = prof.nonce || null;
 
-  if (transaction && tokenNonce && transaction.nonce !== tokenNonce) {
+  if (transactionNonce && tokenNonce && transactionNonce !== tokenNonce) {
     return error.invalidJwt('Nonce does not match');
   }
 

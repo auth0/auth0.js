@@ -84,7 +84,7 @@ describe('auth0.WebAuth.popup', function () {
 
     it('should open the authorize page in a popup', function (done) {
       stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
-        expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&nonce=123&state=456&owp=true');
+        expect(url).to.be('https://me.auth0.com/authorize?connection=the_connection&owp=true&client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&state=456&nonce=123');
         expect(relayUrl).to.be('https://me.auth0.com/relay.html');
         expect(options).to.eql({});
         cb(null, {
