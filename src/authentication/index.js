@@ -158,7 +158,7 @@ Authentication.prototype.loginWithResourceOwner = function (options, cb) {
   var url;
   var body;
 
-  this.warn.warning('loginWithResourceOwner will be soon deprecated.');
+  this.warn.warning('`loginWithResourceOwner` will be soon deprecated, user `login` instead.');
 
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     username: { type: 'string', message: 'username option is required' },
@@ -191,7 +191,7 @@ Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
   var url;
   var params = '';
 
-  this.warn.warning('getSSOData will be soon deprecated.');
+  this.warn.warning('`getSSOData` will be soon deprecated.');
 
   if (typeof withActiveDirectories === 'function') {
     cb = withActiveDirectories;
@@ -233,7 +233,7 @@ Authentication.prototype.delegation = function (options, cb) {
   var url;
   var body;
 
-  this.warn.warning('delegation will be soon deprecated.');
+  this.warn.warning('`delegation` will be soon deprecated.');
 
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     grant_type: { type: 'string', message: 'grant_type option is required' }

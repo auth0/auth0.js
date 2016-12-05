@@ -26,7 +26,7 @@ Redirect.prototype.login = function (options, cb) {
     'audience'
   ]).with(options);
 
-  this.warn.warning('redirect.login will be soon deprecated.');
+  this.warn.warning('`webauth.redirect.login` will be soon deprecated, use `webauth.login` instead.');
 
   params = this.transactionManager.process(params);
 

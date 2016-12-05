@@ -67,7 +67,7 @@ Popup.prototype.login = function (options, cb) {
   var url;
   var relayUrl;
 
-  this.warn.warning('popup.login will be soon deprecated.');
+  this.warn.warning('`webauth.popup.login` will be soon deprecated, use `webauth.client.login` instead.');
 
   /* eslint-disable */
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
