@@ -36,7 +36,7 @@ Popup.prototype.authorize = function (options, cb) {
     'scope',
     'audience',
     'responseType'
-  ]).with(options);
+  ]).with(objectHelper.blacklist(options, ['popupHandler']));
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
     responseType: { type: 'string', message: 'responseType option is required' }
@@ -95,31 +95,33 @@ Popup.prototype.login = function (options, cb) {
 
 Popup.prototype.passwordlessVerify = function (options, cb) {
   var _this = this;
-  return this.client.passwordless.verify(options, function (err) {
-    if (err) {
-      return cb(err);
-    }
+  return this.client.passwordless.verify(objectHelper.blacklist(options, ['popupHandler']),
+    function (err) {
+      if (err) {
+        return cb(err);
+      }
 
-    options.username = options.phoneNumber || options.email;
-    options.password = options.verificationCode;
+      options.username = options.phoneNumber || options.email;
+      options.password = options.verificationCode;
 
-    delete options.email;
-    delete options.phoneNumber;
-    delete options.verificationCode;
-    delete options.type;
+      delete options.email;
+      delete options.phoneNumber;
+      delete options.verificationCode;
+      delete options.type;
 
-    _this.client.loginWithResourceOwner(options, cb);
-  });
+      _this.client.loginWithResourceOwner(options, cb);
+    });
 };
 
 Popup.prototype.signupAndLogin = function (options, cb) {
   var _this = this;
-  return this.client.dbConnection.signup(options, function (err) {
-    if (err) {
-      return cb(err);
-    }
-    _this.login(options, cb);
-  });
+  return this.client.dbConnection.signup(objectHelper.blacklist(options, ['popupHandler']),
+    function (err) {
+      if (err) {
+        return cb(err);
+      }
+      _this.login(options, cb);
+    });
 };
 
 module.exports = Popup;
