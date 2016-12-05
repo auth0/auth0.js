@@ -121,6 +121,8 @@ Popup.prototype.passwordlessVerify = function (options, cb) {
 
 Popup.prototype.signupAndLogin = function (options, cb) {
   var _this = this;
+  var popup = this.getPopupHandler(options);
+  options.popupHandler = options;
   return this.client.dbConnection.signup(objectHelper.blacklist(options, ['popupHandler']),
     function (err) {
       if (err) {
