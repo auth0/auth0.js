@@ -49,6 +49,11 @@ RequestObj.prototype.send = function (body) {
   return this;
 };
 
+RequestObj.prototype.withCredentials = function () {
+  this.request = this.request.withCredentials();
+  return this;
+};
+
 RequestObj.prototype.end = function (cb) {
   this.request = this.request.end(cb);
   return new RequestWrapper(this.request);
