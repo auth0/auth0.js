@@ -23,11 +23,11 @@ Popup.prototype.preload = function (options) {
   return popup;
 };
 
-Popup.prototype.getPopupHandler = function (options) {
+Popup.prototype.getPopupHandler = function (options, preload) {
   if (options.popupHandler) {
     return options.popupHandler;
   }
-  return new PopupHandler();
+  return !!preload ? this.preload(options) : new PopupHandler();
 };
 
 Popup.prototype.authorize = function (options, cb) {
@@ -123,7 +123,7 @@ Popup.prototype.signupAndLogin = function (options, cb) {
   var _this = this;
 
   // Preload popup to avoid the browser to block it since the login happens later
-  var popupHandler = this.getPopupHandler(options);
+  var popupHandler = this.getPopupHandler(options, true);
   options.popupHandler = popupHandler;
 
   return this.client.dbConnection.signup(objectHelper.blacklist(options, ['popupHandler']),

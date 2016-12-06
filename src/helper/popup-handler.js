@@ -41,6 +41,7 @@ PopupHandler.prototype.calculatePosition = function (options) {
 
 PopupHandler.prototype.preload = function (options) {
   var _this = this;
+  var _window = windowHandler.getWindow();
   var popupPosition = this.calculatePosition(options.popupOptions || {});
   var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
   var url = options.url || 'about:blank';
@@ -50,7 +51,7 @@ PopupHandler.prototype.preload = function (options) {
     return this._current_popup;
   }
 
-  this._current_popup = window.open(url, 'auth0_signup_popup', windowFeatures);
+  this._current_popup = _window.open(url, 'auth0_signup_popup', windowFeatures);
 
   this._current_popup.kill = function () {
     this.close();

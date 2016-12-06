@@ -137,6 +137,9 @@ WebAuth.prototype.renewAuth = function (options, cb) {
     'audience'
   ]).with(options);
 
+  params.responseType = params.responseType || 'token';
+  params.responseMode = params.responseMode || 'fragment';
+
   params = this.transactionManager.process(params);
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
