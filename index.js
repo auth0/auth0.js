@@ -552,8 +552,12 @@ Auth0.prototype.parseHash = function (hash, options) {
     if (options.nonce) {
       nonce = options.nonce;
     } else if (window.localStorage) {
-      nonce = window.localStorage.getItem('com.auth0.auth.nonce');
-      window.localStorage.removeItem('com.auth0.auth.nonce');
+      try {
+        nonce = window.localStorage.getItem('com.auth0.auth.nonce');
+        window.localStorage.removeItem('com.auth0.auth.nonce');
+      } catch(e) {
+        // will fail because nonce is undefined
+      }
     }
 
     if ((nonce || prof.nonce) && prof.nonce !== nonce) {
@@ -828,8 +832,13 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
       if (window.localStorage) {
         var nonce = nonceGenerator.randomString(16);
         if (nonce) {
-          options.nonce = nonce;
+          try {
+            options.nonce = nonce;
             window.localStorage.setItem('com.auth0.auth.nonce', nonce);
+          }
+          catch(e) {
+            options.nonce = undefined;
+          }
         }
       } else {
         throw new Error('Unable to generate and store nonce to request id_token. Please provide a nonce value via options');
