@@ -10,7 +10,7 @@ describe('helpers responseHandler', function () {
       expect(data).to.be(undefined);
       expect(err).to.eql({
         error: 'generic_error',
-        error_description: 'Something went wrong'
+        errorDescription: 'Something went wrong'
       });
       done();
     })(null, null);
@@ -31,8 +31,8 @@ describe('helpers responseHandler', function () {
       expect(data).to.be(undefined);
       expect(err).to.eql({
         original: assert_err,
-        status_code: 400,
-        status_text: 'Bad request',
+        statusCode: 400,
+        statusText: 'Bad request',
         code: 'the_error_code',
         description: 'The error description.',
         name: 'SomeName'

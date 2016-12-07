@@ -157,7 +157,7 @@ describe('helpers iframeHandler', function () {
 
           expect(err).to.eql({
             error:'some_error',
-            error_description: 'the+error+description'
+            errorDescription: 'the+error+description'
           });
 
           done();

@@ -57,18 +57,36 @@ function camelToSnake(str) {
   return newKey;
 }
 
+function snakeToCamel(str) {
+  var parts = str.split('_');
+  return parts.reduce(function (p, c) {
+    return p + c.charAt(0).toUpperCase() + c.slice(1);
+  }, parts.shift());
+}
+
 function toSnakeCase(object, exceptions) {
   exceptions = exceptions || [];
 
   return Object.keys(object).reduce(function (p, key) {
     var newKey = exceptions.indexOf(key) === -1 ? camelToSnake(key) : key;
-    p[newKey] = object[key];
+    p[newKey] = typeof(object[key]) === 'object' ? toSnakeCase(object[key]) : object[key];
+    return p;
+  }, {});
+}
+
+function toCamelCase(object, exceptions) {
+  exceptions = exceptions || [];
+
+  return Object.keys(object).reduce(function (p, key) {
+    var newKey = exceptions.indexOf(key) === -1 ? snakeToCamel(key) : key;
+    p[newKey] = typeof(object[key]) === 'object' ? toCamelCase(object[key]) : object[key];
     return p;
   }, {});
 }
 
 module.exports = {
   toSnakeCase: toSnakeCase,
+  toCamelCase: toCamelCase,
   blacklist: blacklist,
   merge: merge,
   pick: pick,

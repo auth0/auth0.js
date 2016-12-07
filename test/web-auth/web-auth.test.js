@@ -57,7 +57,7 @@ describe('auth0.WebAuth', function () {
       webAuth.renewAuth(options, function (err, data) {
         expect(err).to.eql({
           error: 'invalid_token',
-          error_description: 'Nonce does not match'
+          errorDescription: 'Nonce does not match'
         });
         expect(data).to.be(undefined);
         done();
@@ -161,7 +161,7 @@ describe('auth0.WebAuth', function () {
 
       expect(data).to.eql({
         error: 'invalid_token',
-        error_description: 'The clientID configured (0HP71GSd6PuoRYJ3p) does not match with the clientID set in the token (0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup).' // eslint-disable-line
+        errorDescription: 'The clientID configured (0HP71GSd6PuoRYJ3p) does not match with the clientID set in the token (0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup).' // eslint-disable-line
       });
     });
 
@@ -177,7 +177,7 @@ describe('auth0.WebAuth', function () {
 
       expect(data).to.eql({
         error: 'invalid_token',
-        error_description: 'The domain configured (https://mdocs_2.auth0.com/) does not match with the domain set in the token (https://mdocs.auth0.com/).' // eslint-disable-line
+        errorDescription: 'The domain configured (https://mdocs_2.auth0.com/) does not match with the domain set in the token (https://mdocs.auth0.com/).' // eslint-disable-line
       });
     });
 
@@ -207,7 +207,7 @@ describe('auth0.WebAuth', function () {
 
       expect(data).to.eql({
         error: 'the_error_code',
-        error_description: 'the_error_description',
+        errorDescription: 'the_error_description',
         state: 'some_state'
       });
     });
@@ -361,7 +361,7 @@ describe('auth0.WebAuth', function () {
         expect(data).to.be(undefined);
         expect(err).to.eql({
           error: 'invalid_token',
-          error_description: 'The clientID configured (...) does not match with the clientID set in the token (0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup).'
+          errorDescription: 'The clientID configured (...) does not match with the clientID set in the token (0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup).'
         });
         done();
       });

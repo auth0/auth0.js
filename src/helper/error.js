@@ -1,7 +1,7 @@
 function buildResponse(error, description) {
   return {
     error: error,
-    error_description: description
+    errorDescription: description
   };
 }
 
