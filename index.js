@@ -547,8 +547,18 @@ Auth0.prototype.parseHash = function (hash, options) {
         'The domain configured (https://' + this._domain + '/) does not match with the domain set in the token (' + prof.iss + ').');
     }
 
-    var nonce = options.nonce || window.localStorage.getItem('com.auth0.auth.nonce');
-    window.localStorage.removeItem('com.auth0.auth.nonce');
+    var nonce;
+
+    if (options.nonce) {
+      nonce = options.nonce;
+    } else if (window.localStorage) {
+      try {
+        nonce = window.localStorage.getItem('com.auth0.auth.nonce');
+        window.localStorage.removeItem('com.auth0.auth.nonce');
+      } catch(e) {
+        // will fail because nonce is undefined
+      }
+    }
 
     if ((nonce || prof.nonce) && prof.nonce !== nonce) {
       return invalidJwt('The nonce does not match.');
@@ -818,10 +828,20 @@ Auth0.prototype.login = Auth0.prototype.signin = function (options, callback) {
         ((typeof options.username !== 'undefined' || typeof options.email !== 'undefined') && !callback) ||
         (typeof options.username === 'undefined' && typeof options.email === 'undefined')
         ) ) {
-      var nonce = nonceGenerator.randomString(16);
-      if (nonce) {
-        options.nonce = nonce;
-        window.localStorage.setItem('com.auth0.auth.nonce', nonce);
+
+      if (window.localStorage) {
+        var nonce = nonceGenerator.randomString(16);
+        if (nonce) {
+          try {
+            options.nonce = nonce;
+            window.localStorage.setItem('com.auth0.auth.nonce', nonce);
+          }
+          catch(e) {
+            options.nonce = undefined;
+          }
+        }
+      } else {
+        throw new Error('Unable to generate and store nonce to request id_token. Please provide a nonce value via options');
       }
     }
   }
