@@ -127,7 +127,7 @@ Authentication.prototype.login = function (options, cb) {
 Authentication.prototype.loginRealm = function (options, cb) {
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     username: { type: 'string', message: 'username option is required' },
-    password: { type: 'string', message: 'password option is required' }
+    password: { type: 'string', message: 'password option is required' },
     realm: { type: 'string', message: 'realm option is required' }
   });
 
