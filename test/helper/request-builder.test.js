@@ -84,6 +84,7 @@ describe('helpers requestBuilder', function () {
     var req = new RequestBuilder({})
     var handler = req
       .get('https://test.com')
+      .withCredentials()
       .end(function(err, data) {
 
       });

@@ -24,6 +24,10 @@ RequestMock.prototype.set = function (key, value) {
 RequestMock.prototype.abort = function () {
 };
 
+RequestMock.prototype.withCredentials = function () {
+  return this;
+};
+
 RequestMock.prototype.end = function (cb) {
   expect(this.options.headers).to.eql({});
   this.options.cb(cb);

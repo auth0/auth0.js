@@ -214,6 +214,7 @@ Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
 
   return this.request
     .get(url)
+    .withCredentials()
     .end(responseHandler(cb));
 };
 
