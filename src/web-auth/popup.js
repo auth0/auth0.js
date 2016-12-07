@@ -17,12 +17,23 @@ function Popup(client, options) {
   });
 }
 
+/**
+ * Initializes the popup window and returns the instance to be used later in order to avoid being blocked by the browser.
+ *
+ * @method preload
+ * @param {Object} options: receives the window height and width and any other window feature to be sent to window.open
+ */
 Popup.prototype.preload = function (options) {
   var popup = new PopupHandler();
   popup.preload(options || {});
   return popup;
 };
 
+/**
+ * Internal use.
+ *
+ * @method getPopupHandler
+ */
 Popup.prototype.getPopupHandler = function (options, preload) {
   if (options.popupHandler) {
     return options.popupHandler;
@@ -30,6 +41,13 @@ Popup.prototype.getPopupHandler = function (options, preload) {
   return !!preload ? this.preload(options) : new PopupHandler();
 };
 
+/**
+ * Opens in a popup the hosted login page (`/authorize`) in order to initialize a new authN/authZ transaction
+ *
+ * @method authorize
+ * @param {Object} options: https://auth0.com/docs/api/authentication#!#get--authorize_db
+ * @param {Function} cb
+ */
 Popup.prototype.authorize = function (options, cb) {
   var popup;
   var url;
@@ -61,6 +79,14 @@ Popup.prototype.authorize = function (options, cb) {
   return popup.load(url, relayUrl, {}, responseHandler(cb));
 };
 
+/**
+ * Initializes the legacy Lock login flow in a popup
+ *
+ * @method login
+ * @param {Object} options
+ * @param {Function} cb
+ * @deprecated `webauth.popup.login` will be soon deprecated, use `webauth.client.login` instead.
+ */
 Popup.prototype.login = function (options, cb) {
   var params;
   var popup;
@@ -99,6 +125,18 @@ Popup.prototype.login = function (options, cb) {
   return popup.load(url, relayUrl, params, responseHandler(cb));
 };
 
+/**
+ * Verifies the passwordless TOTP and returns the requested token
+ *
+ * @method passwordlessVerify
+ * @param {Object} options:
+ * @param {Object} options.type: `sms` or `email`
+ * @param {Object} options.phoneNumber: only if type = sms
+ * @param {Object} options.email: only if type = email
+ * @param {Object} options.connection: the connection name
+ * @param {Object} options.verificationCode: the TOTP code
+ * @param {Function} cb
+ */
 Popup.prototype.passwordlessVerify = function (options, cb) {
   var _this = this;
   return this.client.passwordless.verify(objectHelper.blacklist(options, ['popupHandler']),
@@ -119,6 +157,13 @@ Popup.prototype.passwordlessVerify = function (options, cb) {
     });
 };
 
+/**
+ * Signs up a new user and automatically logs the user in after the signup.
+ *
+ * @method signupAndLogin
+ * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--dbconnections-signup
+ * @param {Function} cb
+ */
 Popup.prototype.signupAndLogin = function (options, cb) {
   var _this = this;
 
