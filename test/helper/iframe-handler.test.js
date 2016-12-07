@@ -131,7 +131,9 @@ describe('helpers iframeHandler', function () {
             },
             appStatus: null,
             refreshToken: 'kajshdgfkasdjhgfas',
-            state: 'theState'
+            state: 'theState',
+            expiresIn: null,
+            tokenType: 'Bearer'
           });
 
           done();

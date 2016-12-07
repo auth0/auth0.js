@@ -93,7 +93,9 @@ describe('auth0.WebAuth', function () {
         },
         appStatus: null,
         refreshToken: 'kajshdgfkasdjhgfas',
-        state: 'theState'
+        state: 'theState',
+        expiresIn: null,
+        tokenType: 'Bearer'
       });
     });
 
@@ -119,7 +121,9 @@ describe('auth0.WebAuth', function () {
         },
         appStatus: null,
         refreshToken: 'kajshdgfkasdjhgfas',
-        state: 'theState'
+        state: 'theState',
+        expiresIn: null,
+        tokenType: 'Bearer'
       });
     });
 
@@ -139,7 +143,9 @@ describe('auth0.WebAuth', function () {
         idTokenPayload: null,
         appStatus: null,
         refreshToken: 'kajshdgfkasdjhgfas',
-        state: 'theState'
+        state: 'theState',
+        expiresIn: null,
+        tokenType: 'Bearer'
       });
     });
 

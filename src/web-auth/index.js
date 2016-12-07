@@ -84,7 +84,9 @@ WebAuth.prototype.parseHash = function (hash, options) {
     idTokenPayload: token && token.payload ? token.payload : null,
     appStatus: token ? token.appStatus || null : null,
     refreshToken: parsedQs.refresh_token,
-    state: parsedQs.state
+    state: parsedQs.state,
+    expiresIn: parsedQs.expires_in || null,
+    tokenType: parsedQs.token_type || null
   };
 };
 
