@@ -5,6 +5,7 @@ var RequestMock = require('../mock/request-mock');
 var request = require('superagent');
 
 var PopupHandler = require('../../src/helper/popup-handler');
+var windowHandler = require('../../src/helper/window');
 var WebAuth = require('../../src/web-auth');
 
 describe('auth0.WebAuth.popup', function () {
@@ -84,7 +85,7 @@ describe('auth0.WebAuth.popup', function () {
 
     it('should open the authorize page in a popup', function (done) {
       stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
-        expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&nonce=123&state=456&owp=true');
+        expect(url).to.be('https://me.auth0.com/authorize?connection=the_connection&owp=true&client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&state=456&nonce=123');
         expect(relayUrl).to.be('https://me.auth0.com/relay.html');
         expect(options).to.eql({});
         cb(null, {
@@ -367,17 +368,18 @@ describe('auth0.WebAuth.popup', function () {
         responseType: 'token',
         _sendTelemetry: false
       });
-    });
 
-    afterEach(function () {
-      request.post.restore();
-    });
-
-    after(function(){
-      PopupHandler.prototype.load.restore();
-    })
-
-    it('should call db-connection signup with all the options', function (done) {
+      stub(windowHandler, 'getWindow', function() {
+        return {
+          screenX: 500,
+          screenY: 500,
+          outerWidth: 2000,
+          outerHeight: 500,
+          open: function() { return {
+            close: function() {}
+          }; }
+        };
+      });
 
       stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
         expect(url).to.be('https://me.auth0.com/sso_dbconnection_popup/...');
@@ -394,6 +396,18 @@ describe('auth0.WebAuth.popup', function () {
 
         cb();
       });
+    });
+
+    afterEach(function () {
+      request.post.restore();
+    });
+
+    after(function(){
+      windowHandler.getWindow.restore();
+      PopupHandler.prototype.load.restore();
+    })
+
+    it('should call db-connection signup with all the options', function (done) {
 
       stub(request, 'post', function (url) {
         expect(url).to.eql('https://me.auth0.com/dbconnections/signup');

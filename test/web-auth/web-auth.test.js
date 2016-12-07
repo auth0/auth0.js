@@ -3,7 +3,6 @@ var stub = require('sinon').stub;
 var request = require('superagent');
 
 var IframeHandler = require('../../src/helper/iframe-handler');
-var information = require('../../src/helper/information');
 
 var RequestMock = require('../mock/request-mock');
 
@@ -219,7 +218,7 @@ describe('auth0.WebAuth', function () {
 
     it('should pass the correct authorize url', function (done) {
       stub(IframeHandler.prototype, 'init', function(message) {
-        expect(this.url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&scope=openid%20name%20read%3Ablog&audience=urn%3Asite%3Ademo%3Ablog&nonce=123&state=456&prompt=none');
+        expect(this.url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&audience=urn%3Asite%3Ademo%3Ablog&scope=openid%20name%20read%3Ablog&state=456&nonce=123&prompt=none');
         this.timeoutCallback();
       });
 

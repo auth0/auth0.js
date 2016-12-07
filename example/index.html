@@ -6,6 +6,7 @@
     <script src="/webpack-dev-server.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="/auth0.js"></script>
+
     <style>
       .row {
         margin:10px 0;
@@ -241,7 +242,7 @@
 
     $('.login-hosted').click(function (e) {
       e.preventDefault();
-      webAuth.login({ });
+      webAuth.login({});
     });
 
     $('.login-twitter').click(function (e) {
@@ -291,6 +292,5 @@
       );
     });
     </script>
-
   </body>
 </html>
