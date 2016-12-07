@@ -124,6 +124,18 @@ Authentication.prototype.login = function (options, cb) {
   return this.oauthToken(options, cb);
 };
 
+Authentication.prototype.loginRealm = function (options, cb) {
+  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
+    username: { type: 'string', message: 'username option is required' },
+    password: { type: 'string', message: 'password option is required' }
+    realm: { type: 'string', message: 'realm option is required' }
+  });
+
+  options.grantType = 'http://auth0.com/oauth/grant-type/password-realm';
+
+  return this.oauthToken(options, cb);
+};
+
 Authentication.prototype.oauthToken = function (options, cb) {
   var url;
   var body;
