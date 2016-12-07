@@ -295,7 +295,7 @@ Auth0.prototype._configureOfflineMode = function(options) {
 
 Auth0.prototype._getUserInfo = function (profile, id_token, callback) {
 
-  console.warn("DEPRECATION NOTICE: This method will be soon deprecated, use `getUserInfo` instead.")
+  warn("DEPRECATION NOTICE: This method will be soon deprecated, use `getUserInfo` instead.")
 
   if (!(profile && !profile.user_id)) {
     return callback(null, profile);
@@ -1913,24 +1913,13 @@ Auth0.prototype.getSSOData = function (withActiveDirectories, cb) {
 /**
  * Get all configured connections for a client
  *
- * @example
- *
- *     auth0.getConnections(function (err, conns) {
- *       if (err) return console.log(err.message);
- *       expect(conns.length).to.be.above(0);
- *       expect(conns[0].name).to.eql('Apprenda.com');
- *       expect(conns[0].strategy).to.eql('adfs');
- *       expect(conns[0].status).to.eql(false);
- *       expect(conns[0].domain).to.eql('Apprenda.com');
- *       expect(conns[0].domain_aliases).to.eql(['Apprenda.com', 'foo.com', 'bar.com']);
- *     });
- *
  * @method getConnections
  * @param {Function} callback
+ * @deprecated This method is deprecated. If you need to get the connections please use Management API https://auth0.com/docs/api/management/v2#!/Connections/get_connections
  */
-// XXX We may change the way this method works in the future to use client's s3 file.
 
 Auth0.prototype.getConnections = function (callback) {
+  warn('getConnections is deprecated and will be removed shortly. Please use Management API endpoint /connections to list the connections');
   return jsonp('https://' + this._domain + '/public/api/' + this._clientID + '/connections', jsonpOpts, callback);
 };
 
