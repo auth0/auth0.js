@@ -21,7 +21,7 @@ The example directory has a ready-to-go app. In order to run it you need [node](
 Construct a new instance of the Auth0 client as follows:
 
 ```html
-<script src="//cdn.auth0.com/w2/auth0-7.5.0.min.js"></script>
+<script src="//cdn.auth0.com/w2/auth0-7.6.0.min.js"></script>
 <script type="text/javascript">
   var auth0 = new Auth0({
     domain:       'mine.auth0.com',
