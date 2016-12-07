@@ -79,12 +79,14 @@ WebAuth.prototype.parseHash = function (hash, options) {
   }
 
   return {
-    accessToken: parsedQs.access_token,
+    accessToken: parsedQs.access_token || null,
     idToken: parsedQs.id_token || null,
     idTokenPayload: token && token.payload ? token.payload : null,
     appStatus: token ? token.appStatus || null : null,
-    refreshToken: parsedQs.refresh_token,
-    state: parsedQs.state
+    refreshToken: parsedQs.refresh_token || null,
+    state: parsedQs.state || null,
+    expiresIn: parsedQs.expires_in || null,
+    tokenType: parsedQs.token_type || null
   };
 };
 

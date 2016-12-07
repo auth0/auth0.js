@@ -276,7 +276,11 @@ describe('helpers', function () {
       var object = {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
-        attrNAME3: 'attribute_3'
+        attrNAME3: 'attribute_3',
+        someObj: {
+          objAtt1: 'asd',
+          objAtt2: '123'
+        }
       };
 
       var newObject = objectHelper.toSnakeCase(object);
@@ -284,13 +288,21 @@ describe('helpers', function () {
       expect(object).to.eql({
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
-        attrNAME3: 'attribute_3'
+        attrNAME3: 'attribute_3',
+        someObj: {
+          objAtt1: 'asd',
+          objAtt2: '123'
+        }
       });
 
       expect(newObject).to.eql({
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
-        attr_name_3: 'attribute_3'
+        attr_name_3: 'attribute_3',
+        some_obj: {
+          obj_att_1: 'asd',
+          obj_att_2: '123'
+        }
       });
     });
 
@@ -313,6 +325,64 @@ describe('helpers', function () {
         attr_name_1: 'attribute_1',
         attrName22: 'attribute_2',
         attr_name_3: 'attribute_3'
+      });
+    });
+  });
+
+  describe('toCamelCase', function () {
+    it('should change the casing to all the attributes', function () {
+      var object = {
+        attr_name_1: 'attribute_1',
+        attr_name_22: 'attribute_2',
+        attr__name_3: 'attribute_3',
+        some_obj: {
+          obj_att_1: 'asdf',
+          obj_att_2: '1234'
+        }
+      };
+
+      var newObject = objectHelper.toCamelCase(object);
+
+      expect(object).to.eql({
+        attr_name_1: 'attribute_1',
+        attr_name_22: 'attribute_2',
+        attr__name_3: 'attribute_3',
+        some_obj: {
+          obj_att_1: 'asdf',
+          obj_att_2: '1234'
+        }
+      });
+
+      expect(newObject).to.eql({
+        attrName1: 'attribute_1',
+        attrName22: 'attribute_2',
+        attrName3: 'attribute_3',
+        someObj: {
+          objAtt1: 'asdf',
+          objAtt2: '1234'
+        }
+      });
+    });
+
+    it('should change the casing to all the attributes that are not blacklisted', function () {
+      var object = {
+        attr_name_1: 'attribute_1',
+        attr_name_22: 'attribute_2',
+        attr__name_3: 'attribute_3'
+      };
+
+      var newObject = objectHelper.toCamelCase(object, ['attr_name_22']);
+
+      expect(object).to.eql({
+        attr_name_1: 'attribute_1',
+        attr_name_22: 'attribute_2',
+        attr__name_3: 'attribute_3'
+      });
+
+      expect(newObject).to.eql({
+        attrName1: 'attribute_1',
+        attr_name_22: 'attribute_2',
+        attrName3: 'attribute_3'
       });
     });
   });

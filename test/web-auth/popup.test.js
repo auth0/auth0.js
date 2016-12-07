@@ -89,7 +89,6 @@ describe('auth0.WebAuth.popup', function () {
         expect(relayUrl).to.be('https://me.auth0.com/relay.html');
         expect(options).to.eql({});
         cb(null, {
-          _id: '...',
           email_verified: false,
           email: 'me@example.com'
         });
@@ -102,8 +101,7 @@ describe('auth0.WebAuth.popup', function () {
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          _id: '...',
-          email_verified: false,
+          emailVerified: false,
           email: 'me@example.com'
         });
         done();
@@ -143,8 +141,7 @@ describe('auth0.WebAuth.popup', function () {
         });
 
         cb(null, {
-          _id: '...',
-          email_verified: false,
+          emailVerified: false,
           email: 'me@example.com'
         });
       });
@@ -159,8 +156,7 @@ describe('auth0.WebAuth.popup', function () {
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          _id: '...',
-          email_verified: false,
+          emailVerified: false,
           email: 'me@example.com'
         });
         done();
@@ -223,9 +219,9 @@ describe('auth0.WebAuth.popup', function () {
             cb: function (cb) {
               cb(null, {
                 body: {
-                  id_token: 'id_token.id_token.id_token',
-                  access_token: 'access_token',
-                  token_type: 'bearer'
+                  idToken: 'id_token.id_token.id_token',
+                  accessToken: 'access_token',
+                  tokenType: 'bearer'
                 }
               });
             }
@@ -242,9 +238,9 @@ describe('auth0.WebAuth.popup', function () {
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          id_token: 'id_token.id_token.id_token',
-          access_token: 'access_token',
-          token_type: 'bearer'
+          idToken: 'id_token.id_token.id_token',
+          accessToken: 'access_token',
+          tokenType: 'bearer'
         });
         done();
       });
@@ -309,9 +305,9 @@ describe('auth0.WebAuth.popup', function () {
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          id_token: 'id_token.id_token.id_token',
-          access_token: 'access_token',
-          token_type: 'bearer'
+          idToken: 'id_token.id_token.id_token',
+          accessToken: 'access_token',
+          tokenType: 'bearer'
         });
         done();
       });
@@ -492,7 +488,7 @@ describe('auth0.WebAuth.popup', function () {
           },
           "code":"user_exists",
           "description":"The user already exists.",
-          "status_code":400
+          "statusCode":400
         });
         done();
       });

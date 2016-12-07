@@ -43,7 +43,6 @@ describe('auth0.WebAuth.redirect', function () {
           cb: function (cb) {
             cb(null, {
               body: {
-                _id: '...',
                 email_verified: false,
                 email: 'me@example.com'
               }
@@ -59,8 +58,7 @@ describe('auth0.WebAuth.redirect', function () {
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          _id: '...',
-          email_verified: false,
+          emailVerified: false,
           email: 'me@example.com'
         });
         done();
@@ -332,7 +330,7 @@ describe('auth0.WebAuth.redirect', function () {
           'name': 'ValidationError',
           'code': 'invalid_user_password',
           'description': 'Wrong email or password.',
-          'status_code': 400
+          'statusCode': 400
         });
         done();
       });
@@ -386,7 +384,7 @@ describe('auth0.WebAuth.redirect', function () {
           },
           "code":"user_exists",
           "description":"The user already exists.",
-          "status_code":400
+          "statusCode":400
         });
         done();
       });

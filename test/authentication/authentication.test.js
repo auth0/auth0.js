@@ -204,7 +204,7 @@ describe('auth0.authentication', function () {
       this.auth0.userInfo('abcd1234', function(err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          user_id: '...',
+          userId: '...',
           provider: 'auth0',
           connection: 'Username-Password-Authentication',
           isSocial: false
@@ -261,9 +261,9 @@ describe('auth0.authentication', function () {
       }, function(err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          'token_type': 'Bearer',
-          'expires_in': 36000,
-          'id_token': 'eyJ...'
+          'tokenType': 'Bearer',
+          'expiresIn': 36000,
+          'idToken': 'eyJ...'
         });
         done();
       })
@@ -351,9 +351,9 @@ describe('auth0.authentication', function () {
       }, function(err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          'token_type': 'Bearer',
-          'expires_in': 36000,
-          'id_token': 'eyJ...'
+          'tokenType': 'Bearer',
+          'expiresIn': 36000,
+          'idToken': 'eyJ...'
         });
         done();
       })

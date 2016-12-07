@@ -99,7 +99,7 @@ describe('auth0.Management', function () {
       this.auth0.getUser('auth0|123', function(err, user) {
         expect(err).to.be(null);
         expect(user).to.eql({
-          'user_id': 'auth0|123',
+          'userId': 'auth0|123',
           'email': 'me@example.com'
         });
         done();
@@ -182,9 +182,9 @@ describe('auth0.Management', function () {
       this.auth0.patchUserMetadata('auth0|123', {role:'admin'}, function(err, user) {
         expect(err).to.be(null);
         expect(user).to.eql({
-          'user_id': 'auth0|123',
+          'userId': 'auth0|123',
           'email': 'me@example.com',
-          'user_metadata': { role: 'admin' }
+          'userMetadata': { role: 'admin' }
         });
         done();
       })
@@ -281,20 +281,20 @@ describe('auth0.Management', function () {
         expect(err).to.be(null);
         expect(user).to.eql([{
             'connection': 'twitter',
-            'user_id': '191919191919191',
+            'userId': '191919191919191',
             'provider': 'twitter',
             'profileData': {
               'email': '',
-              'email_verified': false,
+              'emailVerified': false,
               'name': '',
               'username': 'johndoe',
-              'given_name': '',
+              'givenName': '',
               'phoneNumber': '',
-              'phone_verified': false,
-              'family_name': ''
+              'phoneVerified': false,
+              'familyName': ''
             },
             'isSocial': false,
-            'access_token': ''
+            'accessToken': ''
           }]);
         done();
       })

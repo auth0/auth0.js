@@ -1,4 +1,5 @@
 var error = require('./error');
+var objectHelper = require('./object');
 
 function wrapCallback(cb) {
   return function (err, data) {
@@ -14,11 +15,11 @@ function wrapCallback(cb) {
       };
 
       if (err.response && err.response.statusCode) {
-        errObj.status_code = err.response.statusCode;
+        errObj.statusCode = err.response.statusCode;
       }
 
       if (err.response && err.response.statusText) {
-        errObj.status_text = err.response.statusText;
+        errObj.statusText = err.response.statusText;
       }
 
       if (err.response && err.response.body) {
@@ -39,7 +40,7 @@ function wrapCallback(cb) {
       return cb(errObj);
     }
 
-    return cb(null, data.body || data.text || data);
+    return cb(null, objectHelper.toCamelCase(data.body || data.text || data));
   };
 }
 

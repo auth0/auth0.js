@@ -61,9 +61,9 @@ describe('auth0.authentication', function () {
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          id_token: 'id_token.id_token.id_token',
-          access_token: 'access_token',
-          token_type: 'bearer'
+          idToken: 'id_token.id_token.id_token',
+          accessToken: 'access_token',
+          tokenType: 'bearer'
         });
         done();
       });
@@ -147,9 +147,9 @@ describe('auth0.authentication', function () {
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          id_token: 'id_token.id_token.id_token',
-          access_token: 'access_token',
-          token_type: 'bearer'
+          idToken: 'id_token.id_token.id_token',
+          accessToken: 'access_token',
+          tokenType: 'bearer'
         });
         done();
       });
