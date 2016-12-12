@@ -65,6 +65,30 @@ describe('auth0.authentication', function () {
       expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&state=1234');
     })
 
+    it('should return a url with connection_scope', function() {
+      var url = this.auth0.buildAuthorizeUrl({
+        responseType: 'token',
+        redirectUri: 'http://anotherpage.com/callback2',
+        prompt: 'none',
+        state: '1234',
+        connection_scope: 'scope1,scope2'
+      });
+
+      expect(url).to.be('https://me.auth0.com/authorize?connection_scope=scope1%2Cscope2&client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&state=1234&prompt=none');
+    })
+
+    it('should return a url with connection_scope as a string', function() {
+      var url = this.auth0.buildAuthorizeUrl({
+        responseType: 'token',
+        redirectUri: 'http://anotherpage.com/callback2',
+        prompt: 'none',
+        state: '1234',
+        connection_scope: ['scope1', 'scope2']
+      });
+
+      expect(url).to.be('https://me.auth0.com/authorize?connection_scope=scope1%2Cscope2&client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&state=1234&prompt=none');
+    })
+
     it('should return a url using overriding the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl({
         responseType: 'token',
@@ -295,9 +319,29 @@ describe('auth0.authentication', function () {
         cb();
       });
 
-      this.auth0.login({
+      this.auth0.loginWithDefaultDirectory({
         username: 'someUsername',
         password: '123456'
+      }, function(err, data) {
+        done();
+      })
+    });
+
+    it('should call oauthToken with all the options', function(done) {
+      stub(this.auth0, 'oauthToken', function(options, cb) {
+        expect(options).to.eql({
+          username: 'someUsername',
+          password: '123456',
+          grantType: 'http://auth0.com/oauth/grant-type/password-realm',
+          realm: 'pepe.com'
+        })
+        cb();
+      });
+
+      this.auth0.login({
+        username: 'someUsername',
+        password: '123456',
+        realm: 'pepe.com'
       }, function(err, data) {
         done();
       })
