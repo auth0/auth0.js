@@ -3,6 +3,7 @@ var objectHelper = require('../helper/object');
 var authorize_params = [
 // auth0
   'connection',
+  'connection_scope',
   'auth0Client',
   'owp',
 // oauth2
