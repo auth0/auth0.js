@@ -1,5 +1,24 @@
 var objectHelper = require('../helper/object');
 
+var token_params = [
+// auth0
+  'realm',
+// oauth2
+  'client_id',
+  'client_secret',
+  'redirect_uri',
+  'scope',
+  'code',
+  'grant_type',
+  'username',
+  'password',
+  'refresh_token',
+  'assertion',
+  'client_assertion',
+  'client_assertion_type',
+  'code_verifier'
+];
+
 var authorize_params = [
 // auth0
   'connection',
@@ -35,6 +54,11 @@ function oauthAuthorizeParams(params) {
   return objectHelper.pick(params, authorize_params);
 }
 
+function oauthTokenParams(params) {
+  return objectHelper.pick(params, token_params);
+}
+
 module.exports = {
+  oauthTokenParams: oauthTokenParams,
   oauthAuthorizeParams: oauthAuthorizeParams
 };

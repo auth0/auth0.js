@@ -155,6 +155,8 @@ Authentication.prototype.oauthToken = function (options, cb) {
     'audience'
   ]).with(options);
 
+  body = parametersWhitelist.oauthTokenParams(body);
+
   assert.check(body, { type: 'object', message: 'options parameter is not valid' }, {
     clientID: { type: 'string', message: 'clientID option is required' },
     grantType: { type: 'string', message: 'grantType option is required' },
