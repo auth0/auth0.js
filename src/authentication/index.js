@@ -80,6 +80,10 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
     params.auth0Client = this.request.getTelemetryData();
   }
 
+  if (params.connection_scope && assert.isArray(params.connection_scope)) {
+    params.connection_scope = params.connection_scope.join(',');
+  }
+
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
   params = parametersWhitelist.oauthAuthorizeParams(params);
 
@@ -113,13 +117,25 @@ Authentication.prototype.buildLogoutUrl = function (options) {
   return urljoin(this.baseOptions.rootUrl, 'v2', 'logout', '?' + qString);
 };
 
-Authentication.prototype.login = function (options, cb) {
+Authentication.prototype.loginWithDefaultDirectory = function (options, cb) {
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     username: { type: 'string', message: 'username option is required' },
     password: { type: 'string', message: 'password option is required' }
   });
 
   options.grantType = 'password';
+
+  return this.oauthToken(options, cb);
+};
+
+Authentication.prototype.login = function (options, cb) {
+  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
+    username: { type: 'string', message: 'username option is required' },
+    password: { type: 'string', message: 'password option is required' },
+    realm: { type: 'string', message: 'realm option is required' }
+  });
+
+  options.grantType = 'http://auth0.com/oauth/grant-type/password-realm';
 
   return this.oauthToken(options, cb);
 };
@@ -147,6 +163,7 @@ Authentication.prototype.oauthToken = function (options, cb) {
   });
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
+  body = parametersWhitelist.oauthTokenParams(body);
 
   body.grant_type = body.grant_type;
 
