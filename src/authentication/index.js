@@ -165,7 +165,7 @@ Authentication.prototype.loginWithDefaultDirectory = function (options, cb) {
 /**
  * Makes a call to the `oauth/token` endpoint with `password-realm` grant type
  *
- * @method loginWithDefaultDirectory
+ * @method login
  * @param {Object} options:
  * @param {Object} options.username
  * @param {Object} options.password
