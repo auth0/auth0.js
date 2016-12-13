@@ -405,6 +405,49 @@ describe('auth0.authentication', function () {
 
   });
 
+  context('getUserCountry', function () {
+    before(function() {
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function(){
+      request.get.restore();
+    })
+
+    it('should return the user country code', function(done) {
+      stub(request, 'get', function(url) {
+        expect(url).to.be('https://me.auth0.com/user/geoloc/country')
+        return new RequestMock({
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                'country_code': 'AR'
+              }
+            });
+          }
+        });
+      });
+
+      this.auth0.getUserCountry(function(err, data) {
+        expect(err).to.be(null);
+        expect(data).to.eql({
+          countryCode: 'AR'
+        });
+        done();
+      })
+    });
+
+  });
+
   context('getSSOData', function () {
     before(function() {
       this.auth0 = new Authentication({

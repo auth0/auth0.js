@@ -135,7 +135,8 @@ describe('helpers responseHandler', function () {
 
   it('should return the data 2', function (done) {
     var assert_data = {
-      text: 'The reponse message'
+      text: 'The reponse message',
+      type: 'text/html'
     }
 
     responseHandler(function(err, data) {
