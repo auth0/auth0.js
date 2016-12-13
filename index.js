@@ -266,7 +266,7 @@ Auth0.prototype._renderAndSubmitWSFedForm = function (options, formHtml) {
 
 Auth0.prototype._getMode = function (options) {
   var result = {
-    scope: 'openid',
+    scope: this._scope,
     response_type: this._getResponseType(options)
   };
 
@@ -1331,7 +1331,7 @@ Auth0.prototype.loginWithResourceOwner = function (options, callback) {
 Auth0.prototype.loginWithSocialAccessToken = function (options, callback) {
   var _this = this;
   var query = this._buildAuthorizationParameters([
-      { scope: 'openid' },
+      { scope: this._scope },
       options,
       { client_id: this._clientID }
     ]);
