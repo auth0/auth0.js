@@ -161,7 +161,7 @@ function Auth0 (options) {
   this._useCordovaSocialPlugins = false || options.useCordovaSocialPlugins;
   this._sendClientInfo = null != options.sendSDKClientInfo ? options.sendSDKClientInfo : true;
 
-  this._scope = options.scope || null;
+  this._scope = options.scope || 'openid';
   this._audience = options.audience || null;
 }
 
