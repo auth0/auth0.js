@@ -4,6 +4,13 @@ var RequestBuilder = require('../helper/request-builder');
 var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 
+/**
+ * Api client for the management API (methods allowed to be called from the browser only)
+ * @constructor
+ * @param {Object} options
+ * @param {Object} options.domain
+ * @param {Object} options.token
+ */
 function Management(options) {
   /* eslint-disable */
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
@@ -22,6 +29,13 @@ function Management(options) {
   this.baseOptions.rootUrl = urljoin('https://' + this.baseOptions.domain, 'api', 'v2');
 }
 
+/**
+ * Returns the user profile. https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
+ *
+ * @method getUser
+ * @param {String} userId
+ * @param {Function} cb
+ */
 Management.prototype.getUser = function (userId, cb) {
   var url;
 
@@ -35,6 +49,15 @@ Management.prototype.getUser = function (userId, cb) {
     .end(responseHandler(cb));
 };
 
+/**
+ * Updates the user metdata. It will patch the user metdata with the attributes sent.
+ * https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
+ *
+ * @method patchUserMetadata
+ * @param {String} userId
+ * @param {Object} userMetadata
+ * @param {Function} cb
+ */
 Management.prototype.patchUserMetadata = function (userId, userMetadata, cb) {
   var url;
 
@@ -50,6 +73,14 @@ Management.prototype.patchUserMetadata = function (userId, userMetadata, cb) {
     .end(responseHandler(cb));
 };
 
+/**
+ * Link two users. https://auth0.com/docs/api/management/v2#!/Users/post_identities
+ *
+ * @method linkUser
+ * @param {String} userId
+ * @param {Object} secondaryUserToken
+ * @param {Function} cb
+ */
 Management.prototype.linkUser = function (userId, secondaryUserToken, cb) {
   var url;
   /* eslint-disable */
