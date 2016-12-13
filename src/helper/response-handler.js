@@ -40,7 +40,7 @@ function wrapCallback(cb) {
       return cb(errObj);
     }
 
-    return cb(null, objectHelper.toCamelCase(data.body || data.text || data));
+    return cb(null, (data.type && data.type === 'text/html') ? data.text : objectHelper.toCamelCase(data.body || data));
   };
 }
 
