@@ -3,6 +3,7 @@ var objectHelper = require('../helper/object');
 var token_params = [
 // auth0
   'realm',
+  'audience',
 // oauth2
   'client_id',
   'client_secret',

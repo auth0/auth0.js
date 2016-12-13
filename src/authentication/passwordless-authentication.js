@@ -10,6 +10,13 @@ function PasswordlessAuthentication(request, options) {
   this.request = request;
 }
 
+/**
+ * Builds and returns the passwordless TOTP verify url in order to initialize a new authN/authZ transaction
+ *
+ * @method buildVerifyUrl
+ * @param {Object} options
+ * @param {Function} cb
+ */
 PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
   var params;
   var qString;
@@ -56,6 +63,13 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
   return urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify_redirect', '?' + qString);
 };
 
+/**
+ * Initializes a new passwordless authN/authZ transaction
+ *
+ * @method start
+ * @param {Object} options: https://auth0.com/docs/api/authentication#passwordless
+ * @param {Function} cb
+ */
 PasswordlessAuthentication.prototype.start = function (options, cb) {
   var url;
   var body;
@@ -90,6 +104,13 @@ PasswordlessAuthentication.prototype.start = function (options, cb) {
     .end(responseHandler(cb));
 };
 
+/**
+ * Verifies the passwordless TOTP and returns an error if any.
+ *
+ * @method buildVerifyUrl
+ * @param {Object} options
+ * @param {Function} cb
+ */
 PasswordlessAuthentication.prototype.verify = function (options, cb) {
   var url;
   var cleanOption;

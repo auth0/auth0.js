@@ -5,7 +5,7 @@ var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 
 /**
- * Api client for the management API (methods allowed to be called from the browser only)
+ * Auth0 Management API Client (methods allowed to be called from the browser only)
  * @constructor
  * @param {Object} options
  * @param {Object} options.domain

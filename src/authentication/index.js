@@ -11,6 +11,18 @@ var Warn = require('../helper/warn');
 var PasswordlessAuthentication = require('./passwordless-authentication');
 var DBConnection = require('./db-connection');
 
+/**
+ * Auth0 Authentication API client
+ * @constructor
+ * @param {Object} options
+ * @param {Object} options.domain
+ * @param {Object} options.clienID
+ * @param {Object} options.responseType
+ * @param {Object} options.responseMode
+ * @param {Object} options.scope
+ * @param {Object} options.audience
+ * @param {Object} options._disableDeprecationWarnings
+ */
 function Authentication(options) {
   /* eslint-disable */
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
@@ -44,6 +56,13 @@ function Authentication(options) {
   });
 }
 
+/**
+ * Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction
+ *
+ * @method buildAuthorizeUrl
+ * @param {Object} options: https://auth0.com/docs/api/authentication#!#get--authorize_db
+ * @param {Function} cb
+ */
 Authentication.prototype.buildAuthorizeUrl = function (options) {
   var params;
   var qString;
@@ -92,6 +111,12 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
   return urljoin(this.baseOptions.rootUrl, 'authorize', '?' + qString);
 };
 
+/**
+ * Builds and returns the Logout url in order to initialize a new authN/authZ transaction
+ *
+ * @method buildLogoutUrl
+ * @param {Object} options: https://auth0.com/docs/api/authentication#!#get--v2-logout
+ */
 Authentication.prototype.buildLogoutUrl = function (options) {
   var params;
   var qString;
@@ -117,10 +142,19 @@ Authentication.prototype.buildLogoutUrl = function (options) {
   return urljoin(this.baseOptions.rootUrl, 'v2', 'logout', '?' + qString);
 };
 
+/**
+ * Makes a call to the `oauth/token` endpoint with `password` grant type
+ *
+ * @method loginWithDefaultDirectory
+ * @param {Object} options: https://auth0.com/docs/api-auth/grant/password
+ * @param {Function} cb
+ */
 Authentication.prototype.loginWithDefaultDirectory = function (options, cb) {
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     username: { type: 'string', message: 'username option is required' },
-    password: { type: 'string', message: 'password option is required' }
+    password: { type: 'string', message: 'password option is required' },
+    scope: { optional: true, type: 'string', message: 'scope option is required' },
+    audience: { optional: true, type: 'string', message: 'audience option is required' }
   });
 
   options.grantType = 'password';
@@ -128,11 +162,25 @@ Authentication.prototype.loginWithDefaultDirectory = function (options, cb) {
   return this.oauthToken(options, cb);
 };
 
+/**
+ * Makes a call to the `oauth/token` endpoint with `password-realm` grant type
+ *
+ * @method loginWithDefaultDirectory
+ * @param {Object} options:
+ * @param {Object} options.username
+ * @param {Object} options.password
+ * @param {Object} options.scope
+ * @param {Object} options.audience
+ * @param {Object} options.realm: the HRD domain or the connection name
+ * @param {Function} cb
+ */
 Authentication.prototype.login = function (options, cb) {
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     username: { type: 'string', message: 'username option is required' },
     password: { type: 'string', message: 'password option is required' },
-    realm: { type: 'string', message: 'realm option is required' }
+    realm: { type: 'string', message: 'realm option is required' },
+    scope: { optional: true, type: 'string', message: 'scope option is required' },
+    audience: { optional: true, type: 'string', message: 'audience option is required' }
   });
 
   options.grantType = 'http://auth0.com/oauth/grant-type/password-realm';
@@ -140,6 +188,18 @@ Authentication.prototype.login = function (options, cb) {
   return this.oauthToken(options, cb);
 };
 
+/**
+ * Makes a call to the `oauth/token` endpoint
+ *
+ * @method oauthToken
+ * @param {Object} options:
+ * @param {Object} options.username
+ * @param {Object} options.password
+ * @param {Object} options.scope
+ * @param {Object} options.audience
+ * @param {Object} options.grantType
+ * @param {Function} cb
+ */
 Authentication.prototype.oauthToken = function (options, cb) {
   var url;
   var body;
@@ -173,6 +233,19 @@ Authentication.prototype.oauthToken = function (options, cb) {
     .end(responseHandler(cb));
 };
 
+/**
+ * Makes a call to the `/ro` endpoint
+ *
+ * @method loginWithResourceOwner
+ * @param {Object} options:
+ * @param {Object} options.username
+ * @param {Object} options.password
+ * @param {Object} options.connection
+ * @param {Object} options.scope
+ * @param {Object} options.audience
+ * @param {Function} cb
+ * @deprecated `loginWithResourceOwner` will be soon deprecated, user `login` instead.
+ */
 Authentication.prototype.loginWithResourceOwner = function (options, cb) {
   var url;
   var body;
@@ -206,6 +279,14 @@ Authentication.prototype.loginWithResourceOwner = function (options, cb) {
     .end(responseHandler(cb));
 };
 
+/**
+ * Makes a call to the `/ssodata` endpoint
+ *
+ * @method getSSOData
+ * @param {Boolean} withActiveDirectories
+ * @param {Function} cb
+ * @deprecated `getSSOData` will be soon deprecated.
+ */
 Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
   var url;
   var params = '';
@@ -235,6 +316,13 @@ Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
     .end(responseHandler(cb));
 };
 
+/**
+ * Makes a call to the `/userinfo` endpoint and returns the user profile
+ *
+ * @method userInfo
+ * @param {String} accessToken
+ * @param {Function} cb
+ */
 Authentication.prototype.userInfo = function (accessToken, cb) {
   var url;
 
@@ -249,6 +337,14 @@ Authentication.prototype.userInfo = function (accessToken, cb) {
     .end(responseHandler(cb));
 };
 
+/**
+ * Makes a call to the `/delegation` endpoint
+ *
+ * @method delegation
+ * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--delegation
+ * @param {Function} cb
+ * @deprecated `delegation` will be soon deprecated.
+ */
 Authentication.prototype.delegation = function (options, cb) {
   var url;
   var body;

@@ -9,6 +9,13 @@ function DBConnection(request, options) {
   this.request = request;
 }
 
+/**
+ * Signup a new user
+ *
+ * @method signup
+ * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--dbconnections-signup
+ * @param {Function} cb
+ */
 DBConnection.prototype.signup = function (options, cb) {
   var url;
   var body;
@@ -35,6 +42,13 @@ DBConnection.prototype.signup = function (options, cb) {
     .end(responseHandler(cb));
 };
 
+/**
+ * Initializes the change password flow
+ *
+ * @method signup
+ * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--dbconnections-change_password
+ * @param {Function} cb
+ */
 DBConnection.prototype.changePassword = function (options, cb) {
   var url;
   var body;
