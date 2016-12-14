@@ -104,7 +104,8 @@ describe('auth0.WebAuth.redirect', function () {
           },
           cb: function (cb) {
             cb(null, {
-              text: 'the_form_html'
+              text: 'the_form_html',
+              type: 'text/html'
             });
           }
         });

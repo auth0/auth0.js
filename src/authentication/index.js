@@ -369,4 +369,22 @@ Authentication.prototype.delegation = function (options, cb) {
     .end(responseHandler(cb));
 };
 
+/**
+ * Fetches the user country based on the ip.
+ *
+ * @method getUserCountry
+ * @param {Function} cb
+ */
+Authentication.prototype.getUserCountry = function (cb) {
+  var url;
+
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  url = urljoin(this.baseOptions.rootUrl, 'user', 'geoloc', 'country');
+
+  return this.request
+    .get(url)
+    .end(responseHandler(cb));
+};
+
 module.exports = Authentication;
