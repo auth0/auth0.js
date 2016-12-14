@@ -1,5 +1,19 @@
 #Change Log
 
+## [v8.0.0-beta.1](https://github.com/auth0/lock/tree/v8.0.0-beta.1) (2016-12-14)
+[Full Changelog](https://github.com/auth0/lock/tree/v8.0.0-alpha.2...v8.0.0-beta.1)
+
+**Added**
+- Add get user country method for passwordless [\#267](https://github.com/auth0/auth0.js/pull/267) ([glena](https://github.com/glena))
+- Login with password realm grant via /oauth/token [\#265](https://github.com/auth0/auth0.js/pull/265) ([glena](https://github.com/glena))
+
+**Changed**
+- Add standard fields to parseHash and normalize responses to camelCase [\#261](https://github.com/auth0/auth0.js/pull/261) ([glena](https://github.com/glena))
+- Add Whitelist of authorize parameters  [\#258](https://github.com/auth0/auth0.js/pull/258) ([glena](https://github.com/glena))
+
+**Fixed**
+- Send cookies on CORS call [\#259](https://github.com/auth0/auth0.js/pull/259) ([glena](https://github.com/glena))
+
 ## [v8.0.0-alpha.2](https://github.com/auth0/lock/tree/v8.0.0-alpha.2) (2016-12-05)
 [Full Changelog](https://github.com/auth0/lock/tree/v8.0.0-alpha.1...v8.0.0-alpha.2)
 

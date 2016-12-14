@@ -2,7 +2,7 @@
 
 npm install
 
-NPM_TAG=${2:-"alpha"}
+NPM_TAG=${2:-"beta"}
 MATCHER=${3:-"*"}
 
 NPM_NAME=$(node scripts/utils/attribute.js name)
