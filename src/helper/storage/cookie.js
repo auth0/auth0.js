@@ -1,5 +1,5 @@
-var windowHandler = require('./window');
-var cookies = require('./cookies');
+var windowHandler = require('../window');
+var cookies = require('../cookies');
 
 function CookieStorage() {}
 

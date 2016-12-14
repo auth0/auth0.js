@@ -3,7 +3,7 @@ var DummyStorage = require('./dummy');
 var CookieStorage = require('./cookie');
 
 function StorageHandler() {
-  this.storage = windowHandler.getWindow().localStorage || new DummyStorage();
+  this.storage = windowHandler.getWindow().localStorage || new CookieStorage();
 }
 
 StorageHandler.prototype.failover = function () {
@@ -20,6 +20,7 @@ StorageHandler.prototype.getItem = function (key) {
   try {
     return this.storage.getItem(key);
   } catch (e) {
+    console.log(e);
     this.failover();
     return this.getItem(key);
   }
