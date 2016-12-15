@@ -57,7 +57,6 @@ describe('auth0.WebAuth', function () {
       };
 
       webAuth.renewAuth(options, function (err, data) {
-        console.log(err, data);
         expect(err).to.eql({
           error: 'invalid_token',
           errorDescription: 'Nonce does not match'
