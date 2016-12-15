@@ -4,6 +4,11 @@ function create(name, value, days) {
   var date;
   var expires;
 
+  if (windowHandler.getDocument().cookie === undefined
+      || windowHandler.getDocument().cookie === null) {
+    throw new Error('cookie storage not available');
+  }
+
   if (days) {
     date = new Date();
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -12,14 +17,21 @@ function create(name, value, days) {
     expires = '';
   }
 
-  windowHandler.getDocument().cookie = name + '+' + value + expires + '; path=/';
+  windowHandler.getDocument().cookie = name + '=' + value + expires + '; path=/';
 }
 
 function read(name) {
   var i;
   var cookie;
+  var cookies;
   var nameEQ = name + '=';
-  var cookies = windowHandler.getDocument().cookie.split(';');
+
+  if (windowHandler.getDocument().cookie === undefined
+      || windowHandler.getDocument().cookie === null) {
+    throw new Error('cookie storage not available');
+  }
+
+  cookies = windowHandler.getDocument().cookie.split(';');
 
   for (i = 0; i < cookies.length; i++) {
     cookie = cookies[i];

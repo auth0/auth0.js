@@ -1,8 +1,8 @@
 var StorageHandler = require('./storage/handler');
 var storage;
 
-function getStorage() {
-  if (!storage) {
+function getStorage(force) {
+  if (!storage || force) {
     storage = new StorageHandler();
   }
   return storage;
@@ -11,7 +11,7 @@ function getStorage() {
 module.exports = {
   getItem: function (key) {
     var value = getStorage().getItem(key);
-    return JSON.parse(value);
+    return value ? JSON.parse(value) : value;
   },
   removeItem: function (key) {
     return getStorage().removeItem(key);
@@ -19,5 +19,8 @@ module.exports = {
   setItem: function (key, value) {
     var json = JSON.stringify(value);
     return getStorage().setItem(key, json);
+  },
+  reload: function() {
+    getStorage(true);
   }
 };

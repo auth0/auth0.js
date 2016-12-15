@@ -12,7 +12,7 @@ CookieStorage.prototype.removeItem = function (key) {
 };
 
 CookieStorage.prototype.setItem = function (key, value) {
-  cookies.read(key, value, 1);
+  cookies.create(key, value, 1);
 };
 
 module.exports = CookieStorage;

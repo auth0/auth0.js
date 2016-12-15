@@ -2,6 +2,7 @@ var expect = require('expect.js');
 var stub = require('sinon').stub;
 var request = require('superagent');
 
+var storage = require('../../src/helper/storage');
 var IframeHandler = require('../../src/helper/iframe-handler');
 
 var RequestMock = require('../mock/request-mock');
@@ -29,6 +30,7 @@ describe('auth0.WebAuth', function () {
           appState: null
         });
       };
+      storage.reload();
     })
 
     it('should fail if the nonce is not valid', function (done) {
@@ -55,6 +57,7 @@ describe('auth0.WebAuth', function () {
       };
 
       webAuth.renewAuth(options, function (err, data) {
+        console.log(err, data);
         expect(err).to.eql({
           error: 'invalid_token',
           errorDescription: 'Nonce does not match'
