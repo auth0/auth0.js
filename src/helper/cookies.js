@@ -1,4 +1,5 @@
 var windowHandler = require('./window');
+var base64Url = require('./base64_url');
 
 function create(name, value, days) {
   var date;
@@ -17,7 +18,7 @@ function create(name, value, days) {
     expires = '';
   }
 
-  windowHandler.getDocument().cookie = name + '=' + value + expires + '; path=/';
+  windowHandler.getDocument().cookie = name + '=' + base64Url.encode(value) + expires + '; path=/';
 }
 
 function read(name) {
@@ -39,7 +40,7 @@ function read(name) {
       cookie = cookie.substring(1, cookie.length);
     }
     if (cookie.indexOf(nameEQ) === 0) {
-      return cookie.substring(nameEQ.length, cookie.length);
+      return base64Url.decode(cookie.substring(nameEQ.length, cookie.length));
     }
   }
 

@@ -10,10 +10,13 @@ function StorageHandler() {
 
 StorageHandler.prototype.failover = function () {
   if (this.storage instanceof DummyStorage) {
+    this.warn.warning('DummyStorage: ignore failover');
     return;
   } else if (this.storage instanceof CookieStorage) {
+    this.warn.warning('CookieStorage: failing over DummyStorage');
     this.storage = new DummyStorage();
   } else {
+    this.warn.warning('LocalStorage: failing over CookieStorage');
     this.storage = new CookieStorage();
   }
 };
