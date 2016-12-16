@@ -8,25 +8,35 @@
 #
 # Running the npm script
 #    npm run release -- major
+#
+# or the tag it should use the final version number starting with `v`
+#
+# Running the script directly:
+#    scripts/release.sh v8.0.0-beta.1
+#
+# Running the npm script
+#    npm run release -- v8.0.0-beta.1
+
+NEW_VERSION=""
+VALID_VERSION_LEVELS=(major minor patch)
+CURR_DATE=`date +%Y-%m-%d`
+
+IS_VALID_VERSION_LEVEL=false
+VERSION_LEVEL=$1
 
 REPO_URL=$( jq .repository.url package.json | sed 's/\"//g' | sed 's/\.git//g')
 REPO_NAME=$( basename $REPO_URL )
+TMP_CHANGELOG_FILE="/tmp/$REPO_NAME-TMPCHANGELOG-$RANDOM"
 
 if [ "$REPO_NAME" = "null" ] || [ "$REPO_NAME" = "" ]; then
    echo "Could not parse repository url"
    exit 1
 fi
 
-VALID_VERSION_LEVELS=(major minor patch)
-
-VERSION_LEVEL=$1
-
 if [ "$VERSION_LEVEL" = "" ]; then
    echo "Version level not provided"
    exit 1
 fi
-
-IS_VALID_VERSION_LEVEL=false
 
 for i in "${!VALID_VERSION_LEVELS[@]}"; do
    if [[ "${VALID_VERSION_LEVELS[$i]}" = "${VERSION_LEVEL}" ]]; then
@@ -35,22 +45,29 @@ for i in "${!VALID_VERSION_LEVELS[@]}"; do
 done
 
 if [ $IS_VALID_VERSION_LEVEL = false ]; then
-  echo "Version level is not valid (major minor patch supported)"
-  exit 1
-fi
+  FIRST_LETER=${VERSION_LEVEL:0:1}
 
-TMP_CHANGELOG_FILE="/tmp/$REPO_NAME-TMPCHANGELOG-$RANDOM"
-CURR_DATE=`date +%Y-%m-%d`
+  if [ "$FIRST_LETER" != "v" ]; then
+    echo "Version level is not valid (major, minor, patch or the version tag (v#.#.#) supported)"
+    exit 1
+  fi
+
+  NEW_V_VERSION=$VERSION_LEVEL
+  NEW_VERSION=${VERSION_LEVEL:1}
+fi
 
 echo "Release process init"
 
-ORIG_VERSION=$( jq .version package.json | sed 's/\"//g')
+ORIG_VERSION=$(jq .version package.json | sed 's/\"//g')
 
 echo "Current version" $ORIG_VERSION
 
-NEW_VERSION=$( node_modules/.bin/semver $ORIG_VERSION --preid beta -i $VERSION_LEVEL )
+if [ "$NEW_VERSION" == "" ]; then
+  NEW_VERSION=$( node_modules/.bin/semver $ORIG_VERSION -i $VERSION_LEVEL )
+  NEW_V_VERSION="v$NEW_VERSION"
+fi
+
 QUOTED_NEW_VERSION="\"$NEW_VERSION\""
-NEW_V_VERSION="v$NEW_VERSION"
 
 echo "New version" $NEW_VERSION
 
