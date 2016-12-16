@@ -38,7 +38,7 @@ Redirect.prototype.login = function (options, cb) {
   this.warn.warning('`webauth.redirect.login` will be soon deprecated, use `webauth.login` instead.');
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
-    responseType: { optional: true, type: 'string', message: 'responseType option is required' }
+    responseType: { type: 'string', message: 'responseType option is required' }
   });
 
   params = this.transactionManager.process(params);

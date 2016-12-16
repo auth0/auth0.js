@@ -553,13 +553,21 @@ describe('auth0.WebAuth.redirect', function () {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',
-        responseType: 'code',
         _sendTelemetry: false
       });
     });
 
+    it('should check that responseType is present', function() {
+      var _this = this;
+      expect(function() {
+        _this.auth0.login({ connection: 'facebook' })
+      }).to.throwException(function (e) {
+        expect(e.message).to.be('responseType option is required');
+      });
+    })
+
     it('should redirect to authorize', function () {
-      this.auth0.login({connection: 'facebook', state: '1234'})
+      this.auth0.login({responseType: 'code', connection: 'facebook', state: '1234'})
       expect(global.window.location).to.be('https://me.auth0.com/authorize?connection=facebook&client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&state=1234');
     });
 

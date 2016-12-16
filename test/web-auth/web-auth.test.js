@@ -254,6 +254,28 @@ describe('auth0.WebAuth', function () {
     });
   });
 
+  context('login', function () {
+    it('should check that responseType is present', function () {
+      global.window = { location: '' };
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false
+      });
+
+      expect(function() {
+        webAuth.login({ connection: 'facebook' })
+      }).to.throwException(function (e) {
+        expect(e.message).to.be('responseType option is required');
+      });
+
+      delete global.window;
+    });
+  });
+
   context('renewAuth', function () {
     beforeEach(function(){
       global.window = {};
