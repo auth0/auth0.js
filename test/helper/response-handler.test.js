@@ -23,6 +23,7 @@ describe('helpers responseHandler', function () {
     assert_err.response.statusText = 'Bad request';
     assert_err.response.body = {
       error: 'the_error_code',
+      policy: 'the policy',
       error_description: 'The error description.',
       name: 'SomeName'
     };
@@ -34,6 +35,7 @@ describe('helpers responseHandler', function () {
         statusCode: 400,
         statusText: 'Bad request',
         code: 'the_error_code',
+        policy: 'the policy',
         description: 'The error description.',
         name: 'SomeName'
       });

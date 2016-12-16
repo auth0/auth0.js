@@ -2,6 +2,7 @@ var UsernamePassword = require('./username-password');
 var TransactionManager = require('./transaction-manager');
 var objectHelper = require('../helper/object');
 var Warn = require('../helper/warn');
+var assert = require('../helper/assert');
 
 function Redirect(client, options) {
   this.baseOptions = options;
