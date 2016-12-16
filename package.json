@@ -20,7 +20,7 @@
     "test:ci": "istanbul cover _mocha --report lcovonly -R test/**/*; codecov",
     "lint": "eslint ./src",
     "publish:cdn": "ccu",
-    "release:prepare": "npm --no-git-tag-version version"
+    "release": "scripts/release.sh"
   },
   "repository": {
     "type": "git",
