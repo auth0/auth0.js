@@ -1,5 +1,15 @@
 #Change Log
 
+## [v8.0.0-beta.2](https://github.com/auth0/auth0.js/tree/v8.0.0-beta.2 (2016-12-16)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.0-beta.2...v8.0.0-beta.2)\n
+
+**Added**
+- Cookie fallback for storage [\#270](https://github.com/auth0/auth0.js/pull/270) ([glena](https://github.com/glena))
+
+**Fixed**
+- Return policy attr in errors + responseType validation [\#273](https://github.com/auth0/auth0.js/pull/273) ([glena](https://github.com/glena))
+
+
 ## [v8.0.0-beta.1](https://github.com/auth0/lock/tree/v8.0.0-beta.1) (2016-12-14)
 [Full Changelog](https://github.com/auth0/lock/tree/v8.0.0-alpha.2...v8.0.0-beta.1)
 
