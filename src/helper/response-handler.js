@@ -37,6 +37,10 @@ function wrapCallback(cb) {
         errObj.name = err.name;
       }
 
+      if (err.policy) {
+        errObj.policy = err.policy;
+      }
+
       return cb(errObj);
     }
 

@@ -2,6 +2,7 @@ var UsernamePassword = require('./username-password');
 var TransactionManager = require('./transaction-manager');
 var objectHelper = require('../helper/object');
 var Warn = require('../helper/warn');
+var assert = require('../helper/assert');
 
 function Redirect(client, options) {
   this.baseOptions = options;
@@ -35,6 +36,10 @@ Redirect.prototype.login = function (options, cb) {
   ]).with(options);
 
   this.warn.warning('`webauth.redirect.login` will be soon deprecated, use `webauth.login` instead.');
+
+  assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
+    responseType: { type: 'string', message: 'responseType option is required' }
+  });
 
   params = this.transactionManager.process(params);
 

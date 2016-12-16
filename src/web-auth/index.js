@@ -259,6 +259,10 @@ WebAuth.prototype.login = function (options) {
     'audience'
   ]).with(options);
 
+  assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
+    responseType: { type: 'string', message: 'responseType option is required' }
+  });
+
   params = this.transactionManager.process(params);
 
   windowHelper.redirect(this.client.buildAuthorizeUrl(params));
