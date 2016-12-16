@@ -94,7 +94,6 @@ echo "module.exports = { raw: " $NEW_VERSION " };" > src/version.js
 mv package.json.new package.json
 mv $TMP_CHANGELOG_FILE CHANGELOG.md
 
-git tag $NEW_V_VERSION
-git commit -m "Release $NEW_V_VERSION"
-git push origin HEAD --tags
+git commit -am "Release $NEW_V_VERSION"
+git push origin HEAD
 
