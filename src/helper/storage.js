@@ -1,18 +1,17 @@
-var windowHandler = require('./window');
+var StorageHandler = require('./storage/handler');
+var storage;
 
-function DummyStorage() {}
-DummyStorage.prototype.getItem = function (key) { return null; };
-DummyStorage.prototype.removeItem = function (key) {};
-DummyStorage.prototype.setItem = function (key, value) {};
-
-function getStorage() {
-  return windowHandler.getWindow().localStorage || new DummyStorage();
+function getStorage(force) {
+  if (!storage || force) {
+    storage = new StorageHandler();
+  }
+  return storage;
 }
 
 module.exports = {
   getItem: function (key) {
     var value = getStorage().getItem(key);
-    return JSON.parse(value);
+    return value ? JSON.parse(value) : value;
   },
   removeItem: function (key) {
     return getStorage().removeItem(key);
@@ -20,5 +19,8 @@ module.exports = {
   setItem: function (key, value) {
     var json = JSON.stringify(value);
     return getStorage().setItem(key, json);
+  },
+  reload: function() {
+    getStorage(true);
   }
 };
