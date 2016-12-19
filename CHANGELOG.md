@@ -3,6 +3,9 @@
 ## [v8.0.0-beta.3](https://github.com/auth0/auth0.js/tree/v8.0.0-beta.3 (2016-12-19)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.0-beta.3...v8.0.0-beta.3)
 
+**Fixed**
+- special handling for popup error responses [\#276](https://github.com/auth0/auth0.js/pull/276) ([glena](https://github.com/glena))
+
 
 ## [v8.0.0-beta.2](https://github.com/auth0/auth0.js/tree/v8.0.0-beta.2 (2016-12-16)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.0-beta.2...v8.0.0-beta.2)
