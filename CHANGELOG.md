@@ -1,7 +1,11 @@
 #Change Log
 
+## [v8.0.0-beta.3](https://github.com/auth0/auth0.js/tree/v8.0.0-beta.3 (2016-12-19)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.0-beta.3...v8.0.0-beta.3)
+
+
 ## [v8.0.0-beta.2](https://github.com/auth0/auth0.js/tree/v8.0.0-beta.2 (2016-12-16)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.0-beta.2...v8.0.0-beta.2)\n
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.0-beta.2...v8.0.0-beta.2)
 
 **Added**
 - Cookie fallback for storage [\#270](https://github.com/auth0/auth0.js/pull/270) ([glena](https://github.com/glena))
