@@ -84,7 +84,7 @@ echo "Generating tmp changelog"
 echo "#Change Log" > $TMP_CHANGELOG_FILE
 echo "" >> $TMP_CHANGELOG_FILE
 echo "## [$NEW_V_VERSION](https://github.com/auth0/$REPO_NAME/tree/$NEW_V_VERSION ($CURR_DATE)" >> $TMP_CHANGELOG_FILE
-echo "[Full Changelog](https://github.com/auth0/$REPO_NAME/compare/$NEW_V_VERSION...$NEW_V_VERSION)\n" >> $TMP_CHANGELOG_FILE
+echo "[Full Changelog](https://github.com/auth0/$REPO_NAME/compare/$NEW_V_VERSION...$NEW_V_VERSION)" >> $TMP_CHANGELOG_FILE
 
 CHANGELOG_WEBTASK="https://webtask.it.auth0.com/api/run/wt-hernan-auth0_com-0/oss-changelog.js?webtask_no_cache=1&repo=$REPO_NAME&milestone=$NEW_V_VERSION"
 
