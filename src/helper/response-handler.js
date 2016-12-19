@@ -9,6 +9,11 @@ function wrapCallback(cb) {
       return cb(error.buildResponse('generic_error', 'Something went wrong'));
     }
 
+    if (!err && data.err) {
+      err = data.err;
+      data = null;
+    }
+
     if (err) {
       errObj = {
         original: err
