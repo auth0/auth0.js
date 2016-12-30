@@ -46,12 +46,15 @@ auth0.login({
 - **parseHash()**: Parses the url hash in order to extract the token
 
 ```js
-var authResult = auth0.parseHash();
-if (!authResult.error) {
+auth0.parseHash(function(err, authResult) {
+    if (err) {
+        return console.log(err);
+    }
+
     auth0.client.userInfo(authResult.accessToken, function(err, user) {
         ...
     });
-}
+});
 ```
 
 - **renewAuth(options, cb)**: Gets a new token from Auth0 (the user should be authenticated using the hosted login page first)

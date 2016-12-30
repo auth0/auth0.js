@@ -9,10 +9,9 @@
         clientID: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
         responseType: 'token'
       });
-      var result = auth0.parseHash(window.location.hash);
-      if (result) {
-        parent.postMessage(result, "http://localhost:3000/"); //The second parameter should be your domain
-      }
+      var result = auth0.parseHash(window.location.hash, function(err, data) {
+        parent.postMessage(err || data, "http://localhost:3000/");
+      });
     </script>
   </head>
   <body></body>

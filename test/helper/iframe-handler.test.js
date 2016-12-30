@@ -17,7 +17,7 @@ function stubWindow(event, data) {
       style: {},
       contentWindow: {
         location: {
-          hash: data || '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+          hash: data || '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
         }
       },
       removeEventListener: function (event) {
@@ -34,6 +34,18 @@ function stubWindow(event, data) {
 
   stub(windowHelper, 'getWindow', function () {
     return {
+      localStorage: {
+        removeItem: function(key) {
+          expect(key).to.be('com.auth0.auth.theState');
+        },
+        getItem: function(key) {
+          expect(key).to.be('com.auth0.auth.theState');
+          return JSON.stringify({
+            nonce: 'asfd',
+            appState: null
+          });
+        }
+      },
       addEventListener: function (event, callback) {
         expect(event).to.be(event);
         if (data !== false) {
@@ -71,11 +83,12 @@ describe('helpers iframeHandler', function () {
   context('should render the iframe', function() {
     before(function () {
       this.auth0 = new WebAuth({
-        domain: 'mdocs.auth0.com',
+        domain: 'wptest.auth0.com',
         redirectUri: 'http://example.com/callback',
-        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
         responseType: 'token',
-        _sendTelemetry: false
+        _sendTelemetry: false,
+        __disableExpirationCheck: true
       });
     });
 
@@ -113,7 +126,7 @@ describe('helpers iframeHandler', function () {
       var iframeHandler = new IframeHandler({
         auth0: this.auth0,
         url: 'http://example.com',
-        callback: function(err,data){
+        callback: function (err,data) {
           expect(iframe.style).to.eql({ display: 'none' });
           expect(iframe.src).to.be('http://example.com');
 
@@ -121,13 +134,14 @@ describe('helpers iframeHandler', function () {
 
           expect(data).to.eql({
             accessToken: 'VjubIMBmpgQ2W2',
-            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA', // eslint-disable-line
+            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA', // eslint-disable-line
             idTokenPayload: {
-              aud: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-              exp: 1478562253,
-              iat: 1478526253,
-              iss: 'https://mdocs.auth0.com/',
-              sub: 'auth0|4AZDF56789'
+              iss: 'https://wptest.auth0.com/',
+              sub: 'auth0|55d48c57d5b0ad0223c408d7',
+              aud: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+              exp: 1482969031,
+              iat: 1482933031,
+              nonce: 'asfd'
             },
             appStatus: null,
             refreshToken: 'kajshdgfkasdjhgfas',
@@ -153,7 +167,7 @@ describe('helpers iframeHandler', function () {
           expect(iframe.style).to.eql({ display: 'none' });
           expect(iframe.src).to.be('http://example.com');
 
-          expect(data).to.be(null);
+          expect(data).to.be(undefined);
 
           expect(err).to.eql({
             error:'some_error',
@@ -168,12 +182,13 @@ describe('helpers iframeHandler', function () {
     });
 
     it('and hook to the load event (with invalid hash) should timeout', function (done) {
-      var iframe = stubWindow('load', '#type=invalid_hash&something=else');
+      var iframe = stubWindow('load', '');
 
       var iframeHandler = new IframeHandler({
         auth0: this.auth0,
         url: 'http://example.com',
-        callback: function(err,data){ },
+        callback: function(err,data){
+        },
         timeoutCallback: function(){
           expect(iframe.style).to.eql({ display: 'none' });
           expect(iframe.src).to.be('http://example.com');
