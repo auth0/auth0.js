@@ -270,11 +270,11 @@ WebAuth.prototype.signup = function (options, cb) {
 /**
  * Redirects to the hosted login page (`/authorize`) in order to initialize a new authN/authZ transaction
  *
- * @method login
+ * @method authorize
  * @param {Object} options: https://auth0.com/docs/api/authentication#!#get--authorize_db
  * @param {Function} cb
  */
-WebAuth.prototype.login = function (options) {
+WebAuth.prototype.authorize = function (options) {
   var params = objectHelper.merge(this.baseOptions, [
     'clientID',
     'responseType',
