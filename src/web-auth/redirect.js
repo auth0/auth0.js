@@ -65,7 +65,7 @@ Redirect.prototype.signupAndLogin = function (options, cb) {
     if (err) {
       return cb(err);
     }
-    return _this.login(options, cb);
+    return _this.loginWithCredentials(options, cb);
   });
 };
 

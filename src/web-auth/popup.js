@@ -179,7 +179,7 @@ Popup.prototype.signupAndLogin = function (options, cb) {
         }
         return cb(err);
       }
-      _this.login(options, cb);
+      _this.loginWithCredentials(options, cb);
     });
 };
 

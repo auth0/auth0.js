@@ -297,11 +297,11 @@ WebAuth.prototype.authorize = function (options) {
  * Signs up a new user, automatically logs the user in after the signup and returns the user token.
  * The login will be done using /oauth/token with password-realm grant type.
  *
- * @method signupAndLogin
+ * @method signupAndAuthorize
  * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--dbconnections-signup
  * @param {Function} cb
  */
-WebAuth.prototype.signupAndLogin = function (options, cb) {
+WebAuth.prototype.signupAndAuthorize = function (options, cb) {
   var _this = this;
 
   return this.client.dbConnection.signup(objectHelper.blacklist(options, ['popupHandler']),

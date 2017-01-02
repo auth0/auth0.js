@@ -304,7 +304,7 @@ describe('auth0.WebAuth', function () {
       });
 
       expect(function() {
-        webAuth.login({ connection: 'facebook' })
+        webAuth.authorize({ connection: 'facebook' })
       }).to.throwException(function (e) {
         expect(e.message).to.be('responseType option is required');
       });
@@ -649,7 +649,7 @@ describe('auth0.WebAuth', function () {
         throw new Error('Invalid url in request post stub');
       });
 
-      this.auth0.signupAndLogin({
+      this.auth0.signupAndAuthorize({
         connection: 'the_connection',
         email: 'me@example.com',
         password: '123456',
@@ -688,7 +688,7 @@ describe('auth0.WebAuth', function () {
         });
       });
 
-      this.auth0.signupAndLogin({
+      this.auth0.signupAndAuthorize({
         connection: 'the_connection',
         email: 'me@example.com',
         password: '123456',
