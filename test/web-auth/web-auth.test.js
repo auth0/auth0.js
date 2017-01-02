@@ -540,4 +540,139 @@ describe('auth0.WebAuth', function () {
       });
     });
   });
+
+  context('signup and login', function () {
+    before(function () {
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'token',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function () {
+      request.post.restore();
+    });
+
+    it('should call db-connection signup with all the options', function (done) {
+
+      stub(request, 'post', function (url) {
+
+        if (url === 'https://me.auth0.com/oauth/token') {
+          return new RequestMock({
+            body: {
+              client_id: '...',
+              realm: 'the_connection',
+              grant_type: 'http://auth0.com/oauth/grant-type/password-realm',
+              username: 'me@example.com',
+              password: '123456',
+              scope: 'openid'
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            cb: function(cb) {
+              cb(null, {
+                body: {
+                  'token_type': 'Bearer',
+                  'expires_in': 36000,
+                  'id_token': 'eyJ...'
+                }
+              });
+            }
+          });
+        }
+
+        if (url === 'https://me.auth0.com/dbconnections/signup') {
+          return new RequestMock({
+            body: {
+              client_id: '...',
+              connection: 'the_connection',
+              email: 'me@example.com',
+              password: '123456'
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            cb: function (cb) {
+              cb(null, {
+                body: {
+                  _id: '...',
+                  email_verified: false,
+                  email: 'me@example.com'
+                }
+              });
+            }
+          });
+        }
+
+        throw new Error('Invalid url in request post stub');
+      });
+
+      this.auth0.signupAndLogin({
+        connection: 'the_connection',
+        email: 'me@example.com',
+        password: '123456',
+        scope: 'openid'
+      }, function (err, data) {
+        done();
+      });
+    });
+
+    it('should propagate signup errors', function (done) {
+      stub(request, 'post', function (url) {
+
+        expect(url).to.be('https://me.auth0.com/dbconnections/signup');
+
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            connection: 'the_connection',
+            email: 'me@example.com',
+            password: '123456'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function (cb) {
+            cb({
+              response: {
+                "statusCode":400,
+                body: {
+                  "code":"user_exists",
+                  "description":"The user already exists."
+                }
+              }
+            });
+          }
+        });
+      });
+
+      this.auth0.signupAndLogin({
+        connection: 'the_connection',
+        email: 'me@example.com',
+        password: '123456',
+        scope: 'openid'
+      }, function (err, data) {
+        expect(data).to.be(undefined);
+        expect(err).to.eql({
+          original: {
+            response: {
+              "statusCode":400,
+              body: {
+                "code":"user_exists",
+                "description":"The user already exists."
+              }
+            }
+          },
+          "code":"user_exists",
+          "description":"The user already exists.",
+          "statusCode":400
+        });
+        done();
+      });
+    });
+  });
 });

@@ -224,7 +224,7 @@
     $('.client-login-db').click(function (e) {
       e.preventDefault();
       webAuth.client.login({
-        connection: 'tests',
+        realm: 'tests',
         username: $('.client-login-username').val(),
         password: $('.client-login-password').val(),
         scope: 'openid profile',

@@ -269,6 +269,30 @@ WebAuth.prototype.login = function (options) {
 };
 
 /**
+ * Signs up a new user, automatically logs the user in after the signup and returns the user token.
+ * The login will be done using /oauth/token with password-realm grant type.
+ *
+ * @method signupAndLogin
+ * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--dbconnections-signup
+ * @param {Function} cb
+ */
+WebAuth.prototype.signupAndLogin = function (options, cb) {
+  var _this = this;
+
+  return this.client.dbConnection.signup(objectHelper.blacklist(options, ['popupHandler']),
+    function (err) {
+      if (err) {
+        return cb(err);
+      }
+      options.realm = options.connection;
+      if (!options.username) {
+        options.username = options.email;
+      }
+      _this.client.login(options, cb);
+    });
+};
+
+/**
  * Redirects to the auth0 logout page
  *
  * @method logout
