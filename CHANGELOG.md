@@ -1,5 +1,16 @@
 # Change Log
 
+## [7.6.1](https://github.com/auth0/lock/tree/v7.6.1) (2017-01-03)
+[Full Changelog](https://github.com/auth0/lock/compare/v7.6.0...v7.6.1)
+
+**Closed issues**
+- Support tenant option for custom domains [\#281](https://github.com/auth0/auth0.js/issues/281)
+
+**Fixed**
+- override issuer + tenant name [\#283](https://github.com/auth0/auth0.js/pull/283) ([glena](https://github.com/glena))
+- allow to provide the tenant name for authN calls [\#282](https://github.com/auth0/auth0.js/pull/282) ([glena](https://github.com/glena))
+- Utilize scope option [\#268](https://github.com/auth0/auth0.js/pull/268) ([naturalethic](https://github.com/naturalethic))
+
 ## [7.6.0](https://github.com/auth0/lock/tree/v7.6.0) (2016-12-07)
 [Full Changelog](https://github.com/auth0/lock/compare/v7.5.0...v7.6.0)
 
