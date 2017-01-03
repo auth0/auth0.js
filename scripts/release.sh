@@ -59,6 +59,7 @@ fi
 echo "Release process init"
 
 ORIG_VERSION=$(jq .version package.json | sed 's/\"//g')
+ORIG_V_VERSION="v$ORIG_VERSION"
 
 echo "Current version" $ORIG_VERSION
 
@@ -84,11 +85,14 @@ echo "Generating tmp changelog"
 echo "#Change Log" > $TMP_CHANGELOG_FILE
 echo "" >> $TMP_CHANGELOG_FILE
 echo "## [$NEW_V_VERSION](https://github.com/auth0/$REPO_NAME/tree/$NEW_V_VERSION) ($CURR_DATE)" >> $TMP_CHANGELOG_FILE
-echo "[Full Changelog](https://github.com/auth0/$REPO_NAME/compare/$NEW_V_VERSION...$NEW_V_VERSION)" >> $TMP_CHANGELOG_FILE
+echo "[Full Changelog](https://github.com/auth0/$REPO_NAME/compare/$ORIG_V_VERSION...$NEW_V_VERSION)" >> $TMP_CHANGELOG_FILE
 
 CHANGELOG_WEBTASK="https://webtask.it.auth0.com/api/run/wt-hernan-auth0_com-0/oss-changelog.js?webtask_no_cache=1&repo=$REPO_NAME&milestone=$NEW_V_VERSION"
 
 curl -f -s -H "Accept: text/markdown" $CHANGELOG_WEBTASK >> $TMP_CHANGELOG_FILE
+
+echo "Updating README.md"
+sed -i .old "s/auth0\/$ORIG_VERSION\/auth0.min.js/lock\/$NEW_VERSION\/auth0.min.js/g" README.md
 
 echo "Updating CHANGELOG.md"
 
@@ -96,10 +100,9 @@ sed "s/\#Change Log//" CHANGELOG.md >> $TMP_CHANGELOG_FILE
 
 echo "Replacing files"
 
-echo "module.exports = {raw:$QUOTED_NEW_VERSION};" > src/version.js
 mv package.json.new package.json
 mv $TMP_CHANGELOG_FILE CHANGELOG.md
+rm README.md.old
 
 git commit -am "Release $NEW_V_VERSION"
 git push origin HEAD
-
