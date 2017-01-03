@@ -72,7 +72,7 @@ describe('helpers cookies', function () {
   it('returns the cookie value (with ;)', function () {
 
     cookies.create('cookie_name', 'cookie; value');
-    expect(windowHandler.getDocument().cookie).to.be.eql('cookie_name=Y29va2llOyB2YWx1ZQ; path=/')
+    expect(windowHandler.getDocument().cookie).to.be.eql('cookie_name=Y29va2llOyB2YWx1ZQ==; path=/')
 
     var value = cookies.read('cookie_name');
     expect(value).to.be.eql('cookie; value')
@@ -82,7 +82,7 @@ describe('helpers cookies', function () {
   it('should reset the expiration', function () {
 
     cookies.create('cookie_name', 'cookie; value');
-    expect(windowHandler.getDocument().cookie).to.be.eql('cookie_name=Y29va2llOyB2YWx1ZQ; path=/')
+    expect(windowHandler.getDocument().cookie).to.be.eql('cookie_name=Y29va2llOyB2YWx1ZQ==; path=/')
 
     cookies.erase('cookie_name');
 

@@ -119,7 +119,7 @@ describe('auth0.authentication', function () {
         state: '1234'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?auth0Client='+ telemetryInfo+'&client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&state=1234&prompt=none');
+      expect(url).to.be('https://me.auth0.com/authorize?auth0Client='+ encodeURIComponent(telemetryInfo) +'&client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&state=1234&prompt=none');
     })
   })
 
@@ -185,7 +185,7 @@ describe('auth0.authentication', function () {
         federated: ''
       });
 
-      expect(url).to.be('https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated=&auth0Client=' + telemetryInfo);
+      expect(url).to.be('https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated=&auth0Client=' + encodeURIComponent(telemetryInfo));
     })
   })
 

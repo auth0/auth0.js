@@ -170,15 +170,19 @@
       domain: 'auth0-tests-auth0js.auth0.com',
       redirectUri: 'http://localhost:3000/example',
       clientID: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
+      audience: 'https://auth0-tests-auth0js.auth0.com/userinfo',
       responseType: 'token'
     });
 
-    var hash = webAuth.parseHash();
-    if (hash) {
-      htmlConsole.dumpCallback(hash.error ? hash : null, hash.error ? null : hash);
+    webAuth.parseHash(function(err, data) {
+      if (err) {
+        return htmlConsole.dumpCallback(err);
+      }
+
+      htmlConsole.dumpCallback(null, data);
       window.location.hash = '';
-      webAuth.client.userInfo(hash.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
-    }
+      webAuth.client.userInfo(data.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
 
     $('#clear-console').click(function () {
       $('#clear-console').removeClass('icon-budicon-498');
@@ -284,7 +288,7 @@
       e.preventDefault();
       webAuth.renewAuth({
         usePostMessage: true,
-        scope: 'openid',
+        scope:'',
         audience: 'https://auth0-tests-auth0js.auth0.com/userinfo',
         redirectURI: 'http://localhost:3000/example/callback.html'
       },

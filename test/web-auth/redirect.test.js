@@ -409,7 +409,7 @@ describe('auth0.WebAuth.redirect', function () {
 
     it('should verify the code and redirect to the passwordless verify page', function(done){
       stub(windowHelper, 'redirect', function (url) {
-        expect(url).to.be("https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&auth0Client=" + telemetryInfo);
+        expect(url).to.be("https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&auth0Client=" + encodeURIComponent(telemetryInfo));
         done();
       });
 

@@ -1,3 +1,5 @@
+var IdTokenVerifier = require('idtoken-verifier');
+
 var assert = require('../helper/assert');
 var error = require('../helper/error');
 var jwt = require('../helper/jwt');
@@ -32,11 +34,17 @@ function WebAuth(options) {
     redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
     scope: { optional: true, type: 'string', message: 'audience is not valid' },
     audience: { optional: true, type: 'string', message: 'scope is not valid' },
-    tenant: { optional: true, type: 'string', message: 'tenant option is not valid. Required when using custom domains.' },
     _disableDeprecationWarnings: { optional: true, type: 'boolean', message: '_disableDeprecationWarnings option is not valid' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
     _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
   });
+
+  if (options.overrides) {
+    assert.check(options.overrides, { type: 'object', message: 'overrides option is not valid' }, {
+      __tenant: { type: 'string', message: '__tenant option is required' },
+      __token_issuer: { type: 'string', message: '__token_issuer option is required' }
+    });
+  }
   /* eslint-enable */
 
   this.baseOptions = options;
@@ -44,7 +52,11 @@ function WebAuth(options) {
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ?
                                         this.baseOptions._sendTelemetry : true;
 
-  this.baseOptions.tenant = this.baseOptions.domain.split('.')[0];
+  this.baseOptions.tenant = (this.overrides && this.overrides.__tenant)
+    || this.baseOptions.domain.split('.')[0];
+
+  this.baseOptions.token_issuer = (this.overrides && this.overrides.__token_issuer)
+    || 'https://' + this.baseOptions.domain + '/';
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 
@@ -57,20 +69,28 @@ function WebAuth(options) {
  * Parse the url hash and extract the access token or id token depending on the transaction.
  *
  * @method parseHash
- * @param {String} hash: the url hash or null to automatically extract from window.location.hash
- * @param {Object} options: state and nonce can be provided to verify the response
+ * @param {Object} options:
+ * @param {String} options.state [OPTIONAL] to verify the response
+ * @param {String} options.nonce [OPTIONAL] to verify the id_token
+ * @param {String} options.hash [OPTIONAL] the url hash. If not provided it will extract from window.location.hash
+ * @param {Function} cb: function(err, token_payload)
  */
-WebAuth.prototype.parseHash = function (hash, options) {
+WebAuth.prototype.parseHash = function (options, cb) {
   var parsedQs;
   var err;
   var token;
 
+  if (!cb && typeof options === 'function') {
+    cb = options;
+    options = {};
+  } else {
+    options = options || {};
+  }
+
   var _window = windowHelper.getWindow();
 
-  var hashStr = hash || _window.location.hash;
+  var hashStr = options.hash === undefined ? _window.location.hash : options.hash;
   hashStr = hashStr.replace(/^#?\/?/, '');
-
-  options = options || {};
 
   parsedQs = qs.parse(hashStr);
 
@@ -81,33 +101,40 @@ WebAuth.prototype.parseHash = function (hash, options) {
       err.state = parsedQs.state;
     }
 
-    return err;
+    return cb(err);
   }
 
   if (!parsedQs.hasOwnProperty('access_token')
        && !parsedQs.hasOwnProperty('id_token')
        && !parsedQs.hasOwnProperty('refresh_token')) {
-    return null;
+    return cb(null, null);
   }
 
   if (parsedQs.id_token) {
-    token = this.validateToken(parsedQs.id_token, parsedQs.state || options.state, options.nonce);
-    if (token.error) {
-      return token;
-    }
-  }
+    this.validateToken(parsedQs.id_token, parsedQs.state || options.state, options.nonce, function (err, response) {
+      if (err) {
+        return cb(err);
+      }
 
+      return cb(null, buildParseHashResponse(parsedQs, response));
+    });
+  } else {
+    cb(null, buildParseHashResponse(parsedQs, null));
+  }
+};
+
+function buildParseHashResponse(qs, token) {
   return {
-    accessToken: parsedQs.access_token || null,
-    idToken: parsedQs.id_token || null,
+    accessToken: qs.access_token || null,
+    idToken: qs.id_token || null,
     idTokenPayload: token && token.payload ? token.payload : null,
     appStatus: token ? token.appStatus || null : null,
-    refreshToken: parsedQs.refresh_token || null,
-    state: parsedQs.state || null,
-    expiresIn: parsedQs.expires_in || null,
-    tokenType: parsedQs.token_type || null
+    refreshToken: qs.refresh_token || null,
+    state: qs.state || null,
+    expiresIn: qs.expires_in || null,
+    tokenType: qs.token_type || null
   };
-};
+}
 
 /**
  * Decodes the id_token and verifies  the nonce.
@@ -116,40 +143,33 @@ WebAuth.prototype.parseHash = function (hash, options) {
  * @param {String} token
  * @param {String} state
  * @param {String} nonce
+ * @param {Function} cb: function(err, {payload, transaction})
  */
-WebAuth.prototype.validateToken = function (token, state, nonce) {
+WebAuth.prototype.validateToken = function (token, state, nonce, cb) {
   var audiences;
   var transaction;
   var transactionNonce;
   var tokenNonce;
-  var prof = jwt.getPayload(token);
-
-  audiences = assert.isArray(prof.aud) ? prof.aud : [prof.aud];
-  if (audiences.indexOf(this.baseOptions.clientID) === -1) {
-    return error.invalidJwt(
-      'The clientID configured (' + this.baseOptions.clientID + ') does not match ' +
-      'with the clientID set in the token (' + audiences.join(', ') + ').');
-  }
 
   transaction = this.transactionManager.getStoredTransaction(state);
-  transactionNonce = (transaction && transaction.nonce) || nonce;
-  tokenNonce = prof.nonce || null;
+  transactionNonce = (transaction && transaction.nonce) || nonce || null;
 
-  if (transactionNonce && tokenNonce && transactionNonce !== tokenNonce) {
-    return error.invalidJwt('Nonce does not match');
-  }
+  var verifier = new IdTokenVerifier({
+    issuer: this.baseOptions.token_issuer,
+    audience: this.baseOptions.clientID,
+    __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
+  });
 
-  // iss should be the Auth0 domain (i.e.: https://contoso.auth0.com/)
-  if (prof.iss && prof.iss !== 'https://' + this.baseOptions.domain + '/') {
-    return error.invalidJwt(
-      'The domain configured (https://' + this.baseOptions.domain + '/) does not match ' +
-      'with the domain set in the token (' + prof.iss + ').');
-  }
+  verifier.verify(token, transactionNonce, function (err, payload) {
+    if (err) {
+      return cb(error.invalidJwt(err.message));
+    }
 
-  return {
-    payload: prof,
-    transaction: transaction
-  };
+    cb(null, {
+      payload: payload,
+      transaction: transaction
+    });
+  });
 };
 
 /**
@@ -189,17 +209,22 @@ WebAuth.prototype.renewAuth = function (options, cb) {
   params = objectHelper.blacklist(params, ['usePostMessage', 'tenant']);
 
   handler = new SilentAuthenticationHandler(this, this.client.buildAuthorizeUrl(params));
+
   handler.login(usePostMessage, function (err, data) {
     if (err) {
       return cb(err);
     }
 
     if (data.id_token) {
-      prof = _this.validateToken(data.id_token, options.state);
-      if (prof.error) {
-        cb(prof);
-      }
-      data.idTokenPayload = prof;
+      return _this.validateToken(data.id_token, options.state, options.nonce, function (err, payload) {
+        if (err) {
+          return cb(err);
+        }
+
+        data.idTokenPayload = payload;
+
+        return cb(null, data);
+      });
     }
 
     return cb(err, data);

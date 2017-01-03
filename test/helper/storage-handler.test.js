@@ -81,7 +81,7 @@ describe('helpers storage handler', function () {
     handler.setItem('some', 'value');
 
     expect(handler.storage).to.be.a(CookieStorage);
-    expect(document.cookie).to.be('some=dmFsdWU; expires=Fri, 02 Jan 1970 00:00:00 GMT; path=/');
+    expect(document.cookie).to.be('some=dmFsdWU=; expires=Fri, 02 Jan 1970 00:00:00 GMT; path=/');
 
     windowHandler.getWindow.restore();
     windowHandler.getDocument.restore();

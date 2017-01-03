@@ -51,13 +51,16 @@ IframeHandler.prototype.messageEventListener = function (e) {
 };
 
 IframeHandler.prototype.loadEventListener = function () {
-  var result = this.auth0.parseHash(this.iframe.contentWindow.location.hash);
-  if (!result) {
-    return;
-  }
-
-  this.destroy();
-  this.callbackHandler(result);
+  var _this = this;
+  this.auth0.parseHash(
+    { hash: this.iframe.contentWindow.location.hash },
+    function (error, result) {
+      if (error || result) {
+        _this.destroy();
+        _this.callback(error, result);
+      }
+    }
+  );
 };
 
 IframeHandler.prototype.callbackHandler = function (result) {
@@ -80,16 +83,17 @@ IframeHandler.prototype.timeoutHandler = function () {
 
 IframeHandler.prototype.destroy = function () {
   var _this = this;
+  var _window = windowHelper.getWindow();
 
   clearTimeout(this.timeoutHandle);
 
   this._destroyTimeout = setTimeout(function () {
-    var _window = windowHelper.getWindow();
     if (_this.usePostMessage) {
       _window.removeEventListener('message', _this.transientMessageEventListener, false);
     } else {
       _this.iframe.removeEventListener('load', _this.transientEventListener, false);
     }
+
     _window.document.body.removeChild(_this.iframe);
   }, 0);
 };
