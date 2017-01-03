@@ -32,11 +32,17 @@ function WebAuth(options) {
     redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
     scope: { optional: true, type: 'string', message: 'audience is not valid' },
     audience: { optional: true, type: 'string', message: 'scope is not valid' },
-    tenant: { optional: true, type: 'string', message: 'tenant option is not valid. Required when using custom domains.' },
     _disableDeprecationWarnings: { optional: true, type: 'boolean', message: '_disableDeprecationWarnings option is not valid' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
     _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
   });
+
+  if (options.overrides) {
+    assert.check(options.overrides, { type: 'object', message: 'overrides option is not valid' }, {
+      __tenant: { type: 'string', message: '__tenant option is required' },
+      __token_issuer: { type: 'string', message: '__token_issuer option is required' }
+    });
+  }
   /* eslint-enable */
 
   this.baseOptions = options;
@@ -44,7 +50,11 @@ function WebAuth(options) {
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ?
                                         this.baseOptions._sendTelemetry : true;
 
-  this.baseOptions.tenant = this.baseOptions.domain.split('.')[0];
+  this.baseOptions.tenant = (this.overrides && this.overrides.__tenant)
+    || this.baseOptions.domain.split('.')[0];
+
+  this.baseOptions.token_issuer = (this.overrides && this.overrides.__token_issuer)
+    || 'https://' + this.baseOptions.domain + '/';
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 
@@ -139,8 +149,7 @@ WebAuth.prototype.validateToken = function (token, state, nonce) {
     return error.invalidJwt('Nonce does not match');
   }
 
-  // iss should be the Auth0 domain (i.e.: https://contoso.auth0.com/)
-  if (prof.iss && prof.iss !== 'https://' + this.baseOptions.domain + '/') {
+  if (prof.iss && prof.iss !== this.baseOptions.token_issuer) {
     return error.invalidJwt(
       'The domain configured (https://' + this.baseOptions.domain + '/) does not match ' +
       'with the domain set in the token (' + prof.iss + ').');
