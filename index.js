@@ -163,6 +163,8 @@ function Auth0 (options) {
 
   this._scope = options.scope || 'openid';
   this._audience = options.audience || null;
+  this._tenant = options.__tenant || this._domain.split('.')[0];
+  this._token_issuer = options.__token_issuer || 'https://' + this._domain + '/';
 }
 
 /**
@@ -542,9 +544,9 @@ Auth0.prototype.parseHash = function (hash, options) {
     }
 
     // iss should be the Auth0 domain (i.e.: https://contoso.auth0.com/)
-    if (prof.iss && prof.iss !== 'https://' + this._domain + '/') {
+    if (prof.iss && prof.iss !== this._token_issuer) {
       return invalidJwt(
-        'The domain configured (https://' + this._domain + '/) does not match with the domain set in the token (' + prof.iss + ').');
+        'The domain configured (' + this._token_issuer + ') does not match with the domain set in the token (' + prof.iss + ').');
     }
 
     var nonce;
@@ -591,8 +593,7 @@ Auth0.prototype.signup = function (options, callback) {
   var opts = {
     client_id: this._clientID,
     redirect_uri: this._getCallbackURL(options),
-    email: trim(options.email || options.username || ''),
-    tenant: options.tenant || this._domain.split('.')[0]
+    email: trim(options.email || options.username || '')
   };
 
   if (typeof options.username === 'string') {
@@ -686,7 +687,6 @@ Auth0.prototype.signup = function (options, callback) {
 
 Auth0.prototype.changePassword = function (options, callback) {
   var query = {
-    tenant:         options.tenant || this._domain.split('.')[0],
     client_id:      this._clientID,
     connection:     options.connection,
     email:          trim(options.email || '')
@@ -1456,7 +1456,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
       client_id: this._clientID,
       redirect_uri: this._getCallbackURL(options),
       username: trim(options.username || options.email || ''),
-      tenant: options.tenant || this._domain.split('.')[0]
+      tenant: this._tenant
     });
 
   this._configureOfflineMode(query);
