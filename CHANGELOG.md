@@ -1,5 +1,40 @@
 #Change Log
 
+## [v8.0.0](https://github.com/auth0/auth0.js/tree/v8.0.0) (2017-01-03)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.0-beta.3...v8.0.0)
+
+In v8 **auth0.js** is divided in three different components:
+
+- WebAuth: Handles all AuthN/AuthZ flows with redirect/popup inside the browser and related Auth API endpoints, e.g. `/logout`.
+- AuthenticationAPI: Helper methods for calling Auth0 Authentication API
+- ManagementAPI: Helper methods for calling Auth0 Management API
+
+To get started you can just create a `WebAuth` instance like this
+
+```js
+var auth0 = new auth0.WebAuth({
+  domain: "{YOUR_AUTH0_DOMAIN}",
+  clientID: "{YOUR_AUTH0_CLIENT_ID}"
+});
+```
+
+> Since auth0.js is intended to be used in javascript clients running in the browser most of the times an instance of `WebAuth` is needed.
+
+And if you ever need to perform an `xhr` request to Auth0 Authentication API, `WebAuth` exposes an instance of `AuthenticationAPI`
+
+```js
+auth0.client.userInfo(accessToken, function(error, userInfo) {
+    // User information or error
+  });
+```
+
+**Added**
+- add token validation and signature verification to the parseHash method [\#278](https://github.com/auth0/auth0.js/pull/278) ([glena](https://github.com/glena))
+- Add method to signup and login using password-realm [\#277](https://github.com/auth0/auth0.js/pull/277) ([glena](https://github.com/glena))
+
+**Breaking changes**
+- Rename methods based on authN and authZ type [\#280](https://github.com/auth0/auth0.js/pull/280) ([glena](https://github.com/glena))
+
 ## [v8.0.0-beta.3](https://github.com/auth0/auth0.js/tree/v8.0.0-beta.3) (2016-12-19)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.0-beta.3...v8.0.0-beta.3)
 

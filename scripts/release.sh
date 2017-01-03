@@ -100,6 +100,7 @@ sed "s/\#Change Log//" CHANGELOG.md >> $TMP_CHANGELOG_FILE
 
 echo "Replacing files"
 
+echo "module.exports = {raw:$QUOTED_NEW_VERSION};" > src/version.js
 mv package.json.new package.json
 mv $TMP_CHANGELOG_FILE CHANGELOG.md
 rm README.md.old
