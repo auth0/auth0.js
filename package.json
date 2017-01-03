@@ -29,8 +29,8 @@
   "author": "Auth0",
   "license": "MIT",
   "dependencies": {
-    "Base64": "~0.1.3",
-    "idtoken-verifier": "^1.0.0-alpha.1",
+    "base64-js": "^1.2.0",
+    "idtoken-verifier": "^1.0.0",
     "superagent": "^2.3.0",
     "url-join": "^1.1.0",
     "winchan": "^0.1.4"
