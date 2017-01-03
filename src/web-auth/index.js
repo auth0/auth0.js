@@ -89,9 +89,8 @@ WebAuth.prototype.parseHash = function (options, cb) {
 
   var _window = windowHelper.getWindow();
 
-  var hashStr = options.hash || _window.location.hash;
+  var hashStr = options.hash === undefined ? _window.location.hash : options.hash;
   hashStr = hashStr.replace(/^#?\/?/, '');
-
 
   parsedQs = qs.parse(hashStr);
 
@@ -210,6 +209,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
   params = objectHelper.blacklist(params, ['usePostMessage', 'tenant']);
 
   handler = new SilentAuthenticationHandler(this, this.client.buildAuthorizeUrl(params));
+
   handler.login(usePostMessage, function (err, data) {
     if (err) {
       return cb(err);

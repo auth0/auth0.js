@@ -55,8 +55,10 @@ IframeHandler.prototype.loadEventListener = function () {
   this.auth0.parseHash(
     { hash: this.iframe.contentWindow.location.hash },
     function (error, result) {
-      _this.destroy();
-      _this.callback(error, result);
+      if (error || result) {
+        _this.destroy();
+        _this.callback(error, result);
+      }
     }
   );
 };
@@ -91,6 +93,7 @@ IframeHandler.prototype.destroy = function () {
     } else {
       _this.iframe.removeEventListener('load', _this.transientEventListener, false);
     }
+
     _window.document.body.removeChild(_this.iframe);
   }, 0);
 };

@@ -17,7 +17,7 @@ function stubWindow(event, data) {
       style: {},
       contentWindow: {
         location: {
-          hash: data || '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+          hash: data !== undefined ? data : '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
         }
       },
       removeEventListener: function (event) {
@@ -110,7 +110,7 @@ describe('helpers iframeHandler', function () {
           expect(err).to.be(null);
           expect(data).to.eql({ access_token: '123' });
 
-          done();
+          setTimeout(done, 100);
         },
         timeoutCallback: function(){},
         usePostMessage: true
@@ -150,7 +150,7 @@ describe('helpers iframeHandler', function () {
             tokenType: 'Bearer'
           });
 
-          done();
+          setTimeout(done, 100);
         }
       });
 
@@ -174,7 +174,7 @@ describe('helpers iframeHandler', function () {
             errorDescription: 'the+error+description'
           });
 
-          done();
+          setTimeout(done, 100);
         }
       });
 
@@ -192,7 +192,7 @@ describe('helpers iframeHandler', function () {
         timeoutCallback: function(){
           expect(iframe.style).to.eql({ display: 'none' });
           expect(iframe.src).to.be('http://example.com');
-          done();
+          setTimeout(done, 100);
         },
         timeout: 100
       });
@@ -211,7 +211,7 @@ describe('helpers iframeHandler', function () {
         timeoutCallback: function(){
           expect(iframe.style).to.eql({ display: 'none' });
           expect(iframe.src).to.be('http://example.com');
-          done();
+          setTimeout(done, 100);
         },
         usePostMessage: true,
         timeout: 100
