@@ -592,7 +592,7 @@ Auth0.prototype.signup = function (options, callback) {
     client_id: this._clientID,
     redirect_uri: this._getCallbackURL(options),
     email: trim(options.email || options.username || ''),
-    tenant: this._domain.split('.')[0]
+    tenant: options.tenant || this._domain.split('.')[0]
   };
 
   if (typeof options.username === 'string') {
@@ -686,7 +686,7 @@ Auth0.prototype.signup = function (options, callback) {
 
 Auth0.prototype.changePassword = function (options, callback) {
   var query = {
-    tenant:         this._domain.split('.')[0],
+    tenant:         options.tenant || this._domain.split('.')[0],
     client_id:      this._clientID,
     connection:     options.connection,
     email:          trim(options.email || '')
@@ -1456,7 +1456,7 @@ Auth0.prototype.loginWithUsernamePassword = function (options, callback) {
       client_id: this._clientID,
       redirect_uri: this._getCallbackURL(options),
       username: trim(options.username || options.email || ''),
-      tenant: this._domain.split('.')[0]
+      tenant: options.tenant || this._domain.split('.')[0]
     });
 
   this._configureOfflineMode(query);
