@@ -82,18 +82,18 @@ Popup.prototype.authorize = function (options, cb) {
 /**
  * Initializes the legacy Lock login flow in a popup
  *
- * @method login
+ * @method loginWithCredentials
  * @param {Object} options
  * @param {Function} cb
- * @deprecated `webauth.popup.login` will be soon deprecated, use `webauth.client.login` instead.
+ * @deprecated `webauth.popup.loginWithCredentials` will be soon deprecated, use `webauth.client.login` instead.
  */
-Popup.prototype.login = function (options, cb) {
+Popup.prototype.loginWithCredentials = function (options, cb) {
   var params;
   var popup;
   var url;
   var relayUrl;
 
-  this.warn.warning('`webauth.popup.login` will be soon deprecated, use `webauth.client.login` instead.');
+  this.warn.warning('`webauth.popup.loginWithCredentials` will be soon deprecated, use `webauth.client.login` instead.');
 
   /* eslint-disable */
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
@@ -179,7 +179,7 @@ Popup.prototype.signupAndLogin = function (options, cb) {
         }
         return cb(err);
       }
-      _this.login(options, cb);
+      _this.loginWithCredentials(options, cb);
     });
 };
 

@@ -146,7 +146,7 @@ describe('auth0.WebAuth.popup', function () {
         });
       });
 
-      this.auth0.popup.login({
+      this.auth0.popup.loginWithCredentials({
         connection: 'the_connection',
         nonce: '123',
         state: '456',

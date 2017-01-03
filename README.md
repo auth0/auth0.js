@@ -32,10 +32,10 @@ Parameters:
 
 ### API
 
-- **login(options)**: Redirects to the hosted login page to initialize an authN/authZ transaction.
+- **authorize(options)**: Redirects to the hosted login page to initialize an authN/authZ transaction.
 
 ```js
-auth0.login({
+auth0.authorize({
         audience: 'url:auth:some-audience',
         scope: 'read:something write:otherthing',
         responseType: 'token',

@@ -138,7 +138,7 @@ describe('auth0.WebAuth.redirect', function () {
 
       var auth0 = new WebAuth(configuration);
 
-      auth0.redirect.login({
+      auth0.redirect.loginWithCredentials({
         connection: 'tests',
         username: 'me@example.com',
         password: '1234',
@@ -202,7 +202,7 @@ describe('auth0.WebAuth.redirect', function () {
 
       var auth0 = new WebAuth(configuration);
 
-      auth0.redirect.login({
+      auth0.redirect.loginWithCredentials({
         connection: 'tests',
         email: 'me@example.com',
         password: '1234',
@@ -560,14 +560,14 @@ describe('auth0.WebAuth.redirect', function () {
     it('should check that responseType is present', function() {
       var _this = this;
       expect(function() {
-        _this.auth0.login({ connection: 'facebook' })
+        _this.auth0.authorize({ connection: 'facebook' })
       }).to.throwException(function (e) {
         expect(e.message).to.be('responseType option is required');
       });
     })
 
     it('should redirect to authorize', function () {
-      this.auth0.login({responseType: 'code', connection: 'facebook', state: '1234'})
+      this.auth0.authorize({responseType: 'code', connection: 'facebook', state: '1234'})
       expect(global.window.location).to.be('https://me.auth0.com/authorize?connection=facebook&client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&state=1234');
     });
 

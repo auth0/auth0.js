@@ -17,12 +17,12 @@ function Redirect(client, options) {
 /**
  * Initializes the legacy Lock login flow in redirect mode
  *
- * @method login
+ * @method loginWithCredentials
  * @param {Object} options
  * @param {Function} cb
- * @deprecated `webauth.redirect.login` will be soon deprecated, use `webauth.login` instead.
+ * @deprecated `webauth.redirect.loginWithCredentials` will be soon deprecated, use `webauth.login` instead.
  */
-Redirect.prototype.login = function (options, cb) {
+Redirect.prototype.loginWithCredentials = function (options, cb) {
   var usernamePassword;
 
   var params = objectHelper.merge(this.baseOptions, [
@@ -35,7 +35,7 @@ Redirect.prototype.login = function (options, cb) {
     'audience'
   ]).with(options);
 
-  this.warn.warning('`webauth.redirect.login` will be soon deprecated, use `webauth.login` instead.');
+  this.warn.warning('`webauth.redirect.loginWithCredentials` will be soon deprecated, use `webauth.login` instead.');
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
     responseType: { type: 'string', message: 'responseType option is required' }
@@ -65,7 +65,7 @@ Redirect.prototype.signupAndLogin = function (options, cb) {
     if (err) {
       return cb(err);
     }
-    return _this.login(options, cb);
+    return _this.loginWithCredentials(options, cb);
   });
 };
 
