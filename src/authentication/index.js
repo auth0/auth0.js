@@ -311,7 +311,7 @@ Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
   url = urljoin(this.baseOptions.rootUrl, 'user', 'ssodata', params);
 
   return this.request
-    .get(url)
+    .get(url, {noHeaders: true})
     .withCredentials()
     .end(responseHandler(cb));
 };

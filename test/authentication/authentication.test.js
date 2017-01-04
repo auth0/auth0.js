@@ -467,9 +467,7 @@ describe('auth0.authentication', function () {
       stub(request, 'get', function(url) {
         expect(url).to.be('https://me.auth0.com/user/ssodata/')
         return new RequestMock({
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: {},
           cb: function(cb) {
             cb(null, {
               body: {
@@ -509,9 +507,7 @@ describe('auth0.authentication', function () {
       stub(request, 'get', function(url) {
         expect(url).to.be('https://me.auth0.com/user/ssodata?ldaps=1&client_id=...')
         return new RequestMock({
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: {},
           cb: function(cb) {
             cb(null, {
               body: {
