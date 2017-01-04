@@ -1,5 +1,12 @@
 #Change Log
 
+## [v8.0.1](https://github.com/auth0/auth0.js/tree/v8.0.1) (2017-01-04)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.0...v8.0.1)
+
+**Fixed**
+- Fix getSSOData failing due to extra headers [\#284](https://github.com/auth0/auth0.js/pull/284) ([glena](https://github.com/glena))
+
+
 ## [v8.0.0](https://github.com/auth0/auth0.js/tree/v8.0.0) (2017-01-03)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.0-beta.3...v8.0.0)
 
