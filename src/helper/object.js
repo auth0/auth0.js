@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
 
+var objectAssign = require('./object-assign');
+
 function pick(object, keys) {
   return keys.reduce(function (prev, key) {
     if (object[key]) {
@@ -9,10 +11,18 @@ function pick(object, keys) {
   }, {});
 }
 
+function objectValues(obj) {
+  var values = [];
+  for (key in obj) {
+    values.push(obj[key]);
+  }
+  return values;
+}
+
 function extend() {
-  var params = Array.from(arguments);
+  var params = objectValues(arguments);
   params.unshift({});
-  return Object.assign.apply(undefined, params);
+  return objectAssign.get().apply(undefined, params);
 }
 
 function merge(object, keys) {
