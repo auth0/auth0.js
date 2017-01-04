@@ -67,7 +67,13 @@ function RequestBuilder(options) {
   this.headers = options.headers || {};
 }
 
-RequestBuilder.prototype.setCommonConfiguration = function (ongoingRequest) {
+RequestBuilder.prototype.setCommonConfiguration = function (ongoingRequest, options) {
+  options = options || {};
+
+  if (options.noHeaders) {
+    return ongoingRequest;
+  }
+
   var headers = this.headers;
   ongoingRequest = ongoingRequest.set('Content-Type', 'application/json');
   Object.keys(this.headers).forEach(function (header) {
@@ -85,16 +91,16 @@ RequestBuilder.prototype.getTelemetryData = function () {
   return base64Url.encode(jsonClientInfo);
 };
 
-RequestBuilder.prototype.get = function (url) {
-  return new RequestObj(this.setCommonConfiguration(request.get(url)));
+RequestBuilder.prototype.get = function (url, options) {
+  return new RequestObj(this.setCommonConfiguration(request.get(url), options));
 };
 
-RequestBuilder.prototype.post = function (url) {
-  return new RequestObj(this.setCommonConfiguration(request.post(url)));
+RequestBuilder.prototype.post = function (url, options) {
+  return new RequestObj(this.setCommonConfiguration(request.post(url), options));
 };
 
-RequestBuilder.prototype.patch = function (url) {
-  return new RequestObj(this.setCommonConfiguration(request.patch(url)));
+RequestBuilder.prototype.patch = function (url, options) {
+  return new RequestObj(this.setCommonConfiguration(request.patch(url), options));
 };
 
 module.exports = RequestBuilder;
