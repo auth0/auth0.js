@@ -92,7 +92,7 @@ CHANGELOG_WEBTASK="https://webtask.it.auth0.com/api/run/wt-hernan-auth0_com-0/os
 curl -f -s -H "Accept: text/markdown" $CHANGELOG_WEBTASK >> $TMP_CHANGELOG_FILE
 
 echo "Updating README.md"
-sed -i .old "s/auth0\/$ORIG_VERSION\/auth0.min.js/lock\/$NEW_VERSION\/auth0.min.js/g" README.md
+sed -i .old "s/auth0\/$ORIG_VERSION\/auth0.min.js/auth0\/$NEW_VERSION\/auth0.min.js/g" README.md
 
 echo "Updating CHANGELOG.md"
 
