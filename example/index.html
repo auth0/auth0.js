@@ -62,7 +62,7 @@
       if (err) {
         return this.dump(err, 'error');
       }
-      if (data.error) {
+      if (data && data.error) {
         return this.dump(data, 'error');
       }
       if (data) {
@@ -175,13 +175,20 @@
     });
 
     webAuth.parseHash(function(err, data) {
+      console.log(err,data);
       if (err) {
         return htmlConsole.dumpCallback(err);
       }
 
-      htmlConsole.dumpCallback(null, data);
+      if (data) {
+        htmlConsole.dumpCallback(null, data);
+
+        if (data.accessToken) {
+          webAuth.client.userInfo(data.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
+        }
+      }
+
       window.location.hash = '';
-      webAuth.client.userInfo(data.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
     $('#clear-console').click(function () {
@@ -198,7 +205,7 @@
 
     $('.login-db').click(function (e) {
       e.preventDefault();
-      webAuth.redirect.login({
+      webAuth.redirect.loginWithCredentials({
         connection: 'tests',
         username: $('.login-username').val(),
         password: $('.login-password').val(),
@@ -216,7 +223,7 @@
     $('.popup-login-db').click(function (e) {
       e.preventDefault();
 
-      webAuth.popup.login({
+      webAuth.popup.loginWithCredentials({
         connection: 'tests',
         username: $('.popup-login-username').val(),
         password: $('.popup-login-password').val(),
@@ -235,28 +242,28 @@
         audience: 'urn:test'
       }, function(err, data) {
         htmlConsole.dumpCallback.bind(htmlConsole)(err, data);
-        this.webAuth.client.userInfo(data.access_token, htmlConsole.dumpCallback.bind(htmlConsole));
+        this.webAuth.client.userInfo(data.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
       });
     });
 
     $('.login-facebook').click(function (e) {
       e.preventDefault();
-      webAuth.login({ connection: 'facebook' });
+      webAuth.authorize({ connection: 'facebook' });
     });
 
     $('.login-hosted').click(function (e) {
       e.preventDefault();
-      webAuth.login({});
+      webAuth.authorize({});
     });
 
     $('.login-twitter').click(function (e) {
       e.preventDefault();
-      webAuth.login({ connection: 'twitter' });
+      webAuth.authorize({ connection: 'twitter' });
     });
 
     $('.login-github').click(function (e) {
       e.preventDefault();
-      webAuth.login({ connection: 'github' });
+      webAuth.authorize({ connection: 'github' });
     });
 
     $('.popup-login-facebook').click(function (e) {

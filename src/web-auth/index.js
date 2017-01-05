@@ -2,7 +2,6 @@ var IdTokenVerifier = require('idtoken-verifier');
 
 var assert = require('../helper/assert');
 var error = require('../helper/error');
-var jwt = require('../helper/jwt');
 var qs = require('../helper/qs');
 var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');

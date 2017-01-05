@@ -76,9 +76,13 @@ RequestBuilder.prototype.setCommonConfiguration = function (ongoingRequest, opti
 
   var headers = this.headers;
   ongoingRequest = ongoingRequest.set('Content-Type', 'application/json');
-  Object.keys(this.headers).forEach(function (header) {
-    ongoingRequest = ongoingRequest.set(header, headers[header]);
-  });
+
+  var keys = Object.keys(this.headers);
+
+  for (var a = 0; a < keys.length; a++) {
+    ongoingRequest = ongoingRequest.set(keys[a], headers[keys[a]]);
+  }
+
   if (this._sendTelemetry) {
     ongoingRequest = ongoingRequest.set('Auth0-Client', this.getTelemetryData());
   }

@@ -20,7 +20,7 @@ TransactionManager.prototype.process = function (options) {
     return options;
   }
 
-  transaction = this.generateTransaction(options.appState, options.state);
+  transaction = this.generateTransaction(options.appState, options.state, options.nonce);
 
   options.state = transaction.state;
 
@@ -31,12 +31,12 @@ TransactionManager.prototype.process = function (options) {
   return options;
 };
 
-TransactionManager.prototype.generateTransaction = function (appState, state) {
+TransactionManager.prototype.generateTransaction = function (appState, state, nonce) {
   var transaction;
   var nonce;
 
   transaction = state || random.randomString(this.keyLength);
-  nonce = random.randomString(this.keyLength);
+  nonce = nonce || random.randomString(this.keyLength);
 
   storage.setItem(this.namespace + transaction, {
     nonce:nonce,

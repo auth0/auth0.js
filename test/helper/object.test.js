@@ -1,5 +1,7 @@
 var expect = require('expect.js');
+var stub = require('sinon').stub;
 
+var objectAssign = require('../../src/helper/object-assign');
 var objectHelper = require('../../src/helper/object');
 
 describe('helpers', function () {
@@ -71,6 +73,41 @@ describe('helpers', function () {
       expect(object2).to.eql({
         attr3: 'attribute_3'
       });
+    });
+
+    it('shold merge objects attributes with polyfill', function () {
+
+      stub(objectAssign, 'get', function() {
+        return objectAssign.objectAssignPolyfill;
+      });
+
+      var object1 = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2'
+      };
+
+      var object2 = {
+        attr3: 'attribute_3'
+      };
+
+      var newObject = objectHelper.extend(object1, object2);
+
+      expect(newObject).to.eql({
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        attr3: 'attribute_3'
+      });
+
+      expect(object1).to.eql({
+        attr1: 'attribute_1',
+        attr2: 'attribute_2'
+      });
+
+      expect(object2).to.eql({
+        attr3: 'attribute_3'
+      });
+
+      objectAssign.get.restore();
     });
 
     it('shold merge objects attributes and override the first object ones', function () {
