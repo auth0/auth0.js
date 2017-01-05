@@ -62,7 +62,7 @@
       if (err) {
         return this.dump(err, 'error');
       }
-      if (data.error) {
+      if (data && data.error) {
         return this.dump(data, 'error');
       }
       if (data) {
@@ -179,9 +179,12 @@
         return htmlConsole.dumpCallback(err);
       }
 
-      htmlConsole.dumpCallback(null, data);
+      if (data) {
+        htmlConsole.dumpCallback(null, data);
+        webAuth.client.userInfo(data.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
+      }
+
       window.location.hash = '';
-      webAuth.client.userInfo(data.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
     $('#clear-console').click(function () {
