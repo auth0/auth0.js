@@ -23,7 +23,10 @@ function check(o, config, attributes) {
     variable(o, config.type, config.message);
   }
   if (config.type === 'object' && attributes) {
-    Object.keys(attributes).forEach(function (a) { // eslint-disable-line
+    var keys = Object.keys(attributes);
+
+    for (var index = 0; index < keys.length; index++ ) {
+      var a = keys[index];
       if (!attributes[a].optional || o[a]) {
         if (!attributes[a].condition || attributes[a].condition(o)) {
           attribute(o, a, attributes[a].type, attributes[a].message);
@@ -32,7 +35,8 @@ function check(o, config, attributes) {
           }
         }
       }
-    });
+    }
+
   }
 }
 

@@ -12,9 +12,9 @@ function randomString(length) {
 
   var random = cryptoObj.getRandomValues(bytes);
 
-  random.forEach(function (c) {
-    result.push(charset[c % charset.length]);
-  });
+  for (var a = 0; a < random.length; a++) {
+    result.push(charset[random[a] % charset.length]);
+  }
 
   return result.join('');
 }
