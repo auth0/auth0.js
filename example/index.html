@@ -201,7 +201,7 @@
 
     $('.login-db').click(function (e) {
       e.preventDefault();
-      webAuth.redirect.login({
+      webAuth.redirect.loginWithCredentials({
         connection: 'tests',
         username: $('.login-username').val(),
         password: $('.login-password').val(),
@@ -219,7 +219,7 @@
     $('.popup-login-db').click(function (e) {
       e.preventDefault();
 
-      webAuth.popup.login({
+      webAuth.popup.loginWithCredentials({
         connection: 'tests',
         username: $('.popup-login-username').val(),
         password: $('.popup-login-password').val(),
@@ -244,22 +244,22 @@
 
     $('.login-facebook').click(function (e) {
       e.preventDefault();
-      webAuth.login({ connection: 'facebook' });
+      webAuth.authorize({ connection: 'facebook' });
     });
 
     $('.login-hosted').click(function (e) {
       e.preventDefault();
-      webAuth.login({});
+      webAuth.authorize({});
     });
 
     $('.login-twitter').click(function (e) {
       e.preventDefault();
-      webAuth.login({ connection: 'twitter' });
+      webAuth.authorize({ connection: 'twitter' });
     });
 
     $('.login-github').click(function (e) {
       e.preventDefault();
-      webAuth.login({ connection: 'github' });
+      webAuth.authorize({ connection: 'github' });
     });
 
     $('.popup-login-facebook').click(function (e) {
