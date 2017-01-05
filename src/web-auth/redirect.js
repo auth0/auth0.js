@@ -41,8 +41,6 @@ Redirect.prototype.loginWithCredentials = function (options, cb) {
     responseType: { type: 'string', message: 'responseType option is required' }
   });
 
-  params = this.transactionManager.process(params);
-
   usernamePassword = new UsernamePassword(this.baseOptions);
   return usernamePassword.login(params, function (err, data) {
     if (err) {
