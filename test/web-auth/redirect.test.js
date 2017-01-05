@@ -94,9 +94,7 @@ describe('auth0.WebAuth.redirect', function () {
             response_type: 'id_token',
             scope: 'openid',
             tenant: 'me',
-            username: 'me@example.com',
-            state: 'ABCDEFGHIJ',
-            nonce: 'ABCDEFGHIJ'
+            username: 'me@example.com'
           },
           headers: {
             'Content-Type': 'application/json',
@@ -176,7 +174,6 @@ describe('auth0.WebAuth.redirect', function () {
             response_type: 'token',
             scope: 'openid',
             tenant: 'me',
-            state: 'ABCDEFGHIJ',
             username: 'me@example.com'
           },
           headers: {
@@ -261,7 +258,6 @@ describe('auth0.WebAuth.redirect', function () {
               client_id: '...',
               connection: 'the_connection',
               password: '123456',
-              state: 'ABCDEFGHIJ',
               redirect_uri: 'http://page.com/callback',
               response_type: 'token',
               scope: 'openid',
