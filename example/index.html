@@ -175,13 +175,17 @@
     });
 
     webAuth.parseHash(function(err, data) {
+      console.log(err,data);
       if (err) {
         return htmlConsole.dumpCallback(err);
       }
 
       if (data) {
         htmlConsole.dumpCallback(null, data);
-        webAuth.client.userInfo(data.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
+
+        if (data.accessToken) {
+          webAuth.client.userInfo(data.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
+        }
       }
 
       window.location.hash = '';
@@ -238,7 +242,7 @@
         audience: 'urn:test'
       }, function(err, data) {
         htmlConsole.dumpCallback.bind(htmlConsole)(err, data);
-        this.webAuth.client.userInfo(data.access_token, htmlConsole.dumpCallback.bind(htmlConsole));
+        this.webAuth.client.userInfo(data.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
       });
     });
 
