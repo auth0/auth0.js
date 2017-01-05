@@ -1,5 +1,4 @@
 var UsernamePassword = require('./username-password');
-var TransactionManager = require('./transaction-manager');
 var objectHelper = require('../helper/object');
 var Warn = require('../helper/warn');
 var assert = require('../helper/assert');
@@ -8,7 +7,6 @@ function Redirect(client, options) {
   this.baseOptions = options;
   this.client = client;
 
-  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
   this.warn = new Warn({
     disableWarnings: !!options._disableDeprecationWarnings
   });
