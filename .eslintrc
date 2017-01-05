@@ -1,7 +1,12 @@
 {
   "extends": "auth0-base/legacy",
+  "plugins": ["compat"],
+  "env": {
+    "browser": true
+  },
   "rules": {
     "func-names": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "compat/compat": "error"
   }
 }
