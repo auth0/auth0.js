@@ -1,5 +1,12 @@
 #Change Log
 
+## [v8.0.2](https://github.com/auth0/auth0.js/tree/v8.0.2) (2017-01-05)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.1...v8.0.2)
+
+**Fixed**
+- Polyfill functions [\#285](https://github.com/auth0/auth0.js/pull/285) ([glena](https://github.com/glena))
+
+
 ## [v8.0.1](https://github.com/auth0/auth0.js/tree/v8.0.1) (2017-01-04)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.0...v8.0.1)
 
