@@ -72,6 +72,7 @@ function WebAuth(options) {
  * @param {String} options.state [OPTIONAL] to verify the response
  * @param {String} options.nonce [OPTIONAL] to verify the id_token
  * @param {String} options.hash [OPTIONAL] the url hash. If not provided it will extract from window.location.hash
+ * @param {Integer} options.leeway [OPTIONAL] the leeway to use for the token validation. Default to 0
  * @param {Function} cb: function(err, token_payload)
  */
 WebAuth.prototype.parseHash = function (options, cb) {
@@ -110,7 +111,7 @@ WebAuth.prototype.parseHash = function (options, cb) {
   }
 
   if (parsedQs.id_token) {
-    this.validateToken(parsedQs.id_token, parsedQs.state || options.state, options.nonce, function (err, response) {
+    this.validateToken(parsedQs.id_token, parsedQs.state || options.state, options.nonce, options.leeway || 0, function (err, response) {
       if (err) {
         return cb(err);
       }
@@ -142,9 +143,10 @@ function buildParseHashResponse(qs, token) {
  * @param {String} token
  * @param {String} state
  * @param {String} nonce
+ * @param {Integer} leeway
  * @param {Function} cb: function(err, {payload, transaction})
  */
-WebAuth.prototype.validateToken = function (token, state, nonce, cb) {
+WebAuth.prototype.validateToken = function (token, state, nonce, leeway, cb) {
   var audiences;
   var transaction;
   var transactionNonce;
@@ -156,6 +158,7 @@ WebAuth.prototype.validateToken = function (token, state, nonce, cb) {
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     audience: this.baseOptions.clientID,
+    leeway: leeway,
     __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
   });
 
@@ -215,7 +218,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
     }
 
     if (data.id_token) {
-      return _this.validateToken(data.id_token, options.state, options.nonce, function (err, payload) {
+      return _this.validateToken(data.id_token, options.state, options.nonce, options.leeway || 0, function (err, payload) {
         if (err) {
           return cb(err);
         }
