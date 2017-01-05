@@ -33,6 +33,7 @@ function WebAuth(options) {
     redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
     scope: { optional: true, type: 'string', message: 'audience is not valid' },
     audience: { optional: true, type: 'string', message: 'scope is not valid' },
+    leeway: { optional: true, type: 'number', message: 'leeway is not valid' },
     _disableDeprecationWarnings: { optional: true, type: 'boolean', message: '_disableDeprecationWarnings option is not valid' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
     _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
@@ -65,7 +66,11 @@ function WebAuth(options) {
 }
 
 /**
- * Parse the url hash and extract the access token or id token depending on the transaction.
+ * Parse the url hash and extract the returned tokens depending on the transaction.
+ *
+ * Only validates id_tokens signed by Auth0 using the RS256 algorithm using the public key exposed
+ * by the `/.well-known/jwks.json` endpoint. Id tokens signed with other algorithms will not be
+ * accepted.
  *
  * @method parseHash
  * @param {Object} options:
@@ -156,6 +161,7 @@ WebAuth.prototype.validateToken = function (token, state, nonce, cb) {
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     audience: this.baseOptions.clientID,
+    leeway: this.baseOptions.leeway || 0,
     __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
   });
 
