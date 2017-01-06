@@ -1,5 +1,12 @@
 #Change Log
 
+## [v8.0.3](https://github.com/auth0/auth0.js/tree/v8.0.3) (2017-01-06)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.2...v8.0.3)
+
+**Added**
+- Add the option to provide a leeway [\#292](https://github.com/auth0/auth0.js/pull/292) ([glena](https://github.com/glena))
+
+
 ## [v8.0.2](https://github.com/auth0/auth0.js/tree/v8.0.2) (2017-01-05)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.1...v8.0.2)
 
