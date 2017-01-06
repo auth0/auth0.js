@@ -1,5 +1,12 @@
 #Change Log
 
+## [v8.0.4](https://github.com/auth0/auth0.js/tree/v8.0.4) (2017-01-06)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.3...v8.0.4)
+
+**Fixed**
+- Fix undefined valud in for [\#295](https://github.com/auth0/auth0.js/pull/295) ([glena](https://github.com/glena))
+
+
 ## [v8.0.3](https://github.com/auth0/auth0.js/tree/v8.0.3) (2017-01-06)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.2...v8.0.3)
 
