@@ -52,7 +52,7 @@ var auth0 = new auth0.WebAuth({
 
 Parameters:
 - **domain {REQUIRED, string}**: Your Auth0 account domain.
-- **client_id {REQUIRED, string}**: Your Auth0 client_id.
+- **clientID {REQUIRED, string}**: Your Auth0 client_id.
 - **redirectUri {OPTIONAL, string}**: The url used as the redirectUri.
 - **scope {OPTIONAL, string}**: The default scope used for all Auth.
 - **audience {OPTIONAL, string}**: The default audience used for requesting access to an API.
@@ -166,7 +166,7 @@ var auth0 = new auth0.Authentication({
 
 ## auth0.Management
 
-Provides an API Client for the Auth0 Management API (only methods meant to be user from the client with the user token).
+Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token).
 
 ### Initialize
 
