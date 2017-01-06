@@ -13,7 +13,7 @@ function pick(object, keys) {
 
 function objectValues(obj) {
   var values = [];
-  for (key in obj) {
+  for (var key in obj) {
     values.push(obj[key]);
   }
   return values;
