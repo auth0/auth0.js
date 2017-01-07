@@ -10,6 +10,8 @@
 
 Client Side Javascript toolkit for Auth0 API
 
+> For auth0.js v7 code please check this [branch](https://github.com/auth0/auth0.js/tree/v7)
+
 ## Install
 
 From CDN
@@ -182,8 +184,6 @@ var auth0 = new auth0.Management({
 - **getUser(userId, cb)**: Returns the user profile. https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
 - **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metdata. It will patch the user metdata with the attributes sent. https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
 - **linkUser(userId, secondaryUserToken, cb)**: Link two users. https://auth0.com/docs/api/management/v2#!/Users/post_identities
-
-
 
 ## Develop
 
