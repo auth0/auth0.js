@@ -31,8 +31,8 @@ function WebAuth(options) {
     responseType: { optional: true, type: 'string', message: 'responseType is not valid' },
     responseMode: { optional: true, type: 'string', message: 'responseMode is not valid' },
     redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
-    scope: { optional: true, type: 'string', message: 'audience is not valid' },
-    audience: { optional: true, type: 'string', message: 'scope is not valid' },
+    scope: { optional: true, type: 'string', message: 'scope is not valid' },
+    audience: { optional: true, type: 'string', message: 'audience is not valid' },
     leeway: { optional: true, type: 'number', message: 'leeway is not valid' },
     _disableDeprecationWarnings: { optional: true, type: 'boolean', message: '_disableDeprecationWarnings option is not valid' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
@@ -83,6 +83,9 @@ WebAuth.prototype.parseHash = function (options, cb) {
   var parsedQs;
   var err;
   var token;
+  var state;
+  var transaction;
+  var transactionNonce;
 
   if (!cb && typeof options === 'function') {
     cb = options;
@@ -114,28 +117,38 @@ WebAuth.prototype.parseHash = function (options, cb) {
     return cb(null, null);
   }
 
-  if (parsedQs.id_token) {
-    this.validateToken(parsedQs.id_token, parsedQs.state || options.state, options.nonce, function (err, response) {
-      if (err) {
-        return cb(err);
-      }
+  state = parsedQs.state || options.state;
 
-      return cb(null, buildParseHashResponse(parsedQs, response));
-    });
+  transaction = this.transactionManager.getStoredTransaction(state);
+  transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
+  transactionState = options.state || (transaction && transaction.state) || null;
+
+  if (parsedQs.id_token) {
+    this.validateToken(
+      parsedQs.id_token,
+      transactionState,
+      transactionNonce,
+      function (error, payload) {
+        if (error) {
+          return cb(error);
+        }
+
+        return cb(null, buildParseHashResponse(parsedQs, (transaction && transaction.appStatus) || null, payload));
+      });
   } else {
-    cb(null, buildParseHashResponse(parsedQs, null));
+    cb(null, buildParseHashResponse(parsedQs, (transaction && transaction.appStatus) || null, null));
   }
 };
 
-function buildParseHashResponse(qs, token) {
+function buildParseHashResponse(qs, appStatus, token) {
   return {
     accessToken: qs.access_token || null,
     idToken: qs.id_token || null,
-    idTokenPayload: token && token.payload ? token.payload : null,
-    appStatus: token ? token.appStatus || null : null,
+    idTokenPayload: token || null,
+    appStatus: appStatus || null,
     refreshToken: qs.refresh_token || null,
     state: qs.state || null,
-    expiresIn: qs.expires_in || null,
+    expiresIn: qs.expires_in ? parseInt(qs.expires_in, 10) : null,
     tokenType: qs.token_type || null
   };
 }
@@ -150,14 +163,6 @@ function buildParseHashResponse(qs, token) {
  * @param {Function} cb: function(err, {payload, transaction})
  */
 WebAuth.prototype.validateToken = function (token, state, nonce, cb) {
-  var audiences;
-  var transaction;
-  var transactionNonce;
-  var tokenNonce;
-
-  transaction = this.transactionManager.getStoredTransaction(state);
-  transactionNonce = (transaction && transaction.nonce) || nonce || null;
-
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     audience: this.baseOptions.clientID,
@@ -165,15 +170,12 @@ WebAuth.prototype.validateToken = function (token, state, nonce, cb) {
     __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
   });
 
-  verifier.verify(token, transactionNonce, function (err, payload) {
+  verifier.verify(token, nonce, function (err, payload) {
     if (err) {
       return cb(error.invalidJwt(err.message));
     }
 
-    cb(null, {
-      payload: payload,
-      transaction: transaction
-    });
+    cb(null, payload);
   });
 };
 
@@ -203,10 +205,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
 
   params = this.transactionManager.process(params);
 
-  assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
-    scope: { type: 'string', message: 'scope option is required' },
-    audience: { type: 'string', message: 'audience option is required' }
-  });
+  assert.check(params, { type: 'object', message: 'options parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   params.prompt = 'none';
@@ -220,8 +219,12 @@ WebAuth.prototype.renewAuth = function (options, cb) {
       return cb(err);
     }
 
+    var transaction = _this.transactionManager.getStoredTransaction(params.state);
+    var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
+    var transactionState = options.state || (transaction && transaction.state) || null;
+
     if (data.id_token) {
-      return _this.validateToken(data.id_token, options.state, options.nonce, function (err, payload) {
+      return _this.validateToken(data.id_token, transactionState, transactionNonce, function (err, payload) {
         if (err) {
           return cb(err);
         }

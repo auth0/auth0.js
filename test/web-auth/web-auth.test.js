@@ -1,5 +1,6 @@
 var expect = require('expect.js');
 var stub = require('sinon').stub;
+var spy = require('sinon').spy;
 var request = require('superagent');
 
 var storage = require('../../src/helper/storage');
@@ -7,6 +8,7 @@ var IframeHandler = require('../../src/helper/iframe-handler');
 
 var RequestMock = require('../mock/request-mock');
 
+var TransactionManager = require('../../src/web-auth/transaction-manager');
 var SilentAuthenticationHandler = require('../../src/web-auth/silent-authentication-handler');
 var WebAuth = require('../../src/web-auth');
 
@@ -84,6 +86,14 @@ describe('auth0.WebAuth', function () {
       global.window.location.hash = '#access_token=asldkfjahsdlkfjhasd&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas';
     });
 
+
+    beforeEach(function() {
+      spy(TransactionManager.prototype, "getStoredTransaction");
+    });
+    afterEach(function() {
+      TransactionManager.prototype.getStoredTransaction.restore();
+    })
+
     it('should parse a valid hash', function (done) {
       var webAuth = new WebAuth({
         domain: 'wptest.auth0.com',
@@ -116,11 +126,13 @@ describe('auth0.WebAuth', function () {
           tokenType: 'Bearer'
         });
 
+        expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+
         done();
       }); // eslint-disable-line
     });
 
-    it('should parse a valid hash from the location.hash', function () {
+    it('should parse a valid hash from the location.hash', function (done) {
       var webAuth = new WebAuth({
         domain: 'wptest.auth0.com',
         redirectUri: 'http://example.com/callback',
@@ -148,6 +160,10 @@ describe('auth0.WebAuth', function () {
           expiresIn: null,
           tokenType: 'Bearer'
         });
+
+        expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+
+        done();
       });
     });
 
@@ -172,6 +188,9 @@ describe('auth0.WebAuth', function () {
           expiresIn: null,
           tokenType: 'Bearer'
         });
+
+        expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+
         done();
       }); // eslint-disable-line
     });
@@ -317,11 +336,15 @@ describe('auth0.WebAuth', function () {
     beforeEach(function(){
       global.window = {};
       global.window.document = {};
+
+      spy(TransactionManager.prototype, "getStoredTransaction");
     });
 
     afterEach(function () {
       delete global.window;
       SilentAuthenticationHandler.prototype.login.restore();
+
+      TransactionManager.prototype.getStoredTransaction.restore();
     });
 
     it('should validate the token', function (done) {
@@ -352,17 +375,17 @@ describe('auth0.WebAuth', function () {
         expect(data).to.eql({
           id_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
           idTokenPayload: {
-            payload: {
-              iss: 'https://wptest.auth0.com/',
-              sub: 'auth0|55d48c57d5b0ad0223c408d7',
-              aud: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
-              exp: 1482969031,
-              iat: 1482933031,
-              nonce: 'asfd'
-            },
-            transaction: null
+            iss: 'https://wptest.auth0.com/',
+            sub: 'auth0|55d48c57d5b0ad0223c408d7',
+            aud: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+            exp: 1482969031,
+            iat: 1482933031,
+            nonce: 'asfd'
           }
         });
+
+        expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+
         done();
       });
     });
