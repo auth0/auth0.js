@@ -1632,7 +1632,7 @@ Auth0.prototype._verify_redirect = function(options) {
 Auth0.prototype.renewIdToken = function (id_token, callback) {
   this.getDelegationToken({
     id_token: id_token,
-    scope: 'passthrough',
+    scope: 'openid',
     api: 'auth0'
   }, callback);
 };
@@ -1641,7 +1641,7 @@ Auth0.prototype.renewIdToken = function (id_token, callback) {
 Auth0.prototype.refreshToken = function (refresh_token, callback) {
   this.getDelegationToken({
     refresh_token: refresh_token,
-    scope: 'passthrough',
+    scope: 'openid',
     api: 'auth0'
   }, callback);
 };
