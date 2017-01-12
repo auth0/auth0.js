@@ -336,6 +336,9 @@ describe('helpers', function () {
         }
       });
 
+      expect(newObject.array_att).to.be.an('array');
+      expect(newObject.some_obj.inner_array_att).to.be.an('array');
+
       expect(newObject).to.eql({
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
@@ -373,6 +376,7 @@ describe('helpers', function () {
   });
 
   describe('toCamelCase', function () {
+
     it('should change the casing to all the attributes', function () {
       var object = {
         attr_name_1: 'attribute_1',
@@ -399,6 +403,9 @@ describe('helpers', function () {
           inner_array_att: [ 'one', 'two' ]
         }
       });
+
+      expect(newObject.arrAtt).to.be.an('array');
+      expect(newObject.someObj.innerArrayAtt).to.be.an('array');
 
       expect(newObject).to.eql({
         attrName1: 'attribute_1',
