@@ -314,9 +314,11 @@ describe('helpers', function () {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
         attrNAME3: 'attribute_3',
+        arrayAtt: [ 'one', 'two' ],
         someObj: {
           objAtt1: 'asd',
-          objAtt2: '123'
+          objAtt2: '123',
+          innerArrayAtt: [ 'one', 'two' ]
         }
       };
 
@@ -326,9 +328,11 @@ describe('helpers', function () {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
         attrNAME3: 'attribute_3',
+        arrayAtt: [ 'one', 'two' ],
         someObj: {
           objAtt1: 'asd',
-          objAtt2: '123'
+          objAtt2: '123',
+          innerArrayAtt: [ 'one', 'two' ]
         }
       });
 
@@ -336,9 +340,11 @@ describe('helpers', function () {
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
         attr_name_3: 'attribute_3',
+        array_att: [ 'one', 'two' ],
         some_obj: {
           obj_att_1: 'asd',
-          obj_att_2: '123'
+          obj_att_2: '123',
+          inner_array_att: [ 'one', 'two' ]
         }
       });
     });
@@ -372,9 +378,11 @@ describe('helpers', function () {
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
         attr__name_3: 'attribute_3',
+        arr_att: [ "one", "two" ],
         some_obj: {
           obj_att_1: 'asdf',
-          obj_att_2: '1234'
+          obj_att_2: '1234',
+          inner_array_att: [ 'one', 'two' ]
         }
       };
 
@@ -384,9 +392,11 @@ describe('helpers', function () {
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
         attr__name_3: 'attribute_3',
+        arr_att: [ "one", "two" ],
         some_obj: {
           obj_att_1: 'asdf',
-          obj_att_2: '1234'
+          obj_att_2: '1234',
+          inner_array_att: [ 'one', 'two' ]
         }
       });
 
@@ -394,9 +404,11 @@ describe('helpers', function () {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
         attrName3: 'attribute_3',
+        arrAtt: [ "one", "two" ],
         someObj: {
           objAtt1: 'asdf',
-          objAtt2: '1234'
+          objAtt2: '1234',
+          innerArrayAtt: [ 'one', 'two' ]
         }
       });
     });
