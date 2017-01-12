@@ -554,7 +554,11 @@ describe('auth0.WebAuth', function () {
           body: {
             client_id: '...',
             connection: 'the_connection',
-            email: 'me@example.com'
+            email: 'me@example.com',
+            authParams: {
+              redirect_uri: 'http://page.com/callback',
+              response_type: 'code'
+            }
           },
           headers: {
             'Content-Type': 'application/json'

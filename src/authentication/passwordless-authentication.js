@@ -83,7 +83,8 @@ PasswordlessAuthentication.prototype.start = function (options, cb) {
     phoneNumber: { required: true, type: 'string', message: 'phoneNumber option is required',
             condition: function (o) { return o.type === 'sms'; } },
     email: { required: true, type: 'string', message: 'email option is required',
-            condition: function (o) { return o.type === 'email'; } }
+            condition: function (o) { return o.type === 'email'; } },
+    authParams: { optional: true, type: 'object', message: 'authParams option is required' }
   });
   /* eslint-enable */
 
@@ -93,10 +94,33 @@ PasswordlessAuthentication.prototype.start = function (options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'start');
 
-  body = objectHelper.merge(this.baseOptions, ['clientID'])
-                .with(cleanOption);
+  body = objectHelper.merge(this.baseOptions, [
+        'clientID',
+        'responseType',
+        'redirectUri',
+        'scope'
+      ]).with(cleanOption);
 
-  body = objectHelper.toSnakeCase(body, ['auth0Client']);
+  if (body.scope) {
+    body.authParams = body.authParams || {};
+    body.authParams.scope = body.scope;
+  }
+
+  if (options.type === 'email' && body.redirectUri) {
+    body.authParams = body.authParams || {};
+    body.authParams.redirect_uri = body.redirectUri;
+  }
+
+  if (options.type === 'email' && body.responseType) {
+    body.authParams = body.authParams || {};
+    body.authParams.response_type = body.responseType;
+  }
+
+  delete body.redirectUri;
+  delete body.responseType;
+  delete body.scope;
+
+  body = objectHelper.toSnakeCase(body, ['auth0Client', 'authParams']);
 
   return this.request
     .post(url)
