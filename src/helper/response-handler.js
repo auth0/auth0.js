@@ -1,7 +1,10 @@
 var error = require('./error');
 var objectHelper = require('./object');
 
-function wrapCallback(cb) {
+function wrapCallback(cb, options) {
+  options = options || {};
+  options.ignoreCasing = options.ignoreCasing ? options.ignoreCasing : false;
+
   return function (err, data) {
     var errObj;
 
@@ -49,7 +52,15 @@ function wrapCallback(cb) {
       return cb(errObj);
     }
 
-    return cb(null, ((data.type && data.type === 'text/html') ? data.text : objectHelper.toCamelCase(data.body || data)));
+    if (data.type && data.type === 'text/html') {
+      return cb(null, data.text);
+    }
+
+    if (options.ignoreCasing) {
+      return cb(null, data.body || data);
+    }
+
+    return cb(null, objectHelper.toCamelCase(data.body || data));
   };
 }
 

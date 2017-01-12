@@ -334,7 +334,7 @@ Authentication.prototype.userInfo = function (accessToken, cb) {
   return this.request
     .get(url)
     .set('Authorization', 'Bearer ' + accessToken)
-    .end(responseHandler(cb));
+    .end(responseHandler(cb, { ignoreCasing: true }));
 };
 
 /**
