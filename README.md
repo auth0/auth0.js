@@ -177,8 +177,8 @@ var auth0 = new auth0.Authentication({
 
 ### API
 
-- **buildAuthorizeUrl(options)**: Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#!#get--authorize_db
-- **buildLogoutUrl(options)**: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#!#get--v2-logout
+- **buildAuthorizeUrl(options)**: Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#database-ad-ldap-passive-
+- **buildLogoutUrl(options)**: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#logout
 - **loginWithDefaultDirectory(options, cb)**: Makes a call to the `oauth/token` endpoint with `password` grant type. https://auth0.com/docs/api-auth/grant/password
 - **login(options, cb)**: Makes a call to the `oauth/token` endpoint with `http://auth0.com/oauth/grant-type/password-realm` grant type.
 - **oauthToken(options, cb)**: Makes a call to the `oauth/token` endpoint.
