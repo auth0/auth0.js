@@ -420,6 +420,18 @@ describe('helpers', function () {
       });
     });
 
+    it.only('should not breack the string', function () {
+      var object = "some random string";
+
+      var newObject = objectHelper.toCamelCase(object);
+
+      expect(object).to.eql("some random string");
+
+      expect(newObject).to.be.a('string');
+
+      expect(newObject).to.eql("some random string");
+    });
+
     it('should change the casing to all the attributes that are not blacklisted', function () {
       var object = {
         attr_name_1: 'attribute_1',

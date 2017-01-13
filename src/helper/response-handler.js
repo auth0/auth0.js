@@ -52,7 +52,7 @@ function wrapCallback(cb, options) {
       return cb(errObj);
     }
 
-    if (data.type && data.type === 'text/html') {
+    if (data.type && (data.type === 'text/html' || data.type === 'text/plain')) {
       return cb(null, data.text);
     }
 
