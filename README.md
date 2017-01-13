@@ -10,6 +10,8 @@
 
 Client Side Javascript toolkit for Auth0 API
 
+> We recommend using auth0.js v8 if you have enabled the flag `OAuth 2.0 API Authorization` in your [tenant settings](https://manage.auth0.com/#/account/advanced). For auth0.js v7 code please check the [v7 branch](https://github.com/auth0/auth0.js/tree/v7), this version will be supported and mantained alongside v8.
+
 ## Install
 
 From CDN
@@ -51,18 +53,19 @@ var auth0 = new auth0.WebAuth({
 ```
 
 Parameters:
-- **domain {REQUIRED, string}**: Your Auth0 account domain.
-- **clientID {REQUIRED, string}**: Your Auth0 client_id.
-- **redirectUri {OPTIONAL, string}**: The url used as the redirectUri.
-- **scope {OPTIONAL, string}**: The default scope used for all Auth.
-- **audience {OPTIONAL, string}**: The default audience used for requesting access to an API.
-- **responseType {OPTIONAL, string}**: The default responseType used.
-- **responseMode {OPTIONAL, string}**: The default responseMode used.
+- **domain {REQUIRED, string}**: Your Auth0 account domain such as `'example.auth0.com'` or `'example.eu.auth0.com'`.
+- **clientID {REQUIRED, string}**: Your Auth0 client ID.
+- **redirectUri {OPTIONAL, string}**: The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be whitelisted in the "Allowed Callback URLs" in your Auth0 client's settings.
+- **scope {OPTIONAL, string}**: The default scope used for all authorization requests.
+- **audience {OPTIONAL, string}**: The default audience, used if requesting access to an API.
+- **responseType {OPTIONAL, string}**: Response type for all authentication requests. Defaults to `'token'`. Valid values are `'token'`, `'id_token'` and `'token id_token'`.
+- **responseMode {OPTIONAL, string}**: The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode.
 - **_disableDeprecationWarnings {OPTIONAL, boolean}**: Disables the deprecation warnings, defaults to `false`.
 
 ### API
 
-- **authorize(options)**: Redirects to `/authorize` endpoint to start the AuthN/AuthZ transaction. Once finished it will redirect back to yout `redirectUri` with the result of the transaction
+- **authorize(options)**: Redirects to the `/authorize` endpoint to start an authentication/authorization transaction.
+Auth0 will call back to your application with the results at the specified `redirectUri`.
 
 ```js
 auth0.authorize({
@@ -73,21 +76,30 @@ auth0.authorize({
 });
 ```
 
-- **parseHash(options, callback)**: Parses the url hash of the redirect Url to extract result of the AuthN/AuthZ transaction.
+- **parseHash(options, callback)**: Parses a URL hash fragment to extract the result of an Auth0 authentication response.
 
 ```js
-auth0.parseHash({}, function(err, authResult) {
+auth0.parseHash(window.location.hash, function(err, authResult) {
   if (err) {
     return console.log(err);
   }
 
+  // The contents of authResult depend on which authentication parameters were used.
+  // It can include the following:
+  // authResult.accessToken - access token for the API specified by `audience`
+  // authResult.expiresIn - string with the access token's expiration time in seconds
+  // authResult.idToken - ID token JWT containing user profile information
+
   auth0.client.userInfo(authResult.accessToken, function(err, user) {
-    // Now you have the user information
+    // Now you have the user's information
   });
 });
 ```
 
-- **renewAuth(options, cb)**: Gets a new token from Auth0 (the user should be authenticated using the hosted login page first)
+- **renewAuth(options, callback)**: Attempts to get a new token from Auth0 by using [silent authentication](https://auth0.com/docs/api-auth/silent-authentication), or invokes `callback` with an error if the user does not have an active SSO session at your Auth0 domain.
+
+This method can be used to detect a locally unauthenticated user's SSO session status, or to renew an authenticated user's access token.
+The actual redirect to `/authorize` happens inside an iframe, so it will not reload your application or redirect away from it.
 
 ```js
 auth0.renewAuth({
@@ -104,9 +116,14 @@ auth0.renewAuth({
 });
 ```
 
+The contents of `authResult` are identical to those returned by `parseHash()`.
+For this request to succeed, the user must have an active SSO session at Auth0 by having logged in through the [hosted login page](https://manage.auth0.com/#/login_page) of your Auth0 domain.
+
 > ***Important:*** this will use postMessage to communicate between the silent callback and the SPA. When false the SDK will attempt to parse the url hash should ignore the url hash and no extra behaviour is needed.
 
-The callback page should be something like the following one. It will parse the url hash and post it to the parent document:
+It is strongly recommended to have a dedicated callback page for silent authentication in order to avoid loading your entire application again inside an iframe.
+This callback page should only parse the URL hash and post it to the parent document so that your application can take action depending on the outcome of the silent authentication attempt.
+For example:
 
 ```js
 <!DOCTYPE html>
@@ -118,17 +135,18 @@ The callback page should be something like the following one. It will parse the 
         domain: '{YOUR_AUTH0_DOMAIN}',
         clientID: '{YOUR_AUTH0_CLIENT_ID}'
       });
-      var result = auth0.parseHash(window.location.hash);
-      if (result) {
-        parent.postMessage(result, "https://example.com/"); //The second parameter should be your domain
-      }
+      auth0.parseHash(window.localtion.hash, function (err, result) {
+        parent.postMessage(err || result, 'https://example.com/');
+      });
     </script>
   </head>
   <body></body>
 </html>
 ```
 
-- **client.login(options, cb)**: Authenticates the user with username & password in a realm using `/oauth/token`. This will not initialize a SSO session in auth0, hence can not be used along with renew auth.
+Remember to add the URL of the silent authentication callback page to the "Allowed Callback URLs" list of your Auth0 client.
+
+- **client.login(options, callback)**: Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
 
 ```js
 auth0.client.login({
@@ -141,6 +159,8 @@ auth0.client.login({
     // Auth tokens in the result or an error
 });
 ```
+
+The contents of `authResult` are identical to those returned by `parseHash()`.
 
 ## auth0.Authentication
 
@@ -182,8 +202,6 @@ var auth0 = new auth0.Management({
 - **getUser(userId, cb)**: Returns the user profile. https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
 - **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metdata. It will patch the user metdata with the attributes sent. https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
 - **linkUser(userId, secondaryUserToken, cb)**: Link two users. https://auth0.com/docs/api/management/v2#!/Users/post_identities
-
-
 
 ## Develop
 
