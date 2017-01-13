@@ -10,7 +10,7 @@
 
 Client Side Javascript toolkit for Auth0 API
 
-> For auth0.js v7 code please check this [branch](https://github.com/auth0/auth0.js/tree/v7)
+> We recommend using auth0.js v8 if you have enabled the flag `OAuth 2.0 API Authorization` in your [tenant settings](https://manage.auth0.com/#/account/advanced). For auth0.js v7 code please check the [v7 branch](https://github.com/auth0/auth0.js/tree/v7), this version will be supported and mantained alongside v8.
 
 ## Install
 
