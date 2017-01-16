@@ -218,7 +218,7 @@ describe('auth0.authentication', function () {
                 user_id: '...',
                 provider: 'auth0',
                 connection: 'Username-Password-Authentication',
-                isSocial: false
+                is_social: false
               }
             });
           }
@@ -228,10 +228,10 @@ describe('auth0.authentication', function () {
       this.auth0.userInfo('abcd1234', function(err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          userId: '...',
+          user_id: '...',
           provider: 'auth0',
           connection: 'Username-Password-Authentication',
-          isSocial: false
+          is_social: false
         });
         done();
       })

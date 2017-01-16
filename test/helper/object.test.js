@@ -314,9 +314,11 @@ describe('helpers', function () {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
         attrNAME3: 'attribute_3',
+        arrayAtt: [ 'one', 'two' ],
         someObj: {
           objAtt1: 'asd',
-          objAtt2: '123'
+          objAtt2: '123',
+          innerArrayAtt: [ 'one', 'two' ]
         }
       };
 
@@ -326,19 +328,26 @@ describe('helpers', function () {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
         attrNAME3: 'attribute_3',
+        arrayAtt: [ 'one', 'two' ],
         someObj: {
           objAtt1: 'asd',
-          objAtt2: '123'
+          objAtt2: '123',
+          innerArrayAtt: [ 'one', 'two' ]
         }
       });
+
+      expect(newObject.array_att).to.be.an('array');
+      expect(newObject.some_obj.inner_array_att).to.be.an('array');
 
       expect(newObject).to.eql({
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
         attr_name_3: 'attribute_3',
+        array_att: [ 'one', 'two' ],
         some_obj: {
           obj_att_1: 'asd',
-          obj_att_2: '123'
+          obj_att_2: '123',
+          inner_array_att: [ 'one', 'two' ]
         }
       });
     });
@@ -367,14 +376,17 @@ describe('helpers', function () {
   });
 
   describe('toCamelCase', function () {
+
     it('should change the casing to all the attributes', function () {
       var object = {
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
         attr__name_3: 'attribute_3',
+        arr_att: [ "one", "two" ],
         some_obj: {
           obj_att_1: 'asdf',
-          obj_att_2: '1234'
+          obj_att_2: '1234',
+          inner_array_att: [ 'one', 'two' ]
         }
       };
 
@@ -384,21 +396,40 @@ describe('helpers', function () {
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
         attr__name_3: 'attribute_3',
+        arr_att: [ "one", "two" ],
         some_obj: {
           obj_att_1: 'asdf',
-          obj_att_2: '1234'
+          obj_att_2: '1234',
+          inner_array_att: [ 'one', 'two' ]
         }
       });
+
+      expect(newObject.arrAtt).to.be.an('array');
+      expect(newObject.someObj.innerArrayAtt).to.be.an('array');
 
       expect(newObject).to.eql({
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
         attrName3: 'attribute_3',
+        arrAtt: [ "one", "two" ],
         someObj: {
           objAtt1: 'asdf',
-          objAtt2: '1234'
+          objAtt2: '1234',
+          innerArrayAtt: [ 'one', 'two' ]
         }
       });
+    });
+
+    it.only('should not breack the string', function () {
+      var object = "some random string";
+
+      var newObject = objectHelper.toCamelCase(object);
+
+      expect(object).to.eql("some random string");
+
+      expect(newObject).to.be.a('string');
+
+      expect(newObject).to.eql("some random string");
     });
 
     it('should change the casing to all the attributes that are not blacklisted', function () {

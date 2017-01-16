@@ -99,7 +99,7 @@ describe('auth0.Management', function () {
       this.auth0.getUser('auth0|123', function(err, user) {
         expect(err).to.be(null);
         expect(user).to.eql({
-          'userId': 'auth0|123',
+          'user_id': 'auth0|123',
           'email': 'me@example.com'
         });
         done();
@@ -182,9 +182,9 @@ describe('auth0.Management', function () {
       this.auth0.patchUserMetadata('auth0|123', {role:'admin'}, function(err, user) {
         expect(err).to.be(null);
         expect(user).to.eql({
-          'userId': 'auth0|123',
+          'user_id': 'auth0|123',
           'email': 'me@example.com',
-          'userMetadata': { role: 'admin' }
+          'user_metadata': { role: 'admin' }
         });
         done();
       })
@@ -258,17 +258,17 @@ describe('auth0.Management', function () {
                     'connection': 'twitter',
                     'user_id': '191919191919191',
                     'provider': 'twitter',
-                    'profileData': {
+                    'profile_data': {
                       'email': '',
                       'email_verified': false,
                       'name': '',
                       'username': 'johndoe',
                       'given_name': '',
-                      'phoneNumber': '',
+                      'phone_number': '',
                       'phone_verified': false,
                       'family_name': ''
                     },
-                    'isSocial': false,
+                    'is_social': false,
                     'access_token': ''
                   }
                 ]
@@ -281,20 +281,20 @@ describe('auth0.Management', function () {
         expect(err).to.be(null);
         expect(user).to.eql([{
             'connection': 'twitter',
-            'userId': '191919191919191',
+            'user_id': '191919191919191',
             'provider': 'twitter',
-            'profileData': {
+            'profile_data': {
               'email': '',
-              'emailVerified': false,
+              'email_verified': false,
               'name': '',
               'username': 'johndoe',
-              'givenName': '',
-              'phoneNumber': '',
-              'phoneVerified': false,
-              'familyName': ''
+              'given_name': '',
+              'phone_number': '',
+              'phone_verified': false,
+              'family_name': ''
             },
-            'isSocial': false,
-            'accessToken': ''
+            'is_social': false,
+            'access_token': ''
           }]);
         done();
       })
