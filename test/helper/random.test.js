@@ -64,7 +64,8 @@ describe('helpers random', function () {
 
     it('return the a random string', function () {
       var string = random.randomString(10);
-      expect(string).to.be(null);
+      expect(string).to.not.be(null);
+      expect(string).to.be.a('string');
     });
   });
 });
