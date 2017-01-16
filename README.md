@@ -96,7 +96,7 @@ auth0.parseHash(window.location.hash, function(err, authResult) {
 });
 ```
 
-- **renewAuth(options, callback)**: Attempts to get a new token from Auth0 by using [silent authentication](https://auth0.com/docs/api-auth/silent-authentication), or invokes `callback` with an error if the user does not have an active SSO session at your Auth0 domain.
+- **renewAuth(options, callback)**: Attempts to get a new token from Auth0 by using [silent authentication](https://auth0.com/docs/api-auth/tutorials/silent-authentication), or invokes `callback` with an error if the user does not have an active SSO session at your Auth0 domain.
 
 This method can be used to detect a locally unauthenticated user's SSO session status, or to renew an authenticated user's access token.
 The actual redirect to `/authorize` happens inside an iframe, so it will not reload your application or redirect away from it.
