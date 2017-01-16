@@ -167,6 +167,98 @@ describe('auth0.authentication', function () {
     });
   });
 
+  context('passwordless start', function () {
+    before(function () {
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function () {
+      request.post.restore();
+    });
+
+    it('should call passwordless start', function (done) {
+      stub(request, 'post', function (url) {
+        expect(url).to.be('https://me.auth0.com/passwordless/start');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            connection: 'the_connection',
+            email: 'me@example.com',
+            authParams: {
+              redirect_uri: 'http://page.com/callback',
+              response_type: 'code'
+            }
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function (cb) {
+            cb(null, {
+              body: {}
+            });
+          }
+        });
+      });
+
+      this.auth0.passwordless.start({
+        connection: 'the_connection',
+        email: 'me@example.com',
+        type: 'email'
+      }, function (err, data) {
+        expect(err).to.be(null);
+        expect(data).to.eql({
+
+        });
+        done();
+      });
+    });
+
+    it('should call passwordless start with authParams', function (done) {
+      stub(request, 'post', function (url) {
+        expect(url).to.be('https://me.auth0.com/passwordless/start');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            connection: 'the_connection',
+            email: 'me@example.com',
+            authParams: {
+              scope: 'openid email',
+              redirect_uri: 'http://page.com/callback',
+              response_type: 'code'
+            }
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function (cb) {
+            cb(null, {
+              body: {}
+            });
+          }
+        });
+      });
+
+      this.auth0.passwordless.start({
+        connection: 'the_connection',
+        email: 'me@example.com',
+        type: 'email',
+        scope: 'openid email'
+      }, function (err, data) {
+        expect(err).to.be(null);
+        expect(data).to.eql({
+
+        });
+        done();
+      });
+    });
+  });
+
   context('passwordless verify', function () {
     before(function () {
       this.auth0 = new Authentication({

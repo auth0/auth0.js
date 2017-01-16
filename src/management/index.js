@@ -46,7 +46,7 @@ Management.prototype.getUser = function (userId, cb) {
 
   return this.request
     .get(url)
-    .end(responseHandler(cb));
+    .end(responseHandler(cb, { ignoreCasing: true }));
 };
 
 /**
@@ -70,7 +70,7 @@ Management.prototype.patchUserMetadata = function (userId, userMetadata, cb) {
   return this.request
     .patch(url)
     .send({ user_metadata: userMetadata })
-    .end(responseHandler(cb));
+    .end(responseHandler(cb, { ignoreCasing: true }));
 };
 
 /**
@@ -95,7 +95,7 @@ Management.prototype.linkUser = function (userId, secondaryUserToken, cb) {
   return this.request
     .post(url)
     .send({ link_with: secondaryUserToken })
-    .end(responseHandler(cb));
+    .end(responseHandler(cb, { ignoreCasing: true }));
 };
 
 module.exports = Management;

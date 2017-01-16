@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 
+var assert = require('./assert');
 var objectAssign = require('./object-assign');
 
 function pick(object, keys) {
@@ -75,21 +76,30 @@ function snakeToCamel(str) {
 }
 
 function toSnakeCase(object, exceptions) {
+  if (typeof(object) !== 'object' || assert.isArray(object) || !object === null) {
+    return object;
+  }
+
   exceptions = exceptions || [];
 
   return Object.keys(object).reduce(function (p, key) {
     var newKey = exceptions.indexOf(key) === -1 ? camelToSnake(key) : key;
-    p[newKey] = typeof(object[key]) === 'object' ? toSnakeCase(object[key]) : object[key];
+    p[newKey] = toSnakeCase(object[key]);
     return p;
   }, {});
 }
 
 function toCamelCase(object, exceptions) {
+
+  if (typeof(object) !== 'object' || assert.isArray(object) || !object === null) {
+    return object;
+  }
+
   exceptions = exceptions || [];
 
   return Object.keys(object).reduce(function (p, key) {
     var newKey = exceptions.indexOf(key) === -1 ? snakeToCamel(key) : key;
-    p[newKey] = typeof(object[key]) === 'object' ? toCamelCase(object[key]) : object[key];
+    p[newKey] = toCamelCase(object[key]);
     return p;
   }, {});
 }
