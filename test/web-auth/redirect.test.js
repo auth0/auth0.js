@@ -432,7 +432,6 @@ describe('auth0.WebAuth.redirect', function () {
       this.auth0.passwordlessVerify({
         connection: 'the_connection',
         phoneNumber: '123456',
-        type: 'sms',
         verificationCode: 'abc'
       }, function (err) {});
     });
@@ -482,7 +481,6 @@ describe('auth0.WebAuth.redirect', function () {
       this.auth0.passwordlessVerify({
         connection: 'the_connection',
         phoneNumber: '123456',
-        type: 'sms',
         verificationCode: 'abc'
       }, function (err) {});
     });
@@ -526,7 +524,6 @@ describe('auth0.WebAuth.redirect', function () {
       this.auth0.passwordlessVerify({
         connection: 'the_connection',
         phoneNumber: '123456',
-        type: 'sms',
         verificationCode: 'abc'
       }, function (err) {
         expect(err).to.eql({

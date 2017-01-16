@@ -231,7 +231,6 @@ describe('auth0.WebAuth.popup', function () {
       });
 
       this.auth0.popup.passwordlessVerify({
-        type: 'sms',
         connection: 'the_connection',
         phoneNumber: '+5491178786555',
         verificationCode: '123'
@@ -298,7 +297,6 @@ describe('auth0.WebAuth.popup', function () {
       });
 
       this.auth0.popup.passwordlessVerify({
-        type: 'email',
         connection: 'the_connection',
         email: 'test@example.com',
         verificationCode: '123'
@@ -339,7 +337,6 @@ describe('auth0.WebAuth.popup', function () {
       });
 
       this.auth0.popup.passwordlessVerify({
-        type: 'sms',
         connection: 'the_connection',
         phoneNumber: '+5491178786555',
         verificationCode: '123'
