@@ -26,6 +26,7 @@ var authorize_params = [
   'connection_scope',
   'auth0Client',
   'owp',
+  'device',
 // oauth2
   'client_id',
   'response_type',

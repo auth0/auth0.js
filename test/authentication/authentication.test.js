@@ -99,6 +99,18 @@ describe('auth0.authentication', function () {
 
       expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&state=1234&prompt=none');
     })
+
+    it('should return a url using using whitelisted authorization parameter device', function() {
+      var url = this.auth0.buildAuthorizeUrl({
+        responseType: 'token',
+        redirectUri: 'http://anotherpage.com/callback2',
+        prompt: 'none',
+        state: '1234',
+        device: 'my-device'
+      });
+
+      expect(url).to.be('https://me.auth0.com/authorize?device=my-device&client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&state=1234&prompt=none');
+    })
   })
 
   context('buildAuthorizeUrl with Telemetry', function () {
