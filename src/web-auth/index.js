@@ -91,6 +91,8 @@ WebAuth.prototype.parseHash = function (options, cb) {
     options = options || {};
   }
 
+  options.disableTokenVerification = options.disableTokenVerification || false;
+
   var _window = windowHelper.getWindow();
 
   var hashStr = options.hash === undefined ? _window.location.hash : options.hash;
@@ -114,7 +116,7 @@ WebAuth.prototype.parseHash = function (options, cb) {
     return cb(null, null);
   }
 
-  if (parsedQs.id_token) {
+  if (parsedQs.id_token && !options.disableTokenVerification) {
     this.validateToken(parsedQs.id_token, parsedQs.state || options.state, options.nonce, function (err, response) {
       if (err) {
         return cb(err);
