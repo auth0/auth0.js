@@ -130,9 +130,9 @@ PasswordlessAuthentication.prototype.verify = function (options, cb) {
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     connection: { type: 'string', message: 'connection option is required' },
     verificationCode: { type: 'string', message: 'verificationCode option is required' },
-    phoneNumber: { required: true, type: 'string', message: 'phoneNumber option is required',
+    phoneNumber: { optional: false, type: 'string', message: 'phoneNumber option is required',
             condition: function (o) { return !o.email; } },
-    email: { required: true, type: 'string', message: 'email option is required',
+    email: { optional: false, type: 'string', message: 'email option is required',
             condition: function (o) { return !o.phoneNumber; } }
   });
   /* eslint-enable */
