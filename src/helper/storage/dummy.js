@@ -1,9 +1,9 @@
 function DummyStorage() {}
 
-DummyStorage.prototype.getItem = function (key) { return null; };
+DummyStorage.prototype.getItem = function () { return null; };
 
-DummyStorage.prototype.removeItem = function (key) {};
+DummyStorage.prototype.removeItem = function () {};
 
-DummyStorage.prototype.setItem = function (key, value) {};
+DummyStorage.prototype.setItem = function () {};
 
 module.exports = DummyStorage;

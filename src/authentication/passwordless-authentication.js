@@ -82,11 +82,11 @@ PasswordlessAuthentication.prototype.start = function (options, cb) {
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'start');
 
   body = objectHelper.merge(this.baseOptions, [
-        'clientID',
-        'responseType',
-        'redirectUri',
-        'scope'
-      ]).with(options);
+    'clientID',
+    'responseType',
+    'redirectUri',
+    'scope'
+  ]).with(options);
 
   if (body.scope) {
     body.authParams = body.authParams || {};

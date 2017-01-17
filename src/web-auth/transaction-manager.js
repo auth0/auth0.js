@@ -32,14 +32,11 @@ TransactionManager.prototype.process = function (options) {
 };
 
 TransactionManager.prototype.generateTransaction = function (appState, state, nonce) {
-  var transaction;
-  var nonce;
-
-  transaction = state || random.randomString(this.keyLength);
+  var transaction = state || random.randomString(this.keyLength);
   nonce = nonce || random.randomString(this.keyLength);
 
   storage.setItem(this.namespace + transaction, {
-    nonce:nonce,
+    nonce: nonce,
     appState: appState
   });
 

@@ -38,7 +38,7 @@ Popup.prototype.getPopupHandler = function (options, preload) {
   if (options.popupHandler) {
     return options.popupHandler;
   }
-  return !!preload ? this.preload(options) : new PopupHandler();
+  return preload ? this.preload(options) : new PopupHandler();
 };
 
 /**

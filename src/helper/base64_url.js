@@ -20,7 +20,7 @@ function stringToByteArray(str) {
 }
 
 function byteArrayToString(array) {
-  var result = "";
+  var result = '';
   for (var i = 0; i < array.length; i++) {
     result += String.fromCharCode(array[i]);
   }
@@ -35,7 +35,7 @@ function encode(str) {
 
 function decode(str) {
   str = padding(str)
-    .replace(/\-/g, '+') // Convert '-' to '+'
+    .replace(/-/g, '+') // Convert '-' to '+'
     .replace(/_/g, '/'); // Convert '_' to '/'
 
   return byteArrayToString(base64.toByteArray(str));

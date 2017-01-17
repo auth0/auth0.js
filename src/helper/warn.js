@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 function Warn(options) {
   this.disableWarnings = options.disableWarnings;
 }

@@ -140,16 +140,16 @@ WebAuth.prototype.parseHash = function (options, cb) {
   }
 };
 
-function buildParseHashResponse(qs, appStatus, token) {
+function buildParseHashResponse(qsParams, appStatus, token) {
   return {
-    accessToken: qs.access_token || null,
-    idToken: qs.id_token || null,
+    accessToken: qsParams.access_token || null,
+    idToken: qsParams.id_token || null,
     idTokenPayload: token || null,
     appStatus: appStatus || null,
-    refreshToken: qs.refresh_token || null,
-    state: qs.state || null,
-    expiresIn: qs.expires_in ? parseInt(qs.expires_in, 10) : null,
-    tokenType: qs.token_type || null
+    refreshToken: qsParams.refresh_token || null,
+    state: qsParams.state || null,
+    expiresIn: qsParams.expires_in ? parseInt(qsParams.expires_in, 10) : null,
+    tokenType: qsParams.token_type || null
   };
 }
 
@@ -188,7 +188,6 @@ WebAuth.prototype.validateToken = function (token, state, nonce, cb) {
  */
 WebAuth.prototype.renewAuth = function (options, cb) {
   var handler;
-  var prof;
   var usePostMessage = !!options.usePostMessage;
   var _this = this;
 
@@ -224,9 +223,9 @@ WebAuth.prototype.renewAuth = function (options, cb) {
     var transactionState = options.state || (transaction && transaction.state) || null;
 
     if (data.id_token) {
-      return _this.validateToken(data.id_token, transactionState, transactionNonce, function (err, payload) {
-        if (err) {
-          return cb(err);
+      return _this.validateToken(data.id_token, transactionState, transactionNonce, function (validationErr, payload) {
+        if (validationErr) {
+          return cb(validationErr);
         }
 
         data.idTokenPayload = payload;

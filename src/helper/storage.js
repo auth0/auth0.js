@@ -20,7 +20,7 @@ module.exports = {
     var json = JSON.stringify(value);
     return getStorage().setItem(key, json);
   },
-  reload: function() {
+  reload: function () {
     getStorage(true);
   }
 };
