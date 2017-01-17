@@ -546,7 +546,12 @@ describe('auth0.WebAuth', function () {
           body: {
             client_id: '...',
             connection: 'the_connection',
-            phone_number: '123456'
+            phone_number: '123456',
+            send: 'code',
+            authParams: {
+              redirect_uri: 'http://page.com/callback',
+              response_type: 'code'
+            }
           },
           headers: {
             'Content-Type': 'application/json'
@@ -562,7 +567,7 @@ describe('auth0.WebAuth', function () {
       this.auth0.passwordlessStart({
         connection: 'the_connection',
         phoneNumber: '123456',
-        type: 'sms'
+        send: 'code'
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({});
@@ -578,6 +583,7 @@ describe('auth0.WebAuth', function () {
             client_id: '...',
             connection: 'the_connection',
             email: 'me@example.com',
+            send: 'code',
             authParams: {
               redirect_uri: 'http://page.com/callback',
               response_type: 'code'
@@ -597,7 +603,7 @@ describe('auth0.WebAuth', function () {
       this.auth0.passwordlessStart({
         connection: 'the_connection',
         email: 'me@example.com',
-        type: 'email'
+        send: 'code'
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({});

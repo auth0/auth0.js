@@ -113,6 +113,18 @@
         </div>
 
         <div>
+          <h2>Login with passwordless connection:</h2>
+          <div>
+            <input class="passwordless-login-username" value="" />
+            <input type="button" class="passwordless-login-db" value="login" />
+          </div>
+          <div>
+            <input class="passwordless-login-code" value="Code" />
+            <input type="button" class="passwordless-login-verify" value="verify" />
+          </div>
+        </div>
+
+        <div>
           <h2>Login with database connection (popup):</h2>
           <input class="popup-login-username" value="johnfoo@gmail.com" />
           <input type="password" class="popup-login-password" value="1234" />
@@ -167,11 +179,18 @@
     });
 
     var webAuth = new auth0.WebAuth({
-      domain: 'auth0-tests-auth0js.auth0.com',
+      domain: 'brucke.auth0.com',
       redirectUri: 'http://localhost:3000/example',
-      clientID: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
-      audience: 'https://auth0-tests-auth0js.auth0.com/userinfo',
-      responseType: 'token id_token'
+      clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+      audience: 'https://brucke.auth0.com/userinfo',
+      responseType: 'token'
+    });
+
+    var webAuthPasswordless = new auth0.WebAuth({
+      domain: 'brucke.auth0.com',
+      redirectUri: 'http://localhost:3000/example',
+      clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+      responseType: 'token'
     });
 
     webAuth.parseHash(function(err, data) {
@@ -210,6 +229,24 @@
         username: $('.login-username').val(),
         password: $('.login-password').val(),
         scope: 'openid'
+      }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+
+    $('.passwordless-login-verify').click(function (e) {
+      e.preventDefault();
+      webAuthPasswordless.passwordlessVerify({
+        connection: 'email',
+        email: $('.passwordless-login-username').val(),
+        verificationCode: $('.passwordless-login-code').val()
+      }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+
+    $('.passwordless-login-db').click(function (e) {
+      e.preventDefault();
+      webAuthPasswordless.passwordlessStart({
+        connection: 'email',
+        email: $('.passwordless-login-username').val(),
+        send: 'code'
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
