@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable guard-for-in */
 
 var assert = require('./assert');
 var objectAssign = require('./object-assign');
@@ -76,7 +78,7 @@ function snakeToCamel(str) {
 }
 
 function toSnakeCase(object, exceptions) {
-  if (typeof(object) !== 'object' || assert.isArray(object) || !object === null) {
+  if (typeof object !== 'object' || assert.isArray(object) || !object === null) {
     return object;
   }
 
@@ -90,8 +92,7 @@ function toSnakeCase(object, exceptions) {
 }
 
 function toCamelCase(object, exceptions) {
-
-  if (typeof(object) !== 'object' || assert.isArray(object) || !object === null) {
+  if (typeof object !== 'object' || assert.isArray(object) || !object === null) {
     return object;
   }
 

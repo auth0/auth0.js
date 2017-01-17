@@ -1,6 +1,7 @@
 var windowHelper = require('./window');
 
 function randomString(length) {
+  // eslint-disable-next-line
   var bytes = new Uint8Array(length);
   var result = [];
   var charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._~';

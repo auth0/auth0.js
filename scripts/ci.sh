@@ -82,6 +82,8 @@ npm_release()
   fi
 }
 
+# Lint
+npm run lint
 
 # Test
 npm run test:ci

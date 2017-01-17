@@ -25,7 +25,7 @@ function check(o, config, attributes) {
   if (config.type === 'object' && attributes) {
     var keys = Object.keys(attributes);
 
-    for (var index = 0; index < keys.length; index++ ) {
+    for (var index = 0; index < keys.length; index++) {
       var a = keys[index];
       if (!attributes[a].optional || o[a]) {
         if (!attributes[a].condition || attributes[a].condition(o)) {
@@ -36,7 +36,6 @@ function check(o, config, attributes) {
         }
       }
     }
-
   }
 }
 

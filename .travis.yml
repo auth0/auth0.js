@@ -2,6 +2,7 @@ language: node_js
 node_js:
 - '6.9'
 script:
+- npm run lint
 - npm run test
 env:
 - CXX=g++-4.8

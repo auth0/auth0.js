@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable guard-for-in */
 var WinChan = require('winchan');
 
 var windowHandler = require('../helper/window');

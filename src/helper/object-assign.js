@@ -1,3 +1,5 @@
+/* eslint-disable no-continue */
+
 function get() {
   if (!Object.assign) {
     return objectAssignPolyfill;
