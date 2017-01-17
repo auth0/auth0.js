@@ -86,9 +86,6 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
     nonce: { type: 'string', message: 'nonce option is required', condition: function(o) {
       return o.responseType.indexOf('code') === -1 && o.responseType.indexOf('id_token') !== -1;
     } },
-    state: { type: 'string', message: 'state option is required', condition: function(o) {
-      return o.responseType.indexOf('code') === -1;
-    } },
     scope: { optional: true, type: 'string', message: 'scope option is required' },
     audience: { optional: true, type: 'string', message: 'audience option is required' }
   });
