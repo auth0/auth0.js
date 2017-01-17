@@ -1,5 +1,18 @@
 #Change Log
 
+## [v8.1.1](https://github.com/auth0/auth0.js/tree/v8.1.1) (2017-01-17)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.1.0...v8.1.1)
+
+**Changed**
+- Removed state requirement [\#321](https://github.com/auth0/auth0.js/pull/321) ([glena](https://github.com/glena))
+
+**Removed**
+- Revert "Fallback to math.random if there is no crypto support" [\#320](https://github.com/auth0/auth0.js/pull/320) ([glena](https://github.com/glena))
+
+**Fixed**
+- Fix undefined variable [\#319](https://github.com/auth0/auth0.js/pull/319) ([glena](https://github.com/glena))
+
+
 ## [v8.1.0](https://github.com/auth0/auth0.js/tree/v8.1.0) (2017-01-17)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.0.4...v8.1.0)
 
