@@ -82,10 +82,10 @@ function WebAuth(options) {
 WebAuth.prototype.parseHash = function (options, cb) {
   var parsedQs;
   var err;
-  var token;
   var state;
   var transaction;
   var transactionNonce;
+  var transactionState;
 
   if (!cb && typeof options === 'function') {
     cb = options;
@@ -128,9 +128,9 @@ WebAuth.prototype.parseHash = function (options, cb) {
       parsedQs.id_token,
       transactionState,
       transactionNonce,
-      function (error, payload) {
-        if (error) {
-          return cb(error);
+      function (validationError, payload) {
+        if (validationError) {
+          return cb(validationError);
         }
 
         return cb(null, buildParseHashResponse(parsedQs, (transaction && transaction.appStatus) || null, payload));

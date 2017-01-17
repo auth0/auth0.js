@@ -7,6 +7,9 @@
   "rules": {
     "func-names": "off",
     "no-underscore-dangle": "off",
+    "no-prototype-builtins": "off",
+    "no-param-reasign": "off",
+    "vars-on-top": "off",
     "compat/compat": "error"
   }
 }
