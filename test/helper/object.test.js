@@ -420,7 +420,7 @@ describe('helpers', function () {
       });
     });
 
-    it('should not break the string', function () {
+    it('should not breack the string', function () {
       var object = "some random string";
 
       var newObject = objectHelper.toCamelCase(object);
