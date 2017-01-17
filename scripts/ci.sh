@@ -86,6 +86,9 @@ npm_release()
 # Test
 npm run test:ci
 
+# Lint
+npm run lint
+
 # Clean
 rm -f build/*.js
 rm -f build/*.map
