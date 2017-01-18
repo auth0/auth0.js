@@ -229,7 +229,7 @@
     $('.login-db').click(function (e) {
       e.preventDefault();
       webAuth.redirect.loginWithCredentials({
-        connection: 'tests',
+        connection: 'acme',
         username: $('.login-username').val(),
         password: $('.login-password').val(),
         scope: 'openid'
@@ -276,7 +276,7 @@
     $('.client-login-db').click(function (e) {
       e.preventDefault();
       webAuth.client.login({
-        realm: 'tests',
+        realm: 'acme',
         username: $('.client-login-username').val(),
         password: $('.client-login-password').val(),
         scope: 'openid profile',
@@ -339,12 +339,13 @@
       webAuth.renewAuth({
         usePostMessage: true,
         scope:'',
-        audience: 'https://auth0-tests-auth0js.auth0.com/userinfo',
+        audience: 'https://brucke.auth0.com/userinfo',
         redirectURI: 'http://localhost:3000/example/callback.html'
       },
         htmlConsole.dumpCallback.bind(htmlConsole)
       );
     });
+    $(document.body).append($('<div class="loaded">LOADED</div>'));
     </script>
   </body>
 </html>
