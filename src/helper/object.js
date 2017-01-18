@@ -14,6 +14,16 @@ function pick(object, keys) {
   }, {});
 }
 
+function getKeysNotIn(obj, allowedKeys) {
+  var notAllowed = [];
+  for (var key in obj) {
+    if (allowedKeys.indexOf(key) === -1) {
+      notAllowed.push(key);
+    }
+  }
+  return notAllowed;
+}
+
 function objectValues(obj) {
   var values = [];
   for (var key in obj) {
@@ -111,5 +121,6 @@ module.exports = {
   blacklist: blacklist,
   merge: merge,
   pick: pick,
+  getKeysNotIn: getKeysNotIn,
   extend: extend
 };

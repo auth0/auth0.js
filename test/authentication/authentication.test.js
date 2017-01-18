@@ -74,7 +74,7 @@ describe('auth0.authentication', function () {
         connection_scope: 'scope1,scope2'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?connection_scope=scope1%2Cscope2&client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&state=1234&prompt=none');
+      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&connection_scope=scope1%2Cscope2');
     })
 
     it('should return a url with connection_scope as a string', function() {
@@ -86,7 +86,7 @@ describe('auth0.authentication', function () {
         connection_scope: ['scope1', 'scope2']
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?connection_scope=scope1%2Cscope2&client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&state=1234&prompt=none');
+      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&connection_scope=scope1%2Cscope2');
     })
 
     it('should return a url using overriding the default settings', function() {
@@ -97,7 +97,7 @@ describe('auth0.authentication', function () {
         state: '1234'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&state=1234&prompt=none');
+      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234');
     })
 
     it('should return a url using using whitelisted authorization parameter device', function() {
@@ -109,7 +109,7 @@ describe('auth0.authentication', function () {
         device: 'my-device'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?device=my-device&client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&state=1234&prompt=none');
+      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&device=my-device');
     })
   })
 
@@ -131,7 +131,7 @@ describe('auth0.authentication', function () {
         state: '1234'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?auth0Client='+ encodeURIComponent(telemetryInfo) +'&client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&state=1234&prompt=none');
+      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&auth0Client='+ encodeURIComponent(telemetryInfo));
     })
   })
 

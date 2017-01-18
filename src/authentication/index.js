@@ -101,7 +101,7 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
   }
 
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
-  params = parametersWhitelist.oauthAuthorizeParams(params);
+  params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 
   qString = qs.build(params);
 
@@ -220,7 +220,7 @@ Authentication.prototype.oauthToken = function (options, cb) {
   });
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
-  body = parametersWhitelist.oauthTokenParams(body);
+  body = parametersWhitelist.oauthTokenParams(this.warn, body);
 
   body.grant_type = body.grant_type;
 
