@@ -1,5 +1,12 @@
 #Change Log
 
+## [v8.1.2](https://github.com/auth0/auth0.js/tree/v8.1.2) (2017-01-19)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.1.1...v8.1.2)
+
+**Fixed**
+- Fixed params whitelist for authorize endpoint [\#324](https://github.com/auth0/auth0.js/pull/324) ([glena](https://github.com/glena))
+
+
 ## [v8.1.1](https://github.com/auth0/auth0.js/tree/v8.1.1) (2017-01-17)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.1.0...v8.1.1)
 
