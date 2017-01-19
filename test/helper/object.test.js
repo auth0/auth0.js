@@ -5,6 +5,63 @@ var objectAssign = require('../../src/helper/object-assign');
 var objectHelper = require('../../src/helper/object');
 
 describe('helpers', function () {
+  describe('getKeysNotIn', function () {
+    it('should return the list of keys not allowed', function () {
+      var object = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        attr3: 'attribute_3'
+      };
+
+      var notAllowed = ['attr1','attr2','attr4'];
+
+      var keysList = objectHelper.getKeysNotIn(object, notAllowed);
+
+      expect(keysList).to.eql(['attr3'])
+
+    });
+
+    it('should return an empty list', function () {
+      var object = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        attr3: 'attribute_3'
+      };
+
+      var notAllowed = ['attr1','attr2','attr3'];
+
+      var keysList = objectHelper.getKeysNotIn(object, notAllowed);
+
+      expect(keysList).to.eql([])
+
+    });
+
+    it('should return an all the keys', function () {
+      var object = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        attr3: 'attribute_3'
+      };
+
+      var notAllowed = ['attr5','attr6','attr7'];
+
+      var keysList = objectHelper.getKeysNotIn(object, notAllowed);
+
+      expect(keysList).to.eql(['attr1','attr2','attr3'])
+    });
+
+    it('should return another empty list', function () {
+      var object = {
+      };
+
+      var notAllowed = ['attr5','attr6','attr7'];
+
+      var keysList = objectHelper.getKeysNotIn(object, notAllowed);
+
+      expect(keysList).to.eql([])
+    });
+  });
+
   describe('pick', function () {
     it('should return only the requested attributes', function () {
       var object = {

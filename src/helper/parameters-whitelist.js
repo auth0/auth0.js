@@ -1,4 +1,4 @@
-var objectHelper = require('../helper/object');
+var objectHelper = require('./object');
 
 var tokenParams = [
 // auth0
@@ -27,6 +27,11 @@ var authorizeParams = [
   'auth0Client',
   'owp',
   'device',
+
+  'protocol',
+  '_csrf',
+  '_intstate',
+
 // oauth2
   'client_id',
   'response_type',
@@ -52,11 +57,17 @@ var authorizeParams = [
   'code_challenge_method'
 ];
 
-function oauthAuthorizeParams(params) {
-  return objectHelper.pick(params, authorizeParams);
+function oauthAuthorizeParams(warn, params) {
+  var notAllowed = objectHelper.getKeysNotIn(params, authorizeParams);
+
+  if (notAllowed.length > 0) {
+    warn.warning('Following parameters are not allowed on the `/authorize` endpoing: [' + notAllowed.join(',') + ']');
+  }
+
+  return params;
 }
 
-function oauthTokenParams(params) {
+function oauthTokenParams(warn, params) {
   return objectHelper.pick(params, tokenParams);
 }
 
