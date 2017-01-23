@@ -371,6 +371,7 @@ describe('helpers', function () {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
         attrNAME3: 'attribute_3',
+        attrNULL: null,
         arrayAtt: [ 'one', 'two' ],
         someObj: {
           objAtt1: 'asd',
@@ -385,6 +386,7 @@ describe('helpers', function () {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
         attrNAME3: 'attribute_3',
+        attrNULL: null,
         arrayAtt: [ 'one', 'two' ],
         someObj: {
           objAtt1: 'asd',
@@ -400,6 +402,7 @@ describe('helpers', function () {
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
         attr_name_3: 'attribute_3',
+        attr_null: null,
         array_att: [ 'one', 'two' ],
         some_obj: {
           obj_att_1: 'asd',
@@ -439,6 +442,7 @@ describe('helpers', function () {
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
         attr__name_3: 'attribute_3',
+        attr_null: null,
         arr_att: [ "one", "two" ],
         some_obj: {
           obj_att_1: 'asdf',
@@ -453,6 +457,7 @@ describe('helpers', function () {
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
         attr__name_3: 'attribute_3',
+        attr_null: null,
         arr_att: [ "one", "two" ],
         some_obj: {
           obj_att_1: 'asdf',
@@ -468,6 +473,7 @@ describe('helpers', function () {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
         attrName3: 'attribute_3',
+        attrNull: null,
         arrAtt: [ "one", "two" ],
         someObj: {
           objAtt1: 'asdf',
