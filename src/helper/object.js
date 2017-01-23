@@ -88,10 +88,9 @@ function snakeToCamel(str) {
 }
 
 function toSnakeCase(object, exceptions) {
-  if (typeof object !== 'object' || assert.isArray(object) || !object === null) {
+  if (typeof object !== 'object' || assert.isArray(object) || object === null) {
     return object;
   }
-
   exceptions = exceptions || [];
 
   return Object.keys(object).reduce(function (p, key) {
@@ -102,7 +101,7 @@ function toSnakeCase(object, exceptions) {
 }
 
 function toCamelCase(object, exceptions) {
-  if (typeof object !== 'object' || assert.isArray(object) || !object === null) {
+  if (typeof object !== 'object' || assert.isArray(object) || object === null) {
     return object;
   }
 
