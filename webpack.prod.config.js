@@ -1,20 +1,43 @@
+var fs = require('fs');
 var webpack = require('webpack');
+var CustomVarLibraryNamePlugin = require('webpack-custom-var-library-name-plugin');
 var path = require('path');
 var SmartBannerPlugin = require('smart-banner-webpack-plugin');
 var UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 var version = require('./src/version.js').raw;
 
-var CustomVarLibraryNamePlugin = require('webpack-custom-var-library-name-plugin');
+var entryPoints = {
+  'auth0-js': ['./src/index.js']
+};
+
+var nameOverrides = {
+  'auth0-js': {
+    var: 'auth0',
+    file: 'auth0'
+  }
+};
+
+var files = fs.readdirSync(path.join(__dirname, './src/plugins/'));
+
+for (var a = 0; a < files.length; a++) {
+  var pluginName = files[a] + '-auth0-plugin';
+  var className = capitalize(files[a]) + 'Auth0Plugin';
+
+  entryPoints[pluginName] = ['./src/plugins/' + files[a] + '/index.js'];
+
+  nameOverrides[pluginName] = {
+    var: className,
+    file: pluginName
+  };
+}
 
 module.exports = {
   devtool: 'source-map',
-  entry: {
-    auth0: './src/index.js'
-  },
+  entry: entryPoints,
   output: {
     path: path.join(__dirname, '../build'),
     filename: '[name].min.js',
-    library: 'auth0-js',
+    library: '[name]',
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
@@ -36,7 +59,7 @@ module.exports = {
   },
   plugins: [
     new CustomVarLibraryNamePlugin({
-      name: 'auth0'
+      name: nameOverrides
     }),
     new webpack.DefinePlugin({
       'process.env': {
@@ -57,3 +80,7 @@ module.exports = {
     )
   ]
 };
+
+function capitalize(name) {
+  return name[0].toUpperCase() + name.slice(1);
+}

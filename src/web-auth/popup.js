@@ -7,15 +7,32 @@ var objectHelper = require('../helper/object');
 var Warn = require('../helper/warn');
 var TransactionManager = require('./transaction-manager');
 
-function Popup(client, options) {
+function Popup(webAuth, client, options) {
   this.baseOptions = options;
   this.client = client;
+  this.webAuth = webAuth;
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
   this.warn = new Warn({
     disableWarnings: !!options._disableDeprecationWarnings
   });
 }
+
+
+/**
+ * Returns a new instance of the popup handler
+ *
+ * @method buildPopupHandler
+ */
+Popup.prototype.buildPopupHandler = function () {
+  var pluginHandler = this.baseOptions.plugins.get('popup.getPopupHandler', this.webAuth);
+
+  if (pluginHandler) {
+    return pluginHandler.getPopupHandler();
+  }
+
+  return new PopupHandler();
+};
 
 /**
  * Initializes the popup window and returns the instance to be used later in order to avoid being blocked by the browser.
@@ -24,8 +41,11 @@ function Popup(client, options) {
  * @param {Object} options: receives the window height and width and any other window feature to be sent to window.open
  */
 Popup.prototype.preload = function (options) {
-  var popup = new PopupHandler();
-  popup.preload(options || {});
+  var options = options || {};
+
+  var popup = this.buildPopupHandler();
+
+  popup.preload(options);
   return popup;
 };
 
@@ -38,7 +58,12 @@ Popup.prototype.getPopupHandler = function (options, preload) {
   if (options.popupHandler) {
     return options.popupHandler;
   }
-  return preload ? this.preload(options) : new PopupHandler();
+
+  if (preload) {
+    return this.preload(options);
+  }
+
+  return this.buildPopupHandler();
 };
 
 /**
@@ -53,9 +78,12 @@ Popup.prototype.authorize = function (options, cb) {
   var url;
   var relayUrl;
 
+  var pluginHandler = this.baseOptions.plugins.get('popup.authorize', this.webAuth);
+
   var params = objectHelper.merge(this.baseOptions, [
     'clientID',
     'scope',
+    'domain',
     'audience',
     'responseType'
   ]).with(objectHelper.blacklist(options, ['popupHandler']));
@@ -71,7 +99,13 @@ Popup.prototype.authorize = function (options, cb) {
   params.owp = true;
   params.redirectUri = undefined;
 
+  if (pluginHandler) {
+    params = pluginHandler.processParams(params);
+  }
+
   params = this.transactionManager.process(params);
+
+  delete params.domain;
 
   url = this.client.buildAuthorizeUrl(params);
 
