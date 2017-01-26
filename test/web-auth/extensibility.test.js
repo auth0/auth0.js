@@ -10,7 +10,7 @@ describe('auth0.WebAuth extensibility', function () {
   context('validations', function () {
     it('should validate the plugin version (must throw)', function() {
       expect(function() {
-        this.webAuth = new WebAuth({
+        var webAuth = new WebAuth({
           domain: 'test.auth0.com',
           clientID: '...',
           responseType: 'token id_token',
@@ -24,14 +24,17 @@ describe('auth0.WebAuth extensibility', function () {
     })
 
     it('should validate the plugin version', function() {
-      this.webAuth = new WebAuth({
+      var plugin = new MockAuth0Plugin();
+      var webAuth = new WebAuth({
         domain: 'test.auth0.com',
         clientID: '...',
         responseType: 'token id_token',
         plugins: [
-          new MockAuth0Plugin()
+          plugin
         ]
       });
+
+      expect(plugin.webAuth).to.be(webAuth);
     })
   });
 

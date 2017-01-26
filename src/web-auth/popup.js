@@ -7,10 +7,9 @@ var objectHelper = require('../helper/object');
 var Warn = require('../helper/warn');
 var TransactionManager = require('./transaction-manager');
 
-function Popup(webAuth, client, options) {
+function Popup(client, options) {
   this.baseOptions = options;
   this.client = client;
-  this.webAuth = webAuth;
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
   this.warn = new Warn({
@@ -25,7 +24,7 @@ function Popup(webAuth, client, options) {
  * @method buildPopupHandler
  */
 Popup.prototype.buildPopupHandler = function () {
-  var pluginHandler = this.baseOptions.plugins.get('popup.getPopupHandler', this.webAuth);
+  var pluginHandler = this.baseOptions.plugins.get('popup.getPopupHandler');
 
   if (pluginHandler) {
     return pluginHandler.getPopupHandler();
@@ -78,7 +77,7 @@ Popup.prototype.authorize = function (options, cb) {
   var url;
   var relayUrl;
 
-  var pluginHandler = this.baseOptions.plugins.get('popup.authorize', this.webAuth);
+  var pluginHandler = this.baseOptions.plugins.get('popup.authorize');
 
   var params = objectHelper.merge(this.baseOptions, [
     'clientID',

@@ -1,11 +1,12 @@
-var windowHandler = require('../../helper/window');
+var windowHandler = require('../../src/helper/window');
 
-function MobilePopupHandler(webAuth) {
+function PopupHandler(webAuth) {
   this.webAuth = webAuth;
   this._current_popup = null;
+  this.options = null;
 }
 
-MobilePopupHandler.prototype.stringifyPopupSettings = function (options) {
+PopupHandler.prototype.stringifyPopupSettings = function (options) {
   var settings = '';
 
   for (var key in options) {
@@ -15,7 +16,7 @@ MobilePopupHandler.prototype.stringifyPopupSettings = function (options) {
   return settings.slice(0, -1);
 };
 
-MobilePopupHandler.prototype.preload = function (options) {
+PopupHandler.prototype.preload = function (options) {
   var _this = this;
   var _window = windowHandler.getWindow();
 
@@ -43,9 +44,10 @@ MobilePopupHandler.prototype.preload = function (options) {
   return this._current_popup;
 };
 
-MobilePopupHandler.prototype.load = function (url, _, options, cb) {
+PopupHandler.prototype.load = function (url, _, options, cb) {
   var _this = this;
   this.url = url;
+  this.options = options;
   if (!this._current_popup) {
     options.url = url;
     this.preload(options);
@@ -70,7 +72,7 @@ MobilePopupHandler.prototype.load = function (url, _, options, cb) {
   this._current_popup.addEventListener('exit', this.transientExitHandler);
 };
 
-MobilePopupHandler.prototype.errorHandler = function (event, cb) {
+PopupHandler.prototype.errorHandler = function (event, cb) {
   if (!this._current_popup) {
     return;
   }
@@ -79,16 +81,16 @@ MobilePopupHandler.prototype.errorHandler = function (event, cb) {
     this._current_popup.kill();
   }
 
-  cb(new Error(event.message), null);
+  cb({ error: 'window_error', errorDescription: event.message });
 };
 
-MobilePopupHandler.prototype.unhook = function () {
+PopupHandler.prototype.unhook = function () {
   this._current_popup.removeEventListener('loaderror', this.transientErrorHandler);
   this._current_popup.removeEventListener('loadstart', this.transientStartHandler);
   this._current_popup.removeEventListener('exit', this.transientExitHandler);
 };
 
-MobilePopupHandler.prototype.exitHandler = function (cb) {
+PopupHandler.prototype.exitHandler = function (cb) {
   if (!this._current_popup) {
     return;
   }
@@ -97,18 +99,24 @@ MobilePopupHandler.prototype.exitHandler = function (cb) {
     this._current_popup.kill();
   }
 
-  cb(new Error('Browser window closed'), null);
+  cb({ error: 'window_closed', errorDescription: 'Browser window closed' });
 };
 
-MobilePopupHandler.prototype.startHandler = function(event, cb) {
+PopupHandler.prototype.startHandler = function (event, cb) {
   var _this = this;
 
   if (!this._current_popup) {
     return;
   }
 
+  var opts = { hash: event.url.split('#').pop() };
+
+  if (this.options.nonce) {
+    opts.nonce = this.options.nonce;
+  }
+
   this.webAuth.parseHash(
-    { hash: event.url.split('#').pop() },
+    opts,
     function (error, result) {
       if (error || result) {
         if (_this._current_popup) {
@@ -120,4 +128,4 @@ MobilePopupHandler.prototype.startHandler = function(event, cb) {
   );
 };
 
-module.exports = MobilePopupHandler;
+module.exports = PopupHandler;

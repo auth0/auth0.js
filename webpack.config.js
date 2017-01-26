@@ -15,13 +15,13 @@ var nameOverrides = {
   }
 };
 
-var files = fs.readdirSync(path.join(__dirname, './src/plugins/'));
+var files = fs.readdirSync(path.join(__dirname, './plugins/'));
 
 for (var a = 0; a < files.length; a++) {
   var pluginName = files[a] + '-auth0-plugin';
   var className = capitalize(files[a]) + 'Auth0Plugin';
 
-  entryPoints[pluginName] = ['./src/plugins/' + files[a] + '/index.js'];
+  entryPoints[pluginName] = ['./plugins/' + files[a] + '/index.js'];
 
   nameOverrides[pluginName] = {
     var: className,

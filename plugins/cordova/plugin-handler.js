@@ -1,5 +1,5 @@
 var urljoin = require('url-join');
-var PopupHandler = require('./mobile-popup-handler');
+var PopupHandler = require('./popup-handler');
 
 function PluginHandler(webAuth) {
   this.webAuth = webAuth;

@@ -12,7 +12,11 @@ MockPlugin.prototype.supports = function (extensibilityPoint) {
   return this.extensibilityPoints.indexOf(extensibilityPoint) > -1;
 };
 
-MockPlugin.prototype.init = function (webAuth) {
+MockPlugin.prototype.setWebAuth = function (webAuth) {
+  this.webAuth = webAuth;
+};
+
+MockPlugin.prototype.init = function () {
   return this.handler;
 };
 

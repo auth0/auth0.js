@@ -1,6 +1,6 @@
 var version = require('../version');
 
-function PluginHandler(plugins) {
+function PluginHandler(webAuth, plugins) {
   this.plugins = plugins;
 
   for (var a = 0; a < this.plugins.length; a++) {
@@ -14,13 +14,15 @@ function PluginHandler(plugins) {
       throw new Error('Plugin ' + pluginName + ' version (' + this.plugins[a].version + ') ' +
         'is not compatible with the SDK version (' + version.raw + ')');
     }
+
+    this.plugins[a].setWebAuth(webAuth);
   }
 }
 
-PluginHandler.prototype.get = function (extensibilityPoint, webAuth) {
+PluginHandler.prototype.get = function (extensibilityPoint) {
   for (var a = 0; a < this.plugins.length; a++) {
     if (this.plugins[a].supports(extensibilityPoint)) {
-      return this.plugins[a].init(webAuth);
+      return this.plugins[a].init();
     }
   }
 

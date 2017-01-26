@@ -51,7 +51,7 @@ function WebAuth(options) {
   /* eslint-enable */
 
   this.baseOptions = options;
-  this.baseOptions.plugins = new PluginHandler(this.baseOptions.plugins || []);
+  this.baseOptions.plugins = new PluginHandler(this, this.baseOptions.plugins || []);
 
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ?
                                         this.baseOptions._sendTelemetry : true;
@@ -66,7 +66,7 @@ function WebAuth(options) {
 
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this.client, this.baseOptions);
-  this.popup = new Popup(this, this.client, this.baseOptions);
+  this.popup = new Popup(this.client, this.baseOptions);
 }
 
 /**
