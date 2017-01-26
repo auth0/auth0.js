@@ -1,20 +1,11 @@
 var windowHandler = require('../../src/helper/window');
+var qs = require('../../src/helper/qs');
 
 function PopupHandler(webAuth) {
   this.webAuth = webAuth;
   this._current_popup = null;
   this.options = null;
 }
-
-PopupHandler.prototype.stringifyPopupSettings = function (options) {
-  var settings = '';
-
-  for (var key in options) {
-    settings += key + '=' + options[key] + ',';
-  }
-
-  return settings.slice(0, -1);
-};
 
 PopupHandler.prototype.preload = function (options) {
   var _this = this;
@@ -27,7 +18,7 @@ PopupHandler.prototype.preload = function (options) {
   delete popupOptions.width;
   delete popupOptions.height;
 
-  var windowFeatures = this.stringifyPopupSettings(popupOptions);
+  var windowFeatures = qs.build(popupOptions, ',', false);
 
   if (this._current_popup && !this._current_popup.closed) {
     return this._current_popup;

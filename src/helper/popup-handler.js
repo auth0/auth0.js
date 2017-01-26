@@ -2,22 +2,13 @@
 /* eslint-disable guard-for-in */
 var WinChan = require('winchan');
 
-var windowHandler = require('../helper/window');
-var objectHelper = require('../helper/object');
+var windowHandler = require('./window');
+var objectHelper = require('./object');
+var qs = require('./qs');
 
 function PopupHandler() {
   this._current_popup = null;
 }
-
-PopupHandler.prototype.stringifyPopupSettings = function (options) {
-  var settings = '';
-
-  for (var key in options) {
-    settings += key + '=' + options[key] + ',';
-  }
-
-  return settings.slice(0, -1);
-};
 
 PopupHandler.prototype.calculatePosition = function (options) {
   var width = options.width || 500;
@@ -47,7 +38,7 @@ PopupHandler.prototype.preload = function (options) {
   var popupPosition = this.calculatePosition(options.popupOptions || {});
   var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
   var url = options.url || 'about:blank';
-  var windowFeatures = this.stringifyPopupSettings(popupOptions);
+  var windowFeatures = qs.build(popupOptions, ',', false);
 
   if (this._current_popup && !this._current_popup.closed) {
     return this._current_popup;
@@ -71,7 +62,7 @@ PopupHandler.prototype.load = function (url, relayUrl, options, cb) {
   var winchanOptions = {
     url: url,
     relay_url: relayUrl,
-    window_features: this.stringifyPopupSettings(popupOptions),
+    window_features: qs.build(popupOptions, ',', false),
     popup: this._current_popup,
     params: options
   };
