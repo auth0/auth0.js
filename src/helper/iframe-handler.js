@@ -66,7 +66,7 @@ IframeHandler.prototype.loadEventListener = function () {
 IframeHandler.prototype.callbackHandler = function (result) {
   var error = null;
 
-  if (result.error) {
+  if (result && result.error) {
     error = result;
     result = null;
   }
