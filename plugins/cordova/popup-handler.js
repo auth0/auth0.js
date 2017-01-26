@@ -26,7 +26,8 @@ PopupHandler.prototype.preload = function (options) {
 
   this._current_popup = _window.open(url, '_blank', windowFeatures);
 
-  this._current_popup.kill = function () {
+  this._current_popup.kill = function (success) {
+    _this._current_popup.success = success;
     this.close();
     _this._current_popup = null;
   };
@@ -67,7 +68,7 @@ PopupHandler.prototype.errorHandler = function (event, cb) {
     return;
   }
 
-  this._current_popup.kill();
+  this._current_popup.kill(true);
 
   cb({ error: 'window_error', errorDescription: event.message });
 };
@@ -88,7 +89,9 @@ PopupHandler.prototype.exitHandler = function (cb) {
   // delay between the user being redirected to the callback and the popup gets closed.
   this.unhook();
 
-  cb({ error: 'window_closed', errorDescription: 'Browser window closed' });
+  if (!this._current_popup.success) {
+    cb({ error: 'window_closed', errorDescription: 'Browser window closed' });
+  }
 };
 
 PopupHandler.prototype.startHandler = function (event, cb) {
@@ -109,7 +112,7 @@ PopupHandler.prototype.startHandler = function (event, cb) {
     opts.nonce = this.options.nonce;
   }
 
-  _this._current_popup.kill();
+  _this._current_popup.kill(true);
 
   this.webAuth.parseHash(
     opts,

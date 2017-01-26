@@ -124,7 +124,9 @@ describe('auth0.plugins.cordova', function () {
           removeEventListener: function(event) {
             delete _this.events[event];
           },
-          close: function(){}
+          close: function(){
+            _this.events.exit();
+          }
         };
       }
     });
