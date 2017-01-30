@@ -135,7 +135,7 @@ For example:
         domain: '{YOUR_AUTH0_DOMAIN}',
         clientID: '{YOUR_AUTH0_CLIENT_ID}'
       });
-      auth0.parseHash(window.localtion.hash, function (err, result) {
+      auth0.parseHash(window.location.hash, function (err, result) {
         parent.postMessage(err || result, 'https://example.com/');
       });
     </script>
