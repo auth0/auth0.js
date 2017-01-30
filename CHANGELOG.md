@@ -1,5 +1,15 @@
 #Change Log
 
+## [v8.2.0](https://github.com/auth0/auth0.js/tree/v8.2.0) (2017-01-30)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.1.3...v8.2.0)
+
+**Added**
+- Plugins support + cordova plugin [\#333](https://github.com/auth0/auth0.js/pull/333) ([glena](https://github.com/glena))
+
+**Fixed**
+- popup.authorize should not require redirectURI when using OWP [\#336](https://github.com/auth0/auth0.js/pull/336) ([glena](https://github.com/glena))
+
+
 ## [v8.1.3](https://github.com/auth0/auth0.js/tree/v8.1.3) (2017-01-23)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.1.2...v8.1.3)
 
