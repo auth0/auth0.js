@@ -81,7 +81,7 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
   /* eslint-disable */
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
     clientID: { type: 'string', message: 'clientID option is required' },
-    redirectUri: { type: 'string', message: 'redirectUri option is required' },
+    redirectUri: { optional: true, type: 'string', message: 'redirectUri option is required' },
     responseType: { type: 'string', message: 'responseType option is required' },
     nonce: { type: 'string', message: 'nonce option is required', condition: function(o) {
       return o.responseType.indexOf('code') === -1 && o.responseType.indexOf('id_token') !== -1;
