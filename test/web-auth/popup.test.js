@@ -97,7 +97,8 @@ describe('auth0.WebAuth.popup', function () {
       this.auth0.popup.authorize({
         connection: 'the_connection',
         nonce: '123',
-        state: '456'
+        state: '456',
+        owp: true
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({

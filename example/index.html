@@ -310,7 +310,9 @@
 
     $('.popup-login-hosted').click(function (e) {
       e.preventDefault();
-      webAuth.popup.authorize({ }, htmlConsole.dumpCallback.bind(htmlConsole));
+      webAuth.popup.authorize({
+        redirectURI: 'http://localhost:3000/example/callback_popup.html'
+      }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
     $('.popup-login-twitter').click(function (e) {

@@ -62,7 +62,7 @@ function WebAuth(options) {
 
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this.client, this.baseOptions);
-  this.popup = new Popup(this.client, this.baseOptions);
+  this.popup = new Popup(this, this.baseOptions);
 }
 
 /**

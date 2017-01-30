@@ -33,7 +33,7 @@
     "idtoken-verifier": "^1.0.1",
     "superagent": "^3.3.1",
     "url-join": "^1.1.0",
-    "winchan": "^0.1.4"
+    "winchan": "^0.2.0"
   },
   "devDependencies": {
     "codecov": "^1.0.1",
