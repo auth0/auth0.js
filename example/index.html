@@ -6,6 +6,7 @@
     <script src="/webpack-dev-server.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="/auth0.js"></script>
+    <script src="/cordova-auth0-plugin.js"></script>
 
     <style>
       .row {
@@ -183,7 +184,10 @@
       redirectUri: 'http://localhost:3000/example',
       clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
       audience: 'https://brucke.auth0.com/userinfo',
-      responseType: 'token'
+      responseType: 'token',
+      plugins: [
+        new CordovaAuth0Plugin()
+      ]
     });
 
     var webAuthPasswordless = new auth0.WebAuth({
