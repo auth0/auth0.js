@@ -1,6 +1,6 @@
 function build(params, glue, uriEncodedValues) {
   glue = glue || '&';
-  uriEncodedValues = (uriEncodedValues === false ? false : true);
+  uriEncodedValues = uriEncodedValues !== false;
 
   return Object.keys(params).reduce(function (arr, key) {
     if (typeof params[key] !== 'undefined') {

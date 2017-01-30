@@ -40,7 +40,7 @@ Popup.prototype.buildPopupHandler = function () {
  * @param {Object} options: receives the window height and width and any other window feature to be sent to window.open
  */
 Popup.prototype.preload = function (options) {
-  var options = options || {};
+  options = options || {};
 
   var popup = this.buildPopupHandler();
 
