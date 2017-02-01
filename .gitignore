@@ -30,6 +30,3 @@ example/auth0.js
 coverage
 
 .idea/
-
-geckodriver
-selenium-server-standalone-3.0.1.jar

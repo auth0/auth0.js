@@ -223,41 +223,6 @@ Run `npm run test:coverage` to run the test suite with coverage report.
 
 Run `npm run lint` to run the linter and check code styles.
 
-### Running the integration tests on localhost
-
-1- Download the latest selenium standalone server
-
-```
-$ curl -O http://selenium-release.storage.googleapis.com/3.0/selenium-server-standalone-3.0.1.jar
-```
-
-2- Download the latest geckdriver version
-
-```
-$ curl -L https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-macos.tar.gz | tar xz
-```
-
-3- Start selenium server
-
-```
-$ java -jar -Dwebdriver.gecko.driver=./geckodriver selenium-server-standalone-3.0.1.jar
-```
-
-> http://webdriver.io/guide.html
-
-4- Init harness server
-
-```
-$ npm start
-```
-
-5- Run the tests
-
-```
-$ npm run test:browser
-```
-
-
 ## Issue Reporting
 
 If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.

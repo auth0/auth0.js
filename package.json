@@ -54,7 +54,6 @@
     "sinon": "^1.17.6",
     "smart-banner-webpack-plugin": "^2.0.0",
     "unminified-webpack-plugin": "^1.1.1",
-    "webdriverio": "^4.6.1",
     "webpack": "^1.13.2",
     "webpack-core": "^0.6.8",
     "webpack-custom-var-library-name-plugin": "^1.0.2",
