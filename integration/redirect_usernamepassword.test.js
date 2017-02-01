@@ -16,10 +16,14 @@ describe('redirect usernamepassword', function () {
       driver.findElement(By.className('login-redirect-usernamepassword')).click();
       driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
+      driver.findElement(By.id('err')).getText().then(function(value) {
+        expect(value).to.equal('');
+      });
+
+
       driver.findElement(By.id('result')).getText().then(function(value) {
         expect(value).to.not.equal('');
       });
-
 
       return driver.quit();
     });

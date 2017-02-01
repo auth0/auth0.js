@@ -20,6 +20,10 @@ describe('redirect authorize', function () {
       driver.findElement(By.id('upLogin')).click();
       driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
+      driver.findElement(By.id('err')).getText().then(function(value) {
+        expect(value).to.equal('');
+      });
+
       driver.findElement(By.id('result')).getText().then(function(value) {
         expect(value).to.not.equal('');
       });
