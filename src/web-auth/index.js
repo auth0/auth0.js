@@ -78,6 +78,7 @@ function WebAuth(options) {
  *
  * @method parseHash
  * @param {Object} options:
+ * @param {String} options._idTokenVerification [OPTIONAL] Default: true.
  * @param {String} options.state [OPTIONAL] to verify the response
  * @param {String} options.nonce [OPTIONAL] to verify the id_token
  * @param {String} options.hash [OPTIONAL] the url hash. If not provided it will extract from window.location.hash
@@ -97,6 +98,8 @@ WebAuth.prototype.parseHash = function (options, cb) {
   } else {
     options = options || {};
   }
+
+  options._idTokenVerification = !(options._idTokenVerification === false);
 
   var _window = windowHelper.getWindow();
 
@@ -128,17 +131,29 @@ WebAuth.prototype.parseHash = function (options, cb) {
   transactionState = options.state || (transaction && transaction.state) || null;
 
   if (parsedQs.id_token) {
-    this.validateToken(
-      parsedQs.id_token,
-      transactionState,
-      transactionNonce,
-      function (validationError, payload) {
-        if (validationError) {
-          return cb(validationError);
-        }
+    if (options._idTokenVerification) {
+      return this.validateToken(
+        parsedQs.id_token,
+        transactionState,
+        transactionNonce,
+        function (validationError, payload) {
+          if (validationError) {
+            return cb(validationError);
+          }
 
-        return cb(null, buildParseHashResponse(parsedQs, (transaction && transaction.appStatus) || null, payload));
+          return cb(null, buildParseHashResponse(parsedQs, (transaction && transaction.appStatus) || null, payload));
+        });
+    } else {
+      var verifier = new IdTokenVerifier({
+        issuer: this.baseOptions.token_issuer,
+        audience: this.baseOptions.clientID,
+        leeway: this.baseOptions.leeway || 0,
+        __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
       });
+
+      var decodedToken = verifier.decode(parsedQs.id_token);
+      return cb(null, buildParseHashResponse(parsedQs, (transaction && transaction.appStatus) || null, decodedToken.payload));
+    }
   } else {
     cb(null, buildParseHashResponse(parsedQs, (transaction && transaction.appStatus) || null, null));
   }
