@@ -44,7 +44,11 @@ function Authentication(options) {
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ?
                                         this.baseOptions._sendTelemetry : true;
 
-  this.baseOptions.rootUrl = 'https://' + this.baseOptions.domain;
+  if (this.baseOptions.domain.startsWith('https://') || this.baseOptions.domain.startsWith('http://')) {
+    this.baseOptions.rootUrl = this.baseOptions.domain;
+  } else {
+    this.baseOptions.rootUrl = 'https://' + this.baseOptions.domain;
+  }
 
   this.request = new RequestBuilder(this.baseOptions);
 
