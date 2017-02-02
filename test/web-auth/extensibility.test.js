@@ -19,7 +19,7 @@ describe('auth0.WebAuth extensibility', function () {
           ]
         });
       }).to.throwException(function (e) {
-        expect(e.message).to.be('Plugin MockPlugin version (v1.0.0) is not compatible with the SDK version (8.1.3)');
+        expect(e.message).to.be('Plugin MockPlugin version (v1.0.0) is not compatible with the SDK version (8.2.0)');
       });
     })
 
