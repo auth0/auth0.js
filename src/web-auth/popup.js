@@ -107,7 +107,11 @@ Popup.prototype.authorize = function (options, cb) {
     'domain',
     'audience',
     'responseType',
-    'redirectUri'
+    'redirectUri',
+    '_csrf',
+    'state',
+    '_instate',
+    'nonce'
   ]).with(objectHelper.blacklist(options, ['popupHandler']));
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
@@ -175,7 +179,11 @@ Popup.prototype.loginWithCredentials = function (options, cb) {
     'clientID',
     'scope',
     'domain',
-    'audience'
+    'audience',
+    '_csrf',
+    'state',
+    '_instate',
+    'nonce'
   ]).with(objectHelper.blacklist(options, ['popupHandler']));
 
   params = objectHelper.pick(options, ['clientID', 'domain']);

@@ -30,7 +30,11 @@ Redirect.prototype.loginWithCredentials = function (options, cb) {
     'responseType',
     'responseMode',
     'scope',
-    'audience'
+    'audience',
+    '_csrf',
+    'state',
+    '_instate',
+    'nonce'
   ]).with(options);
 
   this.warn.warning('`webauth.redirect.loginWithCredentials` will be soon deprecated, use `webauth.login` instead.');
