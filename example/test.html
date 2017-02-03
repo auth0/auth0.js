@@ -31,10 +31,10 @@
 
         webAuth.redirect.loginWithCredentials({
           connection: 'tests',
-          username: $('.login-username').val(),
-          password: $('.login-password').val(),
-          scope: $('.login-scope').val(),
-          responseType: $('.login-response-type').val()
+          username: $('#login-username').val(),
+          password: $('#login-password').val(),
+          scope: $('#login-scope').val(),
+          responseType: $('#login-response-type').val()
         }, function (err) {
           $('#err').html(JSON.stringify(err));
         });
@@ -44,8 +44,8 @@
         e.preventDefault();
 
         webAuth.authorize({
-          scope: $('.login-scope').val(),
-          responseType: $('.login-response-type').val()
+          scope: $('#login-scope').val(),
+          responseType: $('#login-response-type').val()
         });
       });
 

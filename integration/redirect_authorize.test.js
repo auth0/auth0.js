@@ -22,11 +22,19 @@ describe('redirect authorize', function () {
       driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
       driver.findElement(By.id('err')).getText().then(function(value) {
+        console.log('ERR:', value);
         expect(value).to.equal('');
       });
-
       driver.findElement(By.id('result')).getText().then(function(value) {
+        console.log('RESULT:', value);
         expect(value).to.not.equal('');
+
+        var response = JSON.parse(value);
+
+        expect(response.accessToken).to.be.ok();
+        expect(response.idToken).to.not.be.ok();
+        expect(response.tokenType).to.be.ok();
+        expect(response.expiresIn).to.be.ok();
       });
 
       return driver.quit();
@@ -43,10 +51,11 @@ describe('redirect authorize', function () {
       driver.findElement(By.id('email')).sendKeys('johnfoo@gmail.com');
       driver.findElement(By.id('password')).sendKeys('1234');
       driver.findElement(By.id('upLogin')).click();
-      driver.wait(until.elementLocated(By.id('parsed')), 10000);
+      driver.wait(until.elementLocated(By.id('loaded')), 10000);
 
-      driver.getTitle().then(function(url) {
-        expect(value).to.contain('code=');
+      driver.getCurrentUrl().then(function(url) {
+        console.log('RESULT URL:', url);
+        expect(url).to.contain('code=');
       });
 
       return driver.quit();
@@ -71,7 +80,15 @@ describe('redirect authorize', function () {
       });
 
       driver.findElement(By.id('result')).getText().then(function(value) {
+        console.log('RESULT:', value);
         expect(value).to.not.equal('');
+
+        var response = JSON.parse(value);
+
+        expect(response.accessToken).to.be.ok();
+        expect(response.idToken).to.be.ok();
+        expect(response.tokenType).to.be.ok();
+        expect(response.expiresIn).to.be.ok();
       });
 
       return driver.quit();
@@ -95,7 +112,15 @@ describe('redirect authorize', function () {
       });
 
       driver.findElement(By.id('result')).getText().then(function(value) {
+        console.log('RESULT:', value);
         expect(value).to.not.equal('');
+
+        var response = JSON.parse(value);
+
+        expect(response.accessToken).to.not.be.ok();
+        expect(response.idToken).to.be.ok();
+        expect(response.tokenType).to.not.be.ok();
+        expect(response.expiresIn).to.not.be.ok();
       });
 
       return driver.quit();
@@ -119,7 +144,15 @@ describe('redirect authorize', function () {
       });
 
       driver.findElement(By.id('result')).getText().then(function(value) {
+        console.log('RESULT:', value);
         expect(value).to.not.equal('');
+
+        var response = JSON.parse(value);
+
+        expect(response.accessToken).to.be.ok();
+        expect(response.idToken).to.be.ok();
+        expect(response.tokenType).to.be.ok();
+        expect(response.expiresIn).to.be.ok();
       });
 
       return driver.quit();
