@@ -22,7 +22,7 @@ describe('redirect authorize', function () {
       driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
       driver.findElement(By.id('err')).getText().then(function(value) {
-        console.log('ERR:', value);
+        console.log('ERR:', value ? value : '-empty-');
         expect(value).to.equal('');
       });
       driver.findElement(By.id('result')).getText().then(function(value) {
@@ -76,6 +76,7 @@ describe('redirect authorize', function () {
       driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
       driver.findElement(By.id('err')).getText().then(function(value) {
+        console.log('ERR:', value ? value : '-empty-');
         expect(value).to.equal('');
       });
 
@@ -108,6 +109,7 @@ describe('redirect authorize', function () {
       driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
       driver.findElement(By.id('err')).getText().then(function(value) {
+        console.log('ERR:', value ? value : '-empty-');
         expect(value).to.equal('');
       });
 
@@ -140,6 +142,7 @@ describe('redirect authorize', function () {
       driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
       driver.findElement(By.id('err')).getText().then(function(value) {
+        console.log('ERR:', value ? value : '-empty-');
         expect(value).to.equal('');
       });
 
