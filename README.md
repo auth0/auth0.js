@@ -78,6 +78,8 @@ auth0.authorize({
 
 - **parseHash(options, callback)**: Parses a URL hash fragment to extract the result of an Auth0 authentication response.
 
+> This method requires that your tokens are signed with **RS256**
+
 ```js
 auth0.parseHash(window.location.hash, function(err, authResult) {
   if (err) {
