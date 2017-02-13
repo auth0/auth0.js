@@ -10,7 +10,7 @@
 
 Client Side Javascript toolkit for Auth0 API
 
-> We recommend using auth0.js v8 if you need to use [API Auth](https://auth0.com/docs/api-auth) features. For auth0.js v7 code please check the [v7 branch](https://github.com/auth0/auth0.js/tree/v7), this version will be supported and mantained alongside v8.
+> We recommend using auth0.js v8 if you need to use [API Auth](https://auth0.com/docs/api-auth) features. For auth0.js v7 code please check the [v7 branch](https://github.com/auth0/auth0.js/tree/v7), this version will be supported and maintained alongside v8.
 
 Need help migrating from v7? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/migration-guide)
 
