@@ -207,6 +207,10 @@ var auth0 = new auth0.Management({
 - **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metdata. It will patch the user metdata with the attributes sent. https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
 - **linkUser(userId, secondaryUserToken, cb)**: Link two users. https://auth0.com/docs/api/management/v2#!/Users/post_identities
 
+## Documentation
+
+For a complete reference and examples please check our [docs](https://auth0.com/docs/libraries/auth0js) and our [Migration Guide](https://auth0.com/docs/libraries/auth0js/migration-guide) if you need help to migrate from v7
+
 ## Develop
 
 Run `npm start` and point your browser to `http://localhost:3000/example` to run the example page.
