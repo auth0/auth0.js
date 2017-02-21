@@ -1,6 +1,7 @@
 var toString = Object.prototype.toString;
 
 function attribute(o, attr, type, text) {
+  type = type === 'array' ? 'object' : type;
   if (o && typeof o[attr] !== type) {
     throw new Error(text);
   }

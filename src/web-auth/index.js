@@ -3,6 +3,7 @@ var IdTokenVerifier = require('idtoken-verifier');
 var assert = require('../helper/assert');
 var error = require('../helper/error');
 var qs = require('../helper/qs');
+var PluginHandler = require('../helper/plugins');
 var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
 var TransactionManager = require('./transaction-manager');
@@ -15,13 +16,14 @@ var SilentAuthenticationHandler = require('./silent-authentication-handler');
  * Handles all the browser's authentication flows
  * @constructor
  * @param {Object} options
- * @param {Object} options.domain
- * @param {Object} options.clienID
- * @param {Object} options.responseType
- * @param {Object} options.responseMode
- * @param {Object} options.scope
- * @param {Object} options.audience
- * @param {Object} options._disableDeprecationWarnings
+ * @param {String} options.domain
+ * @param {String} options.clienID
+ * @param {String} options.responseType
+ * @param {String} options.responseMode
+ * @param {String} options.scope
+ * @param {String} options.audience
+ * @param {Array} options.plugins
+ * @param {Boolean} options._disableDeprecationWarnings
  */
 function WebAuth(options) {
   /* eslint-disable */
@@ -34,6 +36,7 @@ function WebAuth(options) {
     scope: { optional: true, type: 'string', message: 'scope is not valid' },
     audience: { optional: true, type: 'string', message: 'audience is not valid' },
     leeway: { optional: true, type: 'number', message: 'leeway is not valid' },
+    plugins: { optional: true, type: 'array', message: 'plugins is not valid'},
     _disableDeprecationWarnings: { optional: true, type: 'boolean', message: '_disableDeprecationWarnings option is not valid' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
     _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
@@ -48,6 +51,7 @@ function WebAuth(options) {
   /* eslint-enable */
 
   this.baseOptions = options;
+  this.baseOptions.plugins = new PluginHandler(this, this.baseOptions.plugins || []);
 
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ?
                                         this.baseOptions._sendTelemetry : true;

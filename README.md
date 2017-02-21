@@ -10,7 +10,9 @@
 
 Client Side Javascript toolkit for Auth0 API
 
-> We recommend using auth0.js v8 if you have enabled the flag `OAuth 2.0 API Authorization` in your [tenant settings](https://manage.auth0.com/#/account/advanced). For auth0.js v7 code please check the [v7 branch](https://github.com/auth0/auth0.js/tree/v7), this version will be supported and mantained alongside v8.
+> We recommend using auth0.js v8 if you need to use [API Auth](https://auth0.com/docs/api-auth) features. For auth0.js v7 code please check the [v7 branch](https://github.com/auth0/auth0.js/tree/v7), this version will be supported and maintained alongside v8.
+
+Need help migrating from v7? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/migration-guide)
 
 ## Install
 
@@ -18,7 +20,7 @@ From CDN
 
 ```html
 <!-- Latest patch release (recommended for production) -->
-<script src="http://cdn.auth0.com/js/auth0/8.1.3/auth0.min.js"></script>
+<script src="http://cdn.auth0.com/js/auth0/8.2.0/auth0.min.js"></script>
 ```
 
 From [bower](http://bower.io)
@@ -78,6 +80,8 @@ auth0.authorize({
 
 - **parseHash(options, callback)**: Parses a URL hash fragment to extract the result of an Auth0 authentication response.
 
+> This method requires that your tokens are signed with **RS256**. Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/migration-guide#switching-from-hs256-to-rs256) for more information.
+
 ```js
 auth0.parseHash(window.location.hash, function(err, authResult) {
   if (err) {
@@ -135,7 +139,7 @@ For example:
         domain: '{YOUR_AUTH0_DOMAIN}',
         clientID: '{YOUR_AUTH0_CLIENT_ID}'
       });
-      auth0.parseHash(window.localtion.hash, function (err, result) {
+      auth0.parseHash(window.location.hash, function (err, result) {
         parent.postMessage(err || result, 'https://example.com/');
       });
     </script>
@@ -202,6 +206,10 @@ var auth0 = new auth0.Management({
 - **getUser(userId, cb)**: Returns the user profile. https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
 - **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metdata. It will patch the user metdata with the attributes sent. https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
 - **linkUser(userId, secondaryUserToken, cb)**: Link two users. https://auth0.com/docs/api/management/v2#!/Users/post_identities
+
+## Documentation
+
+For a complete reference and examples please check our [docs](https://auth0.com/docs/libraries/auth0js) and our [Migration Guide](https://auth0.com/docs/libraries/auth0js/migration-guide) if you need help to migrate from v7
 
 ## Develop
 

@@ -1,10 +1,13 @@
-function build(params) {
+function build(params, glue, uriEncodedValues) {
+  glue = glue || '&';
+  uriEncodedValues = uriEncodedValues !== false;
+
   return Object.keys(params).reduce(function (arr, key) {
     if (typeof params[key] !== 'undefined') {
-      arr.push(key + '=' + encodeURIComponent(params[key]));
+      arr.push(key + '=' + (uriEncodedValues ? encodeURIComponent(params[key]) : params[key]));
     }
     return arr;
-  }, []).join('&');
+  }, []).join(glue);
 }
 
 function parse(qs) {
