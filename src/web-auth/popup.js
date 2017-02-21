@@ -1,7 +1,7 @@
 var urljoin = require('url-join');
 var WinChan = require('winchan');
 
-var url_helper = require('../helper/url');
+var urlHelper = require('../helper/url');
 var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 var PopupHandler = require('../helper/popup-handler');
@@ -124,7 +124,7 @@ Popup.prototype.authorize = function (options, cb) {
     // url to the callback
     params.owp = true;
   } else {
-    popOpts.origin = url_helper.extractOrigin(params.redirectUri);
+    popOpts.origin = urlHelper.extractOrigin(params.redirectUri);
     relayUrl = params.redirectUri;
   }
 
