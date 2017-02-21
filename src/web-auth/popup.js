@@ -1,5 +1,7 @@
 var urljoin = require('url-join');
+var WinChan = require('winchan');
 
+var url_helper = require('../helper/url');
 var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 var PopupHandler = require('../helper/popup-handler');
@@ -7,9 +9,10 @@ var objectHelper = require('../helper/object');
 var Warn = require('../helper/warn');
 var TransactionManager = require('./transaction-manager');
 
-function Popup(client, options) {
+function Popup(webAuth, options) {
   this.baseOptions = options;
-  this.client = client;
+  this.client = webAuth.client;
+  this.webAuth = webAuth;
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
   this.warn = new Warn({
@@ -66,6 +69,24 @@ Popup.prototype.getPopupHandler = function (options, preload) {
 };
 
 /**
+ * Handles the popup logic for the callback page.
+ *
+ * @method callback
+ * @param {Object} options:
+ * @param {String} options.state [OPTIONAL] to verify the response
+ * @param {String} options.nonce [OPTIONAL] to verify the id_token
+ * @param {String} options.hash [OPTIONAL] the url hash. If not provided it will extract from window.location.hash
+ */
+Popup.prototype.callback = function (options) {
+  var _this = this;
+  WinChan.onOpen(function (popupOrigin, r, cb) {
+    _this.webAuth.parseHash(options || {}, function (err, data) {
+      return cb(err || data);
+    });
+  });
+};
+
+/**
  * Opens in a popup the hosted login page (`/authorize`) in order to initialize a new authN/authZ transaction
  *
  * @method authorize
@@ -76,6 +97,7 @@ Popup.prototype.authorize = function (options, cb) {
   var popup;
   var url;
   var relayUrl;
+  var popOpts = {};
 
   var pluginHandler = this.baseOptions.plugins.get('popup.authorize');
 
@@ -84,19 +106,27 @@ Popup.prototype.authorize = function (options, cb) {
     'scope',
     'domain',
     'audience',
-    'responseType'
+    'responseType',
+    'redirectUri'
   ]).with(objectHelper.blacklist(options, ['popupHandler']));
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
     responseType: { type: 'string', message: 'responseType option is required' }
   });
 
+  // the relay page should not be necesary as long it happens in the same domain
+  // (a redirectUri shoul be provided). It is necesary when using OWP
   relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');
 
-  // used by server to render the relay page instead of sending the chunk in the
-  // url to the callback
-  params.owp = true;
-  params.redirectUri = undefined;
+  // if a owp is enabled, it should use the owp flag
+  if (options.owp) {
+    // used by server to render the relay page instead of sending the chunk in the
+    // url to the callback
+    params.owp = true;
+  } else {
+    popOpts.origin = url_helper.extractOrigin(params.redirectUri);
+    relayUrl = params.redirectUri;
+  }
 
   if (pluginHandler) {
     params = pluginHandler.processParams(params);
@@ -110,7 +140,7 @@ Popup.prototype.authorize = function (options, cb) {
 
   popup = this.getPopupHandler(options);
 
-  return popup.load(url, relayUrl, {}, responseHandler(cb));
+  return popup.load(url, relayUrl, popOpts, responseHandler(cb));
 };
 
 /**

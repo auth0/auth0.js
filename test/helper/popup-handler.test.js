@@ -128,7 +128,7 @@ describe('helpers popupHandler', function () {
 
       var handler = new PopupHandler();
 
-      handler.load('url', 'relayUrl', { opt: 'value'}, function(err, data) {
+      handler.load('url', 'relayUrl', {params: {opt: 'value'}}, function(err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({data2: 'value2'});
       });

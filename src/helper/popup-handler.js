@@ -59,13 +59,12 @@ PopupHandler.prototype.load = function (url, relayUrl, options, cb) {
   var popupPosition = this.calculatePosition(options.popupOptions || {});
   var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
 
-  var winchanOptions = {
+  var winchanOptions = objectHelper.merge({
     url: url,
     relay_url: relayUrl,
     window_features: qs.build(popupOptions, ',', false),
-    popup: this._current_popup,
-    params: options
-  };
+    popup: this._current_popup
+  }).with(options);
 
   var popup = WinChan.open(winchanOptions, function (err, data) {
     _this._current_popup = null;

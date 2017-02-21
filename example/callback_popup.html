@@ -9,9 +9,8 @@
         clientID: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
         responseType: 'token'
       });
-      auth0.parseHash(window.location.hash, function(err, data) {
-        parent.postMessage(err || data, "http://localhost:3000/");
-      });
+
+      auth0.popup.callback();
     </script>
   </head>
   <body></body>

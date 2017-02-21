@@ -85,7 +85,14 @@ describe('auth0.WebAuth.popup', function () {
 
     it('should open the authorize page in a popup', function (done) {
       stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
-        expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=id_token&connection=the_connection&nonce=123&state=456&owp=true');
+        // TODO: Improve url validation
+        expect(url).to.match(/^https:\/\/me.auth0.com\/authorize\?/);
+        expect(url).to.contain('client_id=...');
+        expect(url).to.contain('response_type=id_token');
+        expect(url).to.contain('connection=the_connection');
+        expect(url).to.contain('nonce=123');
+        expect(url).to.contain('state=456');
+        expect(url).to.contain('owp=true');
         expect(relayUrl).to.be('https://me.auth0.com/relay.html');
         expect(options).to.eql({});
         cb(null, {
@@ -97,7 +104,8 @@ describe('auth0.WebAuth.popup', function () {
       this.auth0.popup.authorize({
         connection: 'the_connection',
         nonce: '123',
-        state: '456'
+        state: '456',
+        owp: true
       }, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({

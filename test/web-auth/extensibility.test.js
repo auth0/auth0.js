@@ -4,6 +4,7 @@ var stub = require('sinon').stub;
 var PopupHandler = require('../../src/helper/popup-handler');
 var MockAuth0Plugin = require('../mock/mock-auth0-plugin');
 var WebAuth = require('../../src/web-auth');
+var version = require('../../src/version');
 
 describe('auth0.WebAuth extensibility', function () {
 
@@ -19,7 +20,7 @@ describe('auth0.WebAuth extensibility', function () {
           ]
         });
       }).to.throwException(function (e) {
-        expect(e.message).to.be('Plugin MockPlugin version (v1.0.0) is not compatible with the SDK version (8.1.3)');
+        expect(e.message).to.be('Plugin MockPlugin version (v1.0.0) is not compatible with the SDK version ('+ version.raw +')');
       });
     })
 
@@ -96,7 +97,7 @@ describe('auth0.WebAuth extensibility', function () {
         });
       });
 
-      this.webAuth.popup.authorize({}, function (err, data) {
+      this.webAuth.popup.authorize({owp: true}, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
           emailVerified: false,
