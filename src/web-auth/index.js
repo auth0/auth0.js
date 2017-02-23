@@ -258,9 +258,11 @@ WebAuth.prototype.changePassword = function (options, cb) {
  *
  * @method passwordlessStart
  * @param {Object} options: https://auth0.com/docs/api/authentication#passwordless
- * @param {Object} options.type: `sms` or `email`
- * @param {Object} options.phoneNumber: only if type = sms
- * @param {Object} options.email: only if type = email
+ * @param {Object} options.send: `link` or `code`
+ * @param {Object} options.phoneNumber: send should be code and email not set
+ * @param {Object} options.email: phoneNumber should be ignored
+ * @param {Object} options.connection
+ * @param {Object} options.authParams
  * @param {Function} cb
  */
 WebAuth.prototype.passwordlessStart = function (options, cb) {
