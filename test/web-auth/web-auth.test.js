@@ -132,6 +132,43 @@ describe('auth0.WebAuth', function () {
       }); // eslint-disable-line
     });
 
+    it('should parse a valid hash with HS256 signed token', function (done) {
+      var webAuth = new WebAuth({
+        domain: 'auth0-tests-lock.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+        responseType: 'token',
+        __disableExpirationCheck: true
+      });
+
+      var data = webAuth.parseHash({
+        _idTokenVerification: false,
+        hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+      }, function(err, data) {
+        expect(err).to.be(null);
+        expect(data).to.eql({
+          accessToken: 'VjubIMBmpgQ2W2',
+          idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ',
+          idTokenPayload: {
+            iss: 'https://auth0-tests-lock.auth0.com/',
+            sub: 'twitter|366141931',
+            aud: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+            exp: 1486083146,
+            iat: 1486047146
+          },
+          appStatus: null,
+          refreshToken: 'kajshdgfkasdjhgfas',
+          state: 'theState',
+          expiresIn: null,
+          tokenType: 'Bearer'
+        });
+
+        expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+
+        done();
+      }); // eslint-disable-line
+    });
+
     it('should parse a valid hash from the location.hash', function (done) {
       var webAuth = new WebAuth({
         domain: 'wptest.auth0.com',
