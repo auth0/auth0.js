@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Auth0.js Demo Examples</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="/auth0.js"></script>
+  </head>
+  <body class="container">
+
+    <input id="login-username" value="" />
+    <input id="login-password" type="password" value="" />
+    <input id="login-scope" value="" />
+    <input id="login-response-type" value="" />
+    <input type="button" class="login-redirect-usernamepassword" value="redirect usernamepassword" />
+    <input type="button" class="login-redirect-authorize" value="redirect authorize" />
+
+    <div id="err"></div>
+    <div id="result"></div>
+
+    <script type="text/javascript">
+
+      var webAuth = new auth0.WebAuth({
+        domain: 'auth0-tests-auth0js.auth0.com',
+        redirectUri: window.location.href,
+        clientID: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
+        leeway: 30
+      });
+
+      $('.login-redirect-usernamepassword').click(function (e) {
+        e.preventDefault();
+
+        webAuth.redirect.loginWithCredentials({
+          connection: 'tests',
+          username: $('#login-username').val(),
+          password: $('#login-password').val(),
+          scope: $('#login-scope').val(),
+          responseType: $('#login-response-type').val()
+        }, function (err) {
+          $('#err').html(JSON.stringify(err));
+        });
+      });
+
+      $('.login-redirect-authorize').click(function (e) {
+        e.preventDefault();
+
+        webAuth.authorize({
+          scope: $('#login-scope').val(),
+          responseType: $('#login-response-type').val()
+        });
+      });
+
+      webAuth.parseHash(function (err, result) {
+        if (err) {
+          $('#err').html(JSON.stringify(err));
+          $(document.body).append($('<div id="parsed"></div>'));
+        }
+
+        if (result) {
+          $('#result').html(JSON.stringify(result));
+          $(document.body).append($('<div id="parsed"></div>'));
+        }
+      });
+
+      $( document ).ready(function() {
+        $(document.body).append($('<div id="loaded"></div>'));
+      });
+    </script>
+  </body>
+</html>

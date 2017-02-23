@@ -78,7 +78,7 @@ function WebAuth(options) {
  *
  * @method parseHash
  * @param {Object} options:
- * @param {String} options._idTokenVerification [OPTIONAL] Default: true.
+ * @param {String} options._idTokenVerification [OPTIONAL] Default: true
  * @param {String} options.state [OPTIONAL] to verify the response
  * @param {String} options.nonce [OPTIONAL] to verify the id_token
  * @param {String} options.hash [OPTIONAL] the url hash. If not provided it will extract from window.location.hash
@@ -140,7 +140,6 @@ WebAuth.prototype.parseHash = function (options, cb) {
         if (validationError) {
           return cb(validationError);
         }
-
         return cb(null, buildParseHashResponse(parsedQs, applicationStatus, payload));
       });
   }
