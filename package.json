@@ -1,6 +1,6 @@
 {
   "name": "auth0-js",
-  "version": "8.2.0",
+  "version": "8.3.0",
   "description": "Auth0 headless browser sdk",
   "main": "src/index.js",
   "keywords": [

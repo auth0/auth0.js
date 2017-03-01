@@ -1,5 +1,22 @@
 #Change Log
 
+## [v8.3.0](https://github.com/auth0/auth0.js/tree/v8.3.0) (2017-03-01)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.2.0...v8.3.0)
+
+**Added**
+- Integration tests [\#346](https://github.com/auth0/auth0.js/pull/346) ([glena](https://github.com/glena))
+- Whitelist nonce, state, _csrf and _instate from constructor [\#345](https://github.com/auth0/auth0.js/pull/345) ([glena](https://github.com/glena))
+- Added flag to disable id_token verification for legacy clients [\#341](https://github.com/auth0/auth0.js/pull/341) ([glena](https://github.com/glena))
+- Popup no owp [\#337](https://github.com/auth0/auth0.js/pull/337) ([glena](https://github.com/glena))
+
+**Changed**
+- Remove warnings around refreshing session [\#353](https://github.com/auth0/auth0.js/pull/353) ([hzalaz](https://github.com/hzalaz))
+- Updated passwordless start jsdocs [\#340](https://github.com/auth0/auth0.js/pull/340) ([glena](https://github.com/glena))
+
+**Fixed**
+- Only parse cordova callback hash  [\#370](https://github.com/auth0/auth0.js/pull/370) ([hzalaz](https://github.com/hzalaz))
+
+
 ## [v8.2.0](https://github.com/auth0/auth0.js/tree/v8.2.0) (2017-01-30)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.1.3...v8.2.0)
 
