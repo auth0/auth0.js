@@ -16,7 +16,7 @@ var DBConnection = require('./db-connection');
  * @constructor
  * @param {Object} options
  * @param {Object} options.domain
- * @param {Object} options.clienID
+ * @param {Object} options.clientID
  * @param {Object} options.responseType
  * @param {Object} options.responseMode
  * @param {Object} options.scope
