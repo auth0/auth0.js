@@ -1,5 +1,6 @@
 var windowHandler = require('../../src/helper/window');
 var qs = require('../../src/helper/qs');
+var urljoin = require('url-join');
 
 function PopupHandler(webAuth) {
   this.webAuth = webAuth;
@@ -100,24 +101,28 @@ PopupHandler.prototype.startHandler = function (event, cb) {
   if (!this._current_popup) {
     return;
   }
+
+  var callbackUrl = urljoin('https:', this.webAuth.baseOptions.domain, '/mobile');
+
+  if (event.url && !(event.url.indexOf(callbackUrl + '#') === 0)) { return; }
+
   var parts = event.url.split('#');
 
   if (parts.length === 1) {
     return;
   }
 
-  var opts = { hash: parts.pop() };
+  var opts = { hash: parts.pop(), _idTokenVerification: false };
 
   if (this.options.nonce) {
     opts.nonce = this.options.nonce;
   }
 
-  _this._current_popup.kill(true);
-
   this.webAuth.parseHash(
     opts,
     function (error, result) {
       if (error || result) {
+        _this._current_popup.kill(true);
         cb(error, result);
       }
     }
