@@ -18,7 +18,7 @@ function Redirect(client, options) {
  * @method loginWithCredentials
  * @param {Object} options
  * @param {Function} cb
- * @deprecated `webauth.redirect.loginWithCredentials` will be soon deprecated, use `webauth.login` instead.
+ * @deprecated `webauth.redirect.loginWithCredentials` will be soon deprecated, use `webauth.authorize` instead.
  */
 Redirect.prototype.loginWithCredentials = function (options, cb) {
   var usernamePassword;
@@ -37,7 +37,7 @@ Redirect.prototype.loginWithCredentials = function (options, cb) {
     'nonce'
   ]).with(options);
 
-  this.warn.warning('`webauth.redirect.loginWithCredentials` will be soon deprecated, use `webauth.login` instead.');
+  this.warn.warning('`webauth.redirect.loginWithCredentials` will be soon deprecated, use `webauth.authorize` instead.');
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
     responseType: { type: 'string', message: 'responseType option is required' }
