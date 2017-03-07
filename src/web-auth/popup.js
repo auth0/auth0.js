@@ -132,7 +132,9 @@ Popup.prototype.authorize = function (options, cb) {
     relayUrl = params.redirectUri;
   }
 
-  popOpts.popupOptions = options.popupOptions;
+  if (options.popupOptions) {
+      popOpts.popupOptions = options.popupOptions;
+  }
 
   if (pluginHandler) {
     params = pluginHandler.processParams(params);
