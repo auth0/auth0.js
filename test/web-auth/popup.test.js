@@ -1,5 +1,6 @@
 var expect = require('expect.js');
 var stub = require('sinon').stub;
+var URL = require('url');
 
 var RequestMock = require('../mock/request-mock');
 var request = require('superagent');
@@ -83,16 +84,45 @@ describe('auth0.WebAuth.popup', function () {
       PopupHandler.prototype.load.restore();
     });
 
+    it('should open the popup a with the proper parameters', function (done) {
+      stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
+        expect(relayUrl).to.be('https://me.auth0.com/relay.html');
+        expect(options.popupOptions.height).to.be(300);
+        expect(options.popupOptions.width).to.be(250);
+        expect(options.popupOptions).to.not.have.property('extra');
+        cb(null, {
+          email_verified: false,
+          email: 'me@example.com'
+        });
+      });
+
+      this.auth0.popup.authorize({
+        connection: 'the_connection',
+        state: '123',
+        nonce: '456',
+        owp: true,
+        popupOptions: {
+          height: 300,
+          width: 250,
+          extra: 'blacklisted'
+        }
+      }, function (err, data) {
+        done();
+      });
+    });
+ 
     it('should open the authorize page in a popup', function (done) {
       stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
-        // TODO: Improve url validation
-        expect(url).to.match(/^https:\/\/me.auth0.com\/authorize\?/);
-        expect(url).to.contain('client_id=...');
-        expect(url).to.contain('response_type=id_token');
-        expect(url).to.contain('connection=the_connection');
-        expect(url).to.contain('nonce=123');
-        expect(url).to.contain('state=456');
-        expect(url).to.contain('owp=true');
+        var components = URL.parse(url, true);
+        expect(components.protocol).to.be('https:');
+        expect(components.host).to.be('me.auth0.com');
+        expect(components.pathname).to.be('/authorize');
+        expect(components.query.client_id).to.be('...');
+        expect(components.query.response_type).to.be('id_token');
+        expect(components.query.connection).to.be('the_connection');
+        expect(components.query.nonce).to.be('123');
+        expect(components.query.state).to.be('456');
+        expect(components.query.owp).to.be('true');
         expect(relayUrl).to.be('https://me.auth0.com/relay.html');
         expect(options).to.eql({});
         cb(null, {

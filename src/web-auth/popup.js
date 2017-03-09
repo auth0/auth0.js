@@ -133,7 +133,7 @@ Popup.prototype.authorize = function (options, cb) {
   }
 
   if (options.popupOptions) {
-      popOpts.popupOptions = options.popupOptions;
+    popOpts.popupOptions = objectHelper.pick(options.popupOptions, ['width', 'height']);
   }
 
   if (pluginHandler) {
