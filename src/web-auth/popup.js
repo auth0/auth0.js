@@ -188,13 +188,14 @@ Popup.prototype.loginWithCredentials = function (options, cb) {
 
   params = objectHelper.pick(options, ['clientID', 'domain']);
   params.options = objectHelper.toSnakeCase(
-    objectHelper.blacklist(options, ['clientID', 'domain'])
+    objectHelper.pick(options, ['password', 'connection', 'state', 'scope', '_csrf', 'device'])
   );
+  params.options.username = options.username || options.email;
 
   url = urljoin(this.baseOptions.rootUrl, 'sso_dbconnection_popup', options.clientID);
   relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');
 
-  return popup.load(url, relayUrl, params, responseHandler(cb));
+  return popup.load(url, relayUrl, { params: params }, responseHandler(cb));
 };
 
 /**
