@@ -136,15 +136,17 @@ describe('auth0.WebAuth.popup', function () {
       stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
         expect(url).to.be('https://me.auth0.com/sso_dbconnection_popup/...');
         expect(relayUrl).to.be('https://me.auth0.com/relay.html');
-        expect(options).to.eql({ clientID: '...',
-          domain: 'me.auth0.com',
-          options:{
-            connection: 'the_connection',
-            nonce: '123',
-            state: '456',
-            username: 'theUsername',
-            password: 'thepassword',
-            scope: 'openid'
+        expect(options).to.eql({
+          params: {
+            clientID: '...',
+            domain: 'me.auth0.com',
+            options:{
+              connection: 'the_connection',
+              state: '456',
+              username: 'theUsername',
+              password: 'thepassword',
+              scope: 'openid'
+            }
           }
         });
 
@@ -156,7 +158,6 @@ describe('auth0.WebAuth.popup', function () {
 
       this.auth0.popup.loginWithCredentials({
         connection: 'the_connection',
-        nonce: '123',
         state: '456',
         username: 'theUsername',
         password: 'thepassword',
@@ -385,13 +386,16 @@ describe('auth0.WebAuth.popup', function () {
       stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
         expect(url).to.be('https://me.auth0.com/sso_dbconnection_popup/...');
         expect(relayUrl).to.be('https://me.auth0.com/relay.html');
-        expect(options).to.eql({ clientID: '...',
-          domain: 'me.auth0.com',
-          options:{
-            connection: 'the_connection',
-            email: 'me@example.com',
-            password: '123456',
-            scope: 'openid'
+        expect(options).to.eql({
+          params: {
+            clientID: '...',
+            domain: 'me.auth0.com',
+            options:{
+              connection: 'the_connection',
+              username: 'me@example.com',
+              password: '123456',
+              scope: 'openid'
+            }
           }
         });
 
