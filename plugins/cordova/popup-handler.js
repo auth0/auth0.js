@@ -1,5 +1,5 @@
 var windowHandler = require('../../src/helper/window');
-var qs = require('../../src/helper/qs');
+var qs = require('qs');
 var urljoin = require('url-join');
 
 function PopupHandler(webAuth) {
@@ -19,7 +19,10 @@ PopupHandler.prototype.preload = function (options) {
   delete popupOptions.width;
   delete popupOptions.height;
 
-  var windowFeatures = qs.build(popupOptions, ',', false);
+  var windowFeatures = qs.stringify(popupOptions, {
+    encode: false,
+    delimiter: ','
+  });
 
   if (this._current_popup && !this._current_popup.closed) {
     return this._current_popup;

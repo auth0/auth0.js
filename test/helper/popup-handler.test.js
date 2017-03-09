@@ -2,7 +2,7 @@ var expect = require('expect.js');
 var stub = require('sinon').stub;
 var WinChan = require('winchan');
 
-var qs = require('../../src/helper/qs');
+var qs = require('qs');
 var PopupHandler = require('../../src/helper/popup-handler');
 
 describe('helpers popupHandler', function () {
@@ -78,19 +78,6 @@ describe('helpers popupHandler', function () {
         top: 1350
       });
     });
-  });
-
-  describe('stringifies the window properties', function () {
-
-    it('using the options received', function () {
-      var str = qs.build({
-        attr1: 'attribute 1',
-        attr2: 'attribute 2',
-        attr3: 'attribute 3'
-      }, ',', false);
-      expect(str).to.eql('attr1=attribute 1,attr2=attribute 2,attr3=attribute 3');
-    });
-
   });
 
   describe('should open the popup', function () {

@@ -1,7 +1,7 @@
 var urljoin = require('url-join');
 
 var RequestBuilder = require('../helper/request-builder');
-var qs = require('../helper/qs');
+var qs = require('qs');
 var objectHelper = require('../helper/object');
 var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
@@ -103,7 +103,7 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 
-  qString = qs.build(params);
+  qString = qs.stringify(params);
 
   return urljoin(this.baseOptions.rootUrl, 'authorize', '?' + qString);
 };
@@ -134,7 +134,7 @@ Authentication.prototype.buildLogoutUrl = function (options) {
 
   params = objectHelper.toSnakeCase(params, ['auth0Client', 'returnTo']);
 
-  qString = qs.build(params);
+  qString = qs.stringify(params);
 
   return urljoin(this.baseOptions.rootUrl, 'v2', 'logout', '?' + qString);
 };
@@ -297,7 +297,7 @@ Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   if (withActiveDirectories) {
-    params = '?' + qs.build({
+    params = '?' + qs.stringify({
       ldaps: 1,
       client_id: this.baseOptions.clientID
     });
