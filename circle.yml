@@ -1,0 +1,10 @@
+machine:
+  node:
+    version: v6.1.0
+test:
+  pre:
+    - npm run lint
+  override:
+    - npm run test:ci
+  post:
+    - npm run test:coverage
