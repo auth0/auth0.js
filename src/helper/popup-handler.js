@@ -4,7 +4,7 @@ var WinChan = require('winchan');
 
 var windowHandler = require('./window');
 var objectHelper = require('./object');
-var qs = require('./qs');
+var qs = require('qs');
 
 function PopupHandler() {
   this._current_popup = null;
@@ -38,7 +38,10 @@ PopupHandler.prototype.preload = function (options) {
   var popupPosition = this.calculatePosition(options.popupOptions || {});
   var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
   var url = options.url || 'about:blank';
-  var windowFeatures = qs.build(popupOptions, ',', false);
+  var windowFeatures = qs.stringify(popupOptions, {
+    encode: false,
+    delimiter: ','
+  });
 
   if (this._current_popup && !this._current_popup.closed) {
     return this._current_popup;
@@ -62,7 +65,10 @@ PopupHandler.prototype.load = function (url, relayUrl, options, cb) {
   var winchanOptions = objectHelper.merge({
     url: url,
     relay_url: relayUrl,
-    window_features: qs.build(popupOptions, ',', false),
+    window_features: qs.stringify(popupOptions, {
+        delimiter: ',',
+        encode: false
+    }),
     popup: this._current_popup
   }).with(options);
 

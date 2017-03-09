@@ -2,7 +2,7 @@ var urljoin = require('url-join');
 
 var objectHelper = require('../helper/object');
 var assert = require('../helper/assert');
-var qs = require('../helper/qs');
+var qs = require('qs');
 var responseHandler = require('../helper/response-handler');
 
 function PasswordlessAuthentication(request, options) {
@@ -48,7 +48,7 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
 
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
 
-  qString = qs.build(params);
+  qString = qs.stringify(params);
 
   return urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify_redirect', '?' + qString);
 };
