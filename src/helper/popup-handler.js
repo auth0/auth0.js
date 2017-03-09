@@ -66,8 +66,8 @@ PopupHandler.prototype.load = function (url, relayUrl, options, cb) {
     url: url,
     relay_url: relayUrl,
     window_features: qs.stringify(popupOptions, {
-        delimiter: ',',
-        encode: false
+      delimiter: ',',
+      encode: false
     }),
     popup: this._current_popup
   }).with(options);
