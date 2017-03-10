@@ -1,6 +1,6 @@
 machine:
   node:
-    version: v6.1.0
+    version: v6.10.0
 test:
   pre:
     - npm run build
