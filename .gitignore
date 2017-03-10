@@ -28,5 +28,6 @@ example/auth0.js
 
 .gitignore
 coverage
+test-results.xml
 
 .idea/

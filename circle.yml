@@ -3,8 +3,15 @@ machine:
     version: v6.1.0
 test:
   pre:
+    - npm run build
     - npm run lint
   override:
-    - npm run test:ci
+    - npm run ci:test:
+        environment:
+          MOCHA_FILE: $CIRCLE_TEST_REPORTS/junit/test-results.xml
   post:
-    - npm run test:coverage
+    - npm run ci:coverage
+general:
+  artifacts:
+    - build
+    - reports
