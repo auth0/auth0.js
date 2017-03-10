@@ -14,4 +14,3 @@ test:
 general:
   artifacts:
     - build
-    - reports
