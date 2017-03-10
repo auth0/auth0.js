@@ -86,7 +86,7 @@ npm_release()
 npm run lint
 
 # Test
-npm run test:ci
+npm run ci:test
 
 # Clean
 rm -f build/*.js

@@ -21,7 +21,7 @@
     "ci:coverage": "codecov",
     "lint": "eslint ./src",
     "publish:cdn": "ccu",
-    "ci:release": "scripts/release.sh"
+    "release": "scripts/release.sh"
   },
   "repository": {
     "type": "git",
