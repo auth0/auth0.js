@@ -7,9 +7,9 @@ var CookieStorage = require('../../src/helper/storage/cookie');
 var DummyStorage = require('../../src/helper/storage/dummy');
 
 function MockLocalStorage() {}
-MockLocalStorage.prototype.getItem = function() { throw new Error('fail'); }
-MockLocalStorage.prototype.removeItem = function() { throw new Error('fail'); }
-MockLocalStorage.prototype.setItem = function() { throw new Error('fail'); }
+MockLocalStorage.prototype.getItem = function() { throw new Error('fail'); };
+MockLocalStorage.prototype.removeItem = function() { throw new Error('fail'); };
+MockLocalStorage.prototype.setItem = function() { throw new Error('fail'); };
 
 describe('helpers storage handler', function () {
   it('should use localStorage by default', function () {

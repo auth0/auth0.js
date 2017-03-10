@@ -2,8 +2,8 @@
 
 # auth0.js
 
+[![Build Status][circleci-image]][circleci-url]
 [![NPM version][npm-image]][npm-url]
-[![Build status][travis-image]][travis-url]
 [![Coverage][codecov-image]][codecov-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
@@ -241,8 +241,8 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE.txt) f
 
 [npm-image]: https://img.shields.io/npm/v/auth0-js.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/auth0-js
-[travis-image]: http://img.shields.io/travis/auth0/auth0.js.svg?branch=v8&style=flat-square
-[travis-url]: https://travis-ci.org/auth0/auth0.js
+[circleci-image]: http://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&style=flat-square
+[circleci-url]: https://circleci.com/gh/auth0/auth0.js
 [codecov-image]: https://img.shields.io/codecov/c/github/auth0/auth0.js/v8.svg?style=flat-square
 [codecov-url]: https://codecov.io/github/auth0/auth0.js?branch=v8
 [license-image]: http://img.shields.io/npm/l/auth0-js.svg?style=flat-square

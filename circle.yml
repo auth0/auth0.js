@@ -1,0 +1,23 @@
+machine:
+  node:
+    version: v6.10.0
+  environment:
+    PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
+dependencies:
+  override:
+    - yarn
+  cache_directories:
+    - ~/.cache/yarn
+test:
+  pre:
+    - yarn run build
+    - yarn run lint
+  override:
+    - yarn run ci:test:
+        environment:
+          MOCHA_FILE: $CIRCLE_TEST_REPORTS/junit/test-results.xml
+  post:
+    - yarn run ci:coverage
+general:
+  artifacts:
+    - build
