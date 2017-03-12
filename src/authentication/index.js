@@ -264,7 +264,7 @@ Authentication.prototype.loginWithResourceOwner = function (options, cb) {
     'clientID',
     'scope',
     'audience'
-  ]).with(options);
+  ]).with(options, ['username', 'password', 'scope', 'connection', 'device']);
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
