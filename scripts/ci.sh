@@ -1,6 +1,6 @@
 #!/bin/bash
 
-npm install
+yarn install
 
 NPM_TAG=${2:-"beta"}
 MATCHER=${3:-"*"}
@@ -85,17 +85,17 @@ npm_release()
 }
 
 # Lint
-npm run lint
+yarn run lint
 
 # Test
-npm run ci:test
+yarn run ci:test
 
 # Clean
 rm -f build/*.js
 rm -f build/*.map
 
 # Build
-npm run build
+yarn run build
 
 # Release
 git checkout -b dist
