@@ -15,10 +15,12 @@ function Redirect(client, options) {
 /**
  * Initializes the legacy Lock login flow in redirect mode
  *
+ * This method is not compatible with API Auth so if you need to fetch API tokens with audience
+ * you should use {@link WebAuth.authorize}.
+ *
  * @method loginWithCredentials
  * @param {Object} options
  * @param {Function} cb
- * @deprecated `webauth.redirect.loginWithCredentials` will be soon deprecated, use `webauth.authorize` instead.
  */
 Redirect.prototype.loginWithCredentials = function (options, cb) {
   var usernamePassword;
@@ -36,8 +38,6 @@ Redirect.prototype.loginWithCredentials = function (options, cb) {
     '_instate',
     'nonce'
   ]).with(options);
-
-  this.warn.warning('`webauth.redirect.loginWithCredentials` will be soon deprecated, use `webauth.authorize` instead.');
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
     responseType: { type: 'string', message: 'responseType option is required' }

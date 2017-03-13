@@ -231,7 +231,11 @@ Authentication.prototype.oauthToken = function (options, cb) {
 };
 
 /**
- * Makes a call to the `/ro` endpoint
+ * Performs authentication calling `/oauth/ro` endpoint with username
+ * and password for a given connection name.
+ *
+ * This method is not compatible with API Auth so if you need to fetch API tokens with audience
+ * you should use {@link Authentication.login} or {@link Authentication.oauthToken}.
  *
  * @method loginWithResourceOwner
  * @param {Object} options:
@@ -239,22 +243,17 @@ Authentication.prototype.oauthToken = function (options, cb) {
  * @param {Object} options.password
  * @param {Object} options.connection
  * @param {Object} options.scope
- * @param {Object} options.audience
  * @param {Function} cb
- * @deprecated `loginWithResourceOwner` will be soon deprecated, user `login` instead.
  */
 Authentication.prototype.loginWithResourceOwner = function (options, cb) {
   var url;
   var body;
 
-  this.warn.warning('`loginWithResourceOwner` will be soon deprecated, user `login` instead.');
-
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
     username: { type: 'string', message: 'username option is required' },
     password: { type: 'string', message: 'password option is required' },
     connection: { type: 'string', message: 'connection option is required' },
-    scope: { optional: true, type: 'string', message: 'scope option is required' },
-    audience: { optional: true, type: 'string', message: 'audience option is required' }
+    scope: { optional: true, type: 'string', message: 'scope option is required' }
   });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
@@ -263,7 +262,6 @@ Authentication.prototype.loginWithResourceOwner = function (options, cb) {
   body = objectHelper.merge(this.baseOptions, [
     'clientID',
     'scope',
-    'audience'
   ]).with(options, ['username', 'password', 'scope', 'connection', 'device']);
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);

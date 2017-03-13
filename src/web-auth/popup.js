@@ -152,20 +152,20 @@ Popup.prototype.authorize = function (options, cb) {
 };
 
 /**
- * Initializes the legacy Lock login flow in a popup
+ * Initializes the legacy Lock login flow in a popup using username and password
+ *
+ * This method is not compatible with API Auth so if you need to fetch API tokens with audience
+ * you should use {@link Authentication.login} or {@link Authentication.oauthToken}.
  *
  * @method loginWithCredentials
  * @param {Object} options
  * @param {Function} cb
- * @deprecated `webauth.popup.loginWithCredentials` will be soon deprecated, use `webauth.client.login` instead.
  */
 Popup.prototype.loginWithCredentials = function (options, cb) {
   var params;
   var popup;
   var url;
   var relayUrl;
-
-  this.warn.warning('`webauth.popup.loginWithCredentials` will be soon deprecated, use `webauth.client.login` instead.');
 
   /* eslint-disable */
   assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
