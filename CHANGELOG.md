@@ -1,5 +1,25 @@
 #Change Log
 
+## [v8.4.0](https://github.com/auth0/auth0.js/tree/v8.4.0) (2017-03-13)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.3.0...v8.4.0)
+**Closed issues**
+- winchanOptions missing parameters [\#378](https://github.com/auth0/auth0.js/issues/378)
+- 'Nonce does not match' error when state data contains '=' encoded as %3D [\#377](https://github.com/auth0/auth0.js/issues/377)
+
+**Added**
+- Added possibility to specify custom popup size [\#379](https://github.com/auth0/auth0.js/pull/379) ([artemtool](https://github.com/artemtool))
+
+**Changed**
+- Whitelist resource owner parameters [\#386](https://github.com/auth0/auth0.js/pull/386) ([hzalaz](https://github.com/hzalaz))
+- Only allow to be used in node 6.9 or later [\#385](https://github.com/auth0/auth0.js/pull/385) ([hzalaz](https://github.com/hzalaz))
+- Restrict what popupOptions fields are used [\#383](https://github.com/auth0/auth0.js/pull/383) ([hzalaz](https://github.com/hzalaz))
+- Replace querystring implementation with qs module [\#382](https://github.com/auth0/auth0.js/pull/382) ([selaux](https://github.com/selaux))
+- Deprecation warning: webauth.login → webauth.authorize [\#367](https://github.com/auth0/auth0.js/pull/367) ([dtinth](https://github.com/dtinth))
+
+**Fixed**
+- Pass to popup the needed params for auth [\#381](https://github.com/auth0/auth0.js/pull/381) ([hzalaz](https://github.com/hzalaz))
+
+
 ## [v8.3.0](https://github.com/auth0/auth0.js/tree/v8.3.0) (2017-03-01)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.2.0...v8.3.0)
 
