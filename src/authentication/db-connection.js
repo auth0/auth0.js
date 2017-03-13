@@ -10,11 +10,23 @@ function DBConnection(request, options) {
 }
 
 /**
- * Signup a new user
+ * @callback signUpCallback
+ * @param {Error} [err] error returned by Auth0 with the reason why the signup failed
+ * @param {Object} [result] result of the signup request
+ * @param {Object} result.email user's email
+ * @param {Object} result.emailVerified if the user's email was verified
+ */
+
+/**
+ * Creates a new user in a Auth0 Database connection
  *
  * @method signup
- * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--dbconnections-signup
- * @param {Function} cb
+ * @param {Object} options
+ * @param {String} options.email user email address
+ * @param {String} options.password user password
+ * @param {String} options.connection name of the connection where the user will be created
+ * @param {signUpCallback} cb
+ * @see   {@link https://auth0.com/docs/api/authentication#signup}
  */
 DBConnection.prototype.signup = function (options, cb) {
   var url;
@@ -43,11 +55,19 @@ DBConnection.prototype.signup = function (options, cb) {
 };
 
 /**
- * Initializes the change password flow
+ * @callback changePasswordCallback
+ * @param {Error} [err] error returned by Auth0 with the reason why the request failed
+ */
+
+/**
+ * Request an email with instruction to change a user's password
  *
- * @method signup
- * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--dbconnections-change_password
- * @param {Function} cb
+ * @method changePassword
+ * @param {Object} options
+ * @param {String} options.email address where the user will recieve the change password email. It should match the user's email in Auth0
+ * @param {String} options.connection name of the connection where the user was created
+ * @param {changePasswordCallback} cb
+ * @see   {@link https://auth0.com/docs/api/authentication#change-password}
  */
 DBConnection.prototype.changePassword = function (options, cb) {
   var url;

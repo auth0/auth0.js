@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Authentication.html">Authentication</a></li><li><a href="Management.html">Management</a></li><li><a href="WebAuth.html">WebAuth</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authorize">authorize</a></li><li><a href="global.html#buildAuthorizeUrl">buildAuthorizeUrl</a></li><li><a href="global.html#buildLogoutUrl">buildLogoutUrl</a></li><li><a href="global.html#buildPopupHandler">buildPopupHandler</a></li><li><a href="global.html#buildVerifyUrl">buildVerifyUrl</a></li><li><a href="global.html#callback">callback</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#delegation">delegation</a></li><li><a href="global.html#getPopupHandler">getPopupHandler</a></li><li><a href="global.html#getSSOData">getSSOData</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserCountry">getUserCountry</a></li><li><a href="global.html#isArray">isArray</a></li><li><a href="global.html#linkUser">linkUser</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#loginWithCredentials">loginWithCredentials</a></li><li><a href="global.html#loginWithDefaultDirectory">loginWithDefaultDirectory</a></li><li><a href="global.html#loginWithResourceOwner">loginWithResourceOwner</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#oauthToken">oauthToken</a></li><li><a href="global.html#parseHash">parseHash</a></li><li><a href="global.html#passwordlessStart">passwordlessStart</a></li><li><a href="global.html#passwordlessVerify">passwordlessVerify</a></li><li><a href="global.html#patchUserMetadata">patchUserMetadata</a></li><li><a href="global.html#preload">preload</a></li><li><a href="global.html#renewAuth">renewAuth</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#signupAndAuthorize">signupAndAuthorize</a></li><li><a href="global.html#signupAndLogin">signupAndLogin</a></li><li><a href="global.html#start">start</a></li><li><a href="global.html#userInfo">userInfo</a></li><li><a href="global.html#validateToken">validateToken</a></li></ul>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><p><img src="https://cdn.auth0.com/resources/oss-source-large-2x.png" alt=""></p>
+<h1>auth0.js</h1><p><a href="https://circleci.com/gh/auth0/auth0.js"><img src="http://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&amp;style=flat-square" alt="Build Status"></a>
+<a href="https://npmjs.org/package/auth0-js"><img src="https://img.shields.io/npm/v/auth0-js.svg?style=flat-square" alt="NPM version"></a>
+<a href="https://codecov.io/github/auth0/auth0.js?branch=v8"><img src="https://img.shields.io/codecov/c/github/auth0/auth0.js/v8.svg?style=flat-square" alt="Coverage"></a>
+<a href="#license"><img src="http://img.shields.io/npm/l/auth0-js.svg?style=flat-square" alt="License"></a>
+<a href="https://npmjs.org/package/auth0-js"><img src="http://img.shields.io/npm/dm/auth0-js.svg?style=flat-square" alt="Downloads"></a></p>
+<p>Client Side Javascript toolkit for Auth0 API</p>
+<blockquote>
+<p>We recommend using auth0.js v8 if you need to use <a href="https://auth0.com/docs/api-auth">API Auth</a> features. For auth0.js v7 code please check the <a href="https://github.com/auth0/auth0.js/tree/v7">v7 branch</a>, this version will be supported and maintained alongside v8.</p>
+</blockquote>
+<p>Need help migrating from v7? Please check our <a href="https://auth0.com/docs/libraries/auth0js/migration-guide">Migration Guide</a></p>
+<h2>Install</h2><p>From CDN</p>
+<pre class="prettyprint source lang-html"><code>&lt;!-- Latest patch release (recommended for production) -->
+&lt;script src=&quot;http://cdn.auth0.com/js/auth0/8.3.0/auth0.min.js&quot;>&lt;/script></code></pre><p>From <a href="http://bower.io">bower</a></p>
+<pre class="prettyprint source lang-sh"><code>bower install auth0-lock</code></pre><pre class="prettyprint source lang-html"><code>&lt;script src=&quot;bower_components/auth0.js/build/auth0.min.js&quot;>&lt;/script></code></pre><p>From <a href="https://npmjs.org">npm</a></p>
+<pre class="prettyprint source lang-sh"><code>npm install auth0-js</code></pre><p>After installing the <code>auth0-js</code> module, you'll need bundle it up along with all of its dependencies.</p>
+<h2>auth0.WebAuth</h2><p>Provides support for all the authentication flows</p>
+<h3>Initialize</h3><pre class="prettyprint source lang-js"><code>var auth0 = new auth0.WebAuth({
+  domain: &quot;{YOUR_AUTH0_DOMAIN}&quot;,
+  clientID: &quot;{YOUR_AUTH0_CLIENT_ID}&quot;
+});</code></pre><p>Parameters:</p>
+<ul>
+<li><strong>domain {REQUIRED, string}</strong>: Your Auth0 account domain such as <code>'example.auth0.com'</code> or <code>'example.eu.auth0.com'</code>.</li>
+<li><strong>clientID {REQUIRED, string}</strong>: Your Auth0 client ID.</li>
+<li><strong>redirectUri {OPTIONAL, string}</strong>: The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be whitelisted in the &quot;Allowed Callback URLs&quot; in your Auth0 client's settings.</li>
+<li><strong>scope {OPTIONAL, string}</strong>: The default scope used for all authorization requests.</li>
+<li><strong>audience {OPTIONAL, string}</strong>: The default audience, used if requesting access to an API.</li>
+<li><strong>responseType {OPTIONAL, string}</strong>: Response type for all authentication requests. Defaults to <code>'token'</code>. Valid values are <code>'token'</code>, <code>'id_token'</code> and <code>'token id_token'</code>.</li>
+<li><strong>responseMode {OPTIONAL, string}</strong>: The default responseMode used, defaults to <code>'fragment'</code>. The <code>parseHash</code> method can be used to parse authentication responses using fragment response mode.</li>
+<li><strong>_disableDeprecationWarnings {OPTIONAL, boolean}</strong>: Disables the deprecation warnings, defaults to <code>false</code>.</li>
+</ul>
+<h3>API</h3><ul>
+<li><strong>authorize(options)</strong>: Redirects to the <code>/authorize</code> endpoint to start an authentication/authorization transaction.
+Auth0 will call back to your application with the results at the specified <code>redirectUri</code>.</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>auth0.authorize({
+  audience: 'https://mystore.com/api/v2',
+  scope: 'read:order write:order',
+  responseType: 'token',
+  redirectUri: 'https://example.com/auth/callback'
+});</code></pre><ul>
+<li><strong>parseHash(options, callback)</strong>: Parses a URL hash fragment to extract the result of an Auth0 authentication response.</li>
+</ul>
+<blockquote>
+<p>This method requires that your tokens are signed with <strong>RS256</strong>. Please check our <a href="https://auth0.com/docs/libraries/auth0js/migration-guide#switching-from-hs256-to-rs256">Migration Guide</a> for more information.</p>
+</blockquote>
+<pre class="prettyprint source lang-js"><code>auth0.parseHash(window.location.hash, function(err, authResult) {
+  if (err) {
+    return console.log(err);
+  }
+
+  // The contents of authResult depend on which authentication parameters were used.
+  // It can include the following:
+  // authResult.accessToken - access token for the API specified by `audience`
+  // authResult.expiresIn - string with the access token's expiration time in seconds
+  // authResult.idToken - ID token JWT containing user profile information
+
+  auth0.client.userInfo(authResult.accessToken, function(err, user) {
+    // Now you have the user's information
+  });
+});</code></pre><ul>
+<li><strong>renewAuth(options, callback)</strong>: Attempts to get a new token from Auth0 by using <a href="https://auth0.com/docs/api-auth/tutorials/silent-authentication">silent authentication</a>, or invokes <code>callback</code> with an error if the user does not have an active SSO session at your Auth0 domain.</li>
+</ul>
+<p>This method can be used to detect a locally unauthenticated user's SSO session status, or to renew an authenticated user's access token.
+The actual redirect to <code>/authorize</code> happens inside an iframe, so it will not reload your application or redirect away from it.</p>
+<pre class="prettyprint source lang-js"><code>auth0.renewAuth({
+  audience: 'https://mystore.com/api/v2',
+  scope: 'read:order write:order',
+  redirectUri: 'https://example.com/auth/silent-callback',
+
+  // this will use postMessage to comunicate between the silent callback
+  // and the SPA. When false the SDK will attempt to parse the url hash
+  // should ignore the url hash and no extra behaviour is needed.
+  usePostMessage: true
+  }, function (err, authResult) {
+    // Renewed tokens or error
+});</code></pre><p>The contents of <code>authResult</code> are identical to those returned by <code>parseHash()</code>.
+For this request to succeed, the user must have an active SSO session at Auth0 by having logged in through the <a href="https://manage.auth0.com/#/login_page">hosted login page</a> of your Auth0 domain.</p>
+<blockquote>
+<p><strong><em>Important:</em></strong> this will use postMessage to communicate between the silent callback and the SPA. When false the SDK will attempt to parse the url hash should ignore the url hash and no extra behaviour is needed.</p>
+</blockquote>
+<p>It is strongly recommended to have a dedicated callback page for silent authentication in order to avoid loading your entire application again inside an iframe.
+This callback page should only parse the URL hash and post it to the parent document so that your application can take action depending on the outcome of the silent authentication attempt.
+For example:</p>
+<pre class="prettyprint source lang-js"><code>&lt;!DOCTYPE html>
+&lt;html>
+  &lt;head>
+    &lt;script src=&quot;/auth0.js&quot;>&lt;/script>
+    &lt;script type=&quot;text/javascript&quot;>
+      var auth0 = new auth0.WebAuth({
+        domain: '{YOUR_AUTH0_DOMAIN}',
+        clientID: '{YOUR_AUTH0_CLIENT_ID}'
+      });
+      auth0.parseHash(window.location.hash, function (err, result) {
+        parent.postMessage(err || result, 'https://example.com/');
+      });
+    &lt;/script>
+  &lt;/head>
+  &lt;body>&lt;/body>
+&lt;/html></code></pre><p>Remember to add the URL of the silent authentication callback page to the &quot;Allowed Callback URLs&quot; list of your Auth0 client.</p>
+<ul>
+<li><strong>client.login(options, callback)</strong>: Authenticates a user with username and password in a realm using <code>/oauth/token</code>. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>auth0.client.login({
+  realm: 'Username-Password-Authentication', //connection name or HRD domain
+  username: 'info@auth0.com',
+  password: 'areallystrongpassword',
+  audience: 'https://mystore.com/api/v2',
+  scope: 'read:order write:order',
+  }, function(err, authResult) {
+    // Auth tokens in the result or an error
+});</code></pre><p>The contents of <code>authResult</code> are identical to those returned by <code>parseHash()</code>.</p>
+<h2>auth0.Authentication</h2><p>Provides an API client for the Auth0 Authentication API.</p>
+<h3>Initialize</h3><pre class="prettyprint source lang-js"><code>var auth0 = new auth0.Authentication({
+  domain: &quot;{YOUR_AUTH0_DOMAIN}&quot;,
+  clientID: &quot;{YOUR_AUTH0_CLIENT_ID}&quot;
+});</code></pre><h3>API</h3><ul>
+<li><strong>buildAuthorizeUrl(options)</strong>: Builds and returns the <code>/authorize</code> url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#database-ad-ldap-passive-</li>
+<li><strong>buildLogoutUrl(options)</strong>: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#logout</li>
+<li><strong>loginWithDefaultDirectory(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint with <code>password</code> grant type. https://auth0.com/docs/api-auth/grant/password</li>
+<li><strong>login(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint with <code>http://auth0.com/oauth/grant-type/password-realm</code> grant type.</li>
+<li><strong>oauthToken(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint.</li>
+<li><strong>userInfo(token, cb)</strong>: Makes a call to the <code>/userinfo</code> endpoint and returns the user profile.</li>
+</ul>
+<h2>auth0.Management</h2><p>Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token).</p>
+<h3>Initialize</h3><pre class="prettyprint source lang-js"><code>var auth0 = new auth0.Management({
+  domain: &quot;{YOUR_AUTH0_DOMAIN}&quot;,
+  token: &quot;{YOUR_AUTH0_API_TOKEN}&quot;
+});</code></pre><h3>API</h3><ul>
+<li><strong>getUser(userId, cb)</strong>: Returns the user profile. https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id</li>
+<li><strong>patchUserMetadata(userId, userMetadata, cb)</strong>: Updates the user metdata. It will patch the user metdata with the attributes sent. https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id</li>
+<li><strong>linkUser(userId, secondaryUserToken, cb)</strong>: Link two users. https://auth0.com/docs/api/management/v2#!/Users/post_identities</li>
+</ul>
+<h2>Documentation</h2><p>For a complete reference and examples please check our <a href="https://auth0.com/docs/libraries/auth0js">docs</a> and our <a href="https://auth0.com/docs/libraries/auth0js/migration-guide">Migration Guide</a> if you need help to migrate from v7</p>
+<h2>Develop</h2><p>Run <code>npm start</code> and point your browser to <code>http://localhost:3000/example</code> to run the example page.</p>
+<p>Run <code>npm run test</code> to run the test suite.</p>
+<p>Run <code>npm run test:watch</code> to run the test suite while you work.</p>
+<p>Run <code>npm run test:coverage</code> to run the test suite with coverage report.</p>
+<p>Run <code>npm run lint</code> to run the linter and check code styles.</p>
+<h2>Issue Reporting</h2><p>If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The <a href="https://auth0.com/whitehat">Responsible Disclosure Program</a> details the procedure for disclosing security issues.</p>
+<p>For auth0 related questions/support please use the <a href="https://support.auth0.com">Support Center</a>.</p>
+<h2>Author</h2><p><a href="auth0.com">Auth0</a></p>
+<h2>License</h2><p>This project is licensed under the MIT license. See the <a href="LICENSE.txt">LICENSE</a> file for more info.</p>
+<!-- Vaaaaarrrrsss --></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Mar 13 2017 12:11:42 GMT-0300 (ART) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

@@ -31,3 +31,5 @@ coverage
 test-results.xml
 
 .idea/
+
+docs/

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>WebAuth - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Authentication.html">Authentication</a></li><li><a href="Management.html">Management</a></li><li><a href="WebAuth.html">WebAuth</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authorize">authorize</a></li><li><a href="global.html#buildAuthorizeUrl">buildAuthorizeUrl</a></li><li><a href="global.html#buildLogoutUrl">buildLogoutUrl</a></li><li><a href="global.html#callback">callback</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#delegation">delegation</a></li><li><a href="global.html#getSSOData">getSSOData</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#linkUser">linkUser</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#loginWithCredentials">loginWithCredentials</a></li><li><a href="global.html#loginWithDefaultDirectory">loginWithDefaultDirectory</a></li><li><a href="global.html#loginWithResourceOwner">loginWithResourceOwner</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#parseHash">parseHash</a></li><li><a href="global.html#passwordlessStart">passwordlessStart</a></li><li><a href="global.html#passwordlessVerify">passwordlessVerify</a></li><li><a href="global.html#patchUserMetadata">patchUserMetadata</a></li><li><a href="global.html#preload">preload</a></li><li><a href="global.html#renewAuth">renewAuth</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#signupAndAuthorize">signupAndAuthorize</a></li><li><a href="global.html#signupAndLogin">signupAndLogin</a></li><li><a href="global.html#userInfo">userInfo</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">WebAuth</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        WebAuth
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    <h4 class="name" id="WebAuth"><span class="type-signature"></span>new WebAuth<span class="signature">(options)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Handles all the browser's AuthN/AuthZ flows</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>domain</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>your Auth0 domain</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>clientID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>redirectUri</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>url that the Auth0 will redirect after Auth with the Authorization Response</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>responseType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>type of the response used by OAuth 2.0 flow. It can be any space separated list of the values <code>code</code>, <code>token</code>, <code>id_token</code>. <a href="https://openid.net/specs/oauth-v2-multiple-response-types-1_0">https://openid.net/specs/oauth-v2-multiple-response-types-1_0</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>responseMode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>how the Auth response is encoded and redirected back to the client. Supported values are <code>query</code>, <code>fragment</code> and <code>form_post</code>. <a href="https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes">https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>scopes to be requested during Auth. e.g. <code>openid email</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>audience</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>identifier of the resource server who will consume the access token issued after Auth</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>plugins</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line29">line 29</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="https://auth0.com/docs/api/authentication">https://auth0.com/docs/api/authentication</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Mar 17 2017 21:32:33 GMT-0300 (ART) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

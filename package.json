@@ -24,7 +24,8 @@
     "ci:coverage": "codecov",
     "lint": "eslint ./src",
     "publish:cdn": "ccu",
-    "release": "scripts/release.sh"
+    "release": "scripts/release.sh",
+    "jsdocs": "jsdoc --configure .jsdoc.json --verbose"
   },
   "repository": {
     "type": "git",
@@ -50,7 +51,9 @@
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.7",
     "istanbul": "^0.4.5",
+    "jsdoc": "^3.4.3",
     "jsdoc-to-markdown": "^2.0.1",
+    "minami": "^1.1.1",
     "mocha": "^3.2.0",
     "mocha-junit-reporter": "^1.13.0",
     "mocha-multi": "^0.10.0",
