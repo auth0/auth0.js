@@ -17,7 +17,7 @@ var SilentAuthenticationHandler = require('./silent-authentication-handler');
  * @constructor
  * @param {Object} options
  * @param {String} options.domain
- * @param {String} options.clienID
+ * @param {String} options.clientID
  * @param {String} options.responseType
  * @param {String} options.responseMode
  * @param {String} options.scope
