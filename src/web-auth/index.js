@@ -13,17 +13,18 @@ var Popup = require('./popup');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
 
 /**
- * Handles all the browser's authentication flows
+ * Handles all the browser's AuthN/AuthZ flows
  * @constructor
  * @param {Object} options
- * @param {String} options.domain
- * @param {String} options.clientID
- * @param {String} options.responseType
- * @param {String} options.responseMode
- * @param {String} options.scope
- * @param {String} options.audience
- * @param {Array} options.plugins
- * @param {Boolean} options._disableDeprecationWarnings
+ * @param {String} options.domain your Auth0 domain
+ * @param {String} options.clientID your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard
+ * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
+ * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
+ * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
+ * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {Array} [options.plugins]
+ * @see {@link https://auth0.com/docs/api/authentication}
  */
 function WebAuth(options) {
   /* eslint-disable */
@@ -70,19 +71,19 @@ function WebAuth(options) {
 }
 
 /**
- * Parse the url hash and extract the returned tokens depending on the transaction.
+ * Parse the url hash and extract the Auth response from a Auth flow started with {@link authorize}
  *
  * Only validates id_tokens signed by Auth0 using the RS256 algorithm using the public key exposed
- * by the `/.well-known/jwks.json` endpoint. Id tokens signed with other algorithms will not be
- * accepted.
+ * by the `/.well-known/jwks.json` endpoint of your account.
+ * Tokens signed with other algorithms, e.g. HS256 will not be accepted.
  *
  * @method parseHash
- * @param {Object} options:
- * @param {String} options._idTokenVerification [OPTIONAL] Default: true
- * @param {String} options.state [OPTIONAL] to verify the response
- * @param {String} options.nonce [OPTIONAL] to verify the id_token
- * @param {String} options.hash [OPTIONAL] the url hash. If not provided it will extract from window.location.hash
- * @param {Function} cb: function(err, token_payload)
+ * @param {Object} options
+ * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
+ * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
+ * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
+ * @param {String} [options._idTokenVerification] makes parseHash perform or skip `id_token` verification. We **strongly** recommend validating the `id_token` yourself if you disable the verification.
+ * @param {authorizeCallback} cb
  */
 WebAuth.prototype.parseHash = function (options, cb) {
   var parsedQs;
@@ -173,13 +174,20 @@ function buildParseHashResponse(qsParams, appStatus, token) {
 }
 
 /**
- * Decodes the id_token and verifies  the nonce.
+ * @callback validateTokenCallback
+ * @param {Error} [err] error returned by while validating the token
+ * @param {Object} [payload] claims stored in the token
+ */
+
+/**
+ * Decodes the a JWT and verifies its nonce value
  *
  * @method validateToken
+ * @private
  * @param {String} token
  * @param {String} state
  * @param {String} nonce
- * @param {Function} cb: function(err, {payload, transaction})
+ * @param {validateTokenCallback} cb
  */
 WebAuth.prototype.validateToken = function (token, state, nonce, cb) {
   var verifier = new IdTokenVerifier({
@@ -199,11 +207,21 @@ WebAuth.prototype.validateToken = function (token, state, nonce, cb) {
 };
 
 /**
- * Executes a silent authentication transaction under the hood in order to fetch a new token.
+ * Executes a silent authentication transaction under the hood in order to fetch a new tokens for the current session.
+ * This method requires that all Auth is performed with {@link authorize}
  *
  * @method renewAuth
- * @param {Object} options: any valid oauth2 parameter to be sent to the `/authorize` endpoint
- * @param {Function} cb
+ * @param {Object} options
+ * @param {String} [options.domain] your Auth0 domain
+ * @param {String} [options.clientID] your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard
+ * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
+ * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
+ * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
+ * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
+ * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
+ * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
 WebAuth.prototype.renewAuth = function (options, cb) {
   var handler;
@@ -262,49 +280,66 @@ WebAuth.prototype.renewAuth = function (options, cb) {
 };
 
 /**
- * Initialices a change password transaction
+ * Request an email with instruction to change a user's password
  *
  * @method changePassword
- * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--dbconnections-change_password
- * @param {Function} cb
+ * @param {Object} options
+ * @param {String} options.email address where the user will recieve the change password email. It should match the user's email in Auth0
+ * @param {String} options.connection name of the connection where the user was created
+ * @param {changePasswordCallback} cb
+ * @see   {@link https://auth0.com/docs/api/authentication#change-password}
  */
 WebAuth.prototype.changePassword = function (options, cb) {
   return this.client.dbConnection.changePassword(options, cb);
 };
 
 /**
- * Initialices a passwordless authentication transaction
+ * Starts a passwordless authentication transaction.
  *
  * @method passwordlessStart
- * @param {Object} options: https://auth0.com/docs/api/authentication#passwordless
- * @param {Object} options.send: `link` or `code`
- * @param {Object} options.phoneNumber: send should be code and email not set
- * @param {Object} options.email: phoneNumber should be ignored
- * @param {Object} options.connection
- * @param {Object} options.authParams
+ * @param {Object} options
+ * @param {String} options.send what will be sent via email which could be `link` or `code`. For SMS `code` is the only one valud
+ * @param {String} [options.phoneNumber] phone number where to send the `code`. This parameter is mutually exclusive with `email`
+ * @param {String} [options.email] email where to send the `code` or `link`. This parameter is mutually exclusive with `phoneNumber`
+ * @param {String} options.connection name of the passwordless connection
+ * @param {Object} [options.authParams] additional Auth parameters when using `link`
  * @param {Function} cb
+ * @see   {@link https://auth0.com/docs/api/authentication#passwordless}
  */
 WebAuth.prototype.passwordlessStart = function (options, cb) {
   return this.client.passwordless.start(options, cb);
 };
 
 /**
- * Signs up a new user
+ * Creates a new user in a Auth0 Database connection
  *
  * @method signup
- * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--dbconnections-signup
- * @param {Function} cb
+ * @param {Object} options
+ * @param {String} options.email user email address
+ * @param {String} options.password user password
+ * @param {String} options.connection name of the connection where the user will be created
+ * @param {signUpCallback} cb
+ * @see   {@link https://auth0.com/docs/api/authentication#signup}
  */
 WebAuth.prototype.signup = function (options, cb) {
   return this.client.dbConnection.signup(options, cb);
 };
 
 /**
- * Redirects to the hosted login page (`/authorize`) in order to initialize a new authN/authZ transaction
+ * Redirects to the hosted login page (`/authorize`) in order to start a new authN/authZ transaction
  *
  * @method authorize
- * @param {Object} options: https://auth0.com/docs/api/authentication#!#get--authorize_db
- * @param {Function} cb
+ * @param {Object} options
+ * @param {String} [options.domain] your Auth0 domain
+ * @param {String} [options.clientID] your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard
+ * @param {String} options.redirectUri url that the Auth0 will redirect after Auth with the Authorization Response
+ * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
+ * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
+ * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
+ * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
+ * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
 WebAuth.prototype.authorize = function (options) {
   var params = objectHelper.merge(this.baseOptions, [
@@ -334,8 +369,13 @@ WebAuth.prototype.authorize = function (options) {
  * The login will be done using /oauth/token with password-realm grant type.
  *
  * @method signupAndAuthorize
- * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--dbconnections-signup
- * @param {Function} cb
+ * @param {Object} options
+ * @param {String} options.email user email address
+ * @param {String} options.password user password
+ * @param {String} options.connection name of the connection where the user will be created
+ * @param {tokenCallback} cb
+ * @see   {@link https://auth0.com/docs/api/authentication#signup}
+ * @see   {@link https://auth0.com/docs/api-auth/grant/password}
  */
 WebAuth.prototype.signupAndAuthorize = function (options, cb) {
   var _this = this;
@@ -354,10 +394,19 @@ WebAuth.prototype.signupAndAuthorize = function (options, cb) {
 };
 
 /**
- * Redirects to the auth0 logout page
+ * Redirects to the auth0 logout endpoint
+ *
+ * If you want to navigate the user to a specific URL after the logout, set that URL at the returnTo parameter. The URL should be included in any the appropriate Allowed Logout URLs list:
+ *
+ * - If the client_id parameter is included, the returnTo URL must be listed in the Allowed Logout URLs set at the client level (see Setting Allowed Logout URLs at the App Level).
+ * - If the client_id parameter is NOT included, the returnTo URL must be listed in the Allowed Logout URLs set at the account level (see Setting Allowed Logout URLs at the Account Level).
  *
  * @method logout
- * @param {Object} options: https://auth0.com/docs/api/authentication#!#get--v2-logout
+ * @param {Object} options
+ * @param {String} [options.clientID] identifier of your client
+ * @param {String} [options.returnTo] URL to be redirected after the logout
+ * @param {Boolean} [options.federated] tells Auth0 if it should logout the user also from the IdP.
+ * @see   {@link https://auth0.com/docs/api/authentication#logout}
  */
 WebAuth.prototype.logout = function (options) {
   windowHelper.redirect(this.client.buildLogoutUrl(options));
@@ -367,12 +416,12 @@ WebAuth.prototype.logout = function (options) {
  * Verifies the passwordless TOTP and redirects to finish the passwordless transaction
  *
  * @method passwordlessVerify
- * @param {Object} options:
- * @param {Object} options.type: `sms` or `email`
- * @param {Object} options.phoneNumber: only if type = sms
- * @param {Object} options.email: only if type = email
- * @param {Object} options.connection: the connection name
- * @param {Object} options.verificationCode: the TOTP code
+ * @param {Object} options
+ * @param {String} options.type `sms` or `email`
+ * @param {String} options.phoneNumber only if type = sms
+ * @param {String} options.email only if type = email
+ * @param {String} options.connection the connection name
+ * @param {String} options.verificationCode the TOTP code
  * @param {Function} cb
  */
 WebAuth.prototype.passwordlessVerify = function (options, cb) {

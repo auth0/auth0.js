@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Authentication - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Authentication.html">Authentication</a></li><li><a href="Management.html">Management</a></li><li><a href="WebAuth.html">WebAuth</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authorize">authorize</a></li><li><a href="global.html#buildAuthorizeUrl">buildAuthorizeUrl</a></li><li><a href="global.html#buildLogoutUrl">buildLogoutUrl</a></li><li><a href="global.html#buildPopupHandler">buildPopupHandler</a></li><li><a href="global.html#buildVerifyUrl">buildVerifyUrl</a></li><li><a href="global.html#callback">callback</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#delegation">delegation</a></li><li><a href="global.html#getPopupHandler">getPopupHandler</a></li><li><a href="global.html#getSSOData">getSSOData</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserCountry">getUserCountry</a></li><li><a href="global.html#isArray">isArray</a></li><li><a href="global.html#linkUser">linkUser</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#loginWithCredentials">loginWithCredentials</a></li><li><a href="global.html#loginWithDefaultDirectory">loginWithDefaultDirectory</a></li><li><a href="global.html#loginWithResourceOwner">loginWithResourceOwner</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#oauthToken">oauthToken</a></li><li><a href="global.html#parseHash">parseHash</a></li><li><a href="global.html#passwordlessStart">passwordlessStart</a></li><li><a href="global.html#passwordlessVerify">passwordlessVerify</a></li><li><a href="global.html#patchUserMetadata">patchUserMetadata</a></li><li><a href="global.html#preload">preload</a></li><li><a href="global.html#renewAuth">renewAuth</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#signupAndAuthorize">signupAndAuthorize</a></li><li><a href="global.html#signupAndLogin">signupAndLogin</a></li><li><a href="global.html#start">start</a></li><li><a href="global.html#userInfo">userInfo</a></li><li><a href="global.html#validateToken">validateToken</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Authentication</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        Authentication
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    <h4 class="name" id="Authentication"><span class="type-signature"></span>new Authentication<span class="signature">(options)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Creates a new Auth0 Authentication API client</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>domain</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>your Auth0 domain</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>clientID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>responseType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>type of the response used by OAuth 2.0 flow. It can be any space separated list of the values <code>code</code>, <code>token</code>, <code>id_token</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>responseMode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>audience</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>_disableDeprecationWarnings</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="authentication_index.js.html">authentication/index.js</a>, <a href="authentication_index.js.html#line26">line 26</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Mar 13 2017 12:11:42 GMT-0300 (ART) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

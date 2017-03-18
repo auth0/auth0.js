@@ -25,6 +25,7 @@ function Popup(webAuth, options) {
  * Returns a new instance of the popup handler
  *
  * @method buildPopupHandler
+ * @private
  */
 Popup.prototype.buildPopupHandler = function () {
   var pluginHandler = this.baseOptions.plugins.get('popup.getPopupHandler');
@@ -40,7 +41,7 @@ Popup.prototype.buildPopupHandler = function () {
  * Initializes the popup window and returns the instance to be used later in order to avoid being blocked by the browser.
  *
  * @method preload
- * @param {Object} options: receives the window height and width and any other window feature to be sent to window.open
+ * @param {Object} options receives the window height and width and any other window feature to be sent to window.open
  */
 Popup.prototype.preload = function (options) {
   options = options || {};
@@ -55,6 +56,7 @@ Popup.prototype.preload = function (options) {
  * Internal use.
  *
  * @method getPopupHandler
+ * @private
  */
 Popup.prototype.getPopupHandler = function (options, preload) {
   if (options.popupHandler) {
@@ -72,10 +74,12 @@ Popup.prototype.getPopupHandler = function (options, preload) {
  * Handles the popup logic for the callback page.
  *
  * @method callback
- * @param {Object} options:
- * @param {String} options.state [OPTIONAL] to verify the response
- * @param {String} options.nonce [OPTIONAL] to verify the id_token
- * @param {String} options.hash [OPTIONAL] the url hash. If not provided it will extract from window.location.hash
+ * @param {Object} options
+ * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
+ * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
+ * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
+ * @param {String} [options._idTokenVerification] makes parseHash perform or skip `id_token` verification. We **strongly** recommend validating the `id_token` yourself if you disable the verification.
+ * @see   {@link parseHash}
  */
 Popup.prototype.callback = function (options) {
   var _this = this;
@@ -87,11 +91,22 @@ Popup.prototype.callback = function (options) {
 };
 
 /**
- * Opens in a popup the hosted login page (`/authorize`) in order to initialize a new authN/authZ transaction
+ * Shows inside a new window the hosted login page (`/authorize`) in order to start a new authN/authZ transaction and post its result using `postMessage`.
  *
  * @method authorize
- * @param {Object} options: https://auth0.com/docs/api/authentication#!#get--authorize_db
- * @param {Function} cb
+ * @param {Object} options
+ * @param {String} [options.domain] your Auth0 domain
+ * @param {String} [options.clientID] your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard
+ * @param {String} options.redirectUri url that the Auth0 will redirect after Auth with the Authorization Response
+ * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
+ * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
+ * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
+ * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
+ * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {Boolean} [options.owp] determines if Auth0 should render the relay page or not and the caller is responsible of handling the response.
+ * @param {authorizeCallback} cb
+ * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
 Popup.prototype.authorize = function (options, cb) {
   var popup;
@@ -152,14 +167,18 @@ Popup.prototype.authorize = function (options, cb) {
 };
 
 /**
- * Initializes the legacy Lock login flow in a popup using username and password
+ * Performs authentication with username/email and password with a database connection inside a new window
  *
  * This method is not compatible with API Auth so if you need to fetch API tokens with audience
- * you should use {@link Authentication.login} or {@link Authentication.oauthToken}.
+ * you should use {@link authorize} or {@link login}.
  *
  * @method loginWithCredentials
  * @param {Object} options
- * @param {Function} cb
+ * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
+ * @param {String} [options.responseType] type of the response used. It can be any of the values `code` and `token`
+ * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`
+ * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
+ * @param {credentialsCallback} cb
  */
 Popup.prototype.loginWithCredentials = function (options, cb) {
   var params;
@@ -203,15 +222,15 @@ Popup.prototype.loginWithCredentials = function (options, cb) {
 };
 
 /**
- * Verifies the passwordless TOTP and returns the requested token
+ * Verifies the passwordless TOTP and redirects to finish the passwordless transaction
  *
  * @method passwordlessVerify
- * @param {Object} options:
- * @param {Object} options.type: `sms` or `email`
- * @param {Object} options.phoneNumber: only if type = sms
- * @param {Object} options.email: only if type = email
- * @param {Object} options.connection: the connection name
- * @param {Object} options.verificationCode: the TOTP code
+ * @param {Object} options
+ * @param {String} options.type `sms` or `email`
+ * @param {String} options.phoneNumber only if type = sms
+ * @param {String} options.email only if type = email
+ * @param {String} options.connection the connection name
+ * @param {String} options.verificationCode the TOTP code
  * @param {Function} cb
  */
 Popup.prototype.passwordlessVerify = function (options, cb) {
@@ -237,9 +256,15 @@ Popup.prototype.passwordlessVerify = function (options, cb) {
 /**
  * Signs up a new user and automatically logs the user in after the signup.
  *
+ * This method is not compatible with API Auth so if you need to fetch API tokens with audience
+ * you should use {@link authorize} or {@link signupAndAuthorize}.
+ *
  * @method signupAndLogin
- * @param {Object} options: https://auth0.com/docs/api/authentication#!#post--dbconnections-signup
- * @param {Function} cb
+ * @param {Object} options
+ * @param {String} options.email user email address
+ * @param {String} options.password user password
+ * @param {String} options.connection name of the connection where the user will be created
+ * @param {credentialsCallback} cb
  */
 Popup.prototype.signupAndLogin = function (options, cb) {
   var _this = this;

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>web-auth/redirect.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Authentication.html">Authentication</a></li><li><a href="Management.html">Management</a></li><li><a href="WebAuth.html">WebAuth</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authorize">authorize</a></li><li><a href="global.html#buildAuthorizeUrl">buildAuthorizeUrl</a></li><li><a href="global.html#buildLogoutUrl">buildLogoutUrl</a></li><li><a href="global.html#callback">callback</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#delegation">delegation</a></li><li><a href="global.html#getSSOData">getSSOData</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#linkUser">linkUser</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#loginWithCredentials">loginWithCredentials</a></li><li><a href="global.html#loginWithDefaultDirectory">loginWithDefaultDirectory</a></li><li><a href="global.html#loginWithResourceOwner">loginWithResourceOwner</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#parseHash">parseHash</a></li><li><a href="global.html#passwordlessStart">passwordlessStart</a></li><li><a href="global.html#passwordlessVerify">passwordlessVerify</a></li><li><a href="global.html#patchUserMetadata">patchUserMetadata</a></li><li><a href="global.html#preload">preload</a></li><li><a href="global.html#renewAuth">renewAuth</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#signupAndAuthorize">signupAndAuthorize</a></li><li><a href="global.html#signupAndLogin">signupAndLogin</a></li><li><a href="global.html#userInfo">userInfo</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">web-auth/redirect.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var UsernamePassword = require('./username-password');
+var objectHelper = require('../helper/object');
+var Warn = require('../helper/warn');
+var assert = require('../helper/assert');
+
+function Redirect(client, options) {
+  this.baseOptions = options;
+  this.client = client;
+
+  this.warn = new Warn({
+    disableWarnings: !!options._disableDeprecationWarnings
+  });
+}
+
+/**
+ * @callback credentialsCallback
+ * @param {Error} [err] error returned by Auth0 with the reason of the Auth failure
+ * @param {Object} [result] result of the AuthN request
+ * @param {String} result.accessToken token that can be used with {@link userinfo}
+ * @param {String} [result.idToken] token that identifies the user
+ * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all clients can request them or the resource server might not allow them.
+ */
+
+/**
+ * Performs authentication with username/email and password with a database connection
+ *
+ * This method is not compatible with API Auth so if you need to fetch API tokens with audience
+ * you should use {@link authorize} or {@link login}.
+ *
+ * @method loginWithCredentials
+ * @param {Object} options
+ * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
+ * @param {String} [options.responseType] type of the response used. It can be any of the values `code` and `token`
+ * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`
+ * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
+ * @param {credentialsCallback} cb
+ */
+Redirect.prototype.loginWithCredentials = function (options, cb) {
+  var usernamePassword;
+
+  var params = objectHelper.merge(this.baseOptions, [
+    'clientID',
+    'redirectUri',
+    'tenant',
+    'responseType',
+    'responseMode',
+    'scope',
+    'audience',
+    '_csrf',
+    'state',
+    '_instate',
+    'nonce'
+  ]).with(options);
+
+  assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
+    responseType: { type: 'string', message: 'responseType option is required' }
+  });
+
+  usernamePassword = new UsernamePassword(this.baseOptions);
+  return usernamePassword.login(params, function (err, data) {
+    if (err) {
+      return cb(err);
+    }
+    return usernamePassword.callback(data);
+  });
+};
+
+/**
+ * Signs up a new user and automatically logs the user in after the signup.
+ *
+ * @method signupAndLogin
+ * @param {Object} options
+ * @param {String} options.email user email address
+ * @param {String} options.password user password
+ * @param {String} options.connection name of the connection where the user will be created
+ * @param {credentialsCallback} cb
+ */
+Redirect.prototype.signupAndLogin = function (options, cb) {
+  var _this = this;
+  return this.client.dbConnection.signup(options, function (err) {
+    if (err) {
+      return cb(err);
+    }
+    return _this.loginWithCredentials(options, cb);
+  });
+};
+
+module.exports = Redirect;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Mar 17 2017 21:32:33 GMT-0300 (ART) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

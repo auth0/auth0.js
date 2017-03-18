@@ -45,7 +45,7 @@ function check(o, config, attributes) {
  * source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray
  *
  * @param {Array} array
- * @public
+ * @private
  */
 function isArray(array) {
   if (this.supportsIsArray()) {

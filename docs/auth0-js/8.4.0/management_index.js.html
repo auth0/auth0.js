@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>management/index.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Authentication.html">Authentication</a></li><li><a href="Management.html">Management</a></li><li><a href="WebAuth.html">WebAuth</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authorize">authorize</a></li><li><a href="global.html#buildAuthorizeUrl">buildAuthorizeUrl</a></li><li><a href="global.html#buildLogoutUrl">buildLogoutUrl</a></li><li><a href="global.html#callback">callback</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#delegation">delegation</a></li><li><a href="global.html#getSSOData">getSSOData</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#linkUser">linkUser</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#loginWithCredentials">loginWithCredentials</a></li><li><a href="global.html#loginWithDefaultDirectory">loginWithDefaultDirectory</a></li><li><a href="global.html#loginWithResourceOwner">loginWithResourceOwner</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#parseHash">parseHash</a></li><li><a href="global.html#passwordlessStart">passwordlessStart</a></li><li><a href="global.html#passwordlessVerify">passwordlessVerify</a></li><li><a href="global.html#patchUserMetadata">patchUserMetadata</a></li><li><a href="global.html#preload">preload</a></li><li><a href="global.html#renewAuth">renewAuth</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#signupAndAuthorize">signupAndAuthorize</a></li><li><a href="global.html#signupAndLogin">signupAndLogin</a></li><li><a href="global.html#userInfo">userInfo</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">management/index.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var urljoin = require('url-join');
+
+var RequestBuilder = require('../helper/request-builder');
+var assert = require('../helper/assert');
+var responseHandler = require('../helper/response-handler');
+
+/**
+ * Auth0 Management API Client (methods allowed to be called from the browser only)
+ * @constructor
+ * @param {Object} options
+ * @param {Object} options.domain your Auth0 acount domain
+ * @param {Object} options.token a valid API token
+ */
+function Management(options) {
+  /* eslint-disable */
+  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
+    domain: { type: 'string', message: 'domain option is required' },
+    token: { type: 'string', message: 'token option is required' },
+    _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
+    _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
+  });
+  /* eslint-enable */
+
+  this.baseOptions = options;
+
+  this.baseOptions.headers = { Authorization: 'Bearer ' + this.baseOptions.token };
+
+  this.request = new RequestBuilder(this.baseOptions);
+  this.baseOptions.rootUrl = urljoin('https://' + this.baseOptions.domain, 'api', 'v2');
+}
+
+/**
+ * @callback userCallback
+ * @param {Error} [err] failure reason for the failed request to Management API
+ * @param {Object} [result] user profile
+ */
+
+/**
+ * Returns the user profile
+ *
+ * @method getUser
+ * @param {String} userId identifier of the user to retrieve
+ * @param {userCallback} cb
+ * @see https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
+ */
+Management.prototype.getUser = function (userId, cb) {
+  var url;
+
+  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  url = urljoin(this.baseOptions.rootUrl, 'users', userId);
+
+  return this.request
+    .get(url)
+    .end(responseHandler(cb, { ignoreCasing: true }));
+};
+
+/**
+ * Updates the user metdata. It will patch the user metdata with the attributes sent.
+ *
+ *
+ * @method patchUserMetadata
+ * @param {String} userId
+ * @param {Object} userMetadata
+ * @param {userCallback} cb
+ * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id}
+ */
+Management.prototype.patchUserMetadata = function (userId, userMetadata, cb) {
+  var url;
+
+  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
+  assert.check(userMetadata, { type: 'object', message: 'userMetadata parameter is not valid' });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  url = urljoin(this.baseOptions.rootUrl, 'users', userId);
+
+  return this.request
+    .patch(url)
+    .send({ user_metadata: userMetadata })
+    .end(responseHandler(cb, { ignoreCasing: true }));
+};
+
+/**
+ * Link two users
+ *
+ * @method linkUser
+ * @param {String} userId
+ * @param {String} secondaryUserToken
+ * @param {userCallback} cb
+ * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/post_identities}
+ */
+Management.prototype.linkUser = function (userId, secondaryUserToken, cb) {
+  var url;
+  /* eslint-disable */
+  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
+  assert.check(secondaryUserToken, { type: 'string',
+    message: 'secondaryUserToken parameter is not valid' });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+  /* eslint-enable */
+
+  url = urljoin(this.baseOptions.rootUrl, 'users', userId, 'identities');
+
+  return this.request
+    .post(url)
+    .send({ link_with: secondaryUserToken })
+    .end(responseHandler(cb, { ignoreCasing: true }));
+};
+
+module.exports = Management;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Mar 17 2017 21:32:33 GMT-0300 (ART) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
