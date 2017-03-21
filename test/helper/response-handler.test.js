@@ -6,7 +6,7 @@ describe('helpers responseHandler', function () {
 
   it('should return default error', function (done) {
 
-    responseHandler(function(err, data) {
+    responseHandler(function (err, data) {
       expect(data).to.be(undefined);
       expect(err).to.eql({
         error: 'generic_error',
@@ -28,7 +28,7 @@ describe('helpers responseHandler', function () {
       name: 'SomeName'
     };
 
-    responseHandler(function(err, data) {
+    responseHandler(function (err, data) {
       expect(data).to.be(undefined);
       expect(err).to.eql({
         original: assert_err,
@@ -51,7 +51,7 @@ describe('helpers responseHandler', function () {
       description: 'The error description.'
     };
 
-    responseHandler(function(err, data) {
+    responseHandler(function (err, data) {
       expect(data).to.be(undefined);
       expect(err).to.eql({
         original: assert_err,
@@ -68,7 +68,7 @@ describe('helpers responseHandler', function () {
     assert_err.response.body = {
     };
 
-    responseHandler(function(err, data) {
+    responseHandler(function (err, data) {
       expect(data).to.be(undefined);
       expect(err).to.eql({
         original: assert_err,
@@ -87,7 +87,7 @@ describe('helpers responseHandler', function () {
       error_description: 'The error description.'
     };
 
-    responseHandler(function(err, data) {
+    responseHandler(function (err, data) {
       expect(data).to.be(undefined);
       expect(err).to.eql({
         original: assert_err,
@@ -106,7 +106,7 @@ describe('helpers responseHandler', function () {
       err: 'The error description.'
     };
 
-    responseHandler(function(err, data) {
+    responseHandler(function (err, data) {
       expect(data).to.be(undefined);
       expect(err).to.eql({
         original: assert_err,
@@ -117,6 +117,23 @@ describe('helpers responseHandler', function () {
     })(assert_err, null);
   });
 
+  it('should return normalized format 5 (error comes from data)', function (done) {
+    var assert_err = {
+      error: 'the_error_code',
+      errorDescription: 'The error description.'
+    };
+
+    responseHandler(function (err, data) {
+      expect(data).to.be(undefined);
+      expect(err).to.eql({
+        original: assert_err,
+        code: 'the_error_code',
+        description: 'The error description.'
+      });
+      done();
+    })(null, assert_err);
+  });
+
   it('should return the data', function (done) {
     var assert_data = {
       body: {
@@ -125,7 +142,7 @@ describe('helpers responseHandler', function () {
       }
     }
 
-    responseHandler(function(err, data) {
+    responseHandler(function (err, data) {
       expect(err).to.be(null);
       expect(data).to.eql({
         attr1: 'attribute 1',
@@ -141,7 +158,7 @@ describe('helpers responseHandler', function () {
       type: 'text/html'
     }
 
-    responseHandler(function(err, data) {
+    responseHandler(function (err, data) {
       expect(err).to.be(null);
       expect(data).to.eql('The reponse message');
       done();

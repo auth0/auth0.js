@@ -17,6 +17,11 @@ function wrapCallback(cb, options) {
       data = null;
     }
 
+    if (!err && data.error) {
+      err = data;
+      data = null;
+    }
+
     if (err) {
       errObj = {
         original: err
@@ -39,7 +44,7 @@ function wrapCallback(cb, options) {
       }
 
       errObj.code = err.error || err.code || err.error_code || err.status || null;
-      errObj.description = err.error_description || err.description || err.error || err.details || err.err || null;
+      errObj.description = err.errorDescription || err.error_description || err.description || err.error || err.details || err.err || null;
 
       if (err.name) {
         errObj.name = err.name;
