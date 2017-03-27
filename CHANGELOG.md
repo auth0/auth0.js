@@ -1,5 +1,16 @@
 #Change Log
 
+## [v8.5.0](https://github.com/auth0/auth0.js/tree/v8.5.0) (2017-03-27)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.4.0...v8.5.0)
+
+**Changed**
+- Improve jsdocs [\#393](https://github.com/auth0/auth0.js/pull/393) ([hzalaz](https://github.com/hzalaz))
+
+**Fixed**
+- Fixing error handling for when the error comes as a successful response from WinChan [\#395](https://github.com/auth0/auth0.js/pull/395) ([luisrudge](https://github.com/luisrudge))
+- Correct spelling mistake in web-auth JSDoc resulting in incorrect autocomplete suggestions [\#388](https://github.com/auth0/auth0.js/pull/388) ([Geeman201](https://github.com/Geeman201))
+
+
 ## [v8.4.0](https://github.com/auth0/auth0.js/tree/v8.4.0) (2017-03-13)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.3.0...v8.4.0)
 **Closed issues**
