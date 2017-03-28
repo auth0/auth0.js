@@ -1,5 +1,4 @@
 var urljoin = require('url-join');
-var WinChan = require('winchan');
 
 var urlHelper = require('../helper/url');
 var assert = require('../helper/assert');
@@ -83,6 +82,7 @@ Popup.prototype.getPopupHandler = function (options, preload) {
  */
 Popup.prototype.callback = function (options) {
   var _this = this;
+  var WinChan = require('winchan');
   WinChan.onOpen(function (popupOrigin, r, cb) {
     _this.webAuth.parseHash(options || {}, function (err, data) {
       return cb(err || data);

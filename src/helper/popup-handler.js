@@ -1,7 +1,5 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
-var WinChan = require('winchan');
-
 var windowHandler = require('./window');
 var objectHelper = require('./object');
 var qs = require('qs');
@@ -72,6 +70,7 @@ PopupHandler.prototype.load = function (url, relayUrl, options, cb) {
     popup: this._current_popup
   }).with(options);
 
+  var WinChan = require('winchan');
   var popup = WinChan.open(winchanOptions, function (err, data) {
     _this._current_popup = null;
     return cb(err, data);

@@ -1,6 +1,5 @@
 var expect = require('expect.js');
 var stub = require('sinon').stub;
-var WinChan = require('winchan');
 
 var qs = require('qs');
 var PopupHandler = require('../../src/helper/popup-handler');
@@ -81,6 +80,8 @@ describe('helpers popupHandler', function () {
   });
 
   describe('should open the popup', function () {
+    var WinChan = require('winchan');
+
     before(function(){
       global.window = {};
       global.window.screenX = 500;
