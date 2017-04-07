@@ -12,7 +12,7 @@ Client Side Javascript toolkit for Auth0 API
 
 > We recommend using auth0.js v8 if you need to use [API Auth](https://auth0.com/docs/api-auth) features. For auth0.js v7 code please check the [v7 branch](https://github.com/auth0/auth0.js/tree/v7), this version will be supported and maintained alongside v8.
 
-Need help migrating from v7? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/migration-guide)
+Need help migrating from v7? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide)
 
 ## Install
 
@@ -80,7 +80,7 @@ auth0.authorize({
 
 - **parseHash(options, callback)**: Parses a URL hash fragment to extract the result of an Auth0 authentication response.
 
-> This method requires that your tokens are signed with **RS256**. Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/migration-guide#switching-from-hs256-to-rs256) for more information.
+> This method requires that your tokens are signed with **RS256**. Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide#switching-from-hs256-to-rs256) for more information.
 
 ```js
 auth0.parseHash(window.location.hash, function(err, authResult) {
@@ -209,7 +209,7 @@ var auth0 = new auth0.Management({
 
 ## Documentation
 
-For a complete reference and examples please check our [docs](https://auth0.com/docs/libraries/auth0js) and our [Migration Guide](https://auth0.com/docs/libraries/auth0js/migration-guide) if you need help to migrate from v7
+For a complete reference and examples please check our [docs](https://auth0.com/docs/libraries/auth0js) and our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide) if you need help to migrate from v7
 
 ## Develop
 

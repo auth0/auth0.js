@@ -57,7 +57,7 @@
 <blockquote>
 <p>We recommend using auth0.js v8 if you need to use <a href="https://auth0.com/docs/api-auth">API Auth</a> features. For auth0.js v7 code please check the <a href="https://github.com/auth0/auth0.js/tree/v7">v7 branch</a>, this version will be supported and maintained alongside v8.</p>
 </blockquote>
-<p>Need help migrating from v7? Please check our <a href="https://auth0.com/docs/libraries/auth0js/migration-guide">Migration Guide</a></p>
+<p>Need help migrating from v7? Please check our <a href="https://auth0.com/docs/libraries/auth0js/v8/migration-guide">Migration Guide</a></p>
 <h2>Install</h2><p>From CDN</p>
 <pre class="prettyprint source lang-html"><code>&lt;!-- Latest patch release (recommended for production) -->
 &lt;script src=&quot;http://cdn.auth0.com/js/auth0/8.4.0/auth0.min.js&quot;>&lt;/script></code></pre><p>From <a href="http://bower.io">bower</a></p>
@@ -91,7 +91,7 @@ Auth0 will call back to your application with the results at the specified <code
 <li><strong>parseHash(options, callback)</strong>: Parses a URL hash fragment to extract the result of an Auth0 authentication response.</li>
 </ul>
 <blockquote>
-<p>This method requires that your tokens are signed with <strong>RS256</strong>. Please check our <a href="https://auth0.com/docs/libraries/auth0js/migration-guide#switching-from-hs256-to-rs256">Migration Guide</a> for more information.</p>
+<p>This method requires that your tokens are signed with <strong>RS256</strong>. Please check our <a href="https://auth0.com/docs/libraries/auth0js/v8/migration-guide#switching-from-hs256-to-rs256">Migration Guide</a> for more information.</p>
 </blockquote>
 <pre class="prettyprint source lang-js"><code>auth0.parseHash(window.location.hash, function(err, authResult) {
   if (err) {
@@ -180,7 +180,7 @@ For example:</p>
 <li><strong>patchUserMetadata(userId, userMetadata, cb)</strong>: Updates the user metdata. It will patch the user metdata with the attributes sent. https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id</li>
 <li><strong>linkUser(userId, secondaryUserToken, cb)</strong>: Link two users. https://auth0.com/docs/api/management/v2#!/Users/post_identities</li>
 </ul>
-<h2>Documentation</h2><p>For a complete reference and examples please check our <a href="https://auth0.com/docs/libraries/auth0js">docs</a> and our <a href="https://auth0.com/docs/libraries/auth0js/migration-guide">Migration Guide</a> if you need help to migrate from v7</p>
+<h2>Documentation</h2><p>For a complete reference and examples please check our <a href="https://auth0.com/docs/libraries/auth0js">docs</a> and our <a href="https://auth0.com/docs/libraries/auth0js/v8/migration-guide">Migration Guide</a> if you need help to migrate from v7</p>
 <h2>Develop</h2><p>Run <code>npm start</code> and point your browser to <code>http://localhost:3000/example</code> to run the example page.</p>
 <p>Run <code>npm run test</code> to run the test suite.</p>
 <p>Run <code>npm run test:watch</code> to run the test suite while you work.</p>
