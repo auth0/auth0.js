@@ -14,10 +14,7 @@ SilentAuthenticationHandler.prototype.login = function (usePostMessage, callback
     callback: callback,
     timeout: this.timeout,
     timeoutCallback: function () {
-      callback({
-        error: 'timeout',
-        description: 'Timeout during authentication renew.'
-      });
+      callback('#error=timeout&error_description=Timeout+during+authentication+renew.');
     },
     usePostMessage: usePostMessage || false
   });

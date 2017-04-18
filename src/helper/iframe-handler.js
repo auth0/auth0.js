@@ -52,15 +52,7 @@ IframeHandler.prototype.messageEventListener = function (e) {
 
 IframeHandler.prototype.loadEventListener = function () {
   var _this = this;
-  this.auth0.parseHash(
-    { hash: this.iframe.contentWindow.location.hash },
-    function (error, result) {
-      if (error || result) {
-        _this.destroy();
-        _this.callback(error, result);
-      }
-    }
-  );
+  _this.callback(this.iframe.contentWindow.location.hash);
 };
 
 IframeHandler.prototype.callbackHandler = function (result) {
