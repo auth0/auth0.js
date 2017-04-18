@@ -128,7 +128,6 @@ WebAuth.prototype.parseHash = function (options, cb) {
 
   transaction = this.transactionManager.getStoredTransaction(state);
   transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
-  transactionState = options.state || (transaction && transaction.state) || null;
 
   var applicationStatus = (transaction && transaction.appStatus) || null;
   if (parsedQs.id_token && options._idTokenVerification) {
