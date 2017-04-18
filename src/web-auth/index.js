@@ -91,7 +91,6 @@ WebAuth.prototype.parseHash = function (options, cb) {
   var state;
   var transaction;
   var transactionNonce;
-  var transactionState;
 
   if (!cb && typeof options === 'function') {
     cb = options;
