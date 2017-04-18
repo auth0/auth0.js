@@ -88,7 +88,7 @@ describe('helpers iframeHandler', function () {
         clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
         responseType: 'token',
         _sendTelemetry: false,
-        __disableExpirationCheck: true
+        disableExpirationCheck: true
       });
     });
 

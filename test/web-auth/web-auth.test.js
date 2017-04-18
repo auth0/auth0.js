@@ -100,7 +100,7 @@ describe('auth0.WebAuth', function () {
         redirectUri: 'http://example.com/callback',
         clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
         responseType: 'token',
-        __disableExpirationCheck: true
+        disableExpirationCheck: true
       });
 
       var data = webAuth.parseHash({
@@ -138,7 +138,7 @@ describe('auth0.WebAuth', function () {
         redirectUri: 'http://example.com/callback',
         clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
         responseType: 'token',
-        __disableExpirationCheck: true
+        disableExpirationCheck: true
       });
 
       var data = webAuth.parseHash({
@@ -175,7 +175,7 @@ describe('auth0.WebAuth', function () {
         redirectUri: 'http://example.com/callback',
         clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
         responseType: 'token',
-        __disableExpirationCheck: true
+        disableExpirationCheck: true
       });
 
       var data = webAuth.parseHash({ nonce: 'asfd' },function(err, data) {
@@ -399,7 +399,7 @@ describe('auth0.WebAuth', function () {
         scope: 'openid name read:blog',
         audience: 'urn:site:demo:blog',
         _sendTelemetry: false,
-        __disableExpirationCheck: true
+        disableExpirationCheck: true
       });
 
       var options = {

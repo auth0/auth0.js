@@ -37,6 +37,7 @@ function WebAuth(options) {
     scope: { optional: true, type: 'string', message: 'scope is not valid' },
     audience: { optional: true, type: 'string', message: 'audience is not valid' },
     leeway: { optional: true, type: 'number', message: 'leeway is not valid' },
+    disableExpirationCheck: { optional: true, type: 'boolean', message: 'disableExpirationCheck is not valid' },
     plugins: { optional: true, type: 'array', message: 'plugins is not valid'},
     _disableDeprecationWarnings: { optional: true, type: 'boolean', message: '_disableDeprecationWarnings option is not valid' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
@@ -150,7 +151,7 @@ WebAuth.prototype.parseHash = function (options, cb) {
       issuer: this.baseOptions.token_issuer,
       audience: this.baseOptions.clientID,
       leeway: this.baseOptions.leeway || 0,
-      __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
+      __disableExpirationCheck: this.baseOptions.disableExpirationCheck
     });
 
     var decodedToken = verifier.decode(parsedQs.id_token);
@@ -194,7 +195,7 @@ WebAuth.prototype.validateToken = function (token, state, nonce, cb) {
     issuer: this.baseOptions.token_issuer,
     audience: this.baseOptions.clientID,
     leeway: this.baseOptions.leeway || 0,
-    __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
+    __disableExpirationCheck: this.baseOptions.disableExpirationCheck
   });
 
   verifier.verify(token, nonce, function (err, payload) {
