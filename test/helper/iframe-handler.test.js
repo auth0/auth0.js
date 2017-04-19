@@ -119,60 +119,18 @@ describe('helpers iframeHandler', function () {
       iframeHandler.init();
     });
 
-    it('and hook to the load event', function (done) {
+    it('and hook to the load event and returns the hash', function (done) {
 
       var iframe = stubWindow('load');
 
       var iframeHandler = new IframeHandler({
         auth0: this.auth0,
         url: 'http://example.com',
-        callback: function (err,data) {
+        callback: function (data) {
           expect(iframe.style).to.eql({ display: 'none' });
           expect(iframe.src).to.be('http://example.com');
 
-          expect(err).to.be(null);
-
-          expect(data).to.eql({
-            accessToken: 'VjubIMBmpgQ2W2',
-            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA', // eslint-disable-line
-            idTokenPayload: {
-              iss: 'https://wptest.auth0.com/',
-              sub: 'auth0|55d48c57d5b0ad0223c408d7',
-              aud: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
-              exp: 1482969031,
-              iat: 1482933031,
-              nonce: 'asfd'
-            },
-            appStatus: null,
-            refreshToken: 'kajshdgfkasdjhgfas',
-            state: 'theState',
-            expiresIn: null,
-            tokenType: 'Bearer'
-          });
-
-          setTimeout(done, 100);
-        }
-      });
-
-      iframeHandler.init();
-    });
-
-    it(', hook to the load event and returns an error', function (done) {
-      var iframe = stubWindow('load', '#error=some_error&error_description=the+error+description');
-
-      var iframeHandler = new IframeHandler({
-        auth0: this.auth0,
-        url: 'http://example.com',
-        callback: function(err,data){
-          expect(iframe.style).to.eql({ display: 'none' });
-          expect(iframe.src).to.be('http://example.com');
-
-          expect(data).to.be(undefined);
-
-          expect(err).to.eql({
-            error:'some_error',
-            errorDescription: 'the error description'
-          });
+          expect(data).to.eql(iframe.contentWindow.location.hash);
 
           setTimeout(done, 100);
         }

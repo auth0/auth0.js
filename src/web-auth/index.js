@@ -37,7 +37,7 @@ function WebAuth(options) {
     scope: { optional: true, type: 'string', message: 'scope is not valid' },
     audience: { optional: true, type: 'string', message: 'audience is not valid' },
     leeway: { optional: true, type: 'number', message: 'leeway is not valid' },
-    plugins: { optional: true, type: 'array', message: 'plugins is not valid'},
+    plugins: { optional: true, type: 'array', message: 'plugins is not valid' },
     _disableDeprecationWarnings: { optional: true, type: 'boolean', message: '_disableDeprecationWarnings option is not valid' },
     _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
     _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
@@ -55,7 +55,7 @@ function WebAuth(options) {
   this.baseOptions.plugins = new PluginHandler(this, this.baseOptions.plugins || []);
 
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ?
-                                        this.baseOptions._sendTelemetry : true;
+    this.baseOptions._sendTelemetry : true;
 
   this.baseOptions.tenant = (this.overrides && this.overrides.__tenant)
     || this.baseOptions.domain.split('.')[0];
@@ -91,7 +91,6 @@ WebAuth.prototype.parseHash = function (options, cb) {
   var state;
   var transaction;
   var transactionNonce;
-  var transactionState;
 
   if (!cb && typeof options === 'function') {
     cb = options;
@@ -120,8 +119,8 @@ WebAuth.prototype.parseHash = function (options, cb) {
   }
 
   if (!parsedQs.hasOwnProperty('access_token')
-       && !parsedQs.hasOwnProperty('id_token')
-       && !parsedQs.hasOwnProperty('refresh_token')) {
+    && !parsedQs.hasOwnProperty('id_token')
+    && !parsedQs.hasOwnProperty('refresh_token')) {
     return cb(null, null);
   }
 
@@ -129,13 +128,11 @@ WebAuth.prototype.parseHash = function (options, cb) {
 
   transaction = this.transactionManager.getStoredTransaction(state);
   transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
-  transactionState = options.state || (transaction && transaction.state) || null;
 
   var applicationStatus = (transaction && transaction.appStatus) || null;
   if (parsedQs.id_token && options._idTokenVerification) {
     return this.validateToken(
       parsedQs.id_token,
-      transactionState,
       transactionNonce,
       function (validationError, payload) {
         if (validationError) {
@@ -185,11 +182,10 @@ function buildParseHashResponse(qsParams, appStatus, token) {
  * @method validateToken
  * @private
  * @param {String} token
- * @param {String} state
  * @param {String} nonce
  * @param {validateTokenCallback} cb
  */
-WebAuth.prototype.validateToken = function (token, state, nonce, cb) {
+WebAuth.prototype.validateToken = function (token, nonce, cb) {
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     audience: this.baseOptions.clientID,
@@ -242,8 +238,9 @@ WebAuth.prototype.renewAuth = function (options, cb) {
 
   params.responseType = params.responseType || 'token';
   params.responseMode = params.responseMode || 'fragment';
-
-  params = this.transactionManager.process(params);
+  if (!options.nonce) {
+    params = this.transactionManager.process(params);
+  }
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
@@ -254,28 +251,11 @@ WebAuth.prototype.renewAuth = function (options, cb) {
 
   handler = new SilentAuthenticationHandler(this, this.client.buildAuthorizeUrl(params));
 
-  handler.login(usePostMessage, function (err, data) {
-    if (err) {
-      return cb(err);
-    }
-
+  handler.login(usePostMessage, function (hash) {
     var transaction = _this.transactionManager.getStoredTransaction(params.state);
     var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
     var transactionState = options.state || (transaction && transaction.state) || null;
-
-    if (data.id_token) {
-      return _this.validateToken(data.id_token, transactionState, transactionNonce, function (validationErr, payload) {
-        if (validationErr) {
-          return cb(validationErr);
-        }
-
-        data.idTokenPayload = payload;
-
-        return cb(null, data);
-      });
-    }
-
-    return cb(err, data);
+    _this.parseHash({ hash: hash, nonce: transactionNonce, state: transactionState }, cb);
   });
 };
 
