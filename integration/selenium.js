@@ -21,7 +21,7 @@ var capabilities = [
   'platform': 'Windows 10',
   'version': '50.0'
 }
-// ,
+,
 // {
 //   'browserName': 'firefox',
 //   'platform': 'Windows 10',

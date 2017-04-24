@@ -32,4 +32,5 @@ test-results.xml
 
 .idea/
 
-docs/
+# jsdocs
+out/

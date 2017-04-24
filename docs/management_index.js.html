@@ -23,7 +23,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Authentication.html">Authentication</a></li><li><a href="Management.html">Management</a></li><li><a href="WebAuth.html">WebAuth</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authorize">authorize</a></li><li><a href="global.html#buildAuthorizeUrl">buildAuthorizeUrl</a></li><li><a href="global.html#buildLogoutUrl">buildLogoutUrl</a></li><li><a href="global.html#buildPopupHandler">buildPopupHandler</a></li><li><a href="global.html#buildVerifyUrl">buildVerifyUrl</a></li><li><a href="global.html#callback">callback</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#delegation">delegation</a></li><li><a href="global.html#getPopupHandler">getPopupHandler</a></li><li><a href="global.html#getSSOData">getSSOData</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserCountry">getUserCountry</a></li><li><a href="global.html#isArray">isArray</a></li><li><a href="global.html#linkUser">linkUser</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#loginWithCredentials">loginWithCredentials</a></li><li><a href="global.html#loginWithDefaultDirectory">loginWithDefaultDirectory</a></li><li><a href="global.html#loginWithResourceOwner">loginWithResourceOwner</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#oauthToken">oauthToken</a></li><li><a href="global.html#parseHash">parseHash</a></li><li><a href="global.html#passwordlessStart">passwordlessStart</a></li><li><a href="global.html#passwordlessVerify">passwordlessVerify</a></li><li><a href="global.html#patchUserMetadata">patchUserMetadata</a></li><li><a href="global.html#preload">preload</a></li><li><a href="global.html#renewAuth">renewAuth</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#signupAndAuthorize">signupAndAuthorize</a></li><li><a href="global.html#signupAndLogin">signupAndLogin</a></li><li><a href="global.html#start">start</a></li><li><a href="global.html#userInfo">userInfo</a></li><li><a href="global.html#validateToken">validateToken</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Authentication.html">Authentication</a></li><li><a href="Management.html">Management</a></li><li><a href="WebAuth.html">WebAuth</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authorize">authorize</a></li><li><a href="global.html#buildAuthorizeUrl">buildAuthorizeUrl</a></li><li><a href="global.html#buildLogoutUrl">buildLogoutUrl</a></li><li><a href="global.html#callback">callback</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#delegation">delegation</a></li><li><a href="global.html#getSSOData">getSSOData</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#linkUser">linkUser</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#loginWithCredentials">loginWithCredentials</a></li><li><a href="global.html#loginWithDefaultDirectory">loginWithDefaultDirectory</a></li><li><a href="global.html#loginWithResourceOwner">loginWithResourceOwner</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#parseHash">parseHash</a></li><li><a href="global.html#passwordlessStart">passwordlessStart</a></li><li><a href="global.html#passwordlessVerify">passwordlessVerify</a></li><li><a href="global.html#patchUserMetadata">patchUserMetadata</a></li><li><a href="global.html#preload">preload</a></li><li><a href="global.html#renewAuth">renewAuth</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#signupAndAuthorize">signupAndAuthorize</a></li><li><a href="global.html#signupAndLogin">signupAndLogin</a></li><li><a href="global.html#userInfo">userInfo</a></li></ul>
 </nav>
 
 <div id="main">
@@ -48,8 +48,8 @@ var responseHandler = require('../helper/response-handler');
  * Auth0 Management API Client (methods allowed to be called from the browser only)
  * @constructor
  * @param {Object} options
- * @param {Object} options.domain
- * @param {Object} options.token
+ * @param {Object} options.domain your Auth0 acount domain
+ * @param {Object} options.token a valid API token
  */
 function Management(options) {
   /* eslint-disable */
@@ -70,11 +70,18 @@ function Management(options) {
 }
 
 /**
- * Returns the user profile. https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
+ * @callback userCallback
+ * @param {Error} [err] failure reason for the failed request to Management API
+ * @param {Object} [result] user profile
+ */
+
+/**
+ * Returns the user profile
  *
  * @method getUser
- * @param {String} userId
- * @param {Function} cb
+ * @param {String} userId identifier of the user to retrieve
+ * @param {userCallback} cb
+ * @see https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
  */
 Management.prototype.getUser = function (userId, cb) {
   var url;
@@ -91,12 +98,13 @@ Management.prototype.getUser = function (userId, cb) {
 
 /**
  * Updates the user metdata. It will patch the user metdata with the attributes sent.
- * https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
+ *
  *
  * @method patchUserMetadata
  * @param {String} userId
  * @param {Object} userMetadata
- * @param {Function} cb
+ * @param {userCallback} cb
+ * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id}
  */
 Management.prototype.patchUserMetadata = function (userId, userMetadata, cb) {
   var url;
@@ -114,12 +122,13 @@ Management.prototype.patchUserMetadata = function (userId, userMetadata, cb) {
 };
 
 /**
- * Link two users. https://auth0.com/docs/api/management/v2#!/Users/post_identities
+ * Link two users
  *
  * @method linkUser
  * @param {String} userId
- * @param {Object} secondaryUserToken
- * @param {Function} cb
+ * @param {String} secondaryUserToken
+ * @param {userCallback} cb
+ * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/post_identities}
  */
 Management.prototype.linkUser = function (userId, secondaryUserToken, cb) {
   var url;
@@ -151,7 +160,7 @@ module.exports = Management;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Mar 13 2017 12:11:42 GMT-0300 (ART) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Apr 23 2017 21:42:14 GMT-0300 (-03) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
