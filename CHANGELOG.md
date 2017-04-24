@@ -4,7 +4,7 @@
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.5.0...v8.6.0)
 
 **Fixed**
-- Fixed nonce checking on renewAuth method [\#413](https://github.com/auth0/auth0.js/pull/413) ([luisrudge](https://github.com/luisrudge))
+- Fixed `nonce` checking on `renewAuth` method [\#413](https://github.com/auth0/auth0.js/pull/413) ([luisrudge](https://github.com/luisrudge))
 - Fixed 'qs' dependency [\#401](https://github.com/auth0/auth0.js/pull/401) ([maxpaj](https://github.com/maxpaj))
 
 
