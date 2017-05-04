@@ -894,8 +894,10 @@ describe('auth0.WebAuth', function () {
           cb: function(cb) {
             cb({
               response: {
-                error: 'Ops',
-                error_description: 'Something happened'
+                body: {
+                  error: 'Ops',
+                  error_description: 'Something happened'
+                }
               }
             });
           }
