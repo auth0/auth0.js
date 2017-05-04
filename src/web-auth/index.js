@@ -402,7 +402,7 @@ WebAuth.prototype.login = function (options) {
   }
   this.request.post(url).withCredentials().send(authenticateBody).end(function (err, data) {
     if (err) {
-      var errorObject = err.response || {
+      var errorObject = (err.response && err.response.body) || {
         error: 'Request Error',
         error_description: JSON.stringify(err)
       };
