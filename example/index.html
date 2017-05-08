@@ -162,6 +162,11 @@
         </div>
 
         <div>
+          <h2>Login with new Login Ticket flow:</h2>
+          <input type="button" class="login-ticket" value="Login" />
+        </div>
+
+        <div>
           <h2>SSO Logout:</h2>
           <input type="button" class="logout" value="Logout" />
         </div>
@@ -344,6 +349,14 @@
       },
         htmlConsole.dumpCallback.bind(htmlConsole)
       );
+    });
+     $('.login-ticket').click(function (e) {
+      e.preventDefault();
+      webAuth.login({
+        username: 'test@example.com',
+        password: 'test',
+        redirectURI: 'http://localhost:3000/example/'
+      });
     });
     $(document.body).append($('<div class="loaded">LOADED</div>'));
     </script>
