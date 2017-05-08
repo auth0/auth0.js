@@ -1,17 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="/auth0.js"></script>
     <script type="text/javascript">
-      var auth0 = new auth0.WebAuth({
-        domain: 'auth0-tests-auth0js.auth0.com',
-        redirectUri: 'http://localhost:3000/example',
-        clientID: '3GGMIEuBPZ28lb6NBDNARaEZisqFakAs',
-        responseType: 'token'
-      });
-      var result = auth0.parseHash(window.location.hash, function(err, data) {
-        parent.postMessage(err || data, "http://localhost:3000/");
-      });
+      parent.postMessage(window.location.hash, "http://localhost:3000/");
     </script>
   </head>
   <body></body>

@@ -52,7 +52,7 @@ IframeHandler.prototype.messageEventListener = function (e) {
 
 IframeHandler.prototype.loadEventListener = function () {
   var _this = this;
-  _this.callback(this.iframe.contentWindow.location.hash);
+  _this.callback(null, this.iframe.contentWindow.location.hash);
 };
 
 IframeHandler.prototype.callbackHandler = function (result) {
