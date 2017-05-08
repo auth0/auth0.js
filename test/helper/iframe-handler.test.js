@@ -126,7 +126,7 @@ describe('helpers iframeHandler', function () {
       var iframeHandler = new IframeHandler({
         auth0: this.auth0,
         url: 'http://example.com',
-        callback: function (data) {
+        callback: function (err, data) {
           expect(iframe.style).to.eql({ display: 'none' });
           expect(iframe.src).to.be('http://example.com');
 
