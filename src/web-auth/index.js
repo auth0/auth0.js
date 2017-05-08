@@ -254,7 +254,12 @@ WebAuth.prototype.renewAuth = function (options, cb) {
 
   handler = new SilentAuthenticationHandler(this, this.client.buildAuthorizeUrl(params));
 
-  handler.login(usePostMessage, function (hash) {
+  handler.login(usePostMessage, function (err, hash) {
+    if (typeof hash === 'object') {
+      // hash was already parsed, so we just return it
+      // it's here to be backwards compatible and should be removed in the next major version
+      return cb(err, hash);
+    }
     var transaction = _this.transactionManager.getStoredTransaction(params.state);
     var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
     var transactionState = options.state || (transaction && transaction.state) || null;
