@@ -1,5 +1,12 @@
 #Change Log
 
+## [v8.6.1](https://github.com/auth0/auth0.js/tree/v8.6.1) (2017-05-08)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.6.0...v8.6.1)
+
+**Fixed**
+- Fix postMessage handler to handle parsed objects as well [\#420](https://github.com/auth0/auth0.js/pull/420) ([luisrudge](https://github.com/luisrudge))
+
+
 ## [v8.6.0](https://github.com/auth0/auth0.js/tree/v8.6.0) (2017-04-24)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.5.0...v8.6.0)
 
