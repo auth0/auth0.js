@@ -10,8 +10,8 @@ var RequestMock = require('../mock/request-mock');
 
 var TransactionManager = require('../../src/web-auth/transaction-manager');
 var SilentAuthenticationHandler = require('../../src/web-auth/silent-authentication-handler');
+var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
 var WebAuth = require('../../src/web-auth');
-var windowHelper = require('../../src/helper/window');
 
 describe('auth0.WebAuth', function () {
   context('init', function () {
@@ -840,7 +840,7 @@ describe('auth0.WebAuth', function () {
       });
     });
   });
-  context('login', function () {
+  context('crossOriginAuthentication', function () {
     before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
@@ -852,156 +852,25 @@ describe('auth0.WebAuth', function () {
     });
 
     afterEach(function () {
-      request.post.restore();
-      if (this.auth0.authorize.restore) {
-        this.auth0.authorize.restore();
+      if (CrossOriginAuthentication.prototype.login.restore) {
+        CrossOriginAuthentication.prototype.login.restore();
       }
-      if (windowHelper.redirect.restore) {
-        windowHelper.redirect.restore();
+      if (CrossOriginAuthentication.prototype.callback.restore) {
+        CrossOriginAuthentication.prototype.callback.restore();
       }
     });
 
-    it('should call /co/authenticate and redirect to /authorize with login_ticket', function (done) {
-      stub(request, 'post', function (url) {
-        if (url !== 'https://me.auth0.com/co/authenticate') {
-          throw new Error('Invalid url in request post stub');
-        }
-        return new RequestMock({
-          body: {
-            client_id: '...',
-            credential_type: 'password',
-            username: 'me@example.com',
-            password: '123456'
-          },
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          cb: function(cb) {
-            cb(null, {
-              body: {
-                login_ticket: 'a_login_ticket'
-              }
-            });
-          }
-        });
-      });
-      stub(this.auth0, 'authorize', function(options) {
-        expect(options).to.be.eql({ loginTicket: 'a_login_ticket', anotherOption: 'foobar' });
+    it('should call login', function (done) {
+      var expectedOptions = {foo: 'bar'};
+      stub(CrossOriginAuthentication.prototype, 'login', function (options) {
+        expect(options).to.be.eql(expectedOptions);
         done();
       });
-
-      this.auth0.login({
-        username: 'me@example.com',
-        password: '123456',
-        anotherOption: 'foobar'
-      });
+      this.auth0.login(expectedOptions);
     });
-    it('should call /co/authenticate with realm grant and redirect to /authorize with login_ticket when realm is used', function (done) {
-      stub(request, 'post', function (url) {
-        if (url !== 'https://me.auth0.com/co/authenticate') {
-          throw new Error('Invalid url in request post stub');
-        }
-        return new RequestMock({
-          body: {
-            client_id: '...',
-            credential_type: 'http://auth0.com/oauth/grant-type/password-realm',
-            username: 'me@example.com',
-            password: '123456',
-            realm: 'a-connection'
-          },
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          cb: function(cb) {
-            cb(null, {
-              body: {
-                login_ticket: 'a_login_ticket'
-              }
-            });
-          }
-        });
-      });
-      stub(this.auth0, 'authorize', function(options) {
-        expect(options).to.be.eql({ realm: 'a-connection', loginTicket: 'a_login_ticket' });
-        done();
-      });
-
-      this.auth0.login({
-        username: 'me@example.com',
-        password: '123456',
-        realm: 'a-connection'
-      });
-    });
-    it('should call /co/authenticate and redirect to options.redirectUri when an error WITH description occur', function (done) {
-      stub(request, 'post', function (url) {
-        if (url !== 'https://me.auth0.com/co/authenticate') {
-          throw new Error('Invalid url in request post stub');
-        }
-        return new RequestMock({
-          body: {
-            client_id: '...',
-            credential_type: 'password',
-            username: 'me@example.com',
-            password: '123456'
-          },
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          cb: function(cb) {
-            cb({
-              response: {
-                body: {
-                  error: 'Ops',
-                  error_description: 'Something happened'
-                }
-              }
-            });
-          }
-        });
-      });
-      stub(windowHelper, 'redirect', function (url) {
-        expect(url).to.be.equal('http://page.com/callback#error=Ops&error_description=Something%20happened');
-        done();
-      });
-
-      this.auth0.login({
-        username: 'me@example.com',
-        password: '123456',
-        anotherOption: 'foobar'
-      });
-    });
-    it('should call /co/authenticate and redirect to options.redirectUri when an error WITHOUT description occur', function (done) {
-      stub(request, 'post', function (url) {
-        if (url !== 'https://me.auth0.com/co/authenticate') {
-          throw new Error('Invalid url in request post stub');
-        }
-        return new RequestMock({
-          body: {
-            client_id: '...',
-            credential_type: 'password',
-            username: 'me@example.com',
-            password: '123456'
-          },
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          cb: function(cb) {
-            cb({
-              foo: 'bar'
-            });
-          }
-        });
-      });
-      stub(windowHelper, 'redirect', function (url) {
-        expect(url).to.be.equal('http://page.com/callback#error=Request%20Error&error_description=%7B%22foo%22:%22bar%22%7D');
-        done();
-      });
-
-      this.auth0.login({
-        username: 'me@example.com',
-        password: '123456',
-        anotherOption: 'foobar'
-      });
+    it('should call callback', function (done) {
+      stub(CrossOriginAuthentication.prototype, 'callback', done);
+      this.auth0.crossOriginAuthenticationCallback();
     });
   });
 });

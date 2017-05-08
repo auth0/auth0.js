@@ -1,5 +1,4 @@
 var IdTokenVerifier = require('idtoken-verifier');
-var urljoin = require('url-join');
 
 var assert = require('../helper/assert');
 var error = require('../helper/error');
@@ -12,8 +11,7 @@ var Authentication = require('../authentication');
 var Redirect = require('./redirect');
 var Popup = require('./popup');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
-var RequestBuilder = require('../helper/request-builder');
-
+var CrossOriginAuthentication = require('./cross-origin-authentication');
 /**
  * Handles all the browser's AuthN/AuthZ flows
  * @constructor
@@ -70,7 +68,7 @@ function WebAuth(options) {
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this.client, this.baseOptions);
   this.popup = new Popup(this, this.baseOptions);
-  this.request = new RequestBuilder(options);
+  this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
 }
 
 /**
@@ -382,7 +380,7 @@ WebAuth.prototype.signupAndAuthorize = function (options, cb) {
 };
 
 /**
- * Logs in the user with username and password. You can use `username` or `email` as the actual username.
+ * Logs in the user with username and password using the cross origin authentication flow. You can use `username` or `email` as the actual username.
  *
  * @method login
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
@@ -392,33 +390,17 @@ WebAuth.prototype.signupAndAuthorize = function (options, cb) {
  * @param {String} options.realm realm
  */
 WebAuth.prototype.login = function (options) {
-  var _this = this;
-  var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate');
-  var authenticateBody = {
-    client_id: options.clientID || this.baseOptions.clientID,
-    credential_type: 'password',
-    username: options.username || options.email,
-    password: options.password
-  };
-  var realm = options.realm || this.baseOptions.realm;
-  if (realm) {
-    authenticateBody.realm = realm;
-    authenticateBody.credential_type = 'http://auth0.com/oauth/grant-type/password-realm';
-  }
-  this.request.post(url).withCredentials().send(authenticateBody).end(function (err, data) {
-    if (err) {
-      var errorObject = (err.response && err.response.body) || {
-        error: 'Request Error',
-        error_description: JSON.stringify(err)
-      };
-      var redirectUrl = _this.baseOptions.redirectUri || options.redirectUri;
-      var errorHash = '#error=' + encodeURI(errorObject.error) + '&error_description=' + encodeURI(errorObject.error_description);
-      return windowHelper.redirect(redirectUrl + errorHash);
-    }
-    options = objectHelper.blacklist(options, ['username', 'password']);
-    var authorizeOptions = objectHelper.merge(options).with({ loginTicket: data.body.login_ticket });
-    _this.authorize(authorizeOptions);
-  });
+  this.crossOriginAuthentication.login(options);
+};
+
+
+/**
+ * Runs the callback code for the cross origin authentication call. This method is meant to be called by the cross origin authentication callback url.
+ *
+ * @method crossOriginAuthenticationCallback
+ */
+WebAuth.prototype.crossOriginAuthenticationCallback = function () {
+  this.crossOriginAuthentication.callback();
 };
 
 /**

@@ -16,7 +16,9 @@ gulp.task('build', function () {
 gulp.task('dev', function () {
   var compiler = webpack(webpackConfig);
 
-  new WebpackDevServer(compiler, {}).listen(3000, 'localhost', function (err) {
+  new WebpackDevServer(compiler, {
+    https: true
+  }).listen(3000, 'localhost', function (err) {
     if (err) {
       throw new gutil.PluginError('webpack-dev-server', err);
     }
