@@ -14,6 +14,36 @@ var WebAuth = require('../../src/web-auth');
 var windowHelper = require('../../src/helper/window');
 
 describe('auth0.WebAuth', function () {
+  context('init', function () {
+    after(function(){
+      delete global.window;
+    })
+
+    before(function(){
+      global.window = {};
+      global.window.localStorage = {};
+      storage.reload();
+    })
+
+    it('should properly set the overrides', function () {
+      var webAuth = new WebAuth({
+        domain: 'wptest.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false,
+        overrides: {
+          __tenant: 'tenant1',
+          __token_issuer: 'issuer1'
+        }
+      });
+
+      expect(webAuth.baseOptions.tenant).to.be('tenant1');
+      expect(webAuth.baseOptions.token_issuer).to.be('issuer1');
+    });
+  })
   context('nonce validation', function () {
     after(function(){
       SilentAuthenticationHandler.prototype.login.restore();

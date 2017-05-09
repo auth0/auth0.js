@@ -59,10 +59,10 @@ function WebAuth(options) {
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ?
     this.baseOptions._sendTelemetry : true;
 
-  this.baseOptions.tenant = (this.overrides && this.overrides.__tenant)
+  this.baseOptions.tenant = (this.baseOptions.overrides && this.baseOptions.overrides.__tenant)
     || this.baseOptions.domain.split('.')[0];
 
-  this.baseOptions.token_issuer = (this.overrides && this.overrides.__token_issuer)
+  this.baseOptions.token_issuer = (this.baseOptions.overrides && this.baseOptions.overrides.__token_issuer)
     || 'https://' + this.baseOptions.domain + '/';
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
