@@ -15,7 +15,7 @@ var WebAuth = require('../../src/web-auth');
 var windowHelper = require('../../src/helper/window');
 
 
-describe('auth0.WebAuth.crossOriginAuthentication', function () {
+describe.only('auth0.WebAuth.crossOriginAuthentication', function () {
   context('login', function () {
     before(function () {
       this.webAuthSpy = {
@@ -130,6 +130,44 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         anotherOption: 'foobar'
       });
       expect(global.window.sessionStorage).to.be.eql({ 'co/verifier/https%3A%2F%2Fme.auth0.com/co_id': 'co_verifier' });
+    });
+    context('should call callback and not redirect to authorize when it is an authentication error', function () {
+      it('access_denied', function(done) {
+        stub(request, 'post', function (url) {
+          expect(url).to.be('https://me.auth0.com/co/authenticate');
+          return new RequestMock({
+            body: {
+              client_id: '...',
+              credential_type: 'password',
+              username: 'me@example.com',
+              password: '123456'
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            cb: function(cb) {
+              cb({
+                response: {
+                  body: {
+                    error: 'access_denied',
+                    error_description: 'access denied'
+                  }
+                }
+              });
+            }
+          });
+        });
+        var _this = this;
+        this.co.login({
+          username: 'me@example.com',
+          password: '123456',
+          anotherOption: 'foobar'
+        }, function (err) {
+          expect(err).to.be.eql({ error: 'access_denied', error_description: 'access denied' });
+          expect(_this.webAuthSpy.authorize.called).to.be.eql(false);
+          done();
+        });
+      });
     });
     it('should call /co/authenticate and redirect to options.redirectUri when an error WITH description occur', function (done) {
       stub(request, 'post', function (url) {

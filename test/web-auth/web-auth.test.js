@@ -862,11 +862,12 @@ describe('auth0.WebAuth', function () {
 
     it('should call login', function (done) {
       var expectedOptions = {foo: 'bar'};
-      stub(CrossOriginAuthentication.prototype, 'login', function (options) {
+      stub(CrossOriginAuthentication.prototype, 'login', function (options, cb) {
         expect(options).to.be.eql(expectedOptions);
+        expect(cb).to.be('cb');
         done();
       });
-      this.auth0.login(expectedOptions);
+      this.auth0.login(expectedOptions, 'cb');
     });
     it('should call callback', function (done) {
       stub(CrossOriginAuthentication.prototype, 'callback', done);

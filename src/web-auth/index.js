@@ -388,9 +388,10 @@ WebAuth.prototype.signupAndAuthorize = function (options, cb) {
  * @param {String} options.email email
  * @param {String} options.password user password
  * @param {String} options.realm realm
+ * @param {Function} cb callback function called only when an authorization error occurs. Has the error as the only parameter.
  */
-WebAuth.prototype.login = function (options) {
-  this.crossOriginAuthentication.login(options);
+WebAuth.prototype.login = function (options, cb) {
+  this.crossOriginAuthentication.login(options, cb);
 };
 
 

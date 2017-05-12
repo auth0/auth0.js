@@ -36,8 +36,9 @@ function createKey(origin, coId) {
  * @param {String} options.email email
  * @param {String} options.password user password
  * @param {String} options.realm realm
+ * @param {Function} cb callback function called only when an authorization error occurs. Has the error as the only parameter.
  */
-CrossOriginAuthentication.prototype.login = function (options) {
+CrossOriginAuthentication.prototype.login = function (options, cb) {
   var _this = this;
   var theWindow = windowHelper.getWindow();
   var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate');
@@ -58,12 +59,15 @@ CrossOriginAuthentication.prototype.login = function (options) {
         error: 'Request Error',
         error_description: JSON.stringify(err)
       };
+      var authorizationErrorCodes = ['access_denied'];
+      var isAuthorizationError = authorizationErrorCodes.indexOf(errorObject.error) > -1;
+      if (cb && isAuthorizationError) {
+        return cb(errorObject);
+      }
       var redirectUrl = _this.baseOptions.redirectUri || options.redirectUri;
       var errorHash = '#error=' + encodeURI(errorObject.error) + '&error_description=' + encodeURI(errorObject.error_description);
       return windowHelper.redirect(redirectUrl + errorHash);
     }
-    // data.body
-    // {login_ticket: 'Sny4Pny9I1wf4xSVYxDnqEnJSR5vvLDF', co_verifier: 'fk8WQOAPmbZ8LDlQ7xPlH_xMJ1l8Eofd', co_id: 'Q3L1rsKoUXHq'}
     options = objectHelper.blacklist(options, ['username', 'password']);
     var authorizeOptions = objectHelper.merge(options).with({ loginTicket: data.body.login_ticket });
     var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);

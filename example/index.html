@@ -356,7 +356,7 @@
         username: 'test@example.com',
         password: 'test',
         redirectURI: 'https://localhost:3000/example/'
-      });
+      }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
     $(document.body).append($('<div class="loaded">LOADED</div>'));
     </script>
