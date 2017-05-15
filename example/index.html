@@ -185,10 +185,10 @@
     });
 
     var webAuth = new auth0.WebAuth({
-      domain: 'brucke.auth0.com',
-      redirectUri: 'http://localhost:3000/example',
-      clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
-      audience: 'https://brucke.auth0.com/userinfo',
+      domain: 'luisrudge-auth0-au.au.auth0.com',
+      redirectUri: 'https://localhost:3000/example',
+      clientID: '9ZEQtEBDEXOozlZ62q17lDFfPae6n30F', //localhost
+      //clientID: 'gPjLXENRzOnYVA0aPgwQ3jPt0cWGYs7j', //https://test-cross-auth.now.sh/
       responseType: 'token',
       plugins: [
         new CordovaAuth0Plugin()
@@ -197,7 +197,7 @@
 
     var webAuthPasswordless = new auth0.WebAuth({
       domain: 'brucke.auth0.com',
-      redirectUri: 'http://localhost:3000/example',
+      redirectUri: 'https://localhost:3000/example',
       clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
       responseType: 'token'
     });
@@ -320,7 +320,7 @@
     $('.popup-login-hosted').click(function (e) {
       e.preventDefault();
       webAuth.popup.authorize({
-        redirectURI: 'http://localhost:3000/example/callback_popup.html'
+        redirectURI: 'https://localhost:3000/example/callback_popup.html'
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
@@ -336,7 +336,7 @@
 
     $('.logout').click(function (e) {
       e.preventDefault();
-      webAuth.logout({ returnTo: 'http://localhost:3000/example' });
+      webAuth.logout({ returnTo: 'https://localhost:3000/example' });
     });
 
     $('.renew-auth').click(function (e) {
@@ -345,7 +345,7 @@
         usePostMessage: true,
         scope:'',
         audience: 'https://brucke.auth0.com/userinfo',
-        redirectURI: 'http://localhost:3000/example/callback.html'
+        redirectURI: 'https://localhost:3000/example/callback.html'
       },
         htmlConsole.dumpCallback.bind(htmlConsole)
       );
@@ -355,8 +355,8 @@
       webAuth.login({
         username: 'test@example.com',
         password: 'test',
-        redirectURI: 'http://localhost:3000/example/'
-      });
+        redirectURI: 'https://localhost:3000/example/'
+      }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
     $(document.body).append($('<div class="loaded">LOADED</div>'));
     </script>
