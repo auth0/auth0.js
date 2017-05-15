@@ -15,7 +15,7 @@ var WebAuth = require('../../src/web-auth');
 var windowHelper = require('../../src/helper/window');
 
 
-describe.only('auth0.WebAuth.crossOriginAuthentication', function () {
+describe('auth0.WebAuth.crossOriginAuthentication', function () {
   context('login', function () {
     before(function () {
       this.webAuthSpy = {
