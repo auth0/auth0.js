@@ -864,10 +864,10 @@ describe('auth0.WebAuth', function () {
       var expectedOptions = {foo: 'bar'};
       stub(CrossOriginAuthentication.prototype, 'login', function (options, cb) {
         expect(options).to.be.eql(expectedOptions);
-        expect(cb).to.be('cb');
+        expect(cb()).to.be('cb');
         done();
       });
-      this.auth0.login(expectedOptions, 'cb');
+      this.auth0.login(expectedOptions, function() { return 'cb'; });
     });
     it('should call callback', function (done) {
       stub(CrossOriginAuthentication.prototype, 'callback', done);
