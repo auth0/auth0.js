@@ -107,6 +107,10 @@ function toCamelCase(object, exceptions) {
 
   exceptions = exceptions || [];
 
+  if (object instanceof Array) {
+    return object.map(function(obj) { return toCamelCase(obj); });
+  }
+  
   return Object.keys(object).reduce(function (p, key) {
     var newKey = exceptions.indexOf(key) === -1 ? snakeToCamel(key) : key;
     p[newKey] = toCamelCase(object[key]);
