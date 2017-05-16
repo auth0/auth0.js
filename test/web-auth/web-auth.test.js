@@ -515,7 +515,7 @@ describe('auth0.WebAuth', function () {
             state: null,
             expiresIn: null,
             tokenType: null,
-          scope: null
+            scope: null
           });
           done();
         });
