@@ -133,7 +133,7 @@ describe('auth0.WebAuth', function () {
 
       var data = webAuth.parseHash({
         nonce: 'asfd',
-        hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+        hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas&scope=foo'
       }, function(err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
@@ -151,7 +151,8 @@ describe('auth0.WebAuth', function () {
           refreshToken: 'kajshdgfkasdjhgfas',
           state: 'theState',
           expiresIn: null,
-          tokenType: 'Bearer'
+          tokenType: 'Bearer',
+          scope: 'foo'
         });
 
         expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
@@ -188,7 +189,8 @@ describe('auth0.WebAuth', function () {
           refreshToken: 'kajshdgfkasdjhgfas',
           state: 'theState',
           expiresIn: null,
-          tokenType: 'Bearer'
+          tokenType: 'Bearer',
+          scope: null
         });
 
         expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
@@ -223,7 +225,8 @@ describe('auth0.WebAuth', function () {
           refreshToken: 'kajshdgfkasdjhgfas',
           state: 'theState',
           expiresIn: null,
-          tokenType: 'Bearer'
+          tokenType: 'Bearer',
+          scope: null
         });
 
         expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
@@ -251,7 +254,8 @@ describe('auth0.WebAuth', function () {
           refreshToken: 'kajshdgfkasdjhgfas',
           state: 'theState',
           expiresIn: null,
-          tokenType: 'Bearer'
+          tokenType: 'Bearer',
+          scope: null
         });
 
         expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
@@ -448,7 +452,8 @@ describe('auth0.WebAuth', function () {
           refreshToken: null,
           state: null,
           expiresIn: null,
-          tokenType: null
+          tokenType: null,
+          scope: null
         });
 
         expect(TransactionManager.prototype.getStoredTransaction.calledTwice).to.be.ok();
@@ -509,7 +514,8 @@ describe('auth0.WebAuth', function () {
             refreshToken: null,
             state: null,
             expiresIn: null,
-            tokenType: null
+            tokenType: null,
+          scope: null
           });
           done();
         });

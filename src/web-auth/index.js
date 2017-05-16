@@ -167,7 +167,8 @@ function buildParseHashResponse(qsParams, appStatus, token) {
     refreshToken: qsParams.refresh_token || null,
     state: qsParams.state || null,
     expiresIn: qsParams.expires_in ? parseInt(qsParams.expires_in, 10) : null,
-    tokenType: qsParams.token_type || null
+    tokenType: qsParams.token_type || null,
+    scope: qsParams.scope || null
   };
 }
 
