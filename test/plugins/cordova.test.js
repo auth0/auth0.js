@@ -155,7 +155,8 @@ describe('auth0.plugins.cordova', function () {
           refreshToken: 'kajshdgfkasdjhgfas',
           state: 'theState',
           expiresIn: null,
-          tokenType: 'Bearer'
+          tokenType: 'Bearer',
+          scope: null
         });
         expect(_this.events).to.eql({});
         done();
@@ -178,7 +179,8 @@ describe('auth0.plugins.cordova', function () {
           refreshToken: null,
           state: 'theState',
           expiresIn: null,
-          tokenType: 'Bearer'
+          tokenType: 'Bearer',
+          scope: null
         });
         expect(_this.events).to.eql({});
         done();
