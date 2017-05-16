@@ -90,7 +90,7 @@ describe('auth0.WebAuth.redirect', function () {
             client_id: '0HP71GSd6PuoRY',
             connection: 'tests',
             password: '1234',
-            redirect_uri: 'http://localhost:3000/example/',
+            redirect_uri: 'https://localhost:3000/example/',
             response_type: 'id_token',
             scope: 'openid',
             tenant: 'me',
@@ -129,7 +129,7 @@ describe('auth0.WebAuth.redirect', function () {
 
       var configuration = {
         domain: 'me.auth0.com',
-        redirectUri: 'http://localhost:3000/example/',
+        redirectUri: 'https://localhost:3000/example/',
         clientID: '0HP71GSd6PuoRY',
         responseType: 'id_token'
       };
@@ -170,7 +170,7 @@ describe('auth0.WebAuth.redirect', function () {
             client_id: '0HP71GSd6PuoRY',
             connection: 'tests',
             password: '1234',
-            redirect_uri: 'http://localhost:3000/example/',
+            redirect_uri: 'https://localhost:3000/example/',
             response_type: 'token',
             scope: 'openid',
             tenant: 'me',
@@ -192,7 +192,7 @@ describe('auth0.WebAuth.redirect', function () {
 
       var configuration = {
         domain: 'me.auth0.com',
-        redirectUri: 'http://localhost:3000/example/',
+        redirectUri: 'https://localhost:3000/example/',
         clientID: '0HP71GSd6PuoRY',
         responseType: 'token'
       };

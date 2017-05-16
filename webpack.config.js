@@ -37,7 +37,7 @@ module.exports = {
     filename: '[name].js',
     library: '[name]',
     libraryTarget: 'umd',
-    publicPath: 'http://localhost:3000/'
+    publicPath: 'https://localhost:3000/'
   },
   resolve: {
     extensions: ['', '.webpack.js', '.web.js', '.js']
