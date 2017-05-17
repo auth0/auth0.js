@@ -150,6 +150,18 @@ For example:
 
 Remember to add the URL of the silent authentication callback page to the "Allowed Callback URLs" list of your Auth0 client.
 
+- **login(options, cb)**: Authenticates a user with username and password using `/co/authenticate`.
+```js
+webAuth.login({
+  username: 'username',
+  password: 'password',
+  redirectURI: 'https://localhost:3000/example/'
+  }, function(authError) {
+    // This callback is only invoked on authorization errors (`access_denied`)
+  });
+});
+```
+
 - **client.login(options, callback)**: Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
 
 ```js

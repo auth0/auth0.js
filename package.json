@@ -23,6 +23,7 @@
     "ci:test": "istanbul cover _mocha --report lcovonly -R test/**/* -- -R mocha-multi --reporter-options spec=-,mocha-junit-reporter=-",
     "ci:coverage": "codecov",
     "lint": "eslint ./src",
+    "lint:fix": "eslint --fix ./src",
     "publish:cdn": "ccu",
     "release": "scripts/release.sh",
     "jsdocs": "jsdoc --configure .jsdoc.json --verbose"

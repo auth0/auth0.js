@@ -28,15 +28,15 @@ function createKey(origin, coId) {
 }
 
 /**
- * Logs in the user with username and password using the cross origin authentication flow. You can use `username` or `email` as the actual username.
+ * Logs in the user with username and password using the cross origin authentication flow. You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
  *
  * @method login
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
- * @param {String} options.username username
- * @param {String} options.email email
- * @param {String} options.password user password
- * @param {String} options.realm realm
- * @param {Function} cb callback function called only when an authorization error occurs. Has the error as the only parameter.
+ * @param {String} [options.username] Username (mutually exclusive with email)
+ * @param {String} [options.email] Email  (mutually exclusive with username)
+ * @param {String} options.password Password
+ * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
+ * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error occurs. Has the error as the only parameter
  */
 CrossOriginAuthentication.prototype.login = function (options, cb) {
   var _this = this;
