@@ -125,6 +125,8 @@ For this request to succeed, the user must have an active SSO session at Auth0 b
 
 > ***Important:*** this will use postMessage to communicate between the silent callback and the SPA. When false the SDK will attempt to parse the url hash should ignore the url hash and no extra behaviour is needed.
 
+> **Also important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `renewAuth`.
+
 It is strongly recommended to have a dedicated callback page for silent authentication in order to avoid loading your entire application again inside an iframe.
 This callback page should only parse the URL hash and post it to the parent document so that your application can take action depending on the outcome of the silent authentication attempt.
 For example:
@@ -149,18 +151,6 @@ For example:
 ```
 
 Remember to add the URL of the silent authentication callback page to the "Allowed Callback URLs" list of your Auth0 client.
-
-- **login(options, cb)**: Authenticates a user with username and password using `/co/authenticate`.
-```js
-webAuth.login({
-  username: 'username',
-  password: 'password',
-  redirectURI: 'https://localhost:3000/example/'
-  }, function(authError) {
-    // This callback is only invoked on authorization errors (`access_denied`)
-  });
-});
-```
 
 - **client.login(options, callback)**: Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
 
