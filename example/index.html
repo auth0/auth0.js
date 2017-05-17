@@ -109,7 +109,7 @@
         <div>
           <h2>Login with database connection:</h2>
           <input class="login-username" value="johnfoo@gmail.com" />
-          <input type="password" class="login-password" value="1234" />
+          <input class="login-password" value="1234" />
           <input type="button" class="login-db" value="login" />
         </div>
 
@@ -128,7 +128,7 @@
         <div>
           <h2>Login with database connection (popup):</h2>
           <input class="popup-login-username" value="johnfoo@gmail.com" />
-          <input type="password" class="popup-login-password" value="1234" />
+          <input class="popup-login-password" value="1234" />
           <input type="button" class="popup-login-db-preload" value="preload" />
           <input type="button" class="popup-login-db" value="login" />
         </div>
@@ -136,7 +136,7 @@
         <div>
           <h2>Login with database connection (client login):</h2>
           <input class="client-login-username" value="johnfoo@gmail.com" />
-          <input type="password" class="client-login-password" value="1234" />
+          <input class="client-login-password" value="1234" />
           <input type="button" class="client-login-db" value="login" />
         </div>
 
@@ -163,6 +163,8 @@
 
         <div>
           <h2>Login with new Login Ticket flow:</h2>
+          <input class="login-ticket-username" value="johnfoo@gmail.com" />
+          <input class="login-ticket-password" value="1234" />
           <input type="button" class="login-ticket" value="Login" />
         </div>
 
@@ -185,10 +187,9 @@
     });
 
     var webAuth = new auth0.WebAuth({
-      domain: 'luisrudge-auth0-au.au.auth0.com',
+      domain: 'brucke.auth0.com',
       redirectUri: 'https://localhost:3000/example',
-      clientID: '9ZEQtEBDEXOozlZ62q17lDFfPae6n30F', //localhost
-      //clientID: 'gPjLXENRzOnYVA0aPgwQ3jPt0cWGYs7j', //https://test-cross-auth.now.sh/
+      clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
       responseType: 'token',
       plugins: [
         new CordovaAuth0Plugin()
@@ -353,9 +354,10 @@
      $('.login-ticket').click(function (e) {
       e.preventDefault();
       webAuth.login({
-        username: 'test@example.com',
-        password: 'test',
-        redirectURI: 'https://localhost:3000/example/'
+        username: $('.login-ticket-username').val(),
+        password: $('.login-ticket-password').val(),
+        redirectURI: 'https://localhost:3000/example/',
+        realm: 'acme'
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
     $(document.body).append($('<div class="loaded">LOADED</div>'));

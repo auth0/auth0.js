@@ -207,6 +207,7 @@ WebAuth.prototype.validateToken = function (token, nonce, cb) {
 /**
  * Executes a silent authentication transaction under the hood in order to fetch a new tokens for the current session.
  * This method requires that all Auth is performed with {@link authorize}
+ * Watch out! If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling this method.
  *
  * @method renewAuth
  * @param {Object} options
@@ -313,7 +314,8 @@ WebAuth.prototype.signup = function (options, cb) {
 };
 
 /**
- * Redirects to the hosted login page (`/authorize`) in order to start a new authN/authZ transaction
+ * Redirects to the hosted login page (`/authorize`) in order to start a new authN/authZ transaction.
+ * After that, you'll have to use the {@link parseHash} function at the specified `redirectUri`.
  *
  * @method authorize
  * @param {Object} options
@@ -381,15 +383,21 @@ WebAuth.prototype.signupAndAuthorize = function (options, cb) {
 };
 
 /**
- * Logs in the user with username and password using the cross origin authentication flow. You can use `username` or `email` as the actual username.
+ * @callback crossOriginLoginCallback
+ * @param {Error} [err] Authentication error returned by Auth0 with the reason why the request failed
+ */
+
+/**
+ * Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
+ * This only works when 3rd party cookies are enabled in the browser. After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
  *
  * @method login
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
- * @param {String} options.username username
- * @param {String} options.email email
- * @param {String} options.password user password
- * @param {String} options.realm realm
- * @param {Function} cb callback function called only when an authorization error occurs. Has the error as the only parameter.
+ * @param {String} [options.username] Username (mutually exclusive with email)
+ * @param {String} [options.email] Email  (mutually exclusive with username)
+ * @param {String} options.password Password
+ * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
+ * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.login = function (options, cb) {
   this.crossOriginAuthentication.login(options, cb);
