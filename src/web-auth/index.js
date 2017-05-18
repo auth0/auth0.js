@@ -220,11 +220,13 @@ WebAuth.prototype.validateToken = function (token, nonce, cb) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {String} [options.postMessageDataType] identifier data type to look for in postMessage event data, where events are initiated from silent callback urls, before accepting a message event is the event expected. A value of false means any postMessage event will trigger a callback.
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
 WebAuth.prototype.renewAuth = function (options, cb) {
   var handler;
   var usePostMessage = !!options.usePostMessage;
+  var postMessageDataType = options.postMessageDataType || false;
   var _this = this;
 
   var params = objectHelper.merge(this.baseOptions, [
@@ -250,14 +252,17 @@ WebAuth.prototype.renewAuth = function (options, cb) {
 
   params.prompt = 'none';
 
-  params = objectHelper.blacklist(params, ['usePostMessage', 'tenant']);
+  params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType']);
 
-  handler = new SilentAuthenticationHandler(this, this.client.buildAuthorizeUrl(params));
+  handler = SilentAuthenticationHandler.create({
+    authenticationUrl: this.client.buildAuthorizeUrl(params),
+    postMessageDataType: postMessageDataType
+  });
 
   handler.login(usePostMessage, function (err, hash) {
     if (typeof hash === 'object') {
-      // hash was already parsed, so we just return it
-      // it's here to be backwards compatible and should be removed in the next major version
+      // hash was already parsed, so we just return it.
+      // it's here to be backwards compatible and should be removed in the next major version.
       return cb(err, hash);
     }
     var transaction = _this.transactionManager.getStoredTransaction(params.state);

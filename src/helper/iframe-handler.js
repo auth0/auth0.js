@@ -1,17 +1,27 @@
 var windowHelper = require('./window');
 
+
 function IframeHandler(options) {
-  this.auth0 = options.auth0;
   this.url = options.url;
   this.callback = options.callback;
   this.timeout = options.timeout || 60 * 1000;
   this.timeoutCallback = options.timeoutCallback || null;
-  this.usePostMessage = options.usePostMessage || false;
+  this.eventListenerType = options.eventListenerType || 'message';
   this.iframe = null;
   this.timeoutHandle = null;
   this._destroyTimeout = null;
   this.transientMessageEventListener = null;
-  this.transientEventListener = null;
+  this.proxyEventListener = null;
+  // If no event identifier specified, set default
+  this.eventValidator = options.eventValidator || {
+    isValid: function () {
+      return true;
+    }
+  };
+
+  if (typeof this.callback !== 'function') {
+    throw new Error('options.callback must be a function');
+  }
 }
 
 IframeHandler.prototype.init = function () {
@@ -22,21 +32,24 @@ IframeHandler.prototype.init = function () {
   this.iframe.style.display = 'none';
   this.iframe.src = this.url;
 
-  if (this.usePostMessage) {
-    // Workaround to avoid using bind that does not work in IE8
-    this.transientMessageEventListener = function (e) {
-      _this.messageEventListener(e);
-    };
+  // Workaround to avoid using bind that does not work in IE8
+  this.proxyEventListener = function (e) {
+    _this.eventListener(e);
+  };
 
-    _window.addEventListener('message', this.transientMessageEventListener, false);
-  } else {
-    // Workaround to avoid using bind that does not work in IE8
-    this.transientEventListener = function () {
-      _this.loadEventListener();
-    };
-
-    this.iframe.addEventListener('load', this.transientEventListener, false);
+  switch (this.eventListenerType) {
+    case 'message':
+      this.eventSourceObject = _window;
+      break;
+    case 'load':
+      this.eventSourceObject = this.iframe;
+      break;
+    default:
+      throw new Error('Unsupported event listener type: ' + this.eventListenerType);
   }
+
+  this.eventSourceObject
+    .addEventListener(this.eventListenerType, this.proxyEventListener, false);
 
   _window.document.body.appendChild(this.iframe);
 
@@ -45,26 +58,18 @@ IframeHandler.prototype.init = function () {
   }, this.timeout);
 };
 
-IframeHandler.prototype.messageEventListener = function (e) {
-  this.destroy();
-  this.callbackHandler(e.data);
-};
 
-IframeHandler.prototype.loadEventListener = function () {
-  var _this = this;
-  _this.callback(null, this.iframe.contentWindow.location.hash);
-};
+IframeHandler.prototype.eventListener = function (event) {
+  var eventData = { event: event, sourceObject: this.eventSourceObject };
 
-IframeHandler.prototype.callbackHandler = function (result) {
-  var error = null;
-
-  if (result && result.error) {
-    error = result;
-    result = null;
+  if (!this.eventValidator.isValid(eventData)) {
+    return;
   }
 
-  this.callback(error, result);
+  this.destroy();
+  this.callback(eventData);
 };
+
 
 IframeHandler.prototype.timeoutHandler = function () {
   this.destroy();
@@ -80,14 +85,11 @@ IframeHandler.prototype.destroy = function () {
   clearTimeout(this.timeoutHandle);
 
   this._destroyTimeout = setTimeout(function () {
-    if (_this.usePostMessage) {
-      _window.removeEventListener('message', _this.transientMessageEventListener, false);
-    } else {
-      _this.iframe.removeEventListener('load', _this.transientEventListener, false);
-    }
-
+    _this.eventSourceObject
+      .removeEventListener(_this.eventListenerType, _this.proxyEventListener, false);
     _window.document.body.removeChild(_this.iframe);
   }, 0);
 };
+
 
 module.exports = IframeHandler;

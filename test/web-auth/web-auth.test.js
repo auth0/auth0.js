@@ -4,7 +4,6 @@ var spy = require('sinon').spy;
 var request = require('superagent');
 
 var storage = require('../../src/helper/storage');
-var IframeHandler = require('../../src/helper/iframe-handler');
 
 var RequestMock = require('../mock/request-mock');
 
@@ -47,6 +46,7 @@ describe('auth0.WebAuth', function () {
   context('nonce validation', function () {
     after(function(){
       SilentAuthenticationHandler.prototype.login.restore();
+
       delete global.window;
     })
 
@@ -95,7 +95,75 @@ describe('auth0.WebAuth', function () {
         done();
       });
     });
-  })
+  });
+
+  context('Pass correct postMessageData value to silent-authentication-handler', function () {
+    afterEach(function () {
+      SilentAuthenticationHandler.create.restore();
+    });
+
+    it('should pass correct postMessageDataType=false value on to silent authentication handler', function (done) {
+      stub(SilentAuthenticationHandler, 'create', function (options) {
+        expect(options.postMessageDataType).to.be(false);
+        done();
+        return {
+          login: function(){}
+        };
+      });
+
+      var webAuth = new WebAuth({
+        domain: 'wptest.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false
+      });
+
+      var options = {
+        nonce: '123',
+        state: '456'
+      };
+
+      webAuth.renewAuth(options, function (err, data) {
+      });
+
+    });
+
+
+    it('should pass correct postMessageDataType=<value> on to silent authentication handler', function (done) {
+      stub(SilentAuthenticationHandler, 'create', function (options) {
+        expect(options.postMessageDataType).to.eql('auth0:silent-authentication');
+        done();
+        return {
+          login: function(){}
+        };
+      });
+
+      var webAuth = new WebAuth({
+        domain: 'wptest.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false
+      });
+
+      var options = {
+        nonce: '123',
+        state: '456',
+        postMessageDataType: 'auth0:silent-authentication'
+      };
+
+      webAuth.renewAuth(options, function (err, data) {
+      });
+
+    });
+  });
+
+
   context('parseHash', function () {
     before(function() {
       global.window = {};
@@ -346,13 +414,13 @@ describe('auth0.WebAuth', function () {
       global.window.removeEventListener = function(){};
     });
     after(function(){
-      IframeHandler.prototype.init.restore();
+      SilentAuthenticationHandler.prototype.login.restore();
     });
 
     it('should pass the correct authorize url', function (done) {
-      stub(IframeHandler.prototype, 'init', function(message) {
-        expect(this.url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&scope=openid%20name%20read%3Ablog&audience=urn%3Asite%3Ademo%3Ablog&nonce=123&state=456&response_mode=fragment&prompt=none');
-        this.timeoutCallback();
+      stub(SilentAuthenticationHandler.prototype, 'login', function() {
+        expect(this.authenticationUrl).to.be('https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&scope=openid%20name%20read%3Ablog&audience=urn%3Asite%3Ademo%3Ablog&nonce=123&state=456&response_mode=fragment&prompt=none');
+        done();
       });
 
       var webAuth = new WebAuth({
@@ -370,11 +438,7 @@ describe('auth0.WebAuth', function () {
         state: '456'
       };
 
-      webAuth.renewAuth(options, function (err) {
-        expect(err.error).to.be('timeout');
-        expect(err.errorDescription).to.be('Timeout during authentication renew.');
-        done();
-      });
+      webAuth.renewAuth(options, function(){});
     });
   });
 
