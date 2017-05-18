@@ -1,4 +1,4 @@
-#Change Log
+# Change Log
 
 ## [v8.6.1](https://github.com/auth0/auth0.js/tree/v8.6.1) (2017-05-08)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.6.0...v8.6.1)
