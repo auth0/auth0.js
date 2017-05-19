@@ -26,7 +26,8 @@
     "lint:fix": "eslint --fix ./src",
     "publish:cdn": "ccu",
     "release": "scripts/release.sh",
-    "jsdocs": "jsdoc --configure .jsdoc.json --verbose"
+    "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
+    "precommit": "lint-staged"
   },
   "repository": {
     "type": "git",
@@ -85,5 +86,12 @@
   "browserslist": [
     "last 2 versions",
     "ie >= 9"
-  ]
+  ],
+  "lint-staged": {
+    "{src,test, plugins,integration}/**/*.js": [
+      "npm run lint",
+      "prettier --write --print-width 100 --single-quote",
+      "git add"
+    ]
+  }
 }
