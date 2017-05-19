@@ -1,5 +1,8 @@
 {
-  "extends": "auth0-base/legacy",
+  "extends": [
+    "auth0-base/legacy",
+    "prettier"
+  ],
   "plugins": [
     "compat"
   ],
@@ -11,10 +14,8 @@
     "no-underscore-dangle": "off",
     "no-prototype-builtins": "off",
     "no-param-reassign": "off",
-    "max-len": "off",
     "consistent-return": "off",
     "vars-on-top": "off",
-    "compat/compat": "error",
-    "space-before-function-paren": "off"
+    "compat/compat": "error"
   }
 }
