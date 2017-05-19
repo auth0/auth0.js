@@ -20,7 +20,7 @@
     "test": "mocha test/**/*.test.js test/setup.js",
     "test:integration": "mocha-parallel-tests --max-parallel 2 integration/**/*.test.js",
     "test:watch": "mocha --watch -R min test/**/*.test.js  test/setup.js",
-    "ci:test": "istanbul cover _mocha --report lcovonly -R test/**/* -- -R mocha-multi --reporter-options spec=-,mocha-junit-reporter=-",
+    "ci:test": "istanbul cover _mocha --report lcovonly -R test/**/* test/setup.js -- -R mocha-multi --reporter-options spec=-,mocha-junit-reporter=-",
     "ci:coverage": "codecov",
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix ./src",
