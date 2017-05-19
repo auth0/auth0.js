@@ -5,7 +5,7 @@ function wrapCallback(cb, options) {
   options = options || {};
   options.ignoreCasing = options.ignoreCasing ? options.ignoreCasing : false;
 
-  return function (err, data) {
+  return function(err, data) {
     var errObj;
 
     if (!err && !data) {
@@ -44,7 +44,14 @@ function wrapCallback(cb, options) {
       }
 
       errObj.code = err.error || err.code || err.error_code || err.status || null;
-      errObj.description = err.errorDescription || err.error_description || err.description || err.error || err.details || err.err || null;
+      errObj.description =
+        err.errorDescription ||
+        err.error_description ||
+        err.description ||
+        err.error ||
+        err.details ||
+        err.err ||
+        null;
 
       if (err.name) {
         errObj.name = err.name;

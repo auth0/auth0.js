@@ -4,7 +4,7 @@ function Warn(options) {
   this.disableWarnings = options.disableWarnings;
 }
 
-Warn.prototype.warning = function (message) {
+Warn.prototype.warning = function(message) {
   if (this.disableWarnings) {
     return;
   }

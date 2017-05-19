@@ -1,6 +1,11 @@
 {
-  "extends": "auth0-base/legacy",
-  "plugins": ["compat"],
+  "extends": [
+    "auth0-base/legacy",
+    "prettier"
+  ],
+  "plugins": [
+    "compat"
+  ],
   "env": {
     "browser": true
   },
@@ -9,7 +14,6 @@
     "no-underscore-dangle": "off",
     "no-prototype-builtins": "off",
     "no-param-reassign": "off",
-    "max-len": "off",
     "consistent-return": "off",
     "vars-on-top": "off",
     "compat/compat": "error"

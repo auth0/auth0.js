@@ -10,7 +10,7 @@ function PopupHandler() {
   this._current_popup = null;
 }
 
-PopupHandler.prototype.calculatePosition = function (options) {
+PopupHandler.prototype.calculatePosition = function(options) {
   var width = options.width || 500;
   var height = options.height || 600;
   var _window = windowHandler.getWindow();
@@ -26,13 +26,13 @@ PopupHandler.prototype.calculatePosition = function (options) {
     ? _window.outerHeight
     : _window.document.body.clientHeight;
 
-  var left = screenX + ((outerWidth - width) / 2);
-  var top = screenY + ((outerHeight - height) / 2);
+  var left = (outerWidth - width) / 2;
+  var top = (outerHeight - height) / 2;
 
-  return { width: width, height: height, left: left, top: top };
+  return { width: width, height: height, left: screenX + left, top: screenY + top };
 };
 
-PopupHandler.prototype.preload = function (options) {
+PopupHandler.prototype.preload = function(options) {
   var _this = this;
   var _window = windowHandler.getWindow();
   var popupPosition = this.calculatePosition(options.popupOptions || {});
@@ -49,7 +49,7 @@ PopupHandler.prototype.preload = function (options) {
 
   this._current_popup = _window.open(url, 'auth0_signup_popup', windowFeatures);
 
-  this._current_popup.kill = function () {
+  this._current_popup.kill = function() {
     this.close();
     _this._current_popup = null;
   };
@@ -57,22 +57,24 @@ PopupHandler.prototype.preload = function (options) {
   return this._current_popup;
 };
 
-PopupHandler.prototype.load = function (url, relayUrl, options, cb) {
+PopupHandler.prototype.load = function(url, relayUrl, options, cb) {
   var _this = this;
   var popupPosition = this.calculatePosition(options.popupOptions || {});
   var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
 
-  var winchanOptions = objectHelper.merge({
-    url: url,
-    relay_url: relayUrl,
-    window_features: qs.stringify(popupOptions, {
-      delimiter: ',',
-      encode: false
-    }),
-    popup: this._current_popup
-  }).with(options);
+  var winchanOptions = objectHelper
+    .merge({
+      url: url,
+      relay_url: relayUrl,
+      window_features: qs.stringify(popupOptions, {
+        delimiter: ',',
+        encode: false
+      }),
+      popup: this._current_popup
+    })
+    .with(options);
 
-  var popup = WinChan.open(winchanOptions, function (err, data) {
+  var popup = WinChan.open(winchanOptions, function(err, data) {
     _this._current_popup = null;
     return cb(err, data);
   });

@@ -1,10 +1,10 @@
 var objectHelper = require('./object');
 
 var tokenParams = [
-// auth0
+  // auth0
   'realm',
   'audience',
-// oauth2
+  // oauth2
   'client_id',
   'client_secret',
   'redirect_uri',
@@ -21,7 +21,7 @@ var tokenParams = [
 ];
 
 var authorizeParams = [
-// auth0
+  // auth0
   'connection',
   'connection_scope',
   'auth0Client',
@@ -32,7 +32,7 @@ var authorizeParams = [
   '_csrf',
   '_intstate',
 
-// oauth2
+  // oauth2
   'client_id',
   'response_type',
   'response_mode',
@@ -61,7 +61,11 @@ function oauthAuthorizeParams(warn, params) {
   var notAllowed = objectHelper.getKeysNotIn(params, authorizeParams);
 
   if (notAllowed.length > 0) {
-    warn.warning('Following parameters are not allowed on the `/authorize` endpoing: [' + notAllowed.join(',') + ']');
+    warn.warning(
+      'Following parameters are not allowed on the `/authorize` endpoing: [' +
+        notAllowed.join(',') +
+        ']'
+    );
   }
 
   return params;

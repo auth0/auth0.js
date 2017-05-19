@@ -1,14 +1,14 @@
 var base64 = require('base64-js');
 
 function padding(str) {
-  var mod = (str.length % 4);
+  var mod = str.length % 4;
   var pad = 4 - mod;
 
   if (mod === 0) {
     return str;
   }
 
-  return str + (new Array(1 + pad)).join('=');
+  return str + new Array(1 + pad).join('=');
 }
 
 function stringToByteArray(str) {
@@ -28,9 +28,10 @@ function byteArrayToString(array) {
 }
 
 function encode(str) {
-  return base64.fromByteArray(stringToByteArray(str))
-      .replace(/\+/g, '-') // Convert '+' to '-'
-      .replace(/\//g, '_'); // Convert '/' to '_'
+  return base64
+    .fromByteArray(stringToByteArray(str))
+    .replace(/\+/g, '-') // Convert '+' to '-'
+    .replace(/\//g, '_'); // Convert '/' to '_'
 }
 
 function decode(str) {

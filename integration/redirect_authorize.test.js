@@ -5,14 +5,12 @@ var selenium = require('./selenium');
 var By = webdriver.By;
 var until = webdriver.until;
 
-describe('redirect authorize', function () {
+describe('redirect authorize', function() {
   this.timeout(9999999);
 
   selenium.runTests((newSession, browser) => {
-
     context(browser, function() {
-
-      it('[token] should result in a successful transaction', function () {
+      it('[token] should result in a successful transaction', function() {
         var session = newSession(this.test.title);
         var driver = session.start();
 
@@ -43,7 +41,7 @@ describe('redirect authorize', function () {
         return session.finish();
       });
 
-      it('[code] should result in a successful transaction', function () {
+      it('[code] should result in a successful transaction', function() {
         var session = newSession(this.test.title);
         var driver = session.start();
 
@@ -63,7 +61,7 @@ describe('redirect authorize', function () {
         return session.finish();
       });
 
-      it('[token openid] should result in a successful transaction', function () {
+      it('[token openid] should result in a successful transaction', function() {
         var session = newSession(this.test.title);
         var driver = session.start();
 
@@ -96,7 +94,7 @@ describe('redirect authorize', function () {
         return session.finish();
       });
 
-      it('[id_token] should result in a successful transaction', function () {
+      it('[id_token] should result in a successful transaction', function() {
         var session = newSession(this.test.title);
         var driver = session.start();
 
@@ -128,7 +126,7 @@ describe('redirect authorize', function () {
         return session.finish();
       });
 
-      it('[token id_token] should result in a successful transaction', function () {
+      it('[token id_token] should result in a successful transaction', function() {
         var session = newSession(this.test.title);
         var driver = session.start();
 
@@ -160,5 +158,5 @@ describe('redirect authorize', function () {
         return session.finish();
       });
     });
-  })
+  });
 });

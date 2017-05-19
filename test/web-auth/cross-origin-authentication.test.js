@@ -14,10 +14,9 @@ var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authent
 var WebAuth = require('../../src/web-auth');
 var windowHelper = require('../../src/helper/window');
 
-
-describe('auth0.WebAuth.crossOriginAuthentication', function () {
-  context('login', function () {
-    before(function () {
+describe('auth0.WebAuth.crossOriginAuthentication', function() {
+  context('login', function() {
+    before(function() {
       this.webAuthSpy = {
         authorize: spy()
       };
@@ -30,15 +29,15 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
       global.window = {};
       global.window.sessionStorage = {};
     });
-    afterEach(function () {
+    afterEach(function() {
       request.post.restore();
       this.webAuthSpy.authorize = spy();
       if (windowHelper.redirect.restore) {
         windowHelper.redirect.restore();
       }
     });
-    it('should call /co/authenticate and redirect to /authorize with login_ticket', function () {
-      stub(request, 'post', function (url) {
+    it('should call /co/authenticate and redirect to /authorize with login_ticket', function() {
+      stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -66,10 +65,13 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         password: '123456',
         anotherOption: 'foobar'
       });
-      expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({ loginTicket: 'a_login_ticket', anotherOption: 'foobar' });
+      expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({
+        loginTicket: 'a_login_ticket',
+        anotherOption: 'foobar'
+      });
     });
-    it('should call /co/authenticate with realm grant and redirect to /authorize with login_ticket when realm is used', function () {
-      stub(request, 'post', function (url) {
+    it('should call /co/authenticate with realm grant and redirect to /authorize with login_ticket when realm is used', function() {
+      stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -98,10 +100,13 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         password: '123456',
         realm: 'a-connection'
       });
-      expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({ loginTicket: 'a_login_ticket', realm: 'a-connection' });
+      expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({
+        loginTicket: 'a_login_ticket',
+        realm: 'a-connection'
+      });
     });
-    it('should call /co/authenticate and save the verifier in sessionStorage', function () {
-      stub(request, 'post', function (url) {
+    it('should call /co/authenticate and save the verifier in sessionStorage', function() {
+      stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -129,48 +134,58 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         password: '123456',
         anotherOption: 'foobar'
       });
-      expect(global.window.sessionStorage).to.be.eql({ 'co/verifier/https%3A%2F%2Fme.auth0.com/co_id': 'co_verifier' });
-    });
-    context('should call callback and not redirect to authorize when it is an authentication error', function () {
-      it('access_denied', function(done) {
-        stub(request, 'post', function (url) {
-          expect(url).to.be('https://me.auth0.com/co/authenticate');
-          return new RequestMock({
-            body: {
-              client_id: '...',
-              credential_type: 'password',
-              username: 'me@example.com',
-              password: '123456'
-            },
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            cb: function(cb) {
-              cb({
-                response: {
-                  body: {
-                    error: 'access_denied',
-                    error_description: 'access denied'
-                  }
-                }
-              });
-            }
-          });
-        });
-        var _this = this;
-        this.co.login({
-          username: 'me@example.com',
-          password: '123456',
-          anotherOption: 'foobar'
-        }, function (err) {
-          expect(err).to.be.eql({ error: 'access_denied', error_description: 'access denied' });
-          expect(_this.webAuthSpy.authorize.called).to.be.eql(false);
-          done();
-        });
+      expect(global.window.sessionStorage).to.be.eql({
+        'co/verifier/https%3A%2F%2Fme.auth0.com/co_id': 'co_verifier'
       });
     });
-    it('should call /co/authenticate and redirect to options.redirectUri when an error WITH description occur', function (done) {
-      stub(request, 'post', function (url) {
+    context(
+      'should call callback and not redirect to authorize when it is an authentication error',
+      function() {
+        it('access_denied', function(done) {
+          stub(request, 'post', function(url) {
+            expect(url).to.be('https://me.auth0.com/co/authenticate');
+            return new RequestMock({
+              body: {
+                client_id: '...',
+                credential_type: 'password',
+                username: 'me@example.com',
+                password: '123456'
+              },
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              cb: function(cb) {
+                cb({
+                  response: {
+                    body: {
+                      error: 'access_denied',
+                      error_description: 'access denied'
+                    }
+                  }
+                });
+              }
+            });
+          });
+          var _this = this;
+          this.co.login(
+            {
+              username: 'me@example.com',
+              password: '123456',
+              anotherOption: 'foobar'
+            },
+            function(err) {
+              expect(err).to.be.eql({ error: 'access_denied', error_description: 'access denied' });
+              expect(_this.webAuthSpy.authorize.called).to.be.eql(false);
+              done();
+            }
+          );
+        });
+      }
+    );
+    it('should call /co/authenticate and redirect to options.redirectUri when an error WITH description occur', function(
+      done
+    ) {
+      stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -194,8 +209,10 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           }
         });
       });
-      stub(windowHelper, 'redirect', function (url) {
-        expect(url).to.be.equal('https://page.com/callback#error=Ops&error_description=Something%20happened');
+      stub(windowHelper, 'redirect', function(url) {
+        expect(url).to.be.equal(
+          'https://page.com/callback#error=Ops&error_description=Something%20happened'
+        );
         done();
       });
 
@@ -205,8 +222,10 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         anotherOption: 'foobar'
       });
     });
-    it('should call /co/authenticate and redirect to options.redirectUri when an error WITHOUT description occur', function (done) {
-      stub(request, 'post', function (url) {
+    it('should call /co/authenticate and redirect to options.redirectUri when an error WITHOUT description occur', function(
+      done
+    ) {
+      stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -225,8 +244,10 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           }
         });
       });
-      stub(windowHelper, 'redirect', function (url) {
-        expect(url).to.be.equal('https://page.com/callback#error=Request%20Error&error_description=%7B%22foo%22:%22bar%22%7D');
+      stub(windowHelper, 'redirect', function(url) {
+        expect(url).to.be.equal(
+          'https://page.com/callback#error=Request%20Error&error_description=%7B%22foo%22:%22bar%22%7D'
+        );
         done();
       });
 
@@ -237,14 +258,17 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
       });
     });
   });
-  context('callback', function () {
-    before(function () {
-      this.co = new CrossOriginAuthentication({}, {
-        rootUrl: 'https://me.auth0.com',
-        clientID: '...',
-        _sendTelemetry: false,
-        redirectUri: 'https://page.com/callback'
-      });
+  context('callback', function() {
+    before(function() {
+      this.co = new CrossOriginAuthentication(
+        {},
+        {
+          rootUrl: 'https://me.auth0.com',
+          clientID: '...',
+          _sendTelemetry: false,
+          redirectUri: 'https://page.com/callback'
+        }
+      );
       global.window = {
         addEventListener: spy(),
         sessionStorage: {
@@ -259,19 +283,19 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         }
       };
     });
-    it('should call parent.postMessage on load', function () {
+    it('should call parent.postMessage on load', function() {
       this.co.callback();
       var theCall = global.window.parent.postMessage.getCall(0);
       expect(theCall.args[0]).to.be.eql({ type: 'ready' });
       expect(theCall.args[1]).to.be('origin');
     });
-    it('should add a listener to the message event', function () {
+    it('should add a listener to the message event', function() {
       this.co.callback();
       var theCall = global.window.addEventListener.getCall(0);
       expect(theCall.args[0]).to.be('message');
     });
-    context('when a message is received', function () {
-      it('should ignore if the message.data.type !== co_verifier_request', function () {
+    context('when a message is received', function() {
+      it('should ignore if the message.data.type !== co_verifier_request', function() {
         this.co.callback();
         var theCall = global.window.addEventListener.getCall(0);
         var evt = {
@@ -282,7 +306,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         theCall.args[1](evt);
         expect(global.window.sessionStorage.removeItem.called).to.be(false);
       });
-      it('should remove item from sessionStorage', function () {
+      it('should remove item from sessionStorage', function() {
         this.co.callback();
         var onMessageHandler = global.window.addEventListener.getCall(0).args[1];
         var evt = {
@@ -294,14 +318,14 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
             }
           },
           source: {
-            postMessage: function(){}
+            postMessage: function() {}
           }
         };
         onMessageHandler(evt);
         var theCall = global.window.sessionStorage.removeItem.getCall(0);
         expect(theCall.args[0]).to.be('co/verifier/https%3A%2F%2Fme.auth0.com/co_id');
       });
-      it('should send the verifier response', function () {
+      it('should send the verifier response', function() {
         this.co.callback();
         var onMessageHandler = global.window.addEventListener.getCall(0).args[1];
         var evt = {
@@ -318,7 +342,10 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         };
         onMessageHandler(evt);
         var theCall = evt.source.postMessage.getCall(0);
-        expect(theCall.args[0]).to.be.eql({ type: 'co_verifier_response', response: { verifier: 'co_verifier' } });
+        expect(theCall.args[0]).to.be.eql({
+          type: 'co_verifier_response',
+          response: { verifier: 'co_verifier' }
+        });
         expect(theCall.args[1]).to.be('https://me.auth0.com');
       });
     });

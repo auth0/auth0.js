@@ -9,7 +9,7 @@ function TransactionManager(options) {
   this.keyLength = options.keyLength || 32;
 }
 
-TransactionManager.prototype.process = function (options) {
+TransactionManager.prototype.process = function(options) {
   var transaction;
 
   if (options.responseType.indexOf('code') !== -1) {
@@ -31,7 +31,7 @@ TransactionManager.prototype.process = function (options) {
   return options;
 };
 
-TransactionManager.prototype.generateTransaction = function (appState, state, nonce) {
+TransactionManager.prototype.generateTransaction = function(appState, state, nonce) {
   var transaction = state || random.randomString(this.keyLength);
   nonce = nonce || random.randomString(this.keyLength);
 
@@ -46,7 +46,7 @@ TransactionManager.prototype.generateTransaction = function (appState, state, no
   };
 };
 
-TransactionManager.prototype.getStoredTransaction = function (transaction) {
+TransactionManager.prototype.getStoredTransaction = function(transaction) {
   var transactionData;
 
   transactionData = storage.getItem(this.namespace + transaction);

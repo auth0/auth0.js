@@ -6,7 +6,7 @@ var assert = require('./assert');
 var objectAssign = require('./object-assign');
 
 function pick(object, keys) {
-  return keys.reduce(function (prev, key) {
+  return keys.reduce(function(prev, key) {
     if (object[key]) {
       prev[key] = object[key];
     }
@@ -41,7 +41,7 @@ function extend() {
 function merge(object, keys) {
   return {
     base: keys ? pick(object, keys) : object,
-    with: function (object2, keys2) {
+    with: function(object2, keys2) {
       object2 = keys2 ? pick(object2, keys2) : object2;
       return extend(this.base, object2);
     }
@@ -49,7 +49,7 @@ function merge(object, keys) {
 }
 
 function blacklist(object, blacklistedKeys) {
-  return Object.keys(object).reduce(function (p, key) {
+  return Object.keys(object).reduce(function(p, key) {
     if (blacklistedKeys.indexOf(key) === -1) {
       p[key] = object[key];
     }
@@ -66,14 +66,17 @@ function camelToSnake(str) {
 
   while (index < str.length) {
     code = str.charCodeAt(index);
-    if ((!wasPrevUppercase && code >= 65 && code <= 90) || (!wasPrevNumber && code >= 48 && code <= 57)) {
+    if (
+      (!wasPrevUppercase && code >= 65 && code <= 90) ||
+      (!wasPrevNumber && code >= 48 && code <= 57)
+    ) {
       newKey += '_';
       newKey += str[index].toLowerCase();
     } else {
       newKey += str[index].toLowerCase();
     }
-    wasPrevNumber = (code >= 48 && code <= 57);
-    wasPrevUppercase = (code >= 65 && code <= 90);
+    wasPrevNumber = code >= 48 && code <= 57;
+    wasPrevUppercase = code >= 65 && code <= 90;
     index++;
   }
 
@@ -82,7 +85,7 @@ function camelToSnake(str) {
 
 function snakeToCamel(str) {
   var parts = str.split('_');
-  return parts.reduce(function (p, c) {
+  return parts.reduce(function(p, c) {
     return p + c.charAt(0).toUpperCase() + c.slice(1);
   }, parts.shift());
 }
@@ -93,7 +96,7 @@ function toSnakeCase(object, exceptions) {
   }
   exceptions = exceptions || [];
 
-  return Object.keys(object).reduce(function (p, key) {
+  return Object.keys(object).reduce(function(p, key) {
     var newKey = exceptions.indexOf(key) === -1 ? camelToSnake(key) : key;
     p[newKey] = toSnakeCase(object[key]);
     return p;
@@ -107,7 +110,7 @@ function toCamelCase(object, exceptions) {
 
   exceptions = exceptions || [];
 
-  return Object.keys(object).reduce(function (p, key) {
+  return Object.keys(object).reduce(function(p, key) {
     var newKey = exceptions.indexOf(key) === -1 ? snakeToCamel(key) : key;
     p[newKey] = toCamelCase(object[key]);
     return p;

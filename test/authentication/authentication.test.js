@@ -9,38 +9,36 @@ var request = require('superagent');
 var RequestBuilder = require('../../src/helper/request-builder');
 var Authentication = require('../../src/authentication');
 
-var telemetryInfo = (new RequestBuilder({})).getTelemetryData();
+var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
-describe('auth0.authentication', function () {
-  describe('initialization', function () {
-
+describe('auth0.authentication', function() {
+  describe('initialization', function() {
     it('should check that options is passed', function() {
       expect(function() {
         var auth0 = new Authentication();
-      }).to.throwException(function (e) {
+      }).to.throwException(function(e) {
         expect(e.message).to.be('options parameter is not valid');
       });
     });
 
     it('should check that domain is set', function() {
       expect(function() {
-        var auth0 = new Authentication({clientID:'...'});
-      }).to.throwException(function (e) {
+        var auth0 = new Authentication({ clientID: '...' });
+      }).to.throwException(function(e) {
         expect(e.message).to.be('domain option is required');
       });
     });
 
     it('should check that clientID is set', function() {
       expect(function() {
-        var auth0 = new Authentication({domain: 'me.auth0.com'});
-      }).to.throwException(function (e) {
+        var auth0 = new Authentication({ domain: 'me.auth0.com' });
+      }).to.throwException(function(e) {
         expect(e.message).to.be('clientID option is required');
       });
     });
   });
 
-  context('buildAuthorizeUrl', function () {
-
+  context('buildAuthorizeUrl', function() {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
@@ -54,15 +52,17 @@ describe('auth0.authentication', function () {
     it('should check that options is valid', function() {
       expect(() => {
         this.auth0.buildAuthorizeUrl('asdfasdfds');
-      }).to.throwException(function (e) {
+      }).to.throwException(function(e) {
         expect(e.message).to.be('options parameter is not valid');
       });
     });
 
     it('should return a url using the default settings', function() {
-      var url = this.auth0.buildAuthorizeUrl({state:'1234'});
+      var url = this.auth0.buildAuthorizeUrl({ state: '1234' });
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&state=1234');
+      expect(url).to.be(
+        'https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&state=1234'
+      );
     });
 
     it('should return a url with connection_scope', function() {
@@ -74,7 +74,9 @@ describe('auth0.authentication', function () {
         connection_scope: 'scope1,scope2'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&connection_scope=scope1%2Cscope2');
+      expect(url).to.be(
+        'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&connection_scope=scope1%2Cscope2'
+      );
     });
 
     it('should return a url with connection_scope as a string', function() {
@@ -86,7 +88,9 @@ describe('auth0.authentication', function () {
         connection_scope: ['scope1', 'scope2']
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&connection_scope=scope1%2Cscope2');
+      expect(url).to.be(
+        'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&connection_scope=scope1%2Cscope2'
+      );
     });
 
     it('should return a url using overriding the default settings', function() {
@@ -97,7 +101,9 @@ describe('auth0.authentication', function () {
         state: '1234'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234');
+      expect(url).to.be(
+        'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234'
+      );
     });
 
     it('should return a url using using whitelisted authorization parameter device', function() {
@@ -109,11 +115,13 @@ describe('auth0.authentication', function () {
         device: 'my-device'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&device=my-device');
+      expect(url).to.be(
+        'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&device=my-device'
+      );
     });
   });
 
-  context('buildAuthorizeUrl with Telemetry', function () {
+  context('buildAuthorizeUrl with Telemetry', function() {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
@@ -131,12 +139,14 @@ describe('auth0.authentication', function () {
         state: '1234'
       });
 
-      expect(url).to.be('https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&auth0Client='+ encodeURIComponent(telemetryInfo));
+      expect(url).to.be(
+        'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fanotherpage.com%2Fcallback2&prompt=none&state=1234&auth0Client=' +
+          encodeURIComponent(telemetryInfo)
+      );
     });
   });
 
-  context('buildLogoutUrl', function () {
-
+  context('buildLogoutUrl', function() {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
@@ -150,7 +160,7 @@ describe('auth0.authentication', function () {
     it('should check that options is valid', function() {
       expect(() => {
         this.auth0.buildLogoutUrl('asdfasdfds');
-      }).to.throwException(function (e) {
+      }).to.throwException(function(e) {
         expect(e.message).to.be('options parameter is not valid');
       });
     });
@@ -176,11 +186,13 @@ describe('auth0.authentication', function () {
         federated: ''
       });
 
-      expect(url).to.be('https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated=');
+      expect(url).to.be(
+        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated='
+      );
     });
   });
 
-  context('buildLogoutUrl with Telemetry', function () {
+  context('buildLogoutUrl with Telemetry', function() {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
@@ -197,11 +209,14 @@ describe('auth0.authentication', function () {
         federated: ''
       });
 
-      expect(url).to.be('https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated=&auth0Client=' + encodeURIComponent(telemetryInfo));
+      expect(url).to.be(
+        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated=&auth0Client=' +
+          encodeURIComponent(telemetryInfo)
+      );
     });
   });
 
-  context('userInfo', function () {
+  context('userInfo', function() {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
@@ -212,7 +227,7 @@ describe('auth0.authentication', function () {
       });
     });
 
-    afterEach(function(){
+    afterEach(function() {
       request.get.restore();
     });
 
@@ -222,7 +237,7 @@ describe('auth0.authentication', function () {
         return new RequestMock({
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer abcd1234'
+            Authorization: 'Bearer abcd1234'
           },
           cb: function(cb) {
             cb(null, {
@@ -250,7 +265,7 @@ describe('auth0.authentication', function () {
     });
   });
 
-  context('delegation', function () {
+  context('delegation', function() {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
@@ -261,7 +276,7 @@ describe('auth0.authentication', function () {
       });
     });
 
-    afterEach(function(){
+    afterEach(function() {
       request.post.restore();
     });
 
@@ -281,32 +296,35 @@ describe('auth0.authentication', function () {
           cb: function(cb) {
             cb(null, {
               body: {
-                'token_type': 'Bearer',
-                'expires_in': 36000,
-                'id_token': 'eyJ...'
+                token_type: 'Bearer',
+                expires_in: 36000,
+                id_token: 'eyJ...'
               }
             });
           }
         });
       });
 
-      this.auth0.delegation({
-        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-        refresh_token: 'your_refresh_token',
-        api_type: 'app'
-      }, function(err, data) {
-        expect(err).to.be(null);
-        expect(data).to.eql({
-          'tokenType': 'Bearer',
-          'expiresIn': 36000,
-          'idToken': 'eyJ...'
-        });
-        done();
-      });
+      this.auth0.delegation(
+        {
+          grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+          refresh_token: 'your_refresh_token',
+          api_type: 'app'
+        },
+        function(err, data) {
+          expect(err).to.be(null);
+          expect(data).to.eql({
+            tokenType: 'Bearer',
+            expiresIn: 36000,
+            idToken: 'eyJ...'
+          });
+          done();
+        }
+      );
     });
   });
 
-  context('login', function () {
+  context('login', function() {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
@@ -317,7 +335,7 @@ describe('auth0.authentication', function () {
       });
     });
 
-    afterEach(function(){
+    afterEach(function() {
       this.auth0.oauthToken.restore();
     });
 
@@ -331,12 +349,15 @@ describe('auth0.authentication', function () {
         cb();
       });
 
-      this.auth0.loginWithDefaultDirectory({
-        username: 'someUsername',
-        password: '123456'
-      }, function(err, data) {
-        done();
-      });
+      this.auth0.loginWithDefaultDirectory(
+        {
+          username: 'someUsername',
+          password: '123456'
+        },
+        function(err, data) {
+          done();
+        }
+      );
     });
 
     it('should call oauthToken with all the options', function(done) {
@@ -350,17 +371,20 @@ describe('auth0.authentication', function () {
         cb();
       });
 
-      this.auth0.login({
-        username: 'someUsername',
-        password: '123456',
-        realm: 'pepe.com'
-      }, function(err, data) {
-        done();
-      });
+      this.auth0.login(
+        {
+          username: 'someUsername',
+          password: '123456',
+          realm: 'pepe.com'
+        },
+        function(err, data) {
+          done();
+        }
+      );
     });
   });
 
-  context('oauthToken', function () {
+  context('oauthToken', function() {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
@@ -371,7 +395,7 @@ describe('auth0.authentication', function () {
       });
     });
 
-    afterEach(function(){
+    afterEach(function() {
       request.post.restore();
     });
 
@@ -391,33 +415,35 @@ describe('auth0.authentication', function () {
           cb: function(cb) {
             cb(null, {
               body: {
-                'token_type': 'Bearer',
-                'expires_in': 36000,
-                'id_token': 'eyJ...'
+                token_type: 'Bearer',
+                expires_in: 36000,
+                id_token: 'eyJ...'
               }
             });
           }
         });
       });
 
-      this.auth0.oauthToken({
-        username: 'someUsername',
-        password: '123456',
-        grantType: 'password'
-      }, function(err, data) {
-        expect(err).to.be(null);
-        expect(data).to.eql({
-          'tokenType': 'Bearer',
-          'expiresIn': 36000,
-          'idToken': 'eyJ...'
-        });
-        done();
-      })
+      this.auth0.oauthToken(
+        {
+          username: 'someUsername',
+          password: '123456',
+          grantType: 'password'
+        },
+        function(err, data) {
+          expect(err).to.be(null);
+          expect(data).to.eql({
+            tokenType: 'Bearer',
+            expiresIn: 36000,
+            idToken: 'eyJ...'
+          });
+          done();
+        }
+      );
     });
-
   });
 
-  context('getUserCountry', function () {
+  context('getUserCountry', function() {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
@@ -428,7 +454,7 @@ describe('auth0.authentication', function () {
       });
     });
 
-    afterEach(function(){
+    afterEach(function() {
       request.get.restore();
     });
 
@@ -442,7 +468,7 @@ describe('auth0.authentication', function () {
           cb: function(cb) {
             cb(null, {
               body: {
-                'country_code': 'AR'
+                country_code: 'AR'
               }
             });
           }
@@ -457,10 +483,9 @@ describe('auth0.authentication', function () {
         done();
       });
     });
-
   });
 
-  context('getSSOData', function () {
+  context('getSSOData', function() {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
@@ -471,7 +496,7 @@ describe('auth0.authentication', function () {
       });
     });
 
-    afterEach(function(){
+    afterEach(function() {
       request.get.restore();
     });
 
@@ -483,7 +508,7 @@ describe('auth0.authentication', function () {
           cb: function(cb) {
             cb(null, {
               body: {
-                sso:false
+                sso: false
               }
             });
           }
@@ -493,14 +518,14 @@ describe('auth0.authentication', function () {
       this.auth0.getSSOData(function(err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          sso:false
+          sso: false
         });
         done();
       });
     });
   });
 
-  context('getSSOData', function () {
+  context('getSSOData', function() {
     before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
@@ -511,7 +536,7 @@ describe('auth0.authentication', function () {
       });
     });
 
-    afterEach(function(){
+    afterEach(function() {
       request.get.restore();
     });
 
@@ -523,7 +548,7 @@ describe('auth0.authentication', function () {
           cb: function(cb) {
             cb(null, {
               body: {
-                sso:false
+                sso: false
               }
             });
           }
@@ -533,11 +558,10 @@ describe('auth0.authentication', function () {
       this.auth0.getSSOData(true, function(err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
-          sso:false
+          sso: false
         });
         done();
       });
     });
   });
-
 });

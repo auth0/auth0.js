@@ -9,18 +9,18 @@ function getStorage(force) {
 }
 
 module.exports = {
-  getItem: function (key) {
+  getItem: function(key) {
     var value = getStorage().getItem(key);
     return value ? JSON.parse(value) : value;
   },
-  removeItem: function (key) {
+  removeItem: function(key) {
     return getStorage().removeItem(key);
   },
-  setItem: function (key, value) {
+  setItem: function(key, value) {
     var json = JSON.stringify(value);
     return getStorage().setItem(key, json);
   },
-  reload: function () {
+  reload: function() {
     getStorage(true);
   }
 };

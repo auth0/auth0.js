@@ -20,14 +20,13 @@ function Popup(webAuth, options) {
   });
 }
 
-
 /**
  * Returns a new instance of the popup handler
  *
  * @method buildPopupHandler
  * @private
  */
-Popup.prototype.buildPopupHandler = function () {
+Popup.prototype.buildPopupHandler = function() {
   var pluginHandler = this.baseOptions.plugins.get('popup.getPopupHandler');
 
   if (pluginHandler) {
@@ -43,7 +42,7 @@ Popup.prototype.buildPopupHandler = function () {
  * @method preload
  * @param {Object} options receives the window height and width and any other window feature to be sent to window.open
  */
-Popup.prototype.preload = function (options) {
+Popup.prototype.preload = function(options) {
   options = options || {};
 
   var popup = this.buildPopupHandler();
@@ -58,7 +57,7 @@ Popup.prototype.preload = function (options) {
  * @method getPopupHandler
  * @private
  */
-Popup.prototype.getPopupHandler = function (options, preload) {
+Popup.prototype.getPopupHandler = function(options, preload) {
   if (options.popupHandler) {
     return options.popupHandler;
   }
@@ -81,10 +80,10 @@ Popup.prototype.getPopupHandler = function (options, preload) {
  * @param {String} [options._idTokenVerification] makes parseHash perform or skip `id_token` verification. We **strongly** recommend validating the `id_token` yourself if you disable the verification.
  * @see   {@link parseHash}
  */
-Popup.prototype.callback = function (options) {
+Popup.prototype.callback = function(options) {
   var _this = this;
-  WinChan.onOpen(function (popupOrigin, r, cb) {
-    _this.webAuth.parseHash(options || {}, function (err, data) {
+  WinChan.onOpen(function(popupOrigin, r, cb) {
+    _this.webAuth.parseHash(options || {}, function(err, data) {
       return cb(err || data);
     });
   });
@@ -108,7 +107,7 @@ Popup.prototype.callback = function (options) {
  * @param {authorizeCallback} cb
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
-Popup.prototype.authorize = function (options, cb) {
+Popup.prototype.authorize = function(options, cb) {
   var popup;
   var url;
   var relayUrl;
@@ -116,22 +115,28 @@ Popup.prototype.authorize = function (options, cb) {
 
   var pluginHandler = this.baseOptions.plugins.get('popup.authorize');
 
-  var params = objectHelper.merge(this.baseOptions, [
-    'clientID',
-    'scope',
-    'domain',
-    'audience',
-    'responseType',
-    'redirectUri',
-    '_csrf',
-    'state',
-    '_instate',
-    'nonce'
-  ]).with(objectHelper.blacklist(options, ['popupHandler']));
+  var params = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'scope',
+      'domain',
+      'audience',
+      'responseType',
+      'redirectUri',
+      '_csrf',
+      'state',
+      '_instate',
+      'nonce'
+    ])
+    .with(objectHelper.blacklist(options, ['popupHandler']));
 
-  assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
-    responseType: { type: 'string', message: 'responseType option is required' }
-  });
+  assert.check(
+    params,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      responseType: { type: 'string', message: 'responseType option is required' }
+    }
+  );
 
   // the relay page should not be necesary as long it happens in the same domain
   // (a redirectUri shoul be provided). It is necesary when using OWP
@@ -180,34 +185,40 @@ Popup.prototype.authorize = function (options, cb) {
  * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
  * @param {credentialsCallback} cb
  */
-Popup.prototype.loginWithCredentials = function (options, cb) {
+Popup.prototype.loginWithCredentials = function(options, cb) {
   var params;
   var popup;
   var url;
   var relayUrl;
 
   /* eslint-disable */
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    clientID: { optional: true, type: 'string', message: 'clientID option is required' },
-    redirectUri: { optional: true, type: 'string', message: 'redirectUri option is required' },
-    responseType: { optional: true, type: 'string', message: 'responseType option is required' },
-    scope: { optional: true, type: 'string', message: 'scope option is required' },
-    audience: { optional: true, type: 'string', message: 'audience option is required' }
-  });
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      clientID: { optional: true, type: 'string', message: 'clientID option is required' },
+      redirectUri: { optional: true, type: 'string', message: 'redirectUri option is required' },
+      responseType: { optional: true, type: 'string', message: 'responseType option is required' },
+      scope: { optional: true, type: 'string', message: 'scope option is required' },
+      audience: { optional: true, type: 'string', message: 'audience option is required' }
+    }
+  );
   /* eslint-enable */
 
   popup = this.getPopupHandler(options);
 
-  options = objectHelper.merge(this.baseOptions, [
-    'clientID',
-    'scope',
-    'domain',
-    'audience',
-    '_csrf',
-    'state',
-    '_instate',
-    'nonce'
-  ]).with(objectHelper.blacklist(options, ['popupHandler']));
+  options = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'scope',
+      'domain',
+      'audience',
+      '_csrf',
+      'state',
+      '_instate',
+      'nonce'
+    ])
+    .with(objectHelper.blacklist(options, ['popupHandler']));
 
   params = objectHelper.pick(options, ['clientID', 'domain']);
   params.options = objectHelper.toSnakeCase(
@@ -233,10 +244,11 @@ Popup.prototype.loginWithCredentials = function (options, cb) {
  * @param {String} options.verificationCode the TOTP code
  * @param {Function} cb
  */
-Popup.prototype.passwordlessVerify = function (options, cb) {
+Popup.prototype.passwordlessVerify = function(options, cb) {
   var _this = this;
-  return this.client.passwordless.verify(objectHelper.blacklist(options, ['popupHandler']),
-    function (err) {
+  return this.client.passwordless.verify(
+    objectHelper.blacklist(options, ['popupHandler']),
+    function(err) {
       if (err) {
         return cb(err);
       }
@@ -250,7 +262,8 @@ Popup.prototype.passwordlessVerify = function (options, cb) {
       delete options.type;
 
       _this.client.loginWithResourceOwner(options, cb);
-    });
+    }
+  );
 };
 
 /**
@@ -266,15 +279,16 @@ Popup.prototype.passwordlessVerify = function (options, cb) {
  * @param {String} options.connection name of the connection where the user will be created
  * @param {credentialsCallback} cb
  */
-Popup.prototype.signupAndLogin = function (options, cb) {
+Popup.prototype.signupAndLogin = function(options, cb) {
   var _this = this;
 
   // Preload popup to avoid the browser to block it since the login happens later
   var popupHandler = this.getPopupHandler(options, true);
   options.popupHandler = popupHandler;
 
-  return this.client.dbConnection.signup(objectHelper.blacklist(options, ['popupHandler']),
-    function (err) {
+  return this.client.dbConnection.signup(
+    objectHelper.blacklist(options, ['popupHandler']),
+    function(err) {
       if (err) {
         if (popupHandler._current_popup) {
           popupHandler._current_popup.kill();
@@ -282,7 +296,8 @@ Popup.prototype.signupAndLogin = function (options, cb) {
         return cb(err);
       }
       _this.loginWithCredentials(options, cb);
-    });
+    }
+  );
 };
 
 module.exports = Popup;

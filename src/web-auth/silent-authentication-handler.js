@@ -7,11 +7,11 @@ function SilentAuthenticationHandler(options) {
   this.postMessageDataType = options.postMessageDataType || false;
 }
 
-SilentAuthenticationHandler.create = function (options) {
+SilentAuthenticationHandler.create = function(options) {
   return new SilentAuthenticationHandler(options);
 };
 
-SilentAuthenticationHandler.prototype.login = function (usePostMessage, callback) {
+SilentAuthenticationHandler.prototype.login = function(usePostMessage, callback) {
   this.handler = new IframeHandler({
     auth0: this.auth0,
     url: this.authenticationUrl,
@@ -19,7 +19,7 @@ SilentAuthenticationHandler.prototype.login = function (usePostMessage, callback
     callback: this.getCallbackHandler(callback, usePostMessage),
     timeout: this.timeout,
     eventValidator: this.getEventValidator(),
-    timeoutCallback: function () {
+    timeoutCallback: function() {
       callback(null, '#error=timeout&error_description=Timeout+during+authentication+renew.');
     },
     usePostMessage: usePostMessage || false
@@ -28,10 +28,10 @@ SilentAuthenticationHandler.prototype.login = function (usePostMessage, callback
   this.handler.init();
 };
 
-SilentAuthenticationHandler.prototype.getEventValidator = function () {
+SilentAuthenticationHandler.prototype.getEventValidator = function() {
   var _this = this;
   return {
-    isValid: function (eventData) {
+    isValid: function(eventData) {
       switch (eventData.event.type) {
         case 'message':
           // Default behaviour, return all message events.
@@ -39,8 +39,9 @@ SilentAuthenticationHandler.prototype.getEventValidator = function () {
             return true;
           }
 
-          return eventData.event.data.type &&
-            eventData.event.data.type === _this.postMessageDataType;
+          return (
+            eventData.event.data.type && eventData.event.data.type === _this.postMessageDataType
+          );
 
         case 'load': // Fall through to default
         default:
@@ -50,8 +51,8 @@ SilentAuthenticationHandler.prototype.getEventValidator = function () {
   };
 };
 
-SilentAuthenticationHandler.prototype.getCallbackHandler = function (callback, usePostMessage) {
-  return function (eventData) {
+SilentAuthenticationHandler.prototype.getCallbackHandler = function(callback, usePostMessage) {
+  return function(eventData) {
     var callbackValue;
     if (!usePostMessage) {
       callbackValue = eventData.sourceObject.contentWindow.location.hash;
@@ -63,6 +64,5 @@ SilentAuthenticationHandler.prototype.getCallbackHandler = function (callback, u
     callback(null, callbackValue);
   };
 };
-
 
 module.exports = SilentAuthenticationHandler;
