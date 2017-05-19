@@ -4,66 +4,63 @@ var stub = require('sinon').stub;
 var objectAssign = require('../../src/helper/object-assign');
 var objectHelper = require('../../src/helper/object');
 
-describe('helpers', function () {
-  describe('getKeysNotIn', function () {
-    it('should return the list of keys not allowed', function () {
+describe('helpers', function() {
+  describe('getKeysNotIn', function() {
+    it('should return the list of keys not allowed', function() {
       var object = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
         attr3: 'attribute_3'
       };
 
-      var notAllowed = ['attr1','attr2','attr4'];
+      var notAllowed = ['attr1', 'attr2', 'attr4'];
 
       var keysList = objectHelper.getKeysNotIn(object, notAllowed);
 
-      expect(keysList).to.eql(['attr3'])
-
+      expect(keysList).to.eql(['attr3']);
     });
 
-    it('should return an empty list', function () {
+    it('should return an empty list', function() {
       var object = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
         attr3: 'attribute_3'
       };
 
-      var notAllowed = ['attr1','attr2','attr3'];
+      var notAllowed = ['attr1', 'attr2', 'attr3'];
 
       var keysList = objectHelper.getKeysNotIn(object, notAllowed);
 
-      expect(keysList).to.eql([])
-
+      expect(keysList).to.eql([]);
     });
 
-    it('should return an all the keys', function () {
+    it('should return an all the keys', function() {
       var object = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
         attr3: 'attribute_3'
       };
 
-      var notAllowed = ['attr5','attr6','attr7'];
+      var notAllowed = ['attr5', 'attr6', 'attr7'];
 
       var keysList = objectHelper.getKeysNotIn(object, notAllowed);
 
-      expect(keysList).to.eql(['attr1','attr2','attr3'])
+      expect(keysList).to.eql(['attr1', 'attr2', 'attr3']);
     });
 
-    it('should return another empty list', function () {
-      var object = {
-      };
+    it('should return another empty list', function() {
+      var object = {};
 
-      var notAllowed = ['attr5','attr6','attr7'];
+      var notAllowed = ['attr5', 'attr6', 'attr7'];
 
       var keysList = objectHelper.getKeysNotIn(object, notAllowed);
 
-      expect(keysList).to.eql([])
+      expect(keysList).to.eql([]);
     });
   });
 
-  describe('pick', function () {
-    it('should return only the requested attributes', function () {
+  describe('pick', function() {
+    it('should return only the requested attributes', function() {
       var object = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
@@ -84,7 +81,7 @@ describe('helpers', function () {
       });
     });
 
-    it('should ignore missing keys', function () {
+    it('should ignore missing keys', function() {
       var object = {
         attr1: 'attribute_1',
         attr3: 'attribute_3'
@@ -103,8 +100,8 @@ describe('helpers', function () {
     });
   });
 
-  describe('extend', function () {
-    it('shold merge objects attributes', function () {
+  describe('extend', function() {
+    it('shold merge objects attributes', function() {
       var object1 = {
         attr1: 'attribute_1',
         attr2: 'attribute_2'
@@ -132,8 +129,7 @@ describe('helpers', function () {
       });
     });
 
-    it('shold merge objects attributes with polyfill', function () {
-
+    it('shold merge objects attributes with polyfill', function() {
       stub(objectAssign, 'get', function() {
         return objectAssign.objectAssignPolyfill;
       });
@@ -167,7 +163,7 @@ describe('helpers', function () {
       objectAssign.get.restore();
     });
 
-    it('shold merge objects attributes and override the first object ones', function () {
+    it('shold merge objects attributes and override the first object ones', function() {
       var object1 = {
         attr1: 'attribute_1',
         attr2: 'attribute_2'
@@ -198,8 +194,8 @@ describe('helpers', function () {
     });
   });
 
-  describe('merge', function () {
-    it('shold merge without pick', function () {
+  describe('merge', function() {
+    it('shold merge without pick', function() {
       var object1 = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
@@ -236,7 +232,7 @@ describe('helpers', function () {
       });
     });
 
-    it('shold merge picking attributes of the base object', function () {
+    it('shold merge picking attributes of the base object', function() {
       var object1 = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
@@ -272,7 +268,7 @@ describe('helpers', function () {
       });
     });
 
-    it('shold merge picking attributes of the second object', function () {
+    it('shold merge picking attributes of the second object', function() {
       var object1 = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
@@ -287,7 +283,8 @@ describe('helpers', function () {
 
       var newObject = objectHelper.merge(object1).with(object2, ['attrA', 'attrC']);
 
-      expect(newObject).to.eql({ attr1: 'attribute_1',
+      expect(newObject).to.eql({
+        attr1: 'attribute_1',
         attr2: 'attribute_2',
         attr3: 'attribute_3',
         attrA: 'attribute_A',
@@ -307,7 +304,7 @@ describe('helpers', function () {
       });
     });
 
-    it('shold merge picking attributes of both objects', function () {
+    it('shold merge picking attributes of both objects', function() {
       var object1 = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
@@ -320,7 +317,9 @@ describe('helpers', function () {
         attrC: 'attribute_C'
       };
 
-      var newObject = objectHelper.merge(object1, ['attr2', 'attr3']).with(object2, ['attrA', 'attrC']);
+      var newObject = objectHelper
+        .merge(object1, ['attr2', 'attr3'])
+        .with(object2, ['attrA', 'attrC']);
 
       expect(newObject).to.eql({
         attr2: 'attribute_2',
@@ -343,8 +342,8 @@ describe('helpers', function () {
     });
   });
 
-  describe('blacklist', function () {
-    it('should return all the attributes not blacklisted', function () {
+  describe('blacklist', function() {
+    it('should return all the attributes not blacklisted', function() {
       var object = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
@@ -365,18 +364,18 @@ describe('helpers', function () {
     });
   });
 
-  describe('toSnakeCase', function () {
-    it('should change the casing to all the attributes', function () {
+  describe('toSnakeCase', function() {
+    it('should change the casing to all the attributes', function() {
       var object = {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
         attrNAME3: 'attribute_3',
         attrNULL: null,
-        arrayAtt: [ 'one', 'two' ],
+        arrayAtt: ['one', 'two'],
         someObj: {
           objAtt1: 'asd',
           objAtt2: '123',
-          innerArrayAtt: [ 'one', 'two' ]
+          innerArrayAtt: ['one', 'two']
         }
       };
 
@@ -387,11 +386,11 @@ describe('helpers', function () {
         attrName22: 'attribute_2',
         attrNAME3: 'attribute_3',
         attrNULL: null,
-        arrayAtt: [ 'one', 'two' ],
+        arrayAtt: ['one', 'two'],
         someObj: {
           objAtt1: 'asd',
           objAtt2: '123',
-          innerArrayAtt: [ 'one', 'two' ]
+          innerArrayAtt: ['one', 'two']
         }
       });
 
@@ -403,16 +402,16 @@ describe('helpers', function () {
         attr_name_22: 'attribute_2',
         attr_name_3: 'attribute_3',
         attr_null: null,
-        array_att: [ 'one', 'two' ],
+        array_att: ['one', 'two'],
         some_obj: {
           obj_att_1: 'asd',
           obj_att_2: '123',
-          inner_array_att: [ 'one', 'two' ]
+          inner_array_att: ['one', 'two']
         }
       });
     });
 
-    it('should change the casing to all the attributes that are not blacklisted', function () {
+    it('should change the casing to all the attributes that are not blacklisted', function() {
       var object = {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
@@ -435,19 +434,18 @@ describe('helpers', function () {
     });
   });
 
-  describe('toCamelCase', function () {
-
-    it('should change the casing to all the attributes', function () {
+  describe('toCamelCase', function() {
+    it('should change the casing to all the attributes', function() {
       var object = {
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
         attr__name_3: 'attribute_3',
         attr_null: null,
-        arr_att: [ "one", "two" ],
+        arr_att: ['one', 'two'],
         some_obj: {
           obj_att_1: 'asdf',
           obj_att_2: '1234',
-          inner_array_att: [ 'one', 'two' ]
+          inner_array_att: ['one', 'two']
         }
       };
 
@@ -458,11 +456,11 @@ describe('helpers', function () {
         attr_name_22: 'attribute_2',
         attr__name_3: 'attribute_3',
         attr_null: null,
-        arr_att: [ "one", "two" ],
+        arr_att: ['one', 'two'],
         some_obj: {
           obj_att_1: 'asdf',
           obj_att_2: '1234',
-          inner_array_att: [ 'one', 'two' ]
+          inner_array_att: ['one', 'two']
         }
       });
 
@@ -474,28 +472,28 @@ describe('helpers', function () {
         attrName22: 'attribute_2',
         attrName3: 'attribute_3',
         attrNull: null,
-        arrAtt: [ "one", "two" ],
+        arrAtt: ['one', 'two'],
         someObj: {
           objAtt1: 'asdf',
           objAtt2: '1234',
-          innerArrayAtt: [ 'one', 'two' ]
+          innerArrayAtt: ['one', 'two']
         }
       });
     });
 
-    it('should not breack the string', function () {
-      var object = "some random string";
+    it('should not breack the string', function() {
+      var object = 'some random string';
 
       var newObject = objectHelper.toCamelCase(object);
 
-      expect(object).to.eql("some random string");
+      expect(object).to.eql('some random string');
 
       expect(newObject).to.be.a('string');
 
-      expect(newObject).to.eql("some random string");
+      expect(newObject).to.eql('some random string');
     });
 
-    it('should change the casing to all the attributes that are not blacklisted', function () {
+    it('should change the casing to all the attributes that are not blacklisted', function() {
       var object = {
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',

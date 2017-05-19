@@ -26,24 +26,41 @@ var DBConnection = require('./db-connection');
  */
 function Authentication(options) {
   /* eslint-disable */
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    domain: { type: 'string', message: 'domain option is required' },
-    clientID: { type: 'string', message: 'clientID option is required' },
-    responseType: { optional: true, type: 'string', message: 'responseType is not valid' },
-    responseMode: { optional: true, type: 'string', message: 'responseMode is not valid' },
-    redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
-    scope: { optional: true, type: 'string', message: 'scope is not valid' },
-    audience: { optional: true, type: 'string', message: 'audience is not valid' },
-    _disableDeprecationWarnings: { optional: true, type: 'boolean', message: '_disableDeprecationWarnings option is not valid' },
-    _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
-    _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
-  });
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      domain: { type: 'string', message: 'domain option is required' },
+      clientID: { type: 'string', message: 'clientID option is required' },
+      responseType: { optional: true, type: 'string', message: 'responseType is not valid' },
+      responseMode: { optional: true, type: 'string', message: 'responseMode is not valid' },
+      redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
+      scope: { optional: true, type: 'string', message: 'scope is not valid' },
+      audience: { optional: true, type: 'string', message: 'audience is not valid' },
+      _disableDeprecationWarnings: {
+        optional: true,
+        type: 'boolean',
+        message: '_disableDeprecationWarnings option is not valid'
+      },
+      _sendTelemetry: {
+        optional: true,
+        type: 'boolean',
+        message: '_sendTelemetry option is not valid'
+      },
+      _telemetryInfo: {
+        optional: true,
+        type: 'object',
+        message: '_telemetryInfo option is not valid'
+      }
+    }
+  );
   /* eslint-enable */
 
   this.baseOptions = options;
 
-  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ?
-                                        this.baseOptions._sendTelemetry : true;
+  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
+    ? this.baseOptions._sendTelemetry
+    : true;
 
   this.baseOptions.rootUrl = 'https://' + this.baseOptions.domain;
 
@@ -74,32 +91,42 @@ function Authentication(options) {
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  * @see {@link https://auth0.com/docs/api/authentication#social}
  */
-Authentication.prototype.buildAuthorizeUrl = function (options) {
+Authentication.prototype.buildAuthorizeUrl = function(options) {
   var params;
   var qString;
 
   assert.check(options, { type: 'object', message: 'options parameter is not valid' });
 
-  params = objectHelper.merge(this.baseOptions, [
-    'clientID',
-    'responseType',
-    'responseMode',
-    'redirectUri',
-    'scope',
-    'audience'
-  ]).with(options);
+  params = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'responseType',
+      'responseMode',
+      'redirectUri',
+      'scope',
+      'audience'
+    ])
+    .with(options);
 
   /* eslint-disable */
-  assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
-    clientID: { type: 'string', message: 'clientID option is required' },
-    redirectUri: { optional: true, type: 'string', message: 'redirectUri option is required' },
-    responseType: { type: 'string', message: 'responseType option is required' },
-    nonce: { type: 'string', message: 'nonce option is required', condition: function(o) {
-      return o.responseType.indexOf('code') === -1 && o.responseType.indexOf('id_token') !== -1;
-    } },
-    scope: { optional: true, type: 'string', message: 'scope option is required' },
-    audience: { optional: true, type: 'string', message: 'audience option is required' }
-  });
+  assert.check(
+    params,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      clientID: { type: 'string', message: 'clientID option is required' },
+      redirectUri: { optional: true, type: 'string', message: 'redirectUri option is required' },
+      responseType: { type: 'string', message: 'responseType option is required' },
+      nonce: {
+        type: 'string',
+        message: 'nonce option is required',
+        condition: function(o) {
+          return o.responseType.indexOf('code') === -1 && o.responseType.indexOf('id_token') !== -1;
+        }
+      },
+      scope: { optional: true, type: 'string', message: 'scope option is required' },
+      audience: { optional: true, type: 'string', message: 'audience option is required' }
+    }
+  );
   /* eslint-enable */
 
   // eslint-disable-next-line
@@ -133,7 +160,7 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
  * @param {Boolean} [options.federated] tells Auth0 if it should logout the user also from the IdP.
  * @see {@link https://auth0.com/docs/api/authentication#logout}
  */
-Authentication.prototype.buildLogoutUrl = function (options) {
+Authentication.prototype.buildLogoutUrl = function(options) {
   var params;
   var qString;
 
@@ -143,8 +170,7 @@ Authentication.prototype.buildLogoutUrl = function (options) {
     message: 'options parameter is not valid'
   });
 
-  params = objectHelper.merge(this.baseOptions, ['clientID'])
-                .with(options || {});
+  params = objectHelper.merge(this.baseOptions, ['clientID']).with(options || {});
 
   // eslint-disable-next-line
   if (this.baseOptions._sendTelemetry) {
@@ -190,13 +216,17 @@ Authentication.prototype.buildLogoutUrl = function (options) {
  * @param {tokenCallback} cb function called with the result of the request
  * @see   {@link https://auth0.com/docs/api-auth/grant/password}
  */
-Authentication.prototype.loginWithDefaultDirectory = function (options, cb) {
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    username: { type: 'string', message: 'username option is required' },
-    password: { type: 'string', message: 'password option is required' },
-    scope: { optional: true, type: 'string', message: 'scope option is required' },
-    audience: { optional: true, type: 'string', message: 'audience option is required' }
-  });
+Authentication.prototype.loginWithDefaultDirectory = function(options, cb) {
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      username: { type: 'string', message: 'username option is required' },
+      password: { type: 'string', message: 'password option is required' },
+      scope: { optional: true, type: 'string', message: 'scope option is required' },
+      audience: { optional: true, type: 'string', message: 'audience option is required' }
+    }
+  );
 
   options.grantType = 'password';
 
@@ -216,14 +246,18 @@ Authentication.prototype.loginWithDefaultDirectory = function (options, cb) {
  * @param {tokenCallback} cb function called with the result of the request
  * @see   {@link https://auth0.com/docs/api-auth/grant/password}
  */
-Authentication.prototype.login = function (options, cb) {
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    username: { type: 'string', message: 'username option is required' },
-    password: { type: 'string', message: 'password option is required' },
-    realm: { type: 'string', message: 'realm option is required' },
-    scope: { optional: true, type: 'string', message: 'scope option is required' },
-    audience: { optional: true, type: 'string', message: 'audience option is required' }
-  });
+Authentication.prototype.login = function(options, cb) {
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      username: { type: 'string', message: 'username option is required' },
+      password: { type: 'string', message: 'password option is required' },
+      realm: { type: 'string', message: 'realm option is required' },
+      scope: { optional: true, type: 'string', message: 'scope option is required' },
+      audience: { optional: true, type: 'string', message: 'audience option is required' }
+    }
+  );
 
   options.grantType = 'http://auth0.com/oauth/grant-type/password-realm';
 
@@ -236,7 +270,7 @@ Authentication.prototype.login = function (options, cb) {
  * @method oauthToken
  * @private
  */
-Authentication.prototype.oauthToken = function (options, cb) {
+Authentication.prototype.oauthToken = function(options, cb) {
   var url;
   var body;
 
@@ -245,28 +279,25 @@ Authentication.prototype.oauthToken = function (options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'oauth', 'token');
 
-  body = objectHelper.merge(this.baseOptions, [
-    'clientID',
-    'scope',
-    'audience'
-  ]).with(options);
+  body = objectHelper.merge(this.baseOptions, ['clientID', 'scope', 'audience']).with(options);
 
-  assert.check(body, { type: 'object', message: 'options parameter is not valid' }, {
-    clientID: { type: 'string', message: 'clientID option is required' },
-    grantType: { type: 'string', message: 'grantType option is required' },
-    scope: { optional: true, type: 'string', message: 'scope option is required' },
-    audience: { optional: true, type: 'string', message: 'audience option is required' }
-  });
+  assert.check(
+    body,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      clientID: { type: 'string', message: 'clientID option is required' },
+      grantType: { type: 'string', message: 'grantType option is required' },
+      scope: { optional: true, type: 'string', message: 'scope option is required' },
+      audience: { optional: true, type: 'string', message: 'audience option is required' }
+    }
+  );
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
   body = parametersWhitelist.oauthTokenParams(this.warn, body);
 
   body.grant_type = body.grant_type;
 
-  return this.request
-    .post(url)
-    .send(body)
-    .end(responseHandler(cb));
+  return this.request.post(url).send(body).end(responseHandler(cb));
 };
 
 /**
@@ -285,33 +316,33 @@ Authentication.prototype.oauthToken = function (options, cb) {
  * @param {String} [options.device] name of the device/browser where the Auth was requested
  * @param {tokenCallback} cb function called with the result of the request
  */
-Authentication.prototype.loginWithResourceOwner = function (options, cb) {
+Authentication.prototype.loginWithResourceOwner = function(options, cb) {
   var url;
   var body;
 
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    username: { type: 'string', message: 'username option is required' },
-    password: { type: 'string', message: 'password option is required' },
-    connection: { type: 'string', message: 'connection option is required' },
-    scope: { optional: true, type: 'string', message: 'scope option is required' }
-  });
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      username: { type: 'string', message: 'username option is required' },
+      password: { type: 'string', message: 'password option is required' },
+      connection: { type: 'string', message: 'connection option is required' },
+      scope: { optional: true, type: 'string', message: 'scope option is required' }
+    }
+  );
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   url = urljoin(this.baseOptions.rootUrl, 'oauth', 'ro');
 
-  body = objectHelper.merge(this.baseOptions, [
-    'clientID',
-    'scope'
-  ]).with(options, ['username', 'password', 'scope', 'connection', 'device']);
+  body = objectHelper
+    .merge(this.baseOptions, ['clientID', 'scope'])
+    .with(options, ['username', 'password', 'scope', 'connection', 'device']);
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
   body.grant_type = body.grant_type || 'password';
 
-  return this.request
-    .post(url)
-    .send(body)
-    .end(responseHandler(cb));
+  return this.request.post(url).send(body).end(responseHandler(cb));
 };
 
 /**
@@ -322,7 +353,7 @@ Authentication.prototype.loginWithResourceOwner = function (options, cb) {
  * @param {Boolean} withActiveDirectories tells Auth0 to return AD data
  * @param {Function} cb
  */
-Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
+Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
   var url;
   var params = '';
 
@@ -331,22 +362,24 @@ Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
     withActiveDirectories = false;
   }
 
-  assert.check(withActiveDirectories, { type: 'boolean', message: 'withActiveDirectories parameter is not valid' });
+  assert.check(withActiveDirectories, {
+    type: 'boolean',
+    message: 'withActiveDirectories parameter is not valid'
+  });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   if (withActiveDirectories) {
-    params = '?' + qs.stringify({
-      ldaps: 1,
-      client_id: this.baseOptions.clientID
-    });
+    params =
+      '?' +
+      qs.stringify({
+        ldaps: 1,
+        client_id: this.baseOptions.clientID
+      });
   }
 
   url = urljoin(this.baseOptions.rootUrl, 'user', 'ssodata', params);
 
-  return this.request
-    .get(url, { noHeaders: true })
-    .withCredentials()
-    .end(responseHandler(cb));
+  return this.request.get(url, { noHeaders: true }).withCredentials().end(responseHandler(cb));
 };
 
 /**
@@ -363,7 +396,7 @@ Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
  * @param {userInfoCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#get-user-info}
  */
-Authentication.prototype.userInfo = function (accessToken, cb) {
+Authentication.prototype.userInfo = function(accessToken, cb) {
   var url;
 
   assert.check(accessToken, { type: 'string', message: 'accessToken parameter is not valid' });
@@ -398,26 +431,26 @@ Authentication.prototype.userInfo = function (accessToken, cb) {
  * @param {delegationCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#delegation}
  */
-Authentication.prototype.delegation = function (options, cb) {
+Authentication.prototype.delegation = function(options, cb) {
   var url;
   var body;
 
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    grant_type: { type: 'string', message: 'grant_type option is required' }
-  });
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      grant_type: { type: 'string', message: 'grant_type option is required' }
+    }
+  );
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   url = urljoin(this.baseOptions.rootUrl, 'delegation');
 
-  body = objectHelper.merge(this.baseOptions, ['clientID'])
-                .with(options);
+  body = objectHelper.merge(this.baseOptions, ['clientID']).with(options);
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
-  return this.request
-    .post(url)
-    .send(body)
-    .end(responseHandler(cb));
+  return this.request.post(url).send(body).end(responseHandler(cb));
 };
 
 /**
@@ -427,16 +460,14 @@ Authentication.prototype.delegation = function (options, cb) {
  * @private
  * @param {Function} cb
  */
-Authentication.prototype.getUserCountry = function (cb) {
+Authentication.prototype.getUserCountry = function(cb) {
   var url;
 
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   url = urljoin(this.baseOptions.rootUrl, 'user', 'geoloc', 'country');
 
-  return this.request
-    .get(url)
-    .end(responseHandler(cb));
+  return this.request.get(url).end(responseHandler(cb));
 };
 
 module.exports = Authentication;

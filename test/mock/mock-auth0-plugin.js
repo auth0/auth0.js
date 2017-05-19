@@ -8,15 +8,15 @@ function MockPlugin(configuration) {
   this.extensibilityPoints = configuration.extensibilityPoints || [];
 }
 
-MockPlugin.prototype.supports = function (extensibilityPoint) {
+MockPlugin.prototype.supports = function(extensibilityPoint) {
   return this.extensibilityPoints.indexOf(extensibilityPoint) > -1;
 };
 
-MockPlugin.prototype.setWebAuth = function (webAuth) {
+MockPlugin.prototype.setWebAuth = function(webAuth) {
   this.webAuth = webAuth;
 };
 
-MockPlugin.prototype.init = function () {
+MockPlugin.prototype.init = function() {
   return this.handler;
 };
 

@@ -28,40 +28,63 @@ var CrossOriginAuthentication = require('./cross-origin-authentication');
  */
 function WebAuth(options) {
   /* eslint-disable */
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    domain: { type: 'string', message: 'domain option is required' },
-    clientID: { type: 'string', message: 'clientID option is required' },
-    responseType: { optional: true, type: 'string', message: 'responseType is not valid' },
-    responseMode: { optional: true, type: 'string', message: 'responseMode is not valid' },
-    redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
-    scope: { optional: true, type: 'string', message: 'scope is not valid' },
-    audience: { optional: true, type: 'string', message: 'audience is not valid' },
-    leeway: { optional: true, type: 'number', message: 'leeway is not valid' },
-    plugins: { optional: true, type: 'array', message: 'plugins is not valid' },
-    _disableDeprecationWarnings: { optional: true, type: 'boolean', message: '_disableDeprecationWarnings option is not valid' },
-    _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
-    _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
-  });
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      domain: { type: 'string', message: 'domain option is required' },
+      clientID: { type: 'string', message: 'clientID option is required' },
+      responseType: { optional: true, type: 'string', message: 'responseType is not valid' },
+      responseMode: { optional: true, type: 'string', message: 'responseMode is not valid' },
+      redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
+      scope: { optional: true, type: 'string', message: 'scope is not valid' },
+      audience: { optional: true, type: 'string', message: 'audience is not valid' },
+      leeway: { optional: true, type: 'number', message: 'leeway is not valid' },
+      plugins: { optional: true, type: 'array', message: 'plugins is not valid' },
+      _disableDeprecationWarnings: {
+        optional: true,
+        type: 'boolean',
+        message: '_disableDeprecationWarnings option is not valid'
+      },
+      _sendTelemetry: {
+        optional: true,
+        type: 'boolean',
+        message: '_sendTelemetry option is not valid'
+      },
+      _telemetryInfo: {
+        optional: true,
+        type: 'object',
+        message: '_telemetryInfo option is not valid'
+      }
+    }
+  );
 
   if (options.overrides) {
-    assert.check(options.overrides, { type: 'object', message: 'overrides option is not valid' }, {
-      __tenant: { type: 'string', message: '__tenant option is required' },
-      __token_issuer: { type: 'string', message: '__token_issuer option is required' }
-    });
+    assert.check(
+      options.overrides,
+      { type: 'object', message: 'overrides option is not valid' },
+      {
+        __tenant: { type: 'string', message: '__tenant option is required' },
+        __token_issuer: { type: 'string', message: '__token_issuer option is required' }
+      }
+    );
   }
   /* eslint-enable */
 
   this.baseOptions = options;
   this.baseOptions.plugins = new PluginHandler(this, this.baseOptions.plugins || []);
 
-  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ?
-    this.baseOptions._sendTelemetry : true;
+  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
+    ? this.baseOptions._sendTelemetry
+    : true;
 
-  this.baseOptions.tenant = (this.baseOptions.overrides && this.baseOptions.overrides.__tenant)
-    || this.baseOptions.domain.split('.')[0];
+  this.baseOptions.tenant =
+    (this.baseOptions.overrides && this.baseOptions.overrides.__tenant) ||
+    this.baseOptions.domain.split('.')[0];
 
-  this.baseOptions.token_issuer = (this.baseOptions.overrides && this.baseOptions.overrides.__token_issuer)
-    || 'https://' + this.baseOptions.domain + '/';
+  this.baseOptions.token_issuer =
+    (this.baseOptions.overrides && this.baseOptions.overrides.__token_issuer) ||
+    'https://' + this.baseOptions.domain + '/';
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 
@@ -86,7 +109,7 @@ function WebAuth(options) {
  * @param {String} [options._idTokenVerification] makes parseHash perform or skip `id_token` verification. We **strongly** recommend validating the `id_token` yourself if you disable the verification.
  * @param {authorizeCallback} cb
  */
-WebAuth.prototype.parseHash = function (options, cb) {
+WebAuth.prototype.parseHash = function(options, cb) {
   var parsedQs;
   var err;
   var state;
@@ -119,9 +142,11 @@ WebAuth.prototype.parseHash = function (options, cb) {
     return cb(err);
   }
 
-  if (!parsedQs.hasOwnProperty('access_token')
-    && !parsedQs.hasOwnProperty('id_token')
-    && !parsedQs.hasOwnProperty('refresh_token')) {
+  if (
+    !parsedQs.hasOwnProperty('access_token') &&
+    !parsedQs.hasOwnProperty('id_token') &&
+    !parsedQs.hasOwnProperty('refresh_token')
+  ) {
     return cb(null, null);
   }
 
@@ -132,15 +157,15 @@ WebAuth.prototype.parseHash = function (options, cb) {
 
   var applicationStatus = (transaction && transaction.appStatus) || null;
   if (parsedQs.id_token && options._idTokenVerification) {
-    return this.validateToken(
-      parsedQs.id_token,
-      transactionNonce,
-      function (validationError, payload) {
-        if (validationError) {
-          return cb(validationError);
-        }
-        return cb(null, buildParseHashResponse(parsedQs, applicationStatus, payload));
-      });
+    return this.validateToken(parsedQs.id_token, transactionNonce, function(
+      validationError,
+      payload
+    ) {
+      if (validationError) {
+        return cb(validationError);
+      }
+      return cb(null, buildParseHashResponse(parsedQs, applicationStatus, payload));
+    });
   }
 
   if (parsedQs.id_token) {
@@ -187,7 +212,7 @@ function buildParseHashResponse(qsParams, appStatus, token) {
  * @param {String} nonce
  * @param {validateTokenCallback} cb
  */
-WebAuth.prototype.validateToken = function (token, nonce, cb) {
+WebAuth.prototype.validateToken = function(token, nonce, cb) {
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     audience: this.baseOptions.clientID,
@@ -195,7 +220,7 @@ WebAuth.prototype.validateToken = function (token, nonce, cb) {
     __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
   });
 
-  verifier.verify(token, nonce, function (err, payload) {
+  verifier.verify(token, nonce, function(err, payload) {
     if (err) {
       return cb(error.invalidJwt(err.message));
     }
@@ -223,23 +248,25 @@ WebAuth.prototype.validateToken = function (token, nonce, cb) {
  * @param {String} [options.postMessageDataType] identifier data type to look for in postMessage event data, where events are initiated from silent callback urls, before accepting a message event is the event expected. A value of false means any postMessage event will trigger a callback.
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
-WebAuth.prototype.renewAuth = function (options, cb) {
+WebAuth.prototype.renewAuth = function(options, cb) {
   var handler;
   var usePostMessage = !!options.usePostMessage;
   var postMessageDataType = options.postMessageDataType || false;
   var _this = this;
 
-  var params = objectHelper.merge(this.baseOptions, [
-    'clientID',
-    'redirectUri',
-    'responseType',
-    'scope',
-    'audience',
-    '_csrf',
-    'state',
-    '_instate',
-    'nonce'
-  ]).with(options);
+  var params = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'redirectUri',
+      'responseType',
+      'scope',
+      'audience',
+      '_csrf',
+      'state',
+      '_instate',
+      'nonce'
+    ])
+    .with(options);
 
   params.responseType = params.responseType || 'token';
   params.responseMode = params.responseMode || 'fragment';
@@ -259,7 +286,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
     postMessageDataType: postMessageDataType
   });
 
-  handler.login(usePostMessage, function (err, hash) {
+  handler.login(usePostMessage, function(err, hash) {
     if (typeof hash === 'object') {
       // hash was already parsed, so we just return it.
       // it's here to be backwards compatible and should be removed in the next major version.
@@ -282,7 +309,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
  * @param {changePasswordCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#change-password}
  */
-WebAuth.prototype.changePassword = function (options, cb) {
+WebAuth.prototype.changePassword = function(options, cb) {
   return this.client.dbConnection.changePassword(options, cb);
 };
 
@@ -299,7 +326,7 @@ WebAuth.prototype.changePassword = function (options, cb) {
  * @param {Function} cb
  * @see   {@link https://auth0.com/docs/api/authentication#passwordless}
  */
-WebAuth.prototype.passwordlessStart = function (options, cb) {
+WebAuth.prototype.passwordlessStart = function(options, cb) {
   return this.client.passwordless.start(options, cb);
 };
 
@@ -314,7 +341,7 @@ WebAuth.prototype.passwordlessStart = function (options, cb) {
  * @param {signUpCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
  */
-WebAuth.prototype.signup = function (options, cb) {
+WebAuth.prototype.signup = function(options, cb) {
   return this.client.dbConnection.signup(options, cb);
 };
 
@@ -335,23 +362,29 @@ WebAuth.prototype.signup = function (options, cb) {
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
-WebAuth.prototype.authorize = function (options) {
-  var params = objectHelper.merge(this.baseOptions, [
-    'clientID',
-    'responseType',
-    'responseMode',
-    'redirectUri',
-    'scope',
-    'audience',
-    '_csrf',
-    'state',
-    '_instate',
-    'nonce'
-  ]).with(options);
+WebAuth.prototype.authorize = function(options) {
+  var params = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'responseType',
+      'responseMode',
+      'redirectUri',
+      'scope',
+      'audience',
+      '_csrf',
+      'state',
+      '_instate',
+      'nonce'
+    ])
+    .with(options);
 
-  assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
-    responseType: { type: 'string', message: 'responseType option is required' }
-  });
+  assert.check(
+    params,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      responseType: { type: 'string', message: 'responseType option is required' }
+    }
+  );
 
   params = this.transactionManager.process(params);
 
@@ -371,11 +404,12 @@ WebAuth.prototype.authorize = function (options) {
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
  * @see   {@link https://auth0.com/docs/api-auth/grant/password}
  */
-WebAuth.prototype.signupAndAuthorize = function (options, cb) {
+WebAuth.prototype.signupAndAuthorize = function(options, cb) {
   var _this = this;
 
-  return this.client.dbConnection.signup(objectHelper.blacklist(options, ['popupHandler']),
-    function (err) {
+  return this.client.dbConnection.signup(
+    objectHelper.blacklist(options, ['popupHandler']),
+    function(err) {
       if (err) {
         return cb(err);
       }
@@ -384,7 +418,8 @@ WebAuth.prototype.signupAndAuthorize = function (options, cb) {
         options.username = options.email;
       }
       _this.client.login(options, cb);
-    });
+    }
+  );
 };
 
 /**
@@ -404,17 +439,16 @@ WebAuth.prototype.signupAndAuthorize = function (options, cb) {
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
-WebAuth.prototype.login = function (options, cb) {
+WebAuth.prototype.login = function(options, cb) {
   this.crossOriginAuthentication.login(options, cb);
 };
-
 
 /**
  * Runs the callback code for the cross origin authentication call. This method is meant to be called by the cross origin authentication callback url.
  *
  * @method crossOriginAuthenticationCallback
  */
-WebAuth.prototype.crossOriginAuthenticationCallback = function () {
+WebAuth.prototype.crossOriginAuthenticationCallback = function() {
   this.crossOriginAuthentication.callback();
 };
 
@@ -433,7 +467,7 @@ WebAuth.prototype.crossOriginAuthenticationCallback = function () {
  * @param {Boolean} [options.federated] tells Auth0 if it should logout the user also from the IdP.
  * @see   {@link https://auth0.com/docs/api/authentication#logout}
  */
-WebAuth.prototype.logout = function (options) {
+WebAuth.prototype.logout = function(options) {
   windowHelper.redirect(this.client.buildLogoutUrl(options));
 };
 
@@ -449,9 +483,9 @@ WebAuth.prototype.logout = function (options) {
  * @param {String} options.verificationCode the TOTP code
  * @param {Function} cb
  */
-WebAuth.prototype.passwordlessVerify = function (options, cb) {
+WebAuth.prototype.passwordlessVerify = function(options, cb) {
   var _this = this;
-  return this.client.passwordless.verify(options, function (err) {
+  return this.client.passwordless.verify(options, function(err) {
     if (err) {
       return cb(err);
     }

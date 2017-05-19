@@ -35,29 +35,35 @@ function Redirect(client, options) {
  * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
  * @param {credentialsCallback} cb
  */
-Redirect.prototype.loginWithCredentials = function (options, cb) {
+Redirect.prototype.loginWithCredentials = function(options, cb) {
   var usernamePassword;
 
-  var params = objectHelper.merge(this.baseOptions, [
-    'clientID',
-    'redirectUri',
-    'tenant',
-    'responseType',
-    'responseMode',
-    'scope',
-    'audience',
-    '_csrf',
-    'state',
-    '_instate',
-    'nonce'
-  ]).with(options);
+  var params = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'redirectUri',
+      'tenant',
+      'responseType',
+      'responseMode',
+      'scope',
+      'audience',
+      '_csrf',
+      'state',
+      '_instate',
+      'nonce'
+    ])
+    .with(options);
 
-  assert.check(params, { type: 'object', message: 'options parameter is not valid' }, {
-    responseType: { type: 'string', message: 'responseType option is required' }
-  });
+  assert.check(
+    params,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      responseType: { type: 'string', message: 'responseType option is required' }
+    }
+  );
 
   usernamePassword = new UsernamePassword(this.baseOptions);
-  return usernamePassword.login(params, function (err, data) {
+  return usernamePassword.login(params, function(err, data) {
     if (err) {
       return cb(err);
     }
@@ -75,9 +81,9 @@ Redirect.prototype.loginWithCredentials = function (options, cb) {
  * @param {String} options.connection name of the connection where the user will be created
  * @param {credentialsCallback} cb
  */
-Redirect.prototype.signupAndLogin = function (options, cb) {
+Redirect.prototype.signupAndLogin = function(options, cb) {
   var _this = this;
-  return this.client.dbConnection.signup(options, function (err) {
+  return this.client.dbConnection.signup(options, function(err) {
     if (err) {
       return cb(err);
     }

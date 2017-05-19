@@ -4,30 +4,38 @@ var stub = require('sinon').stub;
 var windowHandler = require('../../src/helper/window');
 var storage = require('../../src/helper/storage');
 
-describe('helpers storage', function () {
-  beforeEach(function(){
+describe('helpers storage', function() {
+  beforeEach(function() {
     storage.reload();
-  })
+  });
 
-  describe('with localstorage', function () {
-    before(function(){
+  describe('with localstorage', function() {
+    before(function() {
       var data = {};
-      stub(windowHandler, 'getWindow', function () {
+      stub(windowHandler, 'getWindow', function() {
         return {
           localStorage: {
-            getItem: function(key) { return data[key] ? data[key] : null; },
-            removeItem: function(key) { if (data[key]) { delete data[key]; } },
-            setItem: function(key, value) { data[key] = value; },
+            getItem: function(key) {
+              return data[key] ? data[key] : null;
+            },
+            removeItem: function(key) {
+              if (data[key]) {
+                delete data[key];
+              }
+            },
+            setItem: function(key, value) {
+              data[key] = value;
+            }
           }
         };
       });
     });
 
-    after(function(){
+    after(function() {
       windowHandler.getWindow.restore();
     });
 
-    it('should store stuff', function () {
+    it('should store stuff', function() {
       expect(storage.getItem('data')).to.be(null);
       storage.setItem('data', 'text');
       expect(storage.getItem('data')).to.eql('text');
@@ -36,29 +44,31 @@ describe('helpers storage', function () {
     });
   });
 
-  describe('without localstorage and with cookies', function () {
-    before(function(){
+  describe('without localstorage and with cookies', function() {
+    before(function() {
       var document = {
         cookie: ''
       };
-      stub(windowHandler, 'getWindow', function () {
+      stub(windowHandler, 'getWindow', function() {
         return {
           localStorage: {
-            getItem: function(key) { throw new Error('localStorage not available') }
+            getItem: function(key) {
+              throw new Error('localStorage not available');
+            }
           }
         };
       });
-      stub(windowHandler, 'getDocument', function () {
+      stub(windowHandler, 'getDocument', function() {
         return document;
       });
     });
 
-    after(function(){
+    after(function() {
       windowHandler.getDocument.restore();
       windowHandler.getWindow.restore();
     });
 
-    it('should store stuff', function () {
+    it('should store stuff', function() {
       expect(storage.getItem('data')).to.be(null);
       storage.setItem('data', 'text');
       expect(storage.getItem('data')).to.eql('text');
@@ -70,22 +80,22 @@ describe('helpers storage', function () {
     });
   });
 
-  describe('with dummy storage', function () {
-    before(function(){
-      stub(windowHandler, 'getWindow', function () {
+  describe('with dummy storage', function() {
+    before(function() {
+      stub(windowHandler, 'getWindow', function() {
         return {};
       });
-      stub(windowHandler, 'getDocument', function () {
+      stub(windowHandler, 'getDocument', function() {
         return {};
       });
     });
 
-    after(function(){
+    after(function() {
       windowHandler.getDocument.restore();
       windowHandler.getWindow.restore();
     });
 
-    it('should ignore the data', function () {
+    it('should ignore the data', function() {
       expect(storage.getItem('data')).to.be(null);
       storage.setItem('data', 'text');
       expect(storage.getItem('data')).to.be(null);

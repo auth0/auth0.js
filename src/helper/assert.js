@@ -56,7 +56,7 @@ function isArray(array) {
 }
 
 function supportsIsArray() {
-  return (Array.isArray != null);
+  return Array.isArray != null;
 }
 
 module.exports = {

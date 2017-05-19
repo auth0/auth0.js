@@ -1,6 +1,8 @@
 {
   "extends": "auth0-base/legacy",
-  "plugins": ["compat"],
+  "plugins": [
+    "compat"
+  ],
   "env": {
     "browser": true
   },
@@ -12,6 +14,7 @@
     "max-len": "off",
     "consistent-return": "off",
     "vars-on-top": "off",
-    "compat/compat": "error"
+    "compat/compat": "error",
+    "space-before-function-paren": "off"
   }
 }

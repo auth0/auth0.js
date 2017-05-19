@@ -7,13 +7,19 @@ var CookieStorage = require('../../src/helper/storage/cookie');
 var DummyStorage = require('../../src/helper/storage/dummy');
 
 function MockLocalStorage() {}
-MockLocalStorage.prototype.getItem = function() { throw new Error('fail'); };
-MockLocalStorage.prototype.removeItem = function() { throw new Error('fail'); };
-MockLocalStorage.prototype.setItem = function() { throw new Error('fail'); };
+MockLocalStorage.prototype.getItem = function() {
+  throw new Error('fail');
+};
+MockLocalStorage.prototype.removeItem = function() {
+  throw new Error('fail');
+};
+MockLocalStorage.prototype.setItem = function() {
+  throw new Error('fail');
+};
 
-describe('helpers storage handler', function () {
-  it('should use localStorage by default', function () {
-    stub(windowHandler, 'getWindow', function (message) {
+describe('helpers storage handler', function() {
+  it('should use localStorage by default', function() {
+    stub(windowHandler, 'getWindow', function(message) {
       return {
         localStorage: new MockLocalStorage()
       };
@@ -25,8 +31,8 @@ describe('helpers storage handler', function () {
     windowHandler.getWindow.restore();
   });
 
-  it('should use cookie storage is localstorage is not available', function () {
-    stub(windowHandler, 'getWindow', function (message) {
+  it('should use cookie storage is localstorage is not available', function() {
+    stub(windowHandler, 'getWindow', function(message) {
       return {};
     });
 
@@ -36,13 +42,13 @@ describe('helpers storage handler', function () {
     windowHandler.getWindow.restore();
   });
 
-  it('should use cookie storage is localstorage fails with getItem', function () {
-    stub(windowHandler, 'getWindow', function (message) {
+  it('should use cookie storage is localstorage fails with getItem', function() {
+    stub(windowHandler, 'getWindow', function(message) {
       return {
         localStorage: new MockLocalStorage()
       };
     });
-    stub(windowHandler, 'getDocument', function (message) {
+    stub(windowHandler, 'getDocument', function(message) {
       return {
         cookie: ''
       };
@@ -59,19 +65,19 @@ describe('helpers storage handler', function () {
     windowHandler.getDocument.restore();
   });
 
-  it('should use cookie storage is localstorage fails with setItem', function () {
+  it('should use cookie storage is localstorage fails with setItem', function() {
     var document = {
       cookie: ''
     };
-    stub(windowHandler, 'getWindow', function (message) {
+    stub(windowHandler, 'getWindow', function(message) {
       return {
         localStorage: new MockLocalStorage()
       };
     });
-    stub(windowHandler, 'getDocument', function (message) {
+    stub(windowHandler, 'getDocument', function(message) {
       return document;
     });
-    stub(Date.prototype, 'getTime', function (message) {
+    stub(Date.prototype, 'getTime', function(message) {
       return 0;
     });
 
@@ -88,19 +94,19 @@ describe('helpers storage handler', function () {
     Date.prototype.getTime.restore();
   });
 
-  it('should use cookie storage is localstorage fails with removeItem', function () {
+  it('should use cookie storage is localstorage fails with removeItem', function() {
     var document = {
       cookie: ''
     };
-    stub(windowHandler, 'getWindow', function (message) {
+    stub(windowHandler, 'getWindow', function(message) {
       return {
         localStorage: new MockLocalStorage()
       };
     });
-    stub(windowHandler, 'getDocument', function (message) {
+    stub(windowHandler, 'getDocument', function(message) {
       return document;
     });
-    stub(Date.prototype, 'getTime', function (message) {
+    stub(Date.prototype, 'getTime', function(message) {
       return 0;
     });
 
@@ -117,11 +123,11 @@ describe('helpers storage handler', function () {
     Date.prototype.getTime.restore();
   });
 
-  it('should failover to dummy', function () {
+  it('should failover to dummy', function() {
     var document = {
       cookie: ''
     };
-    stub(windowHandler, 'getWindow', function (message) {
+    stub(windowHandler, 'getWindow', function(message) {
       return {
         localStorage: new MockLocalStorage()
       };

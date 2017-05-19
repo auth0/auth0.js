@@ -10,29 +10,47 @@ function PasswordlessAuthentication(request, options) {
   this.request = request;
 }
 
-PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
+PasswordlessAuthentication.prototype.buildVerifyUrl = function(options) {
   var params;
   var qString;
 
   /* eslint-disable */
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    connection: { type: 'string', message: 'connection option is required' },
-    verificationCode: { type: 'string', message: 'verificationCode option is required' },
-    phoneNumber: { optional: false, type: 'string', message: 'phoneNumber option is required',
-            condition: function (o) { return !o.email; } },
-    email: { optional: false, type: 'string', message: 'email option is required',
-            condition: function (o) { return !o.phoneNumber; } }
-  });
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      connection: { type: 'string', message: 'connection option is required' },
+      verificationCode: { type: 'string', message: 'verificationCode option is required' },
+      phoneNumber: {
+        optional: false,
+        type: 'string',
+        message: 'phoneNumber option is required',
+        condition: function(o) {
+          return !o.email;
+        }
+      },
+      email: {
+        optional: false,
+        type: 'string',
+        message: 'email option is required',
+        condition: function(o) {
+          return !o.phoneNumber;
+        }
+      }
+    }
+  );
   /* eslint-enable */
 
-  params = objectHelper.merge(this.baseOptions, [
-    'clientID',
-    'responseType',
-    'responseMode',
-    'redirectUri',
-    'scope',
-    'audience'
-  ]).with(options);
+  params = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'responseType',
+      'responseMode',
+      'redirectUri',
+      'scope',
+      'audience'
+    ])
+    .with(options);
 
   // eslint-disable-next-line
   if (this.baseOptions._sendTelemetry) {
@@ -46,33 +64,50 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
   return urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify_redirect', '?' + qString);
 };
 
-PasswordlessAuthentication.prototype.start = function (options, cb) {
+PasswordlessAuthentication.prototype.start = function(options, cb) {
   var url;
   var body;
 
   /* eslint-disable */
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    connection: { type: 'string', message: 'connection option is required' },
-    send: { type: 'string', message: 'send option is required', values: ['link', 'code'],
-            value_message: 'send is not valid ([link, code])' },
-    phoneNumber: { optional: true, type: 'string', message: 'phoneNumber option is required',
-            condition: function (o) { return o.send === 'code' || !o.email; } },
-    email: { optional: true, type: 'string', message: 'email option is required',
-            condition: function (o) { return o.send === 'link' || !o.phoneNumber; } },
-    authParams: { optional: true, type: 'object', message: 'authParams option is required' }
-  });
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      connection: { type: 'string', message: 'connection option is required' },
+      send: {
+        type: 'string',
+        message: 'send option is required',
+        values: ['link', 'code'],
+        value_message: 'send is not valid ([link, code])'
+      },
+      phoneNumber: {
+        optional: true,
+        type: 'string',
+        message: 'phoneNumber option is required',
+        condition: function(o) {
+          return o.send === 'code' || !o.email;
+        }
+      },
+      email: {
+        optional: true,
+        type: 'string',
+        message: 'email option is required',
+        condition: function(o) {
+          return o.send === 'link' || !o.phoneNumber;
+        }
+      },
+      authParams: { optional: true, type: 'object', message: 'authParams option is required' }
+    }
+  );
   /* eslint-enable */
 
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'start');
 
-  body = objectHelper.merge(this.baseOptions, [
-    'clientID',
-    'responseType',
-    'redirectUri',
-    'scope'
-  ]).with(options);
+  body = objectHelper
+    .merge(this.baseOptions, ['clientID', 'responseType', 'redirectUri', 'scope'])
+    .with(options);
 
   if (body.scope) {
     body.authParams = body.authParams || {};
@@ -95,25 +130,38 @@ PasswordlessAuthentication.prototype.start = function (options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client', 'authParams']);
 
-  return this.request
-    .post(url)
-    .send(body)
-    .end(responseHandler(cb));
+  return this.request.post(url).send(body).end(responseHandler(cb));
 };
 
-PasswordlessAuthentication.prototype.verify = function (options, cb) {
+PasswordlessAuthentication.prototype.verify = function(options, cb) {
   var url;
   var cleanOption;
 
   /* eslint-disable */
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    connection: { type: 'string', message: 'connection option is required' },
-    verificationCode: { type: 'string', message: 'verificationCode option is required' },
-    phoneNumber: { optional: false, type: 'string', message: 'phoneNumber option is required',
-            condition: function (o) { return !o.email; } },
-    email: { optional: false, type: 'string', message: 'email option is required',
-            condition: function (o) { return !o.phoneNumber; } }
-  });
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      connection: { type: 'string', message: 'connection option is required' },
+      verificationCode: { type: 'string', message: 'verificationCode option is required' },
+      phoneNumber: {
+        optional: false,
+        type: 'string',
+        message: 'phoneNumber option is required',
+        condition: function(o) {
+          return !o.email;
+        }
+      },
+      email: {
+        optional: false,
+        type: 'string',
+        message: 'email option is required',
+        condition: function(o) {
+          return !o.phoneNumber;
+        }
+      }
+    }
+  );
   /* eslint-enable */
 
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
@@ -122,10 +170,7 @@ PasswordlessAuthentication.prototype.verify = function (options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify');
 
-  return this.request
-    .post(url)
-    .send(cleanOption)
-    .end(responseHandler(cb));
+  return this.request.post(url).send(cleanOption).end(responseHandler(cb));
 };
 
 module.exports = PasswordlessAuthentication;

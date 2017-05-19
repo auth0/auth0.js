@@ -11,15 +11,23 @@ function PluginHandler(webAuth, plugins) {
         pluginName = this.plugins[a].constructor.name;
       }
 
-      throw new Error('Plugin ' + pluginName + ' version (' + this.plugins[a].version + ') ' +
-        'is not compatible with the SDK version (' + version.raw + ')');
+      throw new Error(
+        'Plugin ' +
+          pluginName +
+          ' version (' +
+          this.plugins[a].version +
+          ') ' +
+          'is not compatible with the SDK version (' +
+          version.raw +
+          ')'
+      );
     }
 
     this.plugins[a].setWebAuth(webAuth);
   }
 }
 
-PluginHandler.prototype.get = function (extensibilityPoint) {
+PluginHandler.prototype.get = function(extensibilityPoint) {
   for (var a = 0; a < this.plugins.length; a++) {
     if (this.plugins[a].supports(extensibilityPoint)) {
       return this.plugins[a].init();

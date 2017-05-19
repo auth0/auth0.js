@@ -13,12 +13,24 @@ var responseHandler = require('../helper/response-handler');
  */
 function Management(options) {
   /* eslint-disable */
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' }, {
-    domain: { type: 'string', message: 'domain option is required' },
-    token: { type: 'string', message: 'token option is required' },
-    _sendTelemetry: { optional: true, type: 'boolean', message: '_sendTelemetry option is not valid' },
-    _telemetryInfo: { optional: true, type: 'object', message: '_telemetryInfo option is not valid' }
-  });
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      domain: { type: 'string', message: 'domain option is required' },
+      token: { type: 'string', message: 'token option is required' },
+      _sendTelemetry: {
+        optional: true,
+        type: 'boolean',
+        message: '_sendTelemetry option is not valid'
+      },
+      _telemetryInfo: {
+        optional: true,
+        type: 'object',
+        message: '_telemetryInfo option is not valid'
+      }
+    }
+  );
   /* eslint-enable */
 
   this.baseOptions = options;
@@ -43,7 +55,7 @@ function Management(options) {
  * @param {userCallback} cb
  * @see https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
  */
-Management.prototype.getUser = function (userId, cb) {
+Management.prototype.getUser = function(userId, cb) {
   var url;
 
   assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
@@ -51,9 +63,7 @@ Management.prototype.getUser = function (userId, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'users', userId);
 
-  return this.request
-    .get(url)
-    .end(responseHandler(cb, { ignoreCasing: true }));
+  return this.request.get(url).end(responseHandler(cb, { ignoreCasing: true }));
 };
 
 /**
@@ -66,7 +76,7 @@ Management.prototype.getUser = function (userId, cb) {
  * @param {userCallback} cb
  * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id}
  */
-Management.prototype.patchUserMetadata = function (userId, userMetadata, cb) {
+Management.prototype.patchUserMetadata = function(userId, userMetadata, cb) {
   var url;
 
   assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
@@ -90,12 +100,14 @@ Management.prototype.patchUserMetadata = function (userId, userMetadata, cb) {
  * @param {userCallback} cb
  * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/post_identities}
  */
-Management.prototype.linkUser = function (userId, secondaryUserToken, cb) {
+Management.prototype.linkUser = function(userId, secondaryUserToken, cb) {
   var url;
   /* eslint-disable */
   assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
-  assert.check(secondaryUserToken, { type: 'string',
-    message: 'secondaryUserToken parameter is not valid' });
+  assert.check(secondaryUserToken, {
+    type: 'string',
+    message: 'secondaryUserToken parameter is not valid'
+  });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
   /* eslint-enable */
 

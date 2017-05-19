@@ -8,11 +8,11 @@ var request = require('superagent');
 var RequestBuilder = require('../../src/helper/request-builder');
 var Authentication = require('../../src/authentication');
 
-var telemetryInfo = (new RequestBuilder({})).getTelemetryData();
+var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
-describe('auth0.authentication', function () {
-  context('/oauth/ro', function () {
-    before(function () {
+describe('auth0.authentication', function() {
+  context('/oauth/ro', function() {
+    before(function() {
       this.auth0 = new Authentication({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -21,12 +21,12 @@ describe('auth0.authentication', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       request.post.restore();
     });
 
-    it('should call the ro endpoint with all the parameters', function (done) {
-      stub(request, 'post', function (url) {
+    it('should call the ro endpoint with all the parameters', function(done) {
+      stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/oauth/ro');
         return new RequestMock({
           body: {
@@ -41,7 +41,7 @@ describe('auth0.authentication', function () {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb(null, {
               body: {
                 id_token: 'id_token.id_token.id_token',
@@ -53,24 +53,27 @@ describe('auth0.authentication', function () {
         });
       });
 
-      this.auth0.loginWithResourceOwner({
-        username: 'the username',
-        password: 'the password',
-        connection: 'the_connection',
-        scope: 'openid'
-      }, function (err, data) {
-        expect(err).to.be(null);
-        expect(data).to.eql({
-          idToken: 'id_token.id_token.id_token',
-          accessToken: 'access_token',
-          tokenType: 'bearer'
-        });
-        done();
-      });
+      this.auth0.loginWithResourceOwner(
+        {
+          username: 'the username',
+          password: 'the password',
+          connection: 'the_connection',
+          scope: 'openid'
+        },
+        function(err, data) {
+          expect(err).to.be(null);
+          expect(data).to.eql({
+            idToken: 'id_token.id_token.id_token',
+            accessToken: 'access_token',
+            tokenType: 'bearer'
+          });
+          done();
+        }
+      );
     });
 
-    it('should handle ro errors', function (done) {
-      stub(request, 'post', function (url) {
+    it('should handle ro errors', function(done) {
+      stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/oauth/ro');
         return new RequestMock({
           body: {
@@ -85,33 +88,36 @@ describe('auth0.authentication', function () {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb({ error: 'unauthorized', error_description: 'invalid username' });
           }
         });
       });
 
-      this.auth0.loginWithResourceOwner({
-        username: 'the username',
-        password: 'the password',
-        connection: 'the_connection',
-        scope: 'openid'
-      }, function (err, data) {
-        expect(data).to.be(undefined);
-        expect(err).to.eql({
-          original: {
-            error: 'unauthorized',
-            error_description: 'invalid username'
-          },
-          code: 'unauthorized',
-          description: 'invalid username'
-        });
-        done();
-      });
+      this.auth0.loginWithResourceOwner(
+        {
+          username: 'the username',
+          password: 'the password',
+          connection: 'the_connection',
+          scope: 'openid'
+        },
+        function(err, data) {
+          expect(data).to.be(undefined);
+          expect(err).to.eql({
+            original: {
+              error: 'unauthorized',
+              error_description: 'invalid username'
+            },
+            code: 'unauthorized',
+            description: 'invalid username'
+          });
+          done();
+        }
+      );
     });
 
-    it('should call the ro endpoint overriding the parameters', function (done) {
-      stub(request, 'post', function (url) {
+    it('should call the ro endpoint overriding the parameters', function(done) {
+      stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/oauth/ro');
         return new RequestMock({
           body: {
@@ -126,7 +132,7 @@ describe('auth0.authentication', function () {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb(null, {
               body: {
                 id_token: 'id_token.id_token.id_token',
@@ -138,24 +144,27 @@ describe('auth0.authentication', function () {
         });
       });
 
-      this.auth0.loginWithResourceOwner({
-        username: 'the username',
-        password: 'the password',
-        connection: 'the_connection',
-        scope: 'openid'
-      }, function (err, data) {
-        expect(err).to.be(null);
-        expect(data).to.eql({
-          idToken: 'id_token.id_token.id_token',
-          accessToken: 'access_token',
-          tokenType: 'bearer'
-        });
-        done();
-      });
+      this.auth0.loginWithResourceOwner(
+        {
+          username: 'the username',
+          password: 'the password',
+          connection: 'the_connection',
+          scope: 'openid'
+        },
+        function(err, data) {
+          expect(err).to.be(null);
+          expect(data).to.eql({
+            idToken: 'id_token.id_token.id_token',
+            accessToken: 'access_token',
+            tokenType: 'bearer'
+          });
+          done();
+        }
+      );
     });
 
-    it('should exclude parameters not in whitelist', function (done) {
-      stub(request, 'post', function (url) {
+    it('should exclude parameters not in whitelist', function(done) {
+      stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/oauth/ro');
         return new RequestMock({
           body: {
@@ -169,7 +178,7 @@ describe('auth0.authentication', function () {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb(null, {
               body: {
                 id_token: 'id_token.id_token.id_token',
@@ -181,20 +190,23 @@ describe('auth0.authentication', function () {
         });
       });
 
-      this.auth0.loginWithResourceOwner({
-        username: 'the username',
-        password: 'the password',
-        connection: 'the_connection',
-        should_ignore: { invalid: 'invalid value' }
-      }, function (err, data) {
-        expect(err).to.be(null);
-        expect(data).to.eql({
-          idToken: 'id_token.id_token.id_token',
-          accessToken: 'access_token',
-          tokenType: 'bearer'
-        });
-        done();
-      });
+      this.auth0.loginWithResourceOwner(
+        {
+          username: 'the username',
+          password: 'the password',
+          connection: 'the_connection',
+          should_ignore: { invalid: 'invalid value' }
+        },
+        function(err, data) {
+          expect(err).to.be(null);
+          expect(data).to.eql({
+            idToken: 'id_token.id_token.id_token',
+            accessToken: 'access_token',
+            tokenType: 'bearer'
+          });
+          done();
+        }
+      );
     });
   });
 });

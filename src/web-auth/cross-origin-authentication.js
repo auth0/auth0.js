@@ -20,11 +20,7 @@ function getFragment(name) {
 }
 
 function createKey(origin, coId) {
-  return [
-    'co/verifier',
-    encodeURIComponent(origin),
-    encodeURIComponent(coId)
-  ].join('/');
+  return ['co/verifier', encodeURIComponent(origin), encodeURIComponent(coId)].join('/');
 }
 
 /**
@@ -39,7 +35,7 @@ function createKey(origin, coId) {
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
-CrossOriginAuthentication.prototype.login = function (options, cb) {
+CrossOriginAuthentication.prototype.login = function(options, cb) {
   var _this = this;
   var theWindow = windowHelper.getWindow();
   var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate');
@@ -54,7 +50,7 @@ CrossOriginAuthentication.prototype.login = function (options, cb) {
     authenticateBody.realm = realm;
     authenticateBody.credential_type = 'http://auth0.com/oauth/grant-type/password-realm';
   }
-  this.request.post(url).withCredentials().send(authenticateBody).end(function (err, data) {
+  this.request.post(url).withCredentials().send(authenticateBody).end(function(err, data) {
     if (err) {
       var errorObject = (err.response && err.response.body) || {
         error: 'Request Error',
@@ -66,11 +62,17 @@ CrossOriginAuthentication.prototype.login = function (options, cb) {
         return cb(errorObject);
       }
       var redirectUrl = _this.baseOptions.redirectUri || options.redirectUri;
-      var errorHash = '#error=' + encodeURI(errorObject.error) + '&error_description=' + encodeURI(errorObject.error_description);
+      var errorHash =
+        '#error=' +
+        encodeURI(errorObject.error) +
+        '&error_description=' +
+        encodeURI(errorObject.error_description);
       return windowHelper.redirect(redirectUrl + errorHash);
     }
     options = objectHelper.blacklist(options, ['username', 'password']);
-    var authorizeOptions = objectHelper.merge(options).with({ loginTicket: data.body.login_ticket });
+    var authorizeOptions = objectHelper
+      .merge(options)
+      .with({ loginTicket: data.body.login_ticket });
     var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
     theWindow.sessionStorage[key] = data.body.co_verifier;
     _this.webAuth.authorize(authorizeOptions);
@@ -82,11 +84,11 @@ CrossOriginAuthentication.prototype.login = function (options, cb) {
  *
  * @method callback
  */
-CrossOriginAuthentication.prototype.callback = function () {
+CrossOriginAuthentication.prototype.callback = function() {
   var targetOrigin = decodeURIComponent(getFragment('origin'));
   var theWindow = windowHelper.getWindow();
 
-  theWindow.addEventListener('message', function (evt) {
+  theWindow.addEventListener('message', function(evt) {
     if (evt.data.type !== 'co_verifier_request') {
       return;
     }
@@ -94,12 +96,15 @@ CrossOriginAuthentication.prototype.callback = function () {
     var verifier = theWindow.sessionStorage[key];
     theWindow.sessionStorage.removeItem(key);
 
-    evt.source.postMessage({
-      type: 'co_verifier_response',
-      response: {
-        verifier: verifier
-      }
-    }, evt.origin);
+    evt.source.postMessage(
+      {
+        type: 'co_verifier_response',
+        response: {
+          verifier: verifier
+        }
+      },
+      evt.origin
+    );
   });
 
   theWindow.parent.postMessage({ type: 'ready' }, targetOrigin);

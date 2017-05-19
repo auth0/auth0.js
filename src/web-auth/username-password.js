@@ -10,7 +10,7 @@ function UsernamePassword(options) {
   this.request = new RequestBuilder(options);
 }
 
-UsernamePassword.prototype.login = function (options, cb) {
+UsernamePassword.prototype.login = function(options, cb) {
   var url;
   var body;
 
@@ -20,25 +20,24 @@ UsernamePassword.prototype.login = function (options, cb) {
 
   options = objectHelper.blacklist(options, ['email']); // eslint-disable-line
 
-  body = objectHelper.merge(this.baseOptions, [
-    'clientID',
-    'redirectUri',
-    'tenant',
-    'responseType',
-    'responseMode',
-    'scope',
-    'audience'
-  ]).with(options);
+  body = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'redirectUri',
+      'tenant',
+      'responseType',
+      'responseMode',
+      'scope',
+      'audience'
+    ])
+    .with(options);
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
-  return this.request
-    .post(url)
-    .send(body)
-    .end(responseHandler(cb));
+  return this.request.post(url).send(body).end(responseHandler(cb));
 };
 
-UsernamePassword.prototype.callback = function (formHtml) {
+UsernamePassword.prototype.callback = function(formHtml) {
   var div;
   var form;
   var _document = windowHelper.getDocument();

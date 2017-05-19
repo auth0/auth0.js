@@ -5,14 +5,17 @@ function create(name, value, days) {
   var date;
   var expires;
 
-  if (windowHandler.getDocument().cookie === undefined
-      || windowHandler.getDocument().cookie === null) {
+  if (
+    windowHandler.getDocument().cookie === undefined ||
+    windowHandler.getDocument().cookie === null
+  ) {
     throw new Error('cookie storage not available');
   }
 
   if (days) {
+    var timeToExpire = days * 24 * 60 * 60 * 1000;
     date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    date.setTime(date.getTime() + timeToExpire);
     expires = '; expires=' + date.toGMTString();
   } else {
     expires = '';
@@ -27,8 +30,10 @@ function read(name) {
   var cookies;
   var nameEQ = name + '=';
 
-  if (windowHandler.getDocument().cookie === undefined
-      || windowHandler.getDocument().cookie === null) {
+  if (
+    windowHandler.getDocument().cookie === undefined ||
+    windowHandler.getDocument().cookie === null
+  ) {
     throw new Error('cookie storage not available');
   }
 
