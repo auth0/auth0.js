@@ -62,7 +62,7 @@ function oauthAuthorizeParams(warn, params) {
 
   if (notAllowed.length > 0) {
     warn.warning(
-      'Following parameters are not allowed on the `/authorize` endpoing: [' +
+      'Following parameters are not allowed on the `/authorize` endpoint: [' +
         notAllowed.join(',') +
         ']'
     );
