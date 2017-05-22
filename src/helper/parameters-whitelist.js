@@ -31,6 +31,7 @@ var authorizeParams = [
   'protocol',
   '_csrf',
   '_intstate',
+  'login_ticket',
 
   // oauth2
   'client_id',
