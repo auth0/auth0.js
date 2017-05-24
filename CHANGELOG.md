@@ -1,5 +1,24 @@
 # Change Log
 
+## [v8.7.0](https://github.com/auth0/auth0.js/tree/v8.7.0) (2017-05-24)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.6.1...v8.7.0)
+
+**Added**
+- Adding `scope` to the parsed hash object [\#434](https://github.com/auth0/auth0.js/pull/434) ([luisrudge](https://github.com/luisrudge))
+- Add option to filter iframe events to prevent incorrect events triggering callbacks [\#432](https://github.com/auth0/auth0.js/pull/432) ([aaronchilcott](https://github.com/aaronchilcott))
+- Adding cross-origin-auth sessionless flow [\#431](https://github.com/auth0/auth0.js/pull/431) ([luisrudge](https://github.com/luisrudge))
+- Adding new LoginTicket flow (with session)  [\#426](https://github.com/auth0/auth0.js/pull/426) ([hzalaz](https://github.com/hzalaz))
+
+**Changed**
+- Sending all /co/authenticate errors to the error callback [\#443](https://github.com/auth0/auth0.js/pull/443) ([luisrudge](https://github.com/luisrudge))
+- Fix some examples and docs + using https everywhere [\#436](https://github.com/auth0/auth0.js/pull/436) ([luisrudge](https://github.com/luisrudge))
+
+**Fixed**
+- Add login_ticket to params whitelist [\#442](https://github.com/auth0/auth0.js/pull/442) ([luisrudge](https://github.com/luisrudge))
+- Fix decoding base64 string with special characters [\#440](https://github.com/auth0/auth0.js/pull/440) ([luisrudge](https://github.com/luisrudge))
+- Fixed issues with overrides not being used [\#430](https://github.com/auth0/auth0.js/pull/430) ([sandrinodimattia](https://github.com/sandrinodimattia))
+# Change Log
+
 ## [v8.6.1](https://github.com/auth0/auth0.js/tree/v8.6.1) (2017-05-08)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.6.0...v8.6.1)
 
