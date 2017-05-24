@@ -53,21 +53,10 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
   this.request.post(url).withCredentials().send(authenticateBody).end(function(err, data) {
     if (err) {
       var errorObject = (err.response && err.response.body) || {
-        error: 'Request Error',
+        error: 'request_error',
         error_description: JSON.stringify(err)
       };
-      var authorizationErrorCodes = ['access_denied'];
-      var isAuthorizationError = authorizationErrorCodes.indexOf(errorObject.error) > -1;
-      if (cb && isAuthorizationError) {
-        return cb(errorObject);
-      }
-      var redirectUrl = _this.baseOptions.redirectUri || options.redirectUri;
-      var errorHash =
-        '#error=' +
-        encodeURI(errorObject.error) +
-        '&error_description=' +
-        encodeURI(errorObject.error_description);
-      return windowHelper.redirect(redirectUrl + errorHash);
+      return cb(errorObject);
     }
     options = objectHelper.blacklist(options, ['username', 'password']);
     var authorizeOptions = objectHelper

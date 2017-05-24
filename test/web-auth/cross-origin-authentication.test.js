@@ -141,7 +141,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
     context(
       'should call callback and not redirect to authorize when it is an authentication error',
       function() {
-        it('access_denied', function(done) {
+        it('with error_description', function(done) {
           stub(request, 'post', function(url) {
             expect(url).to.be('https://me.auth0.com/co/authenticate');
             return new RequestMock({
@@ -158,8 +158,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
                 cb({
                   response: {
                     body: {
-                      error: 'access_denied',
-                      error_description: 'access denied'
+                      error: 'any_error',
+                      error_description: 'any error'
                     }
                   }
                 });
@@ -174,7 +174,42 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
               anotherOption: 'foobar'
             },
             function(err) {
-              expect(err).to.be.eql({ error: 'access_denied', error_description: 'access denied' });
+              expect(err).to.be.eql({ error: 'any_error', error_description: 'any error' });
+              expect(_this.webAuthSpy.authorize.called).to.be.eql(false);
+              done();
+            }
+          );
+        });
+        it('without error_description', function(done) {
+          stub(request, 'post', function(url) {
+            expect(url).to.be('https://me.auth0.com/co/authenticate');
+            return new RequestMock({
+              body: {
+                client_id: '...',
+                credential_type: 'password',
+                username: 'me@example.com',
+                password: '123456'
+              },
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              cb: function(cb) {
+                cb({ some: 'error' });
+              }
+            });
+          });
+          var _this = this;
+          this.co.login(
+            {
+              username: 'me@example.com',
+              password: '123456',
+              anotherOption: 'foobar'
+            },
+            function(err) {
+              expect(err).to.be.eql({
+                error: 'request_error',
+                error_description: '{"some":"error"}'
+              });
               expect(_this.webAuthSpy.authorize.called).to.be.eql(false);
               done();
             }
@@ -182,81 +217,6 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         });
       }
     );
-    it('should call /co/authenticate and redirect to options.redirectUri when an error WITH description occur', function(
-      done
-    ) {
-      stub(request, 'post', function(url) {
-        expect(url).to.be('https://me.auth0.com/co/authenticate');
-        return new RequestMock({
-          body: {
-            client_id: '...',
-            credential_type: 'password',
-            username: 'me@example.com',
-            password: '123456'
-          },
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          cb: function(cb) {
-            cb({
-              response: {
-                body: {
-                  error: 'Ops',
-                  error_description: 'Something happened'
-                }
-              }
-            });
-          }
-        });
-      });
-      stub(windowHelper, 'redirect', function(url) {
-        expect(url).to.be.equal(
-          'https://page.com/callback#error=Ops&error_description=Something%20happened'
-        );
-        done();
-      });
-
-      this.co.login({
-        username: 'me@example.com',
-        password: '123456',
-        anotherOption: 'foobar'
-      });
-    });
-    it('should call /co/authenticate and redirect to options.redirectUri when an error WITHOUT description occur', function(
-      done
-    ) {
-      stub(request, 'post', function(url) {
-        expect(url).to.be('https://me.auth0.com/co/authenticate');
-        return new RequestMock({
-          body: {
-            client_id: '...',
-            credential_type: 'password',
-            username: 'me@example.com',
-            password: '123456'
-          },
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          cb: function(cb) {
-            cb({
-              foo: 'bar'
-            });
-          }
-        });
-      });
-      stub(windowHelper, 'redirect', function(url) {
-        expect(url).to.be.equal(
-          'https://page.com/callback#error=Request%20Error&error_description=%7B%22foo%22:%22bar%22%7D'
-        );
-        done();
-      });
-
-      this.co.login({
-        username: 'me@example.com',
-        password: '123456',
-        anotherOption: 'foobar'
-      });
-    });
   });
   context('callback', function() {
     before(function() {
