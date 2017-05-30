@@ -16,7 +16,7 @@ TransactionManager.prototype.process = function(options) {
     return options;
   }
 
-  if (options.responseType.indexOf('id_token') !== -1 && !!options.nonce) {
+  if (options.responseType.indexOf('token') !== -1 && !!options.nonce) {
     return options;
   }
 
@@ -24,7 +24,7 @@ TransactionManager.prototype.process = function(options) {
 
   options.state = transaction.state;
 
-  if (options.responseType.indexOf('id_token') !== -1) {
+  if (options.responseType.indexOf('token') !== -1) {
     options.nonce = transaction.nonce;
   }
 
