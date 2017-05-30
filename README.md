@@ -100,6 +100,11 @@ auth0.parseHash(window.location.hash, function(err, authResult) {
 });
 ```
 
+_Note: By If you wish to use a developer generated nonce (as opposed to letting Auth0 generate one), then you must provide it
+as an option to both `auth0.authorize` and `auth0.parseHash`. For example, `auth0.authorize({nonce: '1234'})` and then `auth0.parseHash({nonce:'1234'}, callback)`. By default, Auth0 will generate a nonce at random when you call `authorize` and store it in local storage, and pull it out in `parseHash`. The default behavior should work in almost all cases, but some use cases may require a developer to control the nonce._
+
+
+
 - **renewAuth(options, callback)**: Attempts to get a new token from Auth0 by using [silent authentication](https://auth0.com/docs/api-auth/tutorials/silent-authentication), or invokes `callback` with an error if the user does not have an active SSO session at your Auth0 domain.
 
 This method can be used to detect a locally unauthenticated user's SSO session status, or to renew an authenticated user's access token.
