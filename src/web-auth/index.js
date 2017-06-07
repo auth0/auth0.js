@@ -79,11 +79,10 @@ function WebAuth(options) {
     : true;
 
   this.baseOptions.tenant =
-    (this.baseOptions.overrides && this.baseOptions.overrides.__tenant) ||
-    this.baseOptions.domain.split('.')[0];
+    (options.overrides && options.overrides.__tenant) || this.baseOptions.domain.split('.')[0];
 
   this.baseOptions.token_issuer =
-    (this.baseOptions.overrides && this.baseOptions.overrides.__token_issuer) ||
+    (options.overrides && options.overrides.__token_issuer) ||
     'https://' + this.baseOptions.domain + '/';
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
