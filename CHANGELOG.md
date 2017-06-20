@@ -1,5 +1,14 @@
 # Change Log
 
+## [v8.8.0](https://github.com/auth0/auth0.js/tree/v8.8.0) (2017-06-20)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.7.0...v8.8.0)
+
+**Changed**
+- Update idtoken-verifier [\#458](https://github.com/auth0/auth0.js/pull/458) ([hzalaz](https://github.com/hzalaz))
+
+**Fixed**
+- Fix passwordless inside hosted login page [\#459](https://github.com/auth0/auth0.js/pull/459) ([hzalaz](https://github.com/hzalaz))
+
 ## [v8.7.0](https://github.com/auth0/auth0.js/tree/v8.7.0) (2017-05-24)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.6.1...v8.7.0)
 
