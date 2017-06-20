@@ -51,7 +51,8 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function(options) {
       'audience',
       '_csrf',
       'state',
-      '_instate',
+      '_intstate',
+      'protocol',
       'nonce'
     ])
     .with(options);
