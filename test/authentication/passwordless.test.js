@@ -342,5 +342,77 @@ describe('auth0.authentication', function() {
         }
       );
     });
+
+    it('should call passwordless email verify removing extra parameters', function(done) {
+      stub(request, 'post', function(url) {
+        expect(url).to.be('https://me.auth0.com/passwordless/verify');
+        return new RequestMock({
+          body: {
+            connection: 'the_connection',
+            email: 'me@example.com',
+            verification_code: 'abc'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {}
+            });
+          }
+        });
+      });
+
+      this.auth0.passwordless.verify(
+        {
+          connection: 'the_connection',
+          email: 'me@example.com',
+          verificationCode: 'abc',
+          state: 'random',
+          response_type: 'token'
+        },
+        function(err, data) {
+          expect(err).to.be(null);
+          expect(data).to.eql({});
+          done();
+        }
+      );
+    });
+
+    it('should call passwordless sms verify removing extra parameters', function(done) {
+      stub(request, 'post', function(url) {
+        expect(url).to.be('https://me.auth0.com/passwordless/verify');
+        return new RequestMock({
+          body: {
+            connection: 'sms',
+            phone_number: '+1234567890',
+            verification_code: 'abc'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {}
+            });
+          }
+        });
+      });
+
+      this.auth0.passwordless.verify(
+        {
+          connection: 'sms',
+          phoneNumber: '+1234567890',
+          verificationCode: 'abc',
+          state: 'random',
+          response_type: 'token'
+        },
+        function(err, data) {
+          expect(err).to.be(null);
+          expect(data).to.eql({});
+          done();
+        }
+      );
+    });
   });
 });
