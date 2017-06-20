@@ -263,7 +263,7 @@ WebAuth.prototype.renewAuth = function(options, cb) {
       'audience',
       '_csrf',
       'state',
-      '_instate',
+      '_intstate',
       'nonce'
     ])
     .with(options);
@@ -373,7 +373,7 @@ WebAuth.prototype.authorize = function(options) {
       'audience',
       '_csrf',
       'state',
-      '_instate',
+      '_intstate',
       'nonce'
     ])
     .with(options);

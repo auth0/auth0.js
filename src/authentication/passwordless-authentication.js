@@ -48,7 +48,12 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function(options) {
       'responseMode',
       'redirectUri',
       'scope',
-      'audience'
+      'audience',
+      '_csrf',
+      'state',
+      '_intstate',
+      'protocol',
+      'nonce'
     ])
     .with(options);
 
@@ -166,7 +171,14 @@ PasswordlessAuthentication.prototype.verify = function(options, cb) {
 
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
-  cleanOption = objectHelper.toSnakeCase(options, ['auth0Client']);
+  cleanOption = objectHelper.pick(options, [
+    'connection',
+    'verificationCode',
+    'phoneNumber',
+    'email',
+    'auth0Client'
+  ]);
+  cleanOption = objectHelper.toSnakeCase(cleanOption, ['auth0Client']);
 
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify');
 

@@ -125,7 +125,7 @@ Popup.prototype.authorize = function(options, cb) {
       'redirectUri',
       '_csrf',
       'state',
-      '_instate',
+      '_intstate',
       'nonce'
     ])
     .with(objectHelper.blacklist(options, ['popupHandler']));
@@ -215,7 +215,7 @@ Popup.prototype.loginWithCredentials = function(options, cb) {
       'audience',
       '_csrf',
       'state',
-      '_instate',
+      '_intstate',
       'nonce'
     ])
     .with(objectHelper.blacklist(options, ['popupHandler']));
