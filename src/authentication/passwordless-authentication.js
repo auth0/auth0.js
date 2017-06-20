@@ -48,7 +48,11 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function(options) {
       'responseMode',
       'redirectUri',
       'scope',
-      'audience'
+      'audience',
+      '_csrf',
+      'state',
+      '_instate',
+      'nonce'
     ])
     .with(options);
 
