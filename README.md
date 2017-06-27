@@ -60,8 +60,8 @@ Parameters:
 - **redirectUri {OPTIONAL, string}**: The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be whitelisted in the "Allowed Callback URLs" in your Auth0 client's settings.
 - **scope {OPTIONAL, string}**: The default scope used for all authorization requests.
 - **audience {OPTIONAL, string}**: The default audience, used if requesting access to an API.
-- **responseType {OPTIONAL, string}**: Response type for all authentication requests. Defaults to `'token'`. Valid values are `'token'`, `'id_token'` and `'token id_token'`.
-- **responseMode {OPTIONAL, string}**: The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode.
+- **responseType {OPTIONAL, string}**: Response type for all authentication requests. Defaults to `'token'`. It can be any space separated list of the values `code`, `token`, `id_token`.
+- **responseMode {OPTIONAL, string}**: The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`.
 - **_disableDeprecationWarnings {OPTIONAL, boolean}**: Disables the deprecation warnings, defaults to `false`.
 
 ### API
