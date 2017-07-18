@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>management/index.js - Documentation</title>
+    <title>web-auth/cross-origin-authentication.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">management/index.js</h1>
+    <h1 class="page-title">web-auth/cross-origin-authentication.js</h1>
     
 
     
@@ -41,126 +41,106 @@
         <article>
             <pre class="prettyprint source linenums"><code>var urljoin = require('url-join');
 
+var windowHelper = require('../helper/window');
+var objectHelper = require('../helper/object');
 var RequestBuilder = require('../helper/request-builder');
-var assert = require('../helper/assert');
-var responseHandler = require('../helper/response-handler');
 
-/**
- * Auth0 Management API Client (methods allowed to be called from the browser only)
- * @constructor
- * @param {Object} options
- * @param {Object} options.domain your Auth0 acount domain
- * @param {Object} options.token a valid API token
- */
-function Management(options) {
-  /* eslint-disable */
-  assert.check(
-    options,
-    { type: 'object', message: 'options parameter is not valid' },
-    {
-      domain: { type: 'string', message: 'domain option is required' },
-      token: { type: 'string', message: 'token option is required' },
-      _sendTelemetry: {
-        optional: true,
-        type: 'boolean',
-        message: '_sendTelemetry option is not valid'
-      },
-      _telemetryInfo: {
-        optional: true,
-        type: 'object',
-        message: '_telemetryInfo option is not valid'
-      }
-    }
-  );
-  /* eslint-enable */
-
+function CrossOriginAuthentication(webAuth, options) {
+  this.webAuth = webAuth;
   this.baseOptions = options;
+  this.request = new RequestBuilder(options);
+}
 
-  this.baseOptions.headers = { Authorization: 'Bearer ' + this.baseOptions.token };
+function getFragment(name) {
+  var theWindow = windowHelper.getWindow();
+  var value = '&amp;' + theWindow.location.hash.substring(1);
+  var parts = value.split('&amp;' + name + '=');
+  if (parts.length === 2) {
+    return parts.pop().split('&amp;').shift();
+  }
+}
 
-  this.request = new RequestBuilder(this.baseOptions);
-  this.baseOptions.rootUrl = urljoin('https://' + this.baseOptions.domain, 'api', 'v2');
+function createKey(origin, coId) {
+  return ['co/verifier', encodeURIComponent(origin), encodeURIComponent(coId)].join('/');
 }
 
 /**
- * @callback userCallback
- * @param {Error} [err] failure reason for the failed request to Management API
- * @param {Object} [result] user profile
- */
-
-/**
- * Returns the user profile
+ * Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
+ * This only works when 3rd party cookies are enabled in the browser. After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
  *
- * @method getUser
- * @param {String} userId identifier of the user to retrieve
- * @param {userCallback} cb
- * @see https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
+ * @method login
+ * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
+ * @param {String} [options.username] Username (mutually exclusive with email)
+ * @param {String} [options.email] Email  (mutually exclusive with username)
+ * @param {String} options.password Password
+ * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
+ * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
-Management.prototype.getUser = function(userId, cb) {
-  var url;
-
-  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
-  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
-  url = urljoin(this.baseOptions.rootUrl, 'users', userId);
-
-  return this.request.get(url).end(responseHandler(cb, { ignoreCasing: true }));
-};
-
-/**
- * Updates the user metdata. It will patch the user metdata with the attributes sent.
- *
- *
- * @method patchUserMetadata
- * @param {String} userId
- * @param {Object} userMetadata
- * @param {userCallback} cb
- * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id}
- */
-Management.prototype.patchUserMetadata = function(userId, userMetadata, cb) {
-  var url;
-
-  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
-  assert.check(userMetadata, { type: 'object', message: 'userMetadata parameter is not valid' });
-  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
-  url = urljoin(this.baseOptions.rootUrl, 'users', userId);
-
-  return this.request
-    .patch(url)
-    .send({ user_metadata: userMetadata })
-    .end(responseHandler(cb, { ignoreCasing: true }));
-};
-
-/**
- * Link two users
- *
- * @method linkUser
- * @param {String} userId
- * @param {String} secondaryUserToken
- * @param {userCallback} cb
- * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/post_identities}
- */
-Management.prototype.linkUser = function(userId, secondaryUserToken, cb) {
-  var url;
-  /* eslint-disable */
-  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
-  assert.check(secondaryUserToken, {
-    type: 'string',
-    message: 'secondaryUserToken parameter is not valid'
+CrossOriginAuthentication.prototype.login = function(options, cb) {
+  var _this = this;
+  var theWindow = windowHelper.getWindow();
+  var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate');
+  var authenticateBody = {
+    client_id: options.clientID || this.baseOptions.clientID,
+    credential_type: 'password',
+    username: options.username || options.email,
+    password: options.password
+  };
+  var realm = options.realm || this.baseOptions.realm;
+  if (realm) {
+    authenticateBody.realm = realm;
+    authenticateBody.credential_type = 'http://auth0.com/oauth/grant-type/password-realm';
+  }
+  this.request.post(url).withCredentials().send(authenticateBody).end(function(err, data) {
+    if (err) {
+      var errorObject = (err.response &amp;&amp; err.response.body) || {
+        error: 'request_error',
+        error_description: JSON.stringify(err)
+      };
+      return cb(errorObject);
+    }
+    options = objectHelper.blacklist(options, ['username', 'password']);
+    var authorizeOptions = objectHelper
+      .merge(options)
+      .with({ loginTicket: data.body.login_ticket });
+    var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
+    theWindow.sessionStorage[key] = data.body.co_verifier;
+    _this.webAuth.authorize(authorizeOptions);
   });
-  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-  /* eslint-enable */
-
-  url = urljoin(this.baseOptions.rootUrl, 'users', userId, 'identities');
-
-  return this.request
-    .post(url)
-    .send({ link_with: secondaryUserToken })
-    .end(responseHandler(cb, { ignoreCasing: true }));
 };
 
-module.exports = Management;
+/**
+ * Runs the callback code for the cross origin authentication call. This method is meant to be called by the cross origin authentication callback url.
+ *
+ * @method callback
+ */
+CrossOriginAuthentication.prototype.callback = function() {
+  var targetOrigin = decodeURIComponent(getFragment('origin'));
+  var theWindow = windowHelper.getWindow();
+
+  theWindow.addEventListener('message', function(evt) {
+    if (evt.data.type !== 'co_verifier_request') {
+      return;
+    }
+    var key = createKey(evt.origin, evt.data.request.id);
+    var verifier = theWindow.sessionStorage[key];
+    theWindow.sessionStorage.removeItem(key);
+
+    evt.source.postMessage(
+      {
+        type: 'co_verifier_response',
+        response: {
+          verifier: verifier
+        }
+      },
+      evt.origin
+    );
+  });
+
+  theWindow.parent.postMessage({ type: 'ready' }, targetOrigin);
+};
+
+module.exports = CrossOriginAuthentication;
 </code></pre>
         </article>
     </section>
