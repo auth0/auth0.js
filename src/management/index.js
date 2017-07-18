@@ -91,6 +91,21 @@ Management.prototype.patchUserMetadata = function(userId, userMetadata, cb) {
     .end(responseHandler(cb, { ignoreCasing: true }));
 };
 
+Management.prototype.patchUser = function(userId, userData, cb) {
+  var url;
+
+  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
+  assert.check(userData, { type: 'object', message: 'userData parameter is not valid' });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  url = urljoin(this.baseOptions.rootUrl, 'users', userId);
+
+  return this.request
+    .patch(url)
+    .send(userData)
+    .end(responseHandler(cb, { ignoreCasing: true }));
+};
+
 /**
  * Link two users
  *
