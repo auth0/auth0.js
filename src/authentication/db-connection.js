@@ -25,12 +25,14 @@ function DBConnection(request, options) {
  * @param {String} options.email user email address
  * @param {String} options.password user password
  * @param {String} options.connection name of the connection where the user will be created
+ * @param {Object} [options.userMetadata] additional signup attributes used for creating the user. Will be stored in `user_metadata`
  * @param {signUpCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
  */
 DBConnection.prototype.signup = function(options, cb) {
   var url;
   var body;
+  var metadata;
 
   assert.check(
     options,
@@ -47,9 +49,15 @@ DBConnection.prototype.signup = function(options, cb) {
 
   body = objectHelper.merge(this.baseOptions, ['clientID']).with(options);
 
-  body = objectHelper.blacklist(body, ['scope']);
+  metadata = body.user_metadata || body.userMetadata;
+
+  body = objectHelper.blacklist(body, ['scope', 'userMetadata', 'user_metadata']);
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
+
+  if (metadata) {
+    body.user_metadata = metadata;
+  }
 
   return this.request.post(url).send(body).end(responseHandler(cb));
 };
