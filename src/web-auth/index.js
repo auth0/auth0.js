@@ -434,13 +434,38 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * @method login
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
  * @param {String} [options.username] Username (mutually exclusive with email)
- * @param {String} [options.email] Email  (mutually exclusive with username)
+ * @param {String} [options.email] Email (mutually exclusive with username)
  * @param {String} options.password Password
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.login = function(options, cb) {
   this.crossOriginAuthentication.login(options, cb);
+};
+
+/**
+ * Logs in the user by verifying the verification code (OTP) using the cross origin authentication (/co/authenticate) flow. You can use either `phoneNumber` or `email` to identify the user.
+ * This only works when 3rd party cookies are enabled in the browser. After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
+ *
+ * @method login
+ * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
+ * @param {String} [options.phoneNumber] Phone Number (mutually exclusive with email)
+ * @param {String} [options.email] Email (mutually exclusive with username)
+ * @param {String} options.verificationCode Verification Code (OTP)
+ * @param {String} options.connection Passwordless connection to use. It can either be 'sms' or 'email'.
+ * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
+ */
+WebAuth.prototype.passwordlessLogin = function(options, cb) {
+  var loginOptions = objectHelper.extend(
+    {
+      credentialType: 'http://auth0.com/oauth/credential-type/passwordless/otp',
+      realm: options.connection,
+      username: options.email || options.phoneNumber,
+      otp: options.verificationCode
+    },
+    objectHelper.blacklist(options, ['connection', 'email', 'phoneNumber', 'verificationCode'])
+  );
+  this.crossOriginAuthentication.login(loginOptions, cb);
 };
 
 /**

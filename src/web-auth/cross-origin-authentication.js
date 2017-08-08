@@ -41,14 +41,25 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
   var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate');
   var authenticateBody = {
     client_id: options.clientID || this.baseOptions.clientID,
-    credential_type: 'password',
-    username: options.username || options.email,
-    password: options.password
+    username: options.username || options.email
   };
+  if (options.password) {
+    authenticateBody.password = options.password;
+  }
+  if (options.otp) {
+    authenticateBody.otp = options.otp;
+  }
   var realm = options.realm || this.baseOptions.realm;
+
   if (realm) {
+    var credentialType =
+      options.credentialType ||
+      this.baseOptions.credentialType ||
+      'http://auth0.com/oauth/grant-type/password-realm';
     authenticateBody.realm = realm;
-    authenticateBody.credential_type = 'http://auth0.com/oauth/grant-type/password-realm';
+    authenticateBody.credential_type = credentialType;
+  } else {
+    authenticateBody.credential_type = 'password';
   }
   this.request.post(url).withCredentials().send(authenticateBody).end(function(err, data) {
     if (err) {
@@ -58,7 +69,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       };
       return cb(errorObject);
     }
-    options = objectHelper.blacklist(options, ['username', 'password']);
+    options = objectHelper.blacklist(options, ['username', 'password', 'credentialType', 'otp']);
     var authorizeOptions = objectHelper
       .merge(options)
       .with({ loginTicket: data.body.login_ticket });

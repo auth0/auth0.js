@@ -105,6 +105,42 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         realm: 'a-connection'
       });
     });
+    it('should work with custom realm, grant and otp', function() {
+      stub(request, 'post', function(url) {
+        expect(url).to.be('https://me.auth0.com/co/authenticate');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            credential_type: 'http://auth0.com/oauth/credential-type/passwordless/otp',
+            username: 'me@example.com',
+            otp: '123456',
+            realm: 'email'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                login_ticket: 'a_login_ticket',
+                co_verifier: 'co_verifier',
+                co_id: 'co_id'
+              }
+            });
+          }
+        });
+      });
+      this.co.login({
+        username: 'me@example.com',
+        otp: '123456',
+        realm: 'email',
+        credentialType: 'http://auth0.com/oauth/credential-type/passwordless/otp'
+      });
+      expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({
+        loginTicket: 'a_login_ticket',
+        realm: 'email'
+      });
+    });
     it('should call /co/authenticate and save the verifier in sessionStorage', function() {
       stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
