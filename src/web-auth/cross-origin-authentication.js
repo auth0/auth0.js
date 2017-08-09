@@ -79,6 +79,16 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
   });
 };
 
+function tryGetVerifier(theWindow, key) {
+  try {
+    var verifier = theWindow.sessionStorage[key];
+    theWindow.sessionStorage.removeItem(key);
+    return verifier;
+  } catch (e) {
+    return '';
+  }
+}
+
 /**
  * Runs the callback code for the cross origin authentication call. This method is meant to be called by the cross origin authentication callback url.
  *
@@ -93,8 +103,7 @@ CrossOriginAuthentication.prototype.callback = function() {
       return;
     }
     var key = createKey(evt.origin, evt.data.request.id);
-    var verifier = theWindow.sessionStorage[key];
-    theWindow.sessionStorage.removeItem(key);
+    var verifier = tryGetVerifier(theWindow, key);
 
     evt.source.postMessage(
       {

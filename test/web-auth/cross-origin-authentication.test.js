@@ -344,6 +344,30 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         });
         expect(theCall.args[1]).to.be('https://me.auth0.com');
       });
+      it('should send empty verifier in the response when sessionStorage can not be accessed', function() {
+        global.window.sessionStorage = undefined;
+        this.co.callback();
+        var onMessageHandler = global.window.addEventListener.getCall(0).args[1];
+        var evt = {
+          origin: 'https://me.auth0.com',
+          data: {
+            type: 'co_verifier_request',
+            request: {
+              id: 'co_id'
+            }
+          },
+          source: {
+            postMessage: spy()
+          }
+        };
+        onMessageHandler(evt);
+        var theCall = evt.source.postMessage.getCall(0);
+        expect(theCall.args[0]).to.be.eql({
+          type: 'co_verifier_response',
+          response: { verifier: '' }
+        });
+        expect(theCall.args[1]).to.be('https://me.auth0.com');
+      });
     });
   });
 });
