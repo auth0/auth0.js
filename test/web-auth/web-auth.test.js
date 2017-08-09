@@ -818,6 +818,75 @@ describe('auth0.WebAuth', function() {
     });
   });
 
+  context('passwordlessLogin', function() {
+    before(function() {
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function() {
+      if (CrossOriginAuthentication.prototype.login.restore) {
+        CrossOriginAuthentication.prototype.login.restore();
+      }
+      if (CrossOriginAuthentication.prototype.callback.restore) {
+        CrossOriginAuthentication.prototype.callback.restore();
+      }
+    });
+    it('should call `crossOriginAuthentication.login` with phoneNumber', function(done) {
+      var expectedOptions = {
+        credentialType: 'http://auth0.com/oauth/credential-type/passwordless/otp',
+        realm: 'sms',
+        username: '+55165134',
+        otp: '123456'
+      };
+      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
+        expect(options).to.be.eql(expectedOptions);
+        expect(cb()).to.be('cb');
+        done();
+      });
+
+      this.auth0.passwordlessLogin(
+        {
+          connection: 'sms',
+          phoneNumber: '+55165134',
+          verificationCode: '123456'
+        },
+        function(err, data) {
+          return 'cb';
+        }
+      );
+    });
+    it('should call `crossOriginAuthentication.login` with email', function(done) {
+      var expectedOptions = {
+        credentialType: 'http://auth0.com/oauth/credential-type/passwordless/otp',
+        realm: 'email',
+        username: 'the@email.com',
+        otp: '123456'
+      };
+      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
+        expect(options).to.be.eql(expectedOptions);
+        expect(cb()).to.be('cb');
+        done();
+      });
+
+      this.auth0.passwordlessLogin(
+        {
+          connection: 'email',
+          email: 'the@email.com',
+          verificationCode: '123456'
+        },
+        function(err, data) {
+          return 'cb';
+        }
+      );
+    });
+  });
+
   context('signup', function() {
     before(function() {
       this.auth0 = new WebAuth({
