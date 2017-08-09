@@ -33,6 +33,7 @@ describe('auth0.WebAuth', function() {
         scope: 'openid name read:blog',
         audience: 'urn:site:demo:blog',
         _sendTelemetry: false,
+        _timesToRetryFailedRequests: 2,
         overrides: {
           __tenant: 'tenant1',
           __token_issuer: 'issuer1'

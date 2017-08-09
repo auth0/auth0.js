@@ -24,6 +24,7 @@ var CrossOriginAuthentication = require('./cross-origin-authentication');
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {Array} [options.plugins]
+ * @param {Number} [options._timesToRetryFailedRequests] Number of times to retry a failed request, according to {@link https://github.com/visionmedia/superagent/blob/master/lib/should-retry.js}
  * @see {@link https://auth0.com/docs/api/authentication}
  */
 function WebAuth(options) {
@@ -55,6 +56,11 @@ function WebAuth(options) {
         optional: true,
         type: 'object',
         message: '_telemetryInfo option is not valid'
+      },
+      _timesToRetryFailedRequests: {
+        optional: true,
+        type: 'number',
+        message: '_timesToRetryFailedRequests option is not valid'
       }
     }
   );
@@ -77,6 +83,10 @@ function WebAuth(options) {
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
     ? this.baseOptions._sendTelemetry
     : true;
+
+  this.baseOptions._timesToRetryFailedRequests = options._timesToRetryFailedRequests
+    ? parseInt(options._timesToRetryFailedRequests, 0)
+    : 0;
 
   this.baseOptions.tenant =
     (this.baseOptions.overrides && this.baseOptions.overrides.__tenant) ||

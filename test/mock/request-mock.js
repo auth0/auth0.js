@@ -33,4 +33,9 @@ RequestMock.prototype.end = function(cb) {
   return this;
 };
 
+RequestMock.prototype.retry = function(times) {
+  this.willRetry = times;
+  return this;
+};
+
 module.exports = RequestMock;

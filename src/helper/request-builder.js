@@ -64,6 +64,7 @@ RequestObj.prototype.end = function(cb) {
 function RequestBuilder(options) {
   this._sendTelemetry = options._sendTelemetry === false ? options._sendTelemetry : true;
   this._telemetryInfo = options._telemetryInfo || null;
+  this._timesToRetryFailedRequests = options._timesToRetryFailedRequests;
   this.headers = options.headers || {};
 }
 
@@ -85,6 +86,9 @@ RequestBuilder.prototype.setCommonConfiguration = function(ongoingRequest, optio
 
   if (this._sendTelemetry) {
     ongoingRequest = ongoingRequest.set('Auth0-Client', this.getTelemetryData());
+  }
+  if (this._timesToRetryFailedRequests > 0) {
+    ongoingRequest = ongoingRequest.retry(this._timesToRetryFailedRequests);
   }
   return ongoingRequest;
 };
