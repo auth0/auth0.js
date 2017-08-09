@@ -1,5 +1,18 @@
 # Change Log
 
+## [v8.9.0](https://github.com/auth0/auth0.js/tree/v8.9.0) (2017-08-09)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.8.0...v8.9.0)
+
+**Added**
+- Add cross-origin-auth support to Passwordless [\#482](https://github.com/auth0/auth0.js/pull/482) ([luisrudge](https://github.com/luisrudge))
+
+**Changed**
+- Avoid snake casing of metadata on signup [\#475](https://github.com/auth0/auth0.js/pull/475) ([hzalaz](https://github.com/hzalaz))
+
+**Fixed**
+- Send empty verifier when can't access sessionStorage [\#470](https://github.com/auth0/auth0.js/pull/470) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
 ## [v8.8.0](https://github.com/auth0/auth0.js/tree/v8.8.0) (2017-06-20)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.7.0...v8.8.0)
 
