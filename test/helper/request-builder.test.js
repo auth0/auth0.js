@@ -103,6 +103,16 @@ describe('helpers requestBuilder', function() {
     });
   });
 
+  it('should retry request', function() {
+    var retryTimes = 2;
+    var req = new RequestBuilder({
+      _timesToRetryFailedRequests: retryTimes
+    });
+    var handler = req.get('https://test.com').withCredentials().end(function(err, data) {});
+
+    expect(handler.request.willRetry).to.eql(retryTimes);
+  });
+
   it('should post stuff', function() {
     var req = new RequestBuilder({});
     var handler = req
