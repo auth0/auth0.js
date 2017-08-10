@@ -20,7 +20,7 @@ From CDN
 
 ```html
 <!-- Latest patch release (recommended for production) -->
-<script src="http://cdn.auth0.com/js/auth0/8.8.0/auth0.min.js"></script>
+<script src="http://cdn.auth0.com/js/auth0/8.9.0/auth0.min.js"></script>
 ```
 
 From [bower](http://bower.io)
