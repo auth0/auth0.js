@@ -1,5 +1,12 @@
 # Change Log
 
+## [v8.9.1](https://github.com/auth0/auth0.js/tree/v8.9.1) (2017-08-11)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.0...v8.9.1)
+
+**Fixed**
+- Fixed credentialType url [\#487](https://github.com/auth0/auth0.js/pull/487) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
 ## [v8.9.0](https://github.com/auth0/auth0.js/tree/v8.9.0) (2017-08-10)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.8.0...v8.9.0)
 
