@@ -468,7 +468,7 @@ WebAuth.prototype.login = function(options, cb) {
 WebAuth.prototype.passwordlessLogin = function(options, cb) {
   var loginOptions = objectHelper.extend(
     {
-      credentialType: 'http://auth0.com/oauth/credential-type/passwordless/otp',
+      credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
       realm: options.connection,
       username: options.email || options.phoneNumber,
       otp: options.verificationCode

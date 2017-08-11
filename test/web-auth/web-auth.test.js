@@ -840,7 +840,7 @@ describe('auth0.WebAuth', function() {
     });
     it('should call `crossOriginAuthentication.login` with phoneNumber', function(done) {
       var expectedOptions = {
-        credentialType: 'http://auth0.com/oauth/credential-type/passwordless/otp',
+        credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
         realm: 'sms',
         username: '+55165134',
         otp: '123456'
@@ -864,7 +864,7 @@ describe('auth0.WebAuth', function() {
     });
     it('should call `crossOriginAuthentication.login` with email', function(done) {
       var expectedOptions = {
-        credentialType: 'http://auth0.com/oauth/credential-type/passwordless/otp',
+        credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
         realm: 'email',
         username: 'the@email.com',
         otp: '123456'

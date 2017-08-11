@@ -111,7 +111,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         return new RequestMock({
           body: {
             client_id: '...',
-            credential_type: 'http://auth0.com/oauth/credential-type/passwordless/otp',
+            credential_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
             username: 'me@example.com',
             otp: '123456',
             realm: 'email'
@@ -134,7 +134,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         username: 'me@example.com',
         otp: '123456',
         realm: 'email',
-        credentialType: 'http://auth0.com/oauth/credential-type/passwordless/otp'
+        credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp'
       });
       expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({
         loginTicket: 'a_login_ticket',
