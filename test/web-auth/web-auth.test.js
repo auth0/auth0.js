@@ -4,6 +4,7 @@ var spy = require('sinon').spy;
 var request = require('superagent');
 
 var storage = require('../../src/helper/storage');
+var windowHelper = require('../../src/helper/window');
 
 var RequestMock = require('../mock/request-mock');
 
@@ -885,6 +886,112 @@ describe('auth0.WebAuth', function() {
           return 'cb';
         }
       );
+    });
+  });
+
+  context('passwordlessVerify', function() {
+    beforeEach(function() {
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
+    });
+    afterEach(function() {
+      TransactionManager.prototype.process.restore();
+      this.auth0.client.passwordless.verify.restore();
+    });
+    it('should validate params', function() {
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: undefined,
+        _sendTelemetry: false
+      });
+      stub(this.auth0.client.passwordless, 'verify', function() {});
+      spy(TransactionManager.prototype, 'process');
+      var expectedOptions = {
+        responseType: undefined
+      };
+      expect(() => this.auth0.passwordlessVerify({})).to.throwError(
+        /responseType option is required/
+      );
+    });
+    it('should call `transactionManager.process` with merged params', function() {
+      stub(this.auth0.client.passwordless, 'verify', function() {});
+      spy(TransactionManager.prototype, 'process');
+      var expectedOptions = {
+        clientID: '...',
+        responseType: 'code',
+        redirectUri: 'http://page.com/callback',
+        connection: 'sms',
+        phoneNumber: '+55165134',
+        verificationCode: '123456'
+      };
+
+      this.auth0.passwordlessVerify(
+        {
+          connection: 'sms',
+          phoneNumber: '+55165134',
+          verificationCode: '123456'
+        },
+        function(err, data) {
+          return 'cb';
+        }
+      );
+      var mock = TransactionManager.prototype.process;
+      expect(mock.calledOnce).to.be(true);
+      expect(mock.firstCall.args[0]).to.be.eql(expectedOptions);
+    });
+    it('should call `passwordless.verify` with params from transactionManager', function() {
+      var expectedOptions = {
+        from: 'transactionManager'
+      };
+      var mockVerify = stub(this.auth0.client.passwordless, 'verify', function() {});
+      stub(TransactionManager.prototype, 'process', function() {
+        return expectedOptions;
+      });
+
+      this.auth0.passwordlessVerify({}, function(err, data) {
+        return 'cb';
+      });
+      expect(mockVerify.calledOnce).to.be(true);
+      expect(mockVerify.firstCall.args[0]).to.be.eql(expectedOptions);
+    });
+    it('should call callback with error', function(done) {
+      var expectedError = new Error('some error');
+      stub(this.auth0.client.passwordless, 'verify', function(params, cb) {
+        cb(expectedError);
+      });
+      stub(TransactionManager.prototype, 'process', function() {});
+
+      this.auth0.passwordlessVerify({}, function(err, data) {
+        expect(err).to.be.eql(expectedError);
+        done();
+      });
+    });
+    it('should windowHelper.redirect on success', function(done) {
+      var expectedUrl = 'https://verify-url.example.com';
+
+      stub(this.auth0.client.passwordless, 'buildVerifyUrl', function() {
+        return expectedUrl;
+      });
+      stub(this.auth0.client.passwordless, 'verify', function(params, cb) {
+        cb(null);
+      });
+      stub(TransactionManager.prototype, 'process', function() {});
+      stub(windowHelper, 'redirect', function(url) {
+        expect(url).to.be(expectedUrl);
+        done();
+      });
+
+      this.auth0.passwordlessVerify({});
+
+      windowHelper.redirect.restore();
+      this.auth0.client.passwordless.buildVerifyUrl.restore();
     });
   });
 
