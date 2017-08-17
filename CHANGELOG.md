@@ -1,5 +1,12 @@
 # Change Log
 
+## [v8.9.2](https://github.com/auth0/auth0.js/tree/v8.9.2) (2017-08-17)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.1...v8.9.2)
+
+**Fixed**
+- Fix passwordlessVerify not sending nonce [\#489](https://github.com/auth0/auth0.js/pull/489) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
 ## [v8.9.1](https://github.com/auth0/auth0.js/tree/v8.9.1) (2017-08-11)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.0...v8.9.1)
 
