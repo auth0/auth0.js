@@ -738,7 +738,56 @@ describe('auth0.WebAuth', function() {
     });
 
     afterEach(function() {
-      request.post.restore();
+      TransactionManager.prototype.process.restore();
+      if (request.post.restore) {
+        request.post.restore();
+      }
+      if (this.auth0.client.passwordless.start.restore) {
+        this.auth0.client.passwordless.start.restore();
+      }
+    });
+    it('should call `transactionManager.process` with merged params', function() {
+      stub(this.auth0.client.passwordless, 'start', function() {});
+      spy(TransactionManager.prototype, 'process');
+      var expectedOptions = {
+        responseType: 'code',
+        redirectUri: 'http://page.com/callback',
+        auth: 'params'
+      };
+
+      this.auth0.passwordlessStart(
+        {
+          connection: 'sms',
+          phoneNumber: '+55165134',
+          verificationCode: '123456',
+          authParams: {
+            auth: 'params'
+          }
+        },
+        function(err, data) {
+          return 'cb';
+        }
+      );
+      var mock = TransactionManager.prototype.process;
+      expect(mock.calledOnce).to.be(true);
+      expect(mock.firstCall.args[0]).to.be.eql(expectedOptions);
+    });
+    it('should call `passwordless.start` with params from transactionManager', function() {
+      var expectedOptions = {
+        authParams: {
+          from: 'transactionManager'
+        }
+      };
+      var mockVerify = stub(this.auth0.client.passwordless, 'start', function() {});
+      stub(TransactionManager.prototype, 'process', function() {
+        return expectedOptions.authParams;
+      });
+
+      this.auth0.passwordlessStart({}, function(err, data) {
+        return 'cb';
+      });
+      expect(mockVerify.calledOnce).to.be(true);
+      expect(mockVerify.firstCall.args[0]).to.be.eql(expectedOptions);
     });
 
     it('should call passwordless start sms with all the options', function(done) {
@@ -752,7 +801,8 @@ describe('auth0.WebAuth', function() {
             send: 'code',
             authParams: {
               redirect_uri: 'http://page.com/callback',
-              response_type: 'code'
+              response_type: 'code',
+              from: 'tm'
             }
           },
           headers: {
@@ -764,6 +814,10 @@ describe('auth0.WebAuth', function() {
             });
           }
         });
+      });
+
+      stub(TransactionManager.prototype, 'process', function() {
+        return { from: 'tm' };
       });
 
       this.auth0.passwordlessStart(
@@ -791,7 +845,8 @@ describe('auth0.WebAuth', function() {
             send: 'code',
             authParams: {
               redirect_uri: 'http://page.com/callback',
-              response_type: 'code'
+              response_type: 'code',
+              from: 'tm'
             }
           },
           headers: {
@@ -803,6 +858,10 @@ describe('auth0.WebAuth', function() {
             });
           }
         });
+      });
+
+      stub(TransactionManager.prototype, 'process', function() {
+        return { from: 'tm' };
       });
 
       this.auth0.passwordlessStart(
@@ -913,9 +972,6 @@ describe('auth0.WebAuth', function() {
       });
       stub(this.auth0.client.passwordless, 'verify', function() {});
       spy(TransactionManager.prototype, 'process');
-      var expectedOptions = {
-        responseType: undefined
-      };
       expect(() => this.auth0.passwordlessVerify({})).to.throwError(
         /responseType option is required/
       );

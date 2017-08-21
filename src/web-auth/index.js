@@ -337,6 +337,21 @@ WebAuth.prototype.changePassword = function(options, cb) {
  * @see   {@link https://auth0.com/docs/api/authentication#passwordless}
  */
 WebAuth.prototype.passwordlessStart = function(options, cb) {
+  var authParams = objectHelper
+    .merge(this.baseOptions, [
+      'responseType',
+      'responseMode',
+      'redirectUri',
+      'scope',
+      'audience',
+      '_csrf',
+      'state',
+      '_intstate',
+      'nonce'
+    ])
+    .with(options.authParams);
+
+  options.authParams = this.transactionManager.process(authParams);
   return this.client.passwordless.start(options, cb);
 };
 
