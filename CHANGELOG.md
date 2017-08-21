@@ -1,5 +1,12 @@
 # Change Log
 
+## [v8.9.3](https://github.com/auth0/auth0.js/tree/v8.9.3) (2017-08-21)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.2...v8.9.3)
+
+**Fixed**
+- Using transaction manager on passwordlessStart [\#492](https://github.com/auth0/auth0.js/pull/492) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
 ## [v8.9.2](https://github.com/auth0/auth0.js/tree/v8.9.2) (2017-08-17)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.1...v8.9.2)
 
