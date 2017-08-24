@@ -205,13 +205,15 @@ describe('auth0.WebAuth', function() {
       var data = webAuth.parseHash(
         {
           nonce: 'asfd',
-          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas&scope=foo'
+          hash:
+            '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas&scope=foo'
         },
         function(err, data) {
           expect(err).to.be(null);
           expect(data).to.eql({
             accessToken: 'VjubIMBmpgQ2W2',
-            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
+            idToken:
+              'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
             idTokenPayload: {
               iss: 'https://wptest.auth0.com/',
               sub: 'auth0|55d48c57d5b0ad0223c408d7',
@@ -247,13 +249,15 @@ describe('auth0.WebAuth', function() {
       var data = webAuth.parseHash(
         {
           _idTokenVerification: false,
-          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+          hash:
+            '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
         },
         function(err, data) {
           expect(err).to.be(null);
           expect(data).to.eql({
             accessToken: 'VjubIMBmpgQ2W2',
-            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ',
+            idToken:
+              'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ',
             idTokenPayload: {
               iss: 'https://auth0-tests-lock.auth0.com/',
               sub: 'twitter|366141931',
@@ -289,7 +293,8 @@ describe('auth0.WebAuth', function() {
         expect(err).to.be(null);
         expect(data).to.eql({
           accessToken: 'asldkfjahsdlkfjhasd',
-          idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
+          idToken:
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
           idTokenPayload: {
             iss: 'https://wptest.auth0.com/',
             sub: 'auth0|55d48c57d5b0ad0223c408d7',
@@ -322,7 +327,8 @@ describe('auth0.WebAuth', function() {
 
       var data = webAuth.parseHash(
         {
-          hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+          hash:
+            '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
         },
         function(err, data) {
           expect(data).to.eql({
@@ -354,7 +360,8 @@ describe('auth0.WebAuth', function() {
 
       var data = webAuth.parseHash(
         {
-          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+          hash:
+            '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
         },
         function(err, data) {
           expect(err).to.eql({
@@ -376,7 +383,8 @@ describe('auth0.WebAuth', function() {
 
       var data = webAuth.parseHash(
         {
-          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+          hash:
+            '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
         },
         function(err, data) {
           expect(err).to.eql({
@@ -433,11 +441,12 @@ describe('auth0.WebAuth', function() {
   });
 
   context('renewAuth', function() {
-    before(function() {
+    beforeEach(function() {
       global.window = {};
       global.window.removeEventListener = function() {};
     });
-    after(function() {
+    afterEach(function() {
+      delete global.window;
       SilentAuthenticationHandler.prototype.login.restore();
     });
 
@@ -462,6 +471,31 @@ describe('auth0.WebAuth', function() {
       var options = {
         nonce: '123',
         state: '456'
+      };
+
+      webAuth.renewAuth(options, function() {});
+    });
+
+    it('should pass the correct timeout', function(done) {
+      stub(SilentAuthenticationHandler.prototype, 'login', function() {
+        expect(this.timeout).to.be(5000);
+        done();
+      });
+
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false
+      });
+
+      var options = {
+        nonce: '123',
+        state: '456',
+        timeout: 5000
       };
 
       webAuth.renewAuth(options, function() {});
@@ -532,7 +566,8 @@ describe('auth0.WebAuth', function() {
         expect(err).to.be(null);
         expect(data).to.eql({
           accessToken: null,
-          idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
+          idToken:
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
           idTokenPayload: {
             iss: 'https://wptest.auth0.com/',
             sub: 'auth0|55d48c57d5b0ad0223c408d7',
