@@ -12,6 +12,8 @@ var Redirect = require('./redirect');
 var Popup = require('./popup');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
 var CrossOriginAuthentication = require('./cross-origin-authentication');
+var WebMessageHandler = require('./web-message-handler');
+
 /**
  * Handles all the browser's AuthN/AuthZ flows
  * @constructor
@@ -102,6 +104,7 @@ function WebAuth(options) {
   this.redirect = new Redirect(this.client, this.baseOptions);
   this.popup = new Popup(this, this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
+  this.webMessageHandler = new WebMessageHandler(this);
 }
 
 /**
@@ -310,6 +313,59 @@ WebAuth.prototype.renewAuth = function(options, cb) {
     var transactionState = options.state || (transaction && transaction.state) || null;
     _this.parseHash({ hash: hash, nonce: transactionNonce, state: transactionState }, cb);
   });
+};
+
+WebAuth.prototype.renewSession = function(options, cb) {
+  var params = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'redirectUri',
+      'responseType',
+      'scope',
+      'audience',
+      '_csrf',
+      'state',
+      '_intstate',
+      'nonce'
+    ])
+    .with(options);
+
+  if (!options.nonce) {
+    params = this.transactionManager.process(params);
+  }
+
+  assert.check(params, { type: 'object', message: 'options parameter is not valid' });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType']);
+  this.webMessageHandler.renewSession(params, cb);
+};
+
+WebAuth.prototype.checkSession = function(options, cb) {
+  var params = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'redirectUri',
+      'responseType',
+      'scope',
+      'audience',
+      '_csrf',
+      'state',
+      '_intstate',
+      'nonce'
+    ])
+    .with(options);
+
+  if (!options.nonce) {
+    params = this.transactionManager.process(params);
+  }
+
+  assert.check(params, { type: 'object', message: 'options parameter is not valid' });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType']);
+
+  this.webMessageHandler.checkSession(params, cb);
 };
 
 /**

@@ -172,10 +172,18 @@
       </div>
 
       <div>
-        <h2>Login with new Login Ticket flow:</h2>
-        <input class="login-ticket-username" value="johnfoo@gmail.com" />
-        <input class="login-ticket-password" value="1234" />
-        <input type="button" class="login-ticket" value="Login" />
+        <h2>Login with Cross Origin Authentication flow:</h2>
+        <input class="cross-origin-auth-username" value="johnfoo@gmail.com" />
+        <input class="cross-origin-auth-password" value="1234" />
+        <input type="button" class="cross-origin-auth" value="Login" />
+      </div>
+      <div>
+        <h2>Check if you have an active session:</h2>
+        <input type="button" class="web-message-check-session" value="Check session" />
+      </div>
+      <div>
+        <h2>Renew a session:</h2>
+        <input type="button" class="web-message-renew-session" value="Renew session" />
       </div>
 
       <div>
@@ -200,7 +208,7 @@
       domain: 'brucke.auth0.com',
       redirectUri: 'https://localhost:3000/example',
       clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
-      responseType: 'token',
+      responseType: 'id_token token',
       plugins: [
         new CordovaAuth0Plugin()
       ]
@@ -360,14 +368,22 @@
         htmlConsole.dumpCallback.bind(htmlConsole)
       );
     });
-    $('.login-ticket').click(function (e) {
+    $('.cross-origin-auth').click(function (e) {
       e.preventDefault();
       webAuth.login({
-        username: $('.login-ticket-username').val(),
-        password: $('.login-ticket-password').val(),
+        username: $('.cross-origin-auth-username').val(),
+        password: $('.cross-origin-auth-password').val(),
         redirectURI: 'https://localhost:3000/example/',
         realm: 'acme'
       }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+    $('.web-message-check-session').click(function (e) {
+      e.preventDefault();
+      webAuth.checkSession({}, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+    $('.web-message-renew-session').click(function (e) {
+      e.preventDefault();
+      webAuth.renewSession({}, htmlConsole.dumpCallback.bind(htmlConsole));
     });
     $(document.body).append($('<div class="loaded">LOADED</div>'));
   </script>

@@ -11,6 +11,8 @@ var RequestMock = require('../mock/request-mock');
 var TransactionManager = require('../../src/web-auth/transaction-manager');
 var SilentAuthenticationHandler = require('../../src/web-auth/silent-authentication-handler');
 var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
+var IframeHandler = require('../../src/helper/iframe-handler');
+
 var WebAuth = require('../../src/web-auth');
 
 describe('auth0.WebAuth', function() {
@@ -205,15 +207,13 @@ describe('auth0.WebAuth', function() {
       var data = webAuth.parseHash(
         {
           nonce: 'asfd',
-          hash:
-            '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas&scope=foo'
+          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas&scope=foo'
         },
         function(err, data) {
           expect(err).to.be(null);
           expect(data).to.eql({
             accessToken: 'VjubIMBmpgQ2W2',
-            idToken:
-              'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
+            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
             idTokenPayload: {
               iss: 'https://wptest.auth0.com/',
               sub: 'auth0|55d48c57d5b0ad0223c408d7',
@@ -249,15 +249,13 @@ describe('auth0.WebAuth', function() {
       var data = webAuth.parseHash(
         {
           _idTokenVerification: false,
-          hash:
-            '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
         },
         function(err, data) {
           expect(err).to.be(null);
           expect(data).to.eql({
             accessToken: 'VjubIMBmpgQ2W2',
-            idToken:
-              'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ',
+            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ',
             idTokenPayload: {
               iss: 'https://auth0-tests-lock.auth0.com/',
               sub: 'twitter|366141931',
@@ -293,8 +291,7 @@ describe('auth0.WebAuth', function() {
         expect(err).to.be(null);
         expect(data).to.eql({
           accessToken: 'asldkfjahsdlkfjhasd',
-          idToken:
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
+          idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
           idTokenPayload: {
             iss: 'https://wptest.auth0.com/',
             sub: 'auth0|55d48c57d5b0ad0223c408d7',
@@ -327,8 +324,7 @@ describe('auth0.WebAuth', function() {
 
       var data = webAuth.parseHash(
         {
-          hash:
-            '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+          hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
         },
         function(err, data) {
           expect(data).to.eql({
@@ -360,8 +356,7 @@ describe('auth0.WebAuth', function() {
 
       var data = webAuth.parseHash(
         {
-          hash:
-            '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
         },
         function(err, data) {
           expect(err).to.eql({
@@ -383,8 +378,7 @@ describe('auth0.WebAuth', function() {
 
       var data = webAuth.parseHash(
         {
-          hash:
-            '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
+          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&state=theState&refresh_token=kajshdgfkasdjhgfas'
         },
         function(err, data) {
           expect(err).to.eql({
@@ -566,8 +560,7 @@ describe('auth0.WebAuth', function() {
         expect(err).to.be(null);
         expect(data).to.eql({
           accessToken: null,
-          idToken:
-            'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
+          idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
           idTokenPayload: {
             iss: 'https://wptest.auth0.com/',
             sub: 'auth0|55d48c57d5b0ad0223c408d7',
@@ -1257,6 +1250,183 @@ describe('auth0.WebAuth', function() {
     it('should call callback', function(done) {
       stub(CrossOriginAuthentication.prototype, 'callback', done);
       this.auth0.crossOriginAuthenticationCallback();
+    });
+  });
+
+  context('renewSession', function() {
+    beforeEach(function() {
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'token',
+        _sendTelemetry: false
+      });
+      stub(TransactionManager.prototype, 'process', function(params) {
+        return Object.assign({}, params, { from: 'transaction-manager' });
+      });
+    });
+    afterEach(function() {
+      TransactionManager.prototype.process.restore();
+      if (IframeHandler.prototype.init.restore) {
+        IframeHandler.prototype.init.restore();
+      }
+    });
+    it('inits IframeHandler with correct params', function(done) {
+      stub(IframeHandler.prototype, 'init', function() {
+        expect(this.url).to.be(
+          'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&from=transaction-manager&response_mode=web_message&prompt=none'
+        );
+        expect(this.eventListenerType).to.be('message');
+        expect(this.timeout).to.be(60000);
+        done();
+      });
+      this.auth0.renewSession({}, function(err, data) {});
+    });
+    it('uses custom timeout when provided', function(done) {
+      var timeout = 1;
+      stub(IframeHandler.prototype, 'init', function() {
+        expect(this.timeout).to.be(timeout);
+        done();
+      });
+      this.auth0.renewSession(
+        {
+          timeout: timeout
+        },
+        function(err, data) {}
+      );
+    });
+    it('eventValidator validates the event data type is `authorization_response`', function(done) {
+      stub(IframeHandler.prototype, 'init', function() {
+        var getEvent = function(type) {
+          return { event: { data: { type: type } } };
+        };
+        expect(this.eventValidator.isValid(getEvent('wrong'))).to.be(false);
+        expect(this.eventValidator.isValid(getEvent('authorization_response'))).to.be(true);
+        done();
+      });
+      this.auth0.renewSession({}, function(err, data) {});
+    });
+    it('timeoutCallback calls callback with error response', function(done) {
+      stub(IframeHandler.prototype, 'init', function() {
+        this.timeoutCallback();
+      });
+      this.auth0.renewSession({}, function(err, data) {
+        expect(err).to.be.eql({
+          error: 'timeout',
+          error_description: 'Timeout during fetching SSO data'
+        });
+        done();
+      });
+    });
+    it('callback handles error response', function(done) {
+      var error = 'the-error';
+      stub(IframeHandler.prototype, 'init', function() {
+        this.callback({ event: { data: { response: { error: error } } } });
+      });
+      this.auth0.renewSession({}, function(err, data) {
+        expect(err).to.be(error);
+        done();
+      });
+    });
+    it('callback handles success response', function(done) {
+      var response = 'the-response';
+      stub(IframeHandler.prototype, 'init', function() {
+        this.callback({ event: { data: { response: response } } });
+      });
+      this.auth0.renewSession({}, function(err, data) {
+        expect(err).to.be(null);
+        expect(data).to.be(response);
+        done();
+      });
+    });
+  });
+
+  context('checkSession', function() {
+    beforeEach(function() {
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'token',
+        _sendTelemetry: false
+      });
+      stub(TransactionManager.prototype, 'process', function(params) {
+        return Object.assign({}, params, { from: 'transaction-manager' });
+      });
+    });
+    afterEach(function() {
+      TransactionManager.prototype.process.restore();
+      if (IframeHandler.prototype.init.restore) {
+        IframeHandler.prototype.init.restore();
+      }
+    });
+    it('inits IframeHandler with correct params', function(done) {
+      stub(IframeHandler.prototype, 'init', function() {
+        expect(this.url).to.be(
+          'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&from=transaction-manager&response_mode=web_message&prompt=none'
+        );
+        expect(this.eventListenerType).to.be('message');
+        expect(this.timeout).to.be(60000);
+        done();
+      });
+      this.auth0.checkSession({}, function(err, data) {});
+    });
+    it('uses custom timeout when provided', function(done) {
+      var timeout = 1;
+      stub(IframeHandler.prototype, 'init', function() {
+        expect(this.timeout).to.be(timeout);
+        done();
+      });
+      this.auth0.checkSession(
+        {
+          timeout: timeout
+        },
+        function(err, data) {}
+      );
+    });
+    it('eventValidator validates the event data type is `authorization_response`', function(done) {
+      stub(IframeHandler.prototype, 'init', function() {
+        var getEvent = function(type) {
+          return { event: { data: { type: type } } };
+        };
+        expect(this.eventValidator.isValid(getEvent('wrong'))).to.be(false);
+        expect(this.eventValidator.isValid(getEvent('authorization_response'))).to.be(true);
+        done();
+      });
+      this.auth0.checkSession({}, function(err, data) {});
+    });
+    it('timeoutCallback calls callback with error response', function(done) {
+      stub(IframeHandler.prototype, 'init', function() {
+        this.timeoutCallback();
+      });
+      this.auth0.checkSession({}, function(err, data) {
+        expect(err).to.be.eql({
+          error: 'timeout',
+          error_description: 'Timeout during fetching SSO data'
+        });
+        done();
+      });
+    });
+    it('callback handles error response', function(done) {
+      var error = 'the-error';
+      stub(IframeHandler.prototype, 'init', function() {
+        this.callback({ event: { data: { response: { error: error } } } });
+      });
+      this.auth0.checkSession({}, function(err, data) {
+        expect(err).to.be(error);
+        done();
+      });
+    });
+    it('callback handles success response', function(done) {
+      stub(IframeHandler.prototype, 'init', function() {
+        this.callback({ event: { data: { response: 'something' } } });
+      });
+      this.auth0.checkSession({}, function(err, data) {
+        expect(err).to.be(null);
+        expect(data).to.be.eql({ hasSession: true });
+        done();
+      });
     });
   });
 });
