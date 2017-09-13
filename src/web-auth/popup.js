@@ -121,6 +121,7 @@ Popup.prototype.authorize = function(options, cb) {
       'scope',
       'domain',
       'audience',
+      'tenant',
       'responseType',
       'redirectUri',
       '_csrf',
