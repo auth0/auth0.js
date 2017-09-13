@@ -1,4 +1,5 @@
 var IframeHandler = require('../helper/iframe-handler');
+var objectHelper = require('../helper/object');
 
 function runWebMessageFlow(authorizeUrl, options, callback) {
   var handler = new IframeHandler({
@@ -33,9 +34,9 @@ WebMessageHandler.prototype.renewSession = function(options, cb) {
   ) {
     var error = err || eventData.event.data.response.error;
     if (error) {
-      cb(error);
+      return cb(error);
     }
-    cb(null, eventData.event.data.response);
+    cb(null, objectHelper.toCamelCase(eventData.event.data.response));
   });
 };
 

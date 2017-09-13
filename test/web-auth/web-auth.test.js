@@ -1330,13 +1330,13 @@ describe('auth0.WebAuth', function() {
       });
     });
     it('callback handles success response', function(done) {
-      var response = 'the-response';
+      var response = { access_token: 'foobar' };
       stub(IframeHandler.prototype, 'init', function() {
         this.callback({ event: { data: { response: response } } });
       });
       this.auth0.renewSession({}, function(err, data) {
         expect(err).to.be(null);
-        expect(data).to.be(response);
+        expect(data).to.be.eql({ accessToken: 'foobar' });
         done();
       });
     });
