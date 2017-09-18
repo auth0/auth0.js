@@ -1253,95 +1253,6 @@ describe('auth0.WebAuth', function() {
     });
   });
 
-  context('renewSession', function() {
-    beforeEach(function() {
-      this.auth0 = new WebAuth({
-        domain: 'me.auth0.com',
-        clientID: '...',
-        redirectUri: 'http://page.com/callback',
-        responseType: 'token',
-        _sendTelemetry: false
-      });
-      stub(TransactionManager.prototype, 'process', function(params) {
-        return Object.assign({}, params, { from: 'transaction-manager' });
-      });
-    });
-    afterEach(function() {
-      TransactionManager.prototype.process.restore();
-      if (IframeHandler.prototype.init.restore) {
-        IframeHandler.prototype.init.restore();
-      }
-    });
-    it('inits IframeHandler with correct params', function(done) {
-      stub(IframeHandler.prototype, 'init', function() {
-        expect(this.url).to.be(
-          'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&from=transaction-manager&response_mode=web_message&prompt=none'
-        );
-        expect(this.eventListenerType).to.be('message');
-        expect(this.timeout).to.be(60000);
-        done();
-      });
-      this.auth0.renewSession({}, function(err, data) {});
-    });
-    it('uses custom timeout when provided', function(done) {
-      var timeout = 1;
-      stub(IframeHandler.prototype, 'init', function() {
-        expect(this.timeout).to.be(timeout);
-        done();
-      });
-      this.auth0.renewSession(
-        {
-          timeout: timeout
-        },
-        function(err, data) {}
-      );
-    });
-    it('eventValidator validates the event data type is `authorization_response`', function(done) {
-      stub(IframeHandler.prototype, 'init', function() {
-        var getEvent = function(type) {
-          return { event: { data: { type: type } } };
-        };
-        expect(this.eventValidator.isValid(getEvent('wrong'))).to.be(false);
-        expect(this.eventValidator.isValid(getEvent('authorization_response'))).to.be(true);
-        done();
-      });
-      this.auth0.renewSession({}, function(err, data) {});
-    });
-    it('timeoutCallback calls callback with error response', function(done) {
-      stub(IframeHandler.prototype, 'init', function() {
-        this.timeoutCallback();
-      });
-      this.auth0.renewSession({}, function(err, data) {
-        expect(err).to.be.eql({
-          error: 'timeout',
-          error_description: 'Timeout during fetching SSO data'
-        });
-        done();
-      });
-    });
-    it('callback handles error response', function(done) {
-      var error = 'the-error';
-      stub(IframeHandler.prototype, 'init', function() {
-        this.callback({ event: { data: { response: { error: error } } } });
-      });
-      this.auth0.renewSession({}, function(err, data) {
-        expect(err).to.be(error);
-        done();
-      });
-    });
-    it('callback handles success response', function(done) {
-      var response = { access_token: 'foobar' };
-      stub(IframeHandler.prototype, 'init', function() {
-        this.callback({ event: { data: { response: response } } });
-      });
-      this.auth0.renewSession({}, function(err, data) {
-        expect(err).to.be(null);
-        expect(data).to.be.eql({ accessToken: 'foobar' });
-        done();
-      });
-    });
-  });
-
   context('checkSession', function() {
     beforeEach(function() {
       this.auth0 = new WebAuth({
@@ -1419,12 +1330,13 @@ describe('auth0.WebAuth', function() {
       });
     });
     it('callback handles success response', function(done) {
+      var response = { access_token: 'foobar' };
       stub(IframeHandler.prototype, 'init', function() {
-        this.callback({ event: { data: { response: 'something' } } });
+        this.callback({ event: { data: { response: response } } });
       });
       this.auth0.checkSession({}, function(err, data) {
         expect(err).to.be(null);
-        expect(data).to.be.eql({ hasSession: true });
+        expect(data).to.be.eql({ accessToken: 'foobar' });
         done();
       });
     });
