@@ -1,5 +1,16 @@
 # Change Log
 
+## [v8.10.0](https://github.com/auth0/auth0.js/tree/v8.10.0) (2017-09-18)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.3...v8.10.0)
+
+**Added**
+- Adding web_message flow [\#500](https://github.com/auth0/auth0.js/pull/500) ([luisrudge](https://github.com/luisrudge))
+
+**Fixed**
+- Fixing tenant override in popup mode [\#501](https://github.com/auth0/auth0.js/pull/501) ([luisrudge](https://github.com/luisrudge))
+- Allow overriding the timeout as part of the renewAuth method [\#497](https://github.com/auth0/auth0.js/pull/497) ([dctoon](https://github.com/dctoon))
+# Change Log
+
 ## [v8.9.3](https://github.com/auth0/auth0.js/tree/v8.9.3) (2017-08-21)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.2...v8.9.3)
 
