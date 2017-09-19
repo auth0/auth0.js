@@ -181,10 +181,6 @@
         <h2>Check if you have an active session:</h2>
         <input type="button" class="web-message-check-session" value="Check session" />
       </div>
-      <div>
-        <h2>Renew a session:</h2>
-        <input type="button" class="web-message-renew-session" value="Renew session" />
-      </div>
 
       <div>
         <h2>SSO Logout:</h2>
@@ -380,10 +376,6 @@
     $('.web-message-check-session').click(function (e) {
       e.preventDefault();
       webAuth.checkSession({}, htmlConsole.dumpCallback.bind(htmlConsole));
-    });
-    $('.web-message-renew-session').click(function (e) {
-      e.preventDefault();
-      webAuth.renewSession({}, htmlConsole.dumpCallback.bind(htmlConsole));
     });
     $(document.body).append($('<div class="loaded">LOADED</div>'));
   </script>

@@ -25,7 +25,7 @@ function WebMessageHandler(webAuth) {
   this.webAuth = webAuth;
 }
 
-WebMessageHandler.prototype.renewSession = function(options, cb) {
+WebMessageHandler.prototype.checkSession = function(options, cb) {
   options.responseMode = 'web_message';
   options.prompt = 'none';
   runWebMessageFlow(this.webAuth.client.buildAuthorizeUrl(options), options, function(
@@ -37,21 +37,6 @@ WebMessageHandler.prototype.renewSession = function(options, cb) {
       return cb(error);
     }
     cb(null, objectHelper.toCamelCase(eventData.event.data.response));
-  });
-};
-
-WebMessageHandler.prototype.checkSession = function(options, cb) {
-  options.responseMode = 'web_message';
-  options.prompt = 'none';
-  runWebMessageFlow(this.webAuth.client.buildAuthorizeUrl(options), options, function(
-    err,
-    eventData
-  ) {
-    var error = err || eventData.event.data.response.error;
-    if (error) {
-      cb(error);
-    }
-    cb(null, { hasSession: true });
   });
 };
 
