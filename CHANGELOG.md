@@ -1,5 +1,12 @@
 # Change Log
 
+## [v8.10.1](https://github.com/auth0/auth0.js/tree/v8.10.1) (2017-09-19)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.0...v8.10.1)
+
+**Changed**
+- Removing renewSession and keeping only checkSession [\#505](https://github.com/auth0/auth0.js/pull/505) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
 ## [v8.10.0](https://github.com/auth0/auth0.js/tree/v8.10.0) (2017-09-18)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.3...v8.10.0)
 
