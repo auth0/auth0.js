@@ -83,7 +83,7 @@ auth0.authorize({
 > This method requires that your tokens are signed with **RS256**. Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide#switching-from-hs256-to-rs256) for more information.
 
 ```js
-auth0.parseHash(window.location.hash, function(err, authResult) {
+auth0.parseHash({hash: window.location.hash}, function(err, authResult) {
   if (err) {
     return console.log(err);
   }
