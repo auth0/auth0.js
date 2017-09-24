@@ -41,13 +41,6 @@ SilentAuthenticationHandler.prototype.getEventValidator = function() {
             eventData.event.origin !== _this.postMessageOrigin ||
             eventData.event.source !== _this.handler.iframe.contentWindow
           ) {
-            console.error(
-              'event rejected ',
-              eventData.event.origin,
-              _this.postMessageOrigin,
-              eventData.event.source,
-              _this.handler.iframe.contentWindow
-            );
             return false;
           }
 

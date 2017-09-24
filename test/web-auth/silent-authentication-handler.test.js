@@ -178,8 +178,6 @@ describe('handlers silent-authentication-handler', function() {
       });
       var validator = sah.getEventValidator();
 
-      debugger;
-
       expect(
         validator.isValid({
           event: {
