@@ -81,53 +81,169 @@ describe('handlers silent-authentication-handler', function() {
     });
 
     it('should positively validate message event types with correct postMessageDataType set', function() {
+      var fakeContentWindow = 'foobar';
       var sah = new SilentAuthenticationHandler({
         postMessageDataType: 'auth0:silent-authentication'
       });
+      sah.handler = { iframe: { contentWindow: fakeContentWindow } };
+
       var validator = sah.getEventValidator();
 
       expect(
         validator.isValid({
-          event: { type: 'message', data: { type: 'auth0:silent-authentication' } }
+          event: {
+            origin: sah.postMessageOrigin,
+            source: fakeContentWindow,
+            type: 'message',
+            data: {
+              type: 'auth0:silent-authentication'
+            }
+          }
         })
       ).to.be(true);
     });
 
     it('should negatively validate message event types with invalid postMessageDataType', function() {
+      var fakeContentWindow = 'foobar';
       var sah = new SilentAuthenticationHandler({
         postMessageDataType: 'auth0:silent-authentication'
       });
+      sah.handler = { iframe: { contentWindow: fakeContentWindow } };
+
       var validator = sah.getEventValidator();
 
       expect(
         validator.isValid({
-          event: { type: 'message', data: { type: 'some unexpected data type' } }
+          event: {
+            origin: sah.postMessageOrigin,
+            source: fakeContentWindow,
+            type: 'message',
+            data: {
+              type: 'some unexpected data type'
+            }
+          }
         })
       ).to.be(false);
     });
 
     it('should positively validate message event types with postMessageDataType as false', function() {
+      var fakeContentWindow = 'foobar';
       var sah = new SilentAuthenticationHandler({
         postMessageDataType: false
       });
+      sah.handler = { iframe: { contentWindow: fakeContentWindow } };
+
       var validator = sah.getEventValidator();
 
       expect(
         validator.isValid({
-          event: { type: 'message', data: { type: 'some unexpected data type' } }
+          event: {
+            origin: sah.postMessageOrigin,
+            source: fakeContentWindow,
+            type: 'message',
+            data: {
+              type: 'some unexpected data type'
+            }
+          }
         })
       ).to.be(true);
     });
 
     it('should positively validate message event types with postMessageDataType not set', function() {
+      var fakeContentWindow = 'foobar';
       var sah = new SilentAuthenticationHandler({
         postMessageDataType: false
       });
+      sah.handler = { iframe: { contentWindow: fakeContentWindow } };
+
       var validator = sah.getEventValidator();
 
       expect(
         validator.isValid({
-          event: { type: 'message', data: { type: 'some unexpected data type' } }
+          event: {
+            origin: sah.postMessageOrigin,
+            source: fakeContentWindow,
+            type: 'message',
+            data: {
+              type: 'some unexpected data type'
+            }
+          }
+        })
+      ).to.be(true);
+    });
+
+    it('should not care about origin or source if usePostMessage=false', function() {
+      var sah = new SilentAuthenticationHandler({
+        usePostMessage: false
+      });
+      var validator = sah.getEventValidator();
+
+      debugger;
+
+      expect(
+        validator.isValid({
+          event: {
+            type: 'load'
+          }
+        })
+      ).to.be(true);
+    });
+
+    it('should not validate an event from a different origin if usePostMessage=true', function() {
+      var fakeContentWindow = 'foobar';
+      var sah = new SilentAuthenticationHandler({
+        usePostMessage: true
+      });
+      sah.handler = { iframe: { contentWindow: fakeContentWindow } };
+
+      var validator = sah.getEventValidator();
+
+      expect(
+        validator.isValid({
+          event: {
+            origin: sah.postMessageOrigin + 'different',
+            type: 'message'
+          }
+        })
+      ).to.be(false);
+    });
+
+    it('should not validate an event from a different source if usePostMessage=true', function() {
+      var fakeContentWindow = 'foobar';
+      var sah = new SilentAuthenticationHandler({
+        usePostMessage: true
+      });
+      sah.handler = { iframe: { contentWindow: fakeContentWindow } };
+
+      var validator = sah.getEventValidator();
+
+      expect(
+        validator.isValid({
+          event: {
+            origin: sah.postMessageOrigin,
+            source: fakeContentWindow + 'different',
+            type: 'message'
+          }
+        })
+      ).to.be(false);
+    });
+
+    it('should validate an event from the same origin and source if usePostMessage=true', function() {
+      var fakeContentWindow = 'foobar';
+      var sah = new SilentAuthenticationHandler({
+        usePostMessage: true
+      });
+      sah.handler = { iframe: { contentWindow: fakeContentWindow } };
+
+      var validator = sah.getEventValidator();
+
+      expect(
+        validator.isValid({
+          event: {
+            origin: sah.postMessageOrigin,
+            source: fakeContentWindow,
+            type: 'message'
+          }
         })
       ).to.be(true);
     });

@@ -1,10 +1,12 @@
 var IframeHandler = require('../helper/iframe-handler');
+var windowHelper = require('../helper/window');
 
 function SilentAuthenticationHandler(options) {
   this.authenticationUrl = options.authenticationUrl;
   this.timeout = options.timeout || 60 * 1000;
   this.handler = null;
   this.postMessageDataType = options.postMessageDataType || false;
+  this.postMessageOrigin = options.postMessageOrigin || windowHelper.getWindow().origin;
 }
 
 SilentAuthenticationHandler.create = function(options) {
@@ -34,7 +36,22 @@ SilentAuthenticationHandler.prototype.getEventValidator = function() {
     isValid: function(eventData) {
       switch (eventData.event.type) {
         case 'message':
-          // Default behaviour, return all message events.
+          // Message must come from the expected origin and iframe window.
+          if (
+            eventData.event.origin !== _this.postMessageOrigin ||
+            eventData.event.source !== _this.handler.iframe.contentWindow
+          ) {
+            console.error(
+              'event rejected ',
+              eventData.event.origin,
+              _this.postMessageOrigin,
+              eventData.event.source,
+              _this.handler.iframe.contentWindow
+            );
+            return false;
+          }
+
+          // Default behaviour, return all message events from the iframe.
           if (_this.postMessageDataType === false) {
             return true;
           }
