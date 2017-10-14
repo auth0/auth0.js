@@ -26,7 +26,7 @@ From CDN
 From [bower](http://bower.io)
 
 ```sh
-bower install auth0-lock
+bower install auth0-js
 ```
 
 ```html
