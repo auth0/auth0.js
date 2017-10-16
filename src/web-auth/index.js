@@ -82,8 +82,9 @@ function WebAuth(options) {
   this.baseOptions = options;
   this.baseOptions.plugins = new PluginHandler(this, this.baseOptions.plugins || []);
 
-  this.baseOptions._sendTelemetry =
-    this.baseOptions._sendTelemetry === false ? this.baseOptions._sendTelemetry : true;
+  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
+    ? this.baseOptions._sendTelemetry
+    : true;
 
   this.baseOptions._timesToRetryFailedRequests = options._timesToRetryFailedRequests
     ? parseInt(options._timesToRetryFailedRequests, 0)
@@ -100,7 +101,7 @@ function WebAuth(options) {
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 
   this.client = new Authentication(this.baseOptions);
-  this.redirect = new Redirect(this.client, this.baseOptions);
+  this.redirect = new Redirect(this, this.baseOptions);
   this.popup = new Popup(this, this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
   this.webMessageHandler = new WebMessageHandler(this);

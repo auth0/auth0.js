@@ -3,11 +3,10 @@ var stub = require('sinon').stub;
 var request = require('superagent');
 
 var RequestMock = require('../mock/request-mock');
-var UsernamePassword = require('../../src/web-auth/username-password');
 var windowHelper = require('../../src/helper/window');
 var WebAuth = require('../../src/web-auth');
 var RequestBuilder = require('../../src/helper/request-builder');
-
+var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
 describe('auth0.WebAuth.redirect', function() {
@@ -69,164 +68,33 @@ describe('auth0.WebAuth.redirect', function() {
   });
 
   context('login', function() {
-    afterEach(function() {
-      request.post.restore();
-      windowHelper.getDocument.restore();
-      windowHelper.getWindow.restore();
-    });
-
-    it('should authenticate the user, render the callback form and submit it', function(done) {
-      stub(windowHelper, 'getWindow', function() {
-        return {
-          crypto: {
-            getRandomValues: function() {
-              return [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-            }
-          }
-        };
-      });
-      stub(request, 'post', function(url) {
-        expect(url).to.be('https://me.auth0.com/usernamepassword/login');
-        return new RequestMock({
-          body: {
-            client_id: '0HP71GSd6PuoRY',
-            connection: 'tests',
-            password: '1234',
-            redirect_uri: 'https://localhost:3000/example/',
-            response_type: 'id_token',
-            scope: 'openid',
-            tenant: 'me',
-            username: 'me@example.com'
-          },
-          headers: {
-            'Content-Type': 'application/json',
-            'Auth0-Client': telemetryInfo
-          },
-          cb: function(cb) {
-            cb(null, {
-              text: 'the_form_html',
-              type: 'text/html'
-            });
-          }
-        });
-      });
-
-      stub(windowHelper, 'getDocument', function() {
-        return {
-          createElement: function() {
-            return {};
-          },
-          body: {
-            appendChild: function(element) {
-              expect(element.innerHTML).to.eql('the_form_html');
-              return {
-                children: [
-                  {
-                    submit: done
-                  }
-                ]
-              };
-            }
-          }
-        };
-      });
-
-      var configuration = {
+    before(function() {
+      this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
-        redirectUri: 'https://localhost:3000/example/',
-        clientID: '0HP71GSd6PuoRY',
-        responseType: 'id_token'
-      };
-
-      var auth0 = new WebAuth(configuration);
-
-      auth0.redirect.loginWithCredentials(
-        {
-          connection: 'tests',
-          username: 'me@example.com',
-          password: '1234',
-          scope: 'openid'
-        },
-        function(err) {
-          console.log(err);
-        }
-      );
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
     });
-  });
-
-  context('login', function() {
     afterEach(function() {
-      request.post.restore();
-      windowHelper.getWindow.restore();
+      if (CrossOriginAuthentication.prototype.login.restore) {
+        CrossOriginAuthentication.prototype.login.restore();
+      }
+      if (CrossOriginAuthentication.prototype.callback.restore) {
+        CrossOriginAuthentication.prototype.callback.restore();
+      }
     });
-
-    it('should propagate the error', function(done) {
-      stub(windowHelper, 'getWindow', function() {
-        return {
-          crypto: {
-            getRandomValues: function() {
-              return [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-            }
-          }
-        };
+    it('should call CrossOriginAuthentication.login', function(done) {
+      var expectedOptions = { foo: 'bar' };
+      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
+        expect(options).to.be.eql(expectedOptions);
+        expect(cb()).to.be('cb');
+        done();
       });
-      stub(request, 'post', function(url) {
-        expect(url).to.be('https://me.auth0.com/usernamepassword/login');
-        return new RequestMock({
-          body: {
-            client_id: '0HP71GSd6PuoRY',
-            connection: 'tests',
-            password: '1234',
-            redirect_uri: 'https://localhost:3000/example/',
-            response_type: 'token',
-            scope: 'openid',
-            tenant: 'me',
-            username: 'me@example.com'
-          },
-          headers: {
-            'Content-Type': 'application/json',
-            'Auth0-Client': telemetryInfo
-          },
-          cb: function(cb) {
-            cb({
-              name: 'ValidationError',
-              code: 'invalid_user_password',
-              description: 'Wrong email or password.'
-            });
-          }
-        });
+      this.auth0.redirect.loginWithCredentials(expectedOptions, function() {
+        return 'cb';
       });
-
-      var configuration = {
-        domain: 'me.auth0.com',
-        redirectUri: 'https://localhost:3000/example/',
-        clientID: '0HP71GSd6PuoRY',
-        responseType: 'token'
-      };
-
-      var auth0 = new WebAuth(configuration);
-
-      auth0.redirect.loginWithCredentials(
-        {
-          connection: 'tests',
-          email: 'me@example.com',
-          password: '1234',
-          scope: 'openid'
-        },
-        function(err) {
-          expect(err).to.eql({
-            original: {
-              name: 'ValidationError',
-              code: 'invalid_user_password',
-              description: 'Wrong email or password.'
-            },
-            name: 'ValidationError',
-            code: 'invalid_user_password',
-            description: 'Wrong email or password.'
-          });
-          done();
-        }
-      );
     });
   });
 
@@ -260,88 +128,41 @@ describe('auth0.WebAuth.redirect', function() {
 
     it('should call db-connection signup with all the options', function(done) {
       stub(request, 'post', function(url) {
-        if (url === 'https://me.auth0.com/usernamepassword/login') {
-          return new RequestMock({
-            body: {
-              client_id: '...',
-              connection: 'the_connection',
-              password: '123456',
-              redirect_uri: 'http://page.com/callback',
-              response_type: 'token',
-              scope: 'openid',
-              tenant: 'me',
-              username: 'me@example.com'
-            },
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            cb: function(cb) {
-              cb({
-                response: {
-                  body: {
-                    name: 'ValidationError',
-                    code: 'invalid_user_password',
-                    description: 'Wrong email or password.'
-                  },
-                  statusCode: 400
-                }
-              });
-            }
-          });
-        } else if (url === 'https://me.auth0.com/dbconnections/signup') {
-          return new RequestMock({
-            body: {
-              client_id: '...',
-              connection: 'the_connection',
-              email: 'me@example.com',
-              password: '123456'
-            },
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            cb: function(cb) {
-              cb(null, {
-                body: {
-                  _id: '...',
-                  email_verified: false,
-                  email: 'me@example.com'
-                }
-              });
-            }
-          });
+        if (url !== 'https://me.auth0.com/dbconnections/signup') {
+          throw new Error('Invalid URL');
         }
 
-        throw new Error('Invalid URL');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            connection: 'the_connection',
+            email: 'me@example.com',
+            password: '123456'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                _id: '...',
+                email_verified: false,
+                email: 'me@example.com'
+              }
+            });
+          }
+        });
+      });
+      stub(this.auth0.redirect, 'loginWithCredentials', function(options, cb) {
+        done();
       });
 
-      this.auth0.redirect.signupAndLogin(
-        {
-          connection: 'the_connection',
-          email: 'me@example.com',
-          password: '123456',
-          scope: 'openid'
-        },
-        function(err, data) {
-          expect(data).to.be(undefined);
-          expect(err).to.eql({
-            original: {
-              response: {
-                body: {
-                  name: 'ValidationError',
-                  code: 'invalid_user_password',
-                  description: 'Wrong email or password.'
-                },
-                statusCode: 400
-              }
-            },
-            name: 'ValidationError',
-            code: 'invalid_user_password',
-            description: 'Wrong email or password.',
-            statusCode: 400
-          });
-          done();
-        }
-      );
+      this.auth0.redirect.signupAndLogin({
+        connection: 'the_connection',
+        email: 'me@example.com',
+        password: '123456',
+        scope: 'openid'
+      });
     });
 
     it('should propagate signup errors', function(done) {
