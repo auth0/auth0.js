@@ -86,13 +86,14 @@ describe('auth0.WebAuth.redirect', function() {
       }
     });
     it('should call CrossOriginAuthentication.login', function(done) {
-      var expectedOptions = { foo: 'bar' };
+      var inputOptions = { foo: 'bar', connection: 'realm' };
+      var expectedOptions = { foo: 'bar', realm: 'realm' };
       stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
         expect(options).to.be.eql(expectedOptions);
         expect(cb()).to.be('cb');
         done();
       });
-      this.auth0.redirect.loginWithCredentials(expectedOptions, function() {
+      this.auth0.redirect.loginWithCredentials(inputOptions, function() {
         return 'cb';
       });
     });
