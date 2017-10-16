@@ -1,11 +1,10 @@
-var UsernamePassword = require('./username-password');
-var objectHelper = require('../helper/object');
+var CrossOriginAuthentication = require('./cross-origin-authentication');
 var Warn = require('../helper/warn');
-var assert = require('../helper/assert');
 
-function Redirect(client, options) {
+function Redirect(auth0, options) {
   this.baseOptions = options;
-  this.client = client;
+  this.client = auth0.client;
+  this.crossOriginAuthentication = new CrossOriginAuthentication(auth0, this.baseOptions);
 
   this.warn = new Warn({
     disableWarnings: !!options._disableDeprecationWarnings
@@ -13,62 +12,23 @@ function Redirect(client, options) {
 }
 
 /**
- * @callback credentialsCallback
- * @param {Error} [err] error returned by Auth0 with the reason of the Auth failure
- * @param {Object} [result] result of the AuthN request
- * @param {String} result.accessToken token that can be used with {@link userinfo}
- * @param {String} [result.idToken] token that identifies the user
- * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all clients can request them or the resource server might not allow them.
- */
-
-/**
- * Performs authentication with username/email and password with a database connection
- *
- * This method is not compatible with API Auth so if you need to fetch API tokens with audience
- * you should use {@link authorize} or {@link login}.
+ * Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
+ * Some browsers might not be able to successfully authenticate if 3rd party cookies are disabled in your browser. [See here for more information.]{@link https://auth0.com/docs/cross-origin-authentication}.
+ * After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
  *
  * @method loginWithCredentials
- * @param {Object} options
- * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
- * @param {String} [options.responseType] type of the response used. It can be any of the values `code` and `token`
- * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`
- * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
- * @param {credentialsCallback} cb
+ * @deprecated This method will be released in the next major version. Use `webAuth.login` instead.
+ * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
+ * @param {String} [options.username] Username (mutually exclusive with email)
+ * @param {String} [options.email] Email (mutually exclusive with username)
+ * @param {String} options.password Password
+ * @param {String} [options.connection] Connection used to authenticate the user, it can be a realm name or a database connection name
+ * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 Redirect.prototype.loginWithCredentials = function(options, cb) {
-  var usernamePassword;
-
-  var params = objectHelper
-    .merge(this.baseOptions, [
-      'clientID',
-      'redirectUri',
-      'tenant',
-      'responseType',
-      'responseMode',
-      'scope',
-      'audience',
-      '_csrf',
-      'state',
-      '_intstate',
-      'nonce'
-    ])
-    .with(options);
-
-  assert.check(
-    params,
-    { type: 'object', message: 'options parameter is not valid' },
-    {
-      responseType: { type: 'string', message: 'responseType option is required' }
-    }
-  );
-
-  usernamePassword = new UsernamePassword(this.baseOptions);
-  return usernamePassword.login(params, function(err, data) {
-    if (err) {
-      return cb(err);
-    }
-    return usernamePassword.callback(data);
-  });
+  options.realm = options.connection;
+  delete options.connection;
+  this.crossOriginAuthentication.login(options, cb);
 };
 
 /**
@@ -79,7 +39,7 @@ Redirect.prototype.loginWithCredentials = function(options, cb) {
  * @param {String} options.email user email address
  * @param {String} options.password user password
  * @param {String} options.connection name of the connection where the user will be created
- * @param {credentialsCallback} cb
+ * @param {crossOriginLoginCallback} cb
  */
 Redirect.prototype.signupAndLogin = function(options, cb) {
   var _this = this;
