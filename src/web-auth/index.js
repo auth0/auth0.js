@@ -82,8 +82,9 @@ function WebAuth(options) {
   this.baseOptions = options;
   this.baseOptions.plugins = new PluginHandler(this, this.baseOptions.plugins || []);
 
-  this.baseOptions._sendTelemetry =
-    this.baseOptions._sendTelemetry === false ? this.baseOptions._sendTelemetry : true;
+  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
+    ? this.baseOptions._sendTelemetry
+    : true;
 
   this.baseOptions._timesToRetryFailedRequests = options._timesToRetryFailedRequests
     ? parseInt(options._timesToRetryFailedRequests, 0)
@@ -100,7 +101,7 @@ function WebAuth(options) {
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 
   this.client = new Authentication(this.baseOptions);
-  this.redirect = new Redirect(this.client, this.baseOptions);
+  this.redirect = new Redirect(this, this.baseOptions);
   this.popup = new Popup(this, this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
   this.webMessageHandler = new WebMessageHandler(this);
@@ -508,7 +509,8 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
 
 /**
  * Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
- * This only works when 3rd party cookies are enabled in the browser. After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
+ * Some browsers might not be able to successfully authenticate if 3rd party cookies are disabled in your browser. [See here for more information.]{@link https://auth0.com/docs/cross-origin-authentication}.
+ * After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
  *
  * @method login
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired

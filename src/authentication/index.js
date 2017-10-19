@@ -346,43 +346,6 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
 };
 
 /**
- * Makes a call to the `/ssodata` endpoint.
- * We recommend to avoid using this method and rely on your tenant hosted login page and using prompt=none via {@link renewAuth} method.
- *
- * @method getSSOData
- * @param {Boolean} withActiveDirectories tells Auth0 to return AD data
- * @param {Function} cb
- */
-Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
-  var url;
-  var params = '';
-
-  if (typeof withActiveDirectories === 'function') {
-    cb = withActiveDirectories;
-    withActiveDirectories = false;
-  }
-
-  assert.check(withActiveDirectories, {
-    type: 'boolean',
-    message: 'withActiveDirectories parameter is not valid'
-  });
-  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
-  if (withActiveDirectories) {
-    params =
-      '?' +
-      qs.stringify({
-        ldaps: 1,
-        client_id: this.baseOptions.clientID
-      });
-  }
-
-  url = urljoin(this.baseOptions.rootUrl, 'user', 'ssodata', params);
-
-  return this.request.get(url, { noHeaders: true }).withCredentials().end(responseHandler(cb));
-};
-
-/**
  * @callback userInfoCallback
  * @param {Error} [err] error returned by Auth0
  * @param {Object} [userInfo] user information
