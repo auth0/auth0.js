@@ -100,57 +100,24 @@ auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
 });
 ```
 
-- **renewAuth(options, callback)**: Attempts to get a new token from Auth0 by using [silent authentication](https://auth0.com/docs/api-auth/tutorials/silent-authentication), or invokes `callback` with an error if the user does not have an active SSO session at your Auth0 domain.
-
-This method can be used to detect a locally unauthenticated user's SSO session status, or to renew an authenticated user's access token.
-The actual redirect to `/authorize` happens inside an iframe, so it will not reload your application or redirect away from it.
+- **checkSession(options, callback)**: Allows you to acquire a new token from Auth0 for a user who is already authenticated against the hosted login page for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
+Everything happens inside an iframe, so it will not reload your application or redirect away from it.
 
 ```js
-auth0.renewAuth({
+auth0.checkSession({
   audience: 'https://mystore.com/api/v2',
   scope: 'read:order write:order',
-  redirectUri: 'https://example.com/auth/silent-callback',
-
-  // this will use postMessage to comunicate between the silent callback
-  // and the SPA. When false the SDK will attempt to parse the url hash
-  // should ignore the url hash and no extra behaviour is needed.
-  usePostMessage: true
+  redirectUri: 'https://example.com/auth/silent-callback'
   }, function (err, authResult) {
-    // Renewed tokens or error
+    // Authentication tokens or error
 });
 ```
 
 The contents of `authResult` are identical to those returned by `parseHash()`.
-For this request to succeed, the user must have an active SSO session at Auth0 by having logged in through the [hosted login page](https://manage.auth0.com/#/login_page) of your Auth0 domain.
 
-> ***Important:*** this will use postMessage to communicate between the silent callback and the SPA. When false the SDK will attempt to parse the url hash should ignore the url hash and no extra behaviour is needed.
+> **Important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `checkSession`.
 
-> **Also important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `renewAuth`.
-
-It is strongly recommended to have a dedicated callback page for silent authentication in order to avoid loading your entire application again inside an iframe.
-This callback page should only parse the URL hash and post it to the parent document so that your application can take action depending on the outcome of the silent authentication attempt.
-For example:
-
-```js
-<!DOCTYPE html>
-<html>
-  <head>
-    <script src="/auth0.js"></script>
-    <script type="text/javascript">
-      var auth0 = new auth0.WebAuth({
-        domain: '{YOUR_AUTH0_DOMAIN}',
-        clientID: '{YOUR_AUTH0_CLIENT_ID}'
-      });
-      auth0.parseHash(window.location.hash, function (err, result) {
-        parent.postMessage(err || result, 'https://example.com/');
-      });
-    </script>
-  </head>
-  <body></body>
-</html>
-```
-
-Remember to add the URL of the silent authentication callback page to the "Allowed Callback URLs" list of your Auth0 client.
+Remember to add the URL where the authorization request originates from, to the Allowed Web Origins list of your Auth0 client in the [Dashboard](https://manage.auth0.com/) under your client's **Settings**.
 
 - **client.login(options, callback)**: Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
 

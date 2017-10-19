@@ -32,7 +32,10 @@ WebMessageHandler.prototype.checkSession = function(options, cb) {
     err,
     eventData
   ) {
-    var error = err || eventData.event.data.response.error;
+    var error = err;
+    if (!err && eventData.event.data.response.error) {
+      error = objectHelper.pick(eventData.event.data.response, ['error', 'error_description']);
+    }
     if (error) {
       return cb(error);
     }
