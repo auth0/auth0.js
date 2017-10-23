@@ -61,7 +61,7 @@ Parameters:
 - **scope {OPTIONAL, string}**: The default scope used for all authorization requests.
 - **audience {OPTIONAL, string}**: The default audience, used if requesting access to an API.
 - **responseType {OPTIONAL, string}**: Response type for all authentication requests. Defaults to `'token'`. It can be any space separated list of the values `code`, `token`, `id_token`.
-- **responseMode {OPTIONAL, string}**: The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`.
+- **responseMode {OPTIONAL, string}**: The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`.
 - **_disableDeprecationWarnings {OPTIONAL, boolean}**: Disables the deprecation warnings, defaults to `false`.
 
 ### API
