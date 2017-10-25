@@ -18,8 +18,8 @@ var WebAuth = require('../../src/web-auth');
 
 describe('auth0.WebAuth', function() {
   before(function() {
-    stub(TransactionManager.prototype, 'generateTransaction', function(options) {
-      return objectHelper.extend(options, { state: 'randomState', nonce: 'randomNonce' });
+    stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
+      return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
     });
   });
   after(function() {
@@ -854,8 +854,7 @@ describe('auth0.WebAuth', function() {
         responseType: 'code',
         redirectUri: 'http://page.com/callback',
         auth: 'params',
-        state: 'randomState',
-        nonce: 'randomNonce'
+        state: 'randomState'
       };
 
       this.auth0.passwordlessStart(
@@ -1089,8 +1088,7 @@ describe('auth0.WebAuth', function() {
         connection: 'sms',
         phoneNumber: '+55165134',
         verificationCode: '123456',
-        state: 'randomState',
-        nonce: 'randomNonce'
+        state: 'randomState'
       };
 
       this.auth0.passwordlessVerify(

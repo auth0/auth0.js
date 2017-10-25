@@ -10,18 +10,16 @@ function TransactionManager(options) {
 }
 
 TransactionManager.prototype.process = function(options) {
-  var transaction;
-  var responseTypeIncludesIdToken = options.responseType.indexOf('id_token');
-
-  if (responseTypeIncludesIdToken && !!options.nonce) {
-    return options;
+  if (!options.responseType) {
+    throw new Error('responseType is required');
+  }
+  var transaction = this.generateTransaction(options.appState, options.state, options.nonce);
+  if (!options.state) {
+    options.state = transaction.state;
   }
 
-  transaction = this.generateTransaction(options.appState, options.state, options.nonce);
-
-  options.state = transaction.state;
-
-  if (responseTypeIncludesIdToken) {
+  var responseTypeIncludesIdToken = options.responseType.indexOf('id_token') !== -1;
+  if (responseTypeIncludesIdToken && !options.nonce) {
     options.nonce = transaction.nonce;
   }
 

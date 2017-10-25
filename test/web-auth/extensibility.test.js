@@ -85,8 +85,8 @@ describe('auth0.WebAuth extensibility', function() {
         ],
         _sendTelemetry: false
       });
-      stub(TransactionManager.prototype, 'generateTransaction', function(options) {
-        return objectHelper.extend(options, { state: 'randomState', nonce: 'randomNonce' });
+      stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
+        return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
       });
     });
 
@@ -98,7 +98,7 @@ describe('auth0.WebAuth extensibility', function() {
     it('should change the content of the params', function(done) {
       stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
         expect(url).to.be(
-          'https://test.auth0.com/authorize?client_id=...&response_type=code&tenant=test&owp=true&redirect_uri=http%3A%2F%2Fcustom-url.com&state=randomState&nonce=randomNonce'
+          'https://test.auth0.com/authorize?client_id=...&response_type=code&tenant=test&owp=true&redirect_uri=http%3A%2F%2Fcustom-url.com&state=randomState'
         );
         expect(relayUrl).to.be('https://test.auth0.com/relay.html');
         expect(options).to.eql({});

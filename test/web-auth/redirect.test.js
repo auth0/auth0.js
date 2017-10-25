@@ -13,8 +13,8 @@ var objectHelper = require('../../src/helper/object');
 
 describe('auth0.WebAuth.redirect', function() {
   before(function() {
-    stub(TransactionManager.prototype, 'generateTransaction', function(options) {
-      return objectHelper.extend(options, { state: 'randomState', nonce: 'randomNonce' });
+    stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
+      return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
     });
   });
   after(function() {
@@ -251,7 +251,7 @@ describe('auth0.WebAuth.redirect', function() {
     it('should verify the code and redirect to the passwordless verify page', function(done) {
       stub(windowHelper, 'redirect', function(url) {
         expect(url).to.be(
-          'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&nonce=randomNonce&auth0Client=' +
+          'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&auth0Client=' +
             encodeURIComponent(telemetryInfo)
         );
         done();
@@ -307,7 +307,7 @@ describe('auth0.WebAuth.redirect', function() {
     it('should verify the code and redirect to the passwordless verify page', function(done) {
       stub(windowHelper, 'redirect', function(url) {
         expect(url).to.be(
-          'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&nonce=randomNonce'
+          'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState'
         );
         done();
       });
@@ -421,7 +421,7 @@ describe('auth0.WebAuth.redirect', function() {
     it('should redirect to authorize', function() {
       this.auth0.authorize({ responseType: 'code', connection: 'facebook', state: '1234' });
       expect(global.window.location).to.be(
-        'https://me.auth0.com/authorize?client_id=...&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&response_type=code&connection=facebook&state=randomState&nonce=randomNonce'
+        'https://me.auth0.com/authorize?client_id=...&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&response_type=code&connection=facebook&state=1234'
       );
     });
 
