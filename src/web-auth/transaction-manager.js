@@ -11,12 +11,13 @@ function TransactionManager(options) {
 
 TransactionManager.prototype.process = function(options) {
   var transaction;
+  var responseType = options.responseType || '';
 
-  if (options.responseType.indexOf('code') !== -1) {
+  if (responseType.indexOf('code') !== -1) {
     return options;
   }
 
-  if (options.responseType.indexOf('id_token') !== -1 && !!options.nonce) {
+  if (responseType.indexOf('id_token') !== -1 && !!options.nonce) {
     return options;
   }
 
@@ -24,7 +25,7 @@ TransactionManager.prototype.process = function(options) {
 
   options.state = transaction.state;
 
-  if (options.responseType.indexOf('id_token') !== -1) {
+  if (responseType.indexOf('id_token') !== -1) {
     options.nonce = transaction.nonce;
   }
 

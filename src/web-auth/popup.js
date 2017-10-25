@@ -192,7 +192,6 @@ Popup.prototype.loginWithCredentials = function(options, cb) {
   options.realm = options.realm || options.connection;
   delete options.connection;
   options.popup = true;
-  options.responseType = options.responseType || '';
   options = this.transactionManager.process(options);
   this.crossOriginAuthentication.login(options, cb);
 };
