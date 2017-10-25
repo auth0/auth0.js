@@ -11,12 +11,9 @@ function TransactionManager(options) {
 
 TransactionManager.prototype.process = function(options) {
   var transaction;
+  var responseTypeIncludesIdToken = options.responseType.indexOf('id_token');
 
-  if (options.responseType.indexOf('code') !== -1) {
-    return options;
-  }
-
-  if (options.responseType.indexOf('id_token') !== -1 && !!options.nonce) {
+  if (responseTypeIncludesIdToken && !!options.nonce) {
     return options;
   }
 
@@ -24,7 +21,7 @@ TransactionManager.prototype.process = function(options) {
 
   options.state = transaction.state;
 
-  if (options.responseType.indexOf('id_token') !== -1) {
+  if (responseTypeIncludesIdToken) {
     options.nonce = transaction.nonce;
   }
 

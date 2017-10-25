@@ -13,9 +13,18 @@ var SilentAuthenticationHandler = require('../../src/web-auth/silent-authenticat
 var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
 var IframeHandler = require('../../src/helper/iframe-handler');
 
+var objectHelper = require('../../src/helper/object');
 var WebAuth = require('../../src/web-auth');
 
 describe('auth0.WebAuth', function() {
+  before(function() {
+    stub(TransactionManager.prototype, 'generateTransaction', function(options) {
+      return objectHelper.extend(options, { state: 'randomState', nonce: 'randomNonce' });
+    });
+  });
+  after(function() {
+    TransactionManager.prototype.generateTransaction.restore();
+  });
   context('init', function() {
     after(function() {
       delete global.window;
@@ -844,7 +853,9 @@ describe('auth0.WebAuth', function() {
       var expectedOptions = {
         responseType: 'code',
         redirectUri: 'http://page.com/callback',
-        auth: 'params'
+        auth: 'params',
+        state: 'randomState',
+        nonce: 'randomNonce'
       };
 
       this.auth0.passwordlessStart(
@@ -1077,7 +1088,9 @@ describe('auth0.WebAuth', function() {
         redirectUri: 'http://page.com/callback',
         connection: 'sms',
         phoneNumber: '+55165134',
-        verificationCode: '123456'
+        verificationCode: '123456',
+        state: 'randomState',
+        nonce: 'randomNonce'
       };
 
       this.auth0.passwordlessVerify(

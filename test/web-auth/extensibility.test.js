@@ -5,6 +5,8 @@ var PopupHandler = require('../../src/helper/popup-handler');
 var MockAuth0Plugin = require('../mock/mock-auth0-plugin');
 var WebAuth = require('../../src/web-auth');
 var version = require('../../src/version');
+var TransactionManager = require('../../src/web-auth/transaction-manager');
+var objectHelper = require('../../src/helper/object');
 
 describe('auth0.WebAuth extensibility', function() {
   context('validations', function() {
@@ -83,16 +85,20 @@ describe('auth0.WebAuth extensibility', function() {
         ],
         _sendTelemetry: false
       });
+      stub(TransactionManager.prototype, 'generateTransaction', function(options) {
+        return objectHelper.extend(options, { state: 'randomState', nonce: 'randomNonce' });
+      });
     });
 
     after(function() {
+      TransactionManager.prototype.generateTransaction.restore();
       PopupHandler.prototype.load.restore();
     });
 
     it('should change the content of the params', function(done) {
       stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
         expect(url).to.be(
-          'https://test.auth0.com/authorize?client_id=...&response_type=code&tenant=test&owp=true&redirect_uri=http%3A%2F%2Fcustom-url.com'
+          'https://test.auth0.com/authorize?client_id=...&response_type=code&tenant=test&owp=true&redirect_uri=http%3A%2F%2Fcustom-url.com&state=randomState&nonce=randomNonce'
         );
         expect(relayUrl).to.be('https://test.auth0.com/relay.html');
         expect(options).to.eql({});
