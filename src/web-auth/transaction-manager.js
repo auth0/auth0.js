@@ -27,25 +27,25 @@ TransactionManager.prototype.process = function(options) {
 };
 
 TransactionManager.prototype.generateTransaction = function(appState, state, nonce) {
-  var transaction = state || random.randomString(this.keyLength);
+  state = state || random.randomString(this.keyLength);
   nonce = nonce || random.randomString(this.keyLength);
 
-  storage.setItem(this.namespace + transaction, {
+  storage.setItem(this.namespace + state, {
     nonce: nonce,
     appState: appState
   });
 
   return {
-    state: transaction,
+    state: state,
     nonce: nonce
   };
 };
 
-TransactionManager.prototype.getStoredTransaction = function(transaction) {
+TransactionManager.prototype.getStoredTransaction = function(state) {
   var transactionData;
 
-  transactionData = storage.getItem(this.namespace + transaction);
-  storage.removeItem(this.namespace + transaction);
+  transactionData = storage.getItem(this.namespace + state);
+  storage.removeItem(this.namespace + state);
   return transactionData;
 };
 

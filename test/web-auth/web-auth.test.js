@@ -1346,6 +1346,9 @@ describe('auth0.WebAuth', function() {
       if (IframeHandler.prototype.init.restore) {
         IframeHandler.prototype.init.restore();
       }
+      if (WebAuth.prototype.validateAuthenticationResponse.restore) {
+        WebAuth.prototype.validateAuthenticationResponse.restore();
+      }
     });
     it('inits IframeHandler with correct params', function(done) {
       stub(IframeHandler.prototype, 'init', function() {
@@ -1414,6 +1417,20 @@ describe('auth0.WebAuth', function() {
     });
     it('callback handles success response', function(done) {
       var response = { access_token: 'foobar' };
+      stub(WebAuth.prototype, 'validateAuthenticationResponse', function(options, parsedHash, cb) {
+        expect(options).to.be.eql({
+          clientID: '...',
+          redirectUri: 'http://page.com/callback',
+          responseType: 'token',
+          from: 'transaction-manager',
+          responseMode: 'web_message',
+          prompt: 'none'
+        });
+        expect(parsedHash).to.be.eql(response);
+        cb(null, {
+          accessToken: response.access_token
+        });
+      });
       stub(IframeHandler.prototype, 'init', function() {
         this.callback({ event: { data: { response: response } } });
       });

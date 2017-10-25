@@ -190,9 +190,10 @@ Popup.prototype.authorize = function(options, cb) {
  */
 Popup.prototype.loginWithCredentials = function(options, cb) {
   options.realm = options.realm || options.connection;
-  options.responseType = options.responseType || this.baseOptions.responseType;
-  delete options.connection;
   options.popup = true;
+  options = objectHelper
+    .merge(this.baseOptions, ['responseType', 'state', 'nonce'])
+    .with(objectHelper.blacklist(options, ['popupHandler', 'connection']));
   options = this.transactionManager.process(options);
   this.crossOriginAuthentication.login(options, cb);
 };
