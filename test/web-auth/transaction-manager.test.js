@@ -20,7 +20,7 @@ context('TransactionManager', function() {
     it('throws when responseType is not available', function() {
       expect(function() {
         this.tm.process({});
-      }).to.throwError();
+      }).to.throwError('responseType is required');
     });
     it('generates a state when a state is not provided', function() {
       expect(this.tm.process({ responseType: 'code' })).to.be.eql({
