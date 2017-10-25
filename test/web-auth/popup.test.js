@@ -179,7 +179,12 @@ describe('auth0.WebAuth.popup', function() {
     });
     it('should call CrossOriginAuthentication.login', function(done) {
       var inputOptions = { foo: 'bar', connection: 'realm' };
-      var expectedOptions = { foo: 'bar', realm: 'realm', popup: true };
+      var expectedOptions = {
+        foo: 'bar',
+        realm: 'realm',
+        responseType: 'id_token',
+        popup: true
+      };
       stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
         expect(options).to.be.eql(expectedOptions);
         expect(cb()).to.be('cb');
@@ -483,7 +488,8 @@ describe('auth0.WebAuth.popup', function() {
         password: '123456',
         scope: 'openid',
         realm: 'the_connection',
-        popup: true
+        popup: true,
+        responseType: 'token'
       };
       stub(TransactionManager.prototype, 'process', function(options) {
         delete options.popupHandler;
