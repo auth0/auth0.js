@@ -8,6 +8,8 @@ var request = require('superagent');
 var PopupHandler = require('../../src/helper/popup-handler');
 var windowHandler = require('../../src/helper/window');
 var WebAuth = require('../../src/web-auth');
+var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
+var TransactionManager = require('../../src/web-auth/transaction-manager');
 
 describe('auth0.WebAuth.popup', function() {
   before(function() {
@@ -165,50 +167,31 @@ describe('auth0.WebAuth.popup', function() {
     });
 
     afterEach(function() {
-      PopupHandler.prototype.load.restore();
+      if (CrossOriginAuthentication.prototype.login.restore) {
+        CrossOriginAuthentication.prototype.login.restore();
+      }
+      if (CrossOriginAuthentication.prototype.callback.restore) {
+        CrossOriginAuthentication.prototype.callback.restore();
+      }
+      if (TransactionManager.prototype.process.restore) {
+        TransactionManager.prototype.process.restore();
+      }
     });
-
-    it('should do the redirections in the popup', function(done) {
-      stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
-        expect(url).to.be('https://me.auth0.com/sso_dbconnection_popup/...');
-        expect(relayUrl).to.be('https://me.auth0.com/relay.html');
-        expect(options).to.eql({
-          params: {
-            clientID: '...',
-            domain: 'me.auth0.com',
-            options: {
-              connection: 'the_connection',
-              state: '456',
-              username: 'theUsername',
-              password: 'thepassword',
-              scope: 'openid'
-            }
-          }
-        });
-
-        cb(null, {
-          emailVerified: false,
-          email: 'me@example.com'
-        });
+    it('should call CrossOriginAuthentication.login', function(done) {
+      var inputOptions = { foo: 'bar', connection: 'realm' };
+      var expectedOptions = { foo: 'bar', realm: 'realm', popup: true, responseType: '' };
+      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
+        expect(options).to.be.eql(expectedOptions);
+        expect(cb()).to.be('cb');
+        done();
       });
-
-      this.auth0.popup.loginWithCredentials(
-        {
-          connection: 'the_connection',
-          state: '456',
-          username: 'theUsername',
-          password: 'thepassword',
-          scope: 'openid'
-        },
-        function(err, data) {
-          expect(err).to.be(null);
-          expect(data).to.eql({
-            emailVerified: false,
-            email: 'me@example.com'
-          });
-          done();
-        }
-      );
+      stub(TransactionManager.prototype, 'process', function(options) {
+        expect(options).to.be.eql(expectedOptions);
+        return options;
+      });
+      this.auth0.popup.loginWithCredentials(inputOptions, function() {
+        return 'cb';
+      });
     });
   });
 
@@ -453,6 +436,15 @@ describe('auth0.WebAuth.popup', function() {
 
     afterEach(function() {
       request.post.restore();
+      if (CrossOriginAuthentication.prototype.login.restore) {
+        CrossOriginAuthentication.prototype.login.restore();
+      }
+      if (CrossOriginAuthentication.prototype.callback.restore) {
+        CrossOriginAuthentication.prototype.callback.restore();
+      }
+      if (TransactionManager.prototype.process.restore) {
+        TransactionManager.prototype.process.restore();
+      }
     });
 
     after(function() {
@@ -484,6 +476,25 @@ describe('auth0.WebAuth.popup', function() {
             });
           }
         });
+      });
+
+      var expectedOptions = {
+        email: 'me@example.com',
+        password: '123456',
+        scope: 'openid',
+        realm: 'the_connection',
+        popup: true,
+        responseType: ''
+      };
+      stub(TransactionManager.prototype, 'process', function(options) {
+        delete options.popupHandler;
+        expect(options).to.be.eql(expectedOptions);
+        return options;
+      });
+      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
+        delete options.popupHandler;
+        expect(options).to.be.eql(expectedOptions);
+        cb();
       });
 
       this.auth0.popup.signupAndLogin(

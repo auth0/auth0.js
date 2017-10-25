@@ -1379,7 +1379,7 @@ describe('auth0.WebAuth', function() {
       this.auth0.checkSession({}, function(err, data) {
         expect(err).to.be.eql({
           error: 'timeout',
-          error_description: 'Timeout during fetching SSO data'
+          error_description: 'Timeout during executing web_message communication'
         });
         done();
       });

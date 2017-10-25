@@ -191,7 +191,9 @@
     <div class="col-xs-6">
       <h2>Console:</h2>
       <pre><code id="console"></code></pre>
-      <div class="text-right"><i id="clear-console" aria-hidden="true" class="icon-budicon-498 icon"></i></div>
+      <div class="text-right">
+        <i id="clear-console" aria-hidden="true" class="icon-budicon-498 icon"></i>
+      </div>
     </div>
   </div>
 
@@ -288,8 +290,7 @@
         connection: 'acme',
         username: $('.popup-login-username').val(),
         password: $('.popup-login-password').val(),
-        scope: 'openid',
-        popupHandler: popupHandler
+        scope: 'openid'
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
