@@ -17,7 +17,7 @@ context('TransactionManager', function() {
     this.tm = new TransactionManager();
   });
   context('process', function() {
-    it.only('throws when responseType is not available', function() {
+    it('throws when responseType is not available', function() {
       expect(function() {
         this.tm.process({});
       }).to.throwError(/responseType is required/);
