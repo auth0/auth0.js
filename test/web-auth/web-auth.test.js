@@ -309,7 +309,9 @@ describe('auth0.WebAuth', function() {
       ); // eslint-disable-line
     });
 
-    it('should parse a valid hash with HS256 signed token', function(done) {
+    it('should parse a valid hash with HS256 signed token and _idTokenVerification is false', function(
+      done
+    ) {
       var webAuth = new WebAuth({
         domain: 'auth0-tests-lock.auth0.com',
         redirectUri: 'http://example.com/callback',
@@ -321,19 +323,23 @@ describe('auth0.WebAuth', function() {
       var data = webAuth.parseHash(
         {
           _idTokenVerification: false,
-          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1MDkwNDA5ODIsImV4cCI6MTU0MDU3Njk4MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.pblD21S2EYFXAZuNy-edWWNdX_qUtGnpDzWuWc8bncY&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
         },
         function(err, data) {
           expect(err).to.be(null);
           expect(data).to.eql({
             accessToken: 'VjubIMBmpgQ2W2',
-            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5UWXlNVEJDTVVFNVJFRTBOVVU1T1VFek5VSkJNa0kzUWpZME56SXlSVE01UkRrNU5UUTFSZyJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsInN1YiI6InR3aXR0ZXJ8MzY2MTQxOTMxIiwiYXVkIjoiaXhlT0hGaEQ3TlNQeEVRSzZDRmNzd2pVc2E1WWtjWFMiLCJleHAiOjE0ODYwODMxNDYsImlhdCI6MTQ4NjA0NzE0Nn0.hmUmW9DFYVeju8s7k_1Co_eyDrcss5ZqOajV1skZc7lGfrVYVe2MYZ0sX0MNZPFMmPr30cXzaPfUmpluildYYRwKkr3uNw6MpGxM4X5QVrRjFwNnEILzBZdz9KWVjkBV9kbSPnl1YzcgH65ivmUvmk5f2lCcv-i6EXmHlPJyMIxbhk0AfNYD9XdeSN8BhB193m3SJhvHw-B3hOvBqdnGt86qmSmT5x_0UCLBVz3UIaU--08m-0faLeiI9cm7oL4jE1VAQ3ys5lMJQCrgba53xdC7CnzjrgehFIZPfF0A1C553Fj8ZljO63K8ms_v9SNhlGEEutvA3kOuST0WeWcEyQ',
+            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1MDkwNDA5ODIsImV4cCI6MTU0MDU3Njk4MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.pblD21S2EYFXAZuNy-edWWNdX_qUtGnpDzWuWc8bncY',
             idTokenPayload: {
-              iss: 'https://auth0-tests-lock.auth0.com/',
-              sub: 'twitter|366141931',
-              aud: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-              exp: 1486083146,
-              iat: 1486047146
+              iss: 'Online JWT Builder',
+              iat: 1509040982,
+              exp: 1540576982,
+              aud: 'www.example.com',
+              sub: 'jrocket@example.com',
+              GivenName: 'Johnny',
+              Surname: 'Rocket',
+              Email: 'jrocket@example.com',
+              Role: ['Manager', 'Project Administrator']
             },
             appStatus: null,
             refreshToken: 'kajshdgfkasdjhgfas',
@@ -531,6 +537,33 @@ describe('auth0.WebAuth', function() {
         function(err, data) {
           expect(err).to.be(null);
           expect(data).to.be(null);
+          done();
+        }
+      ); // eslint-disable-line
+    });
+
+    it('should fail token validation when alg is HS256 and _idTokenVerification is true', function(
+      done
+    ) {
+      var webAuth = new WebAuth({
+        domain: 'auth0-tests-lock.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+        responseType: 'token',
+        __disableExpirationCheck: true
+      });
+
+      var data = webAuth.parseHash(
+        {
+          _idTokenVerification: true,
+          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+        },
+        function(err, data) {
+          expect(err).to.be.eql({
+            error: 'invalid_token',
+            errorDescription: 'Algorithm HS256 is not supported. (Expected algs: [RS256])'
+          });
+
           done();
         }
       ); // eslint-disable-line
