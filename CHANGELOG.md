@@ -4,6 +4,8 @@
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.2...v9.0.0-beta.3)
 # Change Log
 
+- Changing `popup.loginWithCredentials` to work with Cross Origin Authentication and web_message flows. [\#528](https://github.com/auth0/auth0.js/pull/528)
+
 ## [v9.0.0-beta.2](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.2) (2017-10-19)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.1...v9.0.0-beta.2)
 # Change Log
