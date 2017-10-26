@@ -187,8 +187,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
       errorDescription: '`state` does not match.'
     });
   }
-  var transactionNonce =
-    options.nonce || (transaction && transaction.nonce) || this.baseOptions.nonce || null;
+  var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
 
   var applicationStatus = (transaction && transaction.appStatus) || null;
   if (parsedHash.id_token && options._idTokenVerification) {
