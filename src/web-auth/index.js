@@ -125,9 +125,6 @@ function WebAuth(options) {
 WebAuth.prototype.parseHash = function(options, cb) {
   var parsedQs;
   var err;
-  var state;
-  var transaction;
-  var transactionNonce;
 
   if (!cb && typeof options === 'function') {
     cb = options;
@@ -162,26 +159,50 @@ WebAuth.prototype.parseHash = function(options, cb) {
   ) {
     return cb(null, null);
   }
+  return this.validateAuthenticationResponse(options, parsedQs, cb);
+};
 
-  state = parsedQs.state || options.state;
-
-  transaction = this.transactionManager.getStoredTransaction(state);
-  transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
+/**
+ * Validates an Auth response from a Auth flow started with {@link authorize}
+ *
+ * Only validates id_tokens signed by Auth0 using the RS256 algorithm using the public key exposed
+ * by the `/.well-known/jwks.json` endpoint of your account.
+ * Tokens signed with other algorithms, e.g. HS256 will not be accepted.
+ *
+ * @method validateAuthenticationResponse
+ * @param {Object} options
+ * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
+ * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
+ * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
+ * @param {String} [options._idTokenVerification] makes parseHash perform or skip `id_token` verification. We **strongly** recommend validating the `id_token` yourself if you disable the verification.
+ * @param {authorizeCallback} cb
+ */
+WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash, cb) {
+  var state = parsedHash.state;
+  var transaction = this.transactionManager.getStoredTransaction(state);
+  var transactionStateMatchesState = transaction && transaction.state === state;
+  if (state && !transactionStateMatchesState) {
+    return cb({
+      error: 'invalid_token',
+      errorDescription: '`state` does not match.'
+    });
+  }
+  var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
 
   var applicationStatus = (transaction && transaction.appStatus) || null;
-  if (parsedQs.id_token && options._idTokenVerification) {
-    return this.validateToken(parsedQs.id_token, transactionNonce, function(
+  if (parsedHash.id_token && options._idTokenVerification) {
+    return this.validateToken(parsedHash.id_token, transactionNonce, function(
       validationError,
       payload
     ) {
       if (validationError) {
         return cb(validationError);
       }
-      return cb(null, buildParseHashResponse(parsedQs, applicationStatus, payload));
+      return cb(null, buildParseHashResponse(parsedHash, applicationStatus, payload));
     });
   }
 
-  if (parsedQs.id_token) {
+  if (parsedHash.id_token) {
     var verifier = new IdTokenVerifier({
       issuer: this.baseOptions.token_issuer,
       audience: this.baseOptions.clientID,
@@ -189,10 +210,10 @@ WebAuth.prototype.parseHash = function(options, cb) {
       __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
     });
 
-    var decodedToken = verifier.decode(parsedQs.id_token);
-    cb(null, buildParseHashResponse(parsedQs, applicationStatus, decodedToken.payload));
+    var decodedToken = verifier.decode(parsedHash.id_token);
+    cb(null, buildParseHashResponse(parsedHash, applicationStatus, decodedToken.payload));
   } else {
-    cb(null, buildParseHashResponse(parsedQs, applicationStatus, null));
+    cb(null, buildParseHashResponse(parsedHash, applicationStatus, null));
   }
 };
 
@@ -287,9 +308,7 @@ WebAuth.prototype.renewAuth = function(options, cb) {
 
   params.responseType = params.responseType || 'token';
   params.responseMode = params.responseMode || 'fragment';
-  if (!options.nonce) {
-    params = this.transactionManager.process(params);
-  }
+  params = this.transactionManager.process(params);
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
@@ -316,10 +335,7 @@ WebAuth.prototype.renewAuth = function(options, cb) {
       // it's here to be backwards compatible and should be removed in the next major version.
       return cb(err, hash);
     }
-    var transaction = _this.transactionManager.getStoredTransaction(params.state);
-    var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
-    var transactionState = options.state || (transaction && transaction.state) || null;
-    _this.parseHash({ hash: hash, nonce: transactionNonce, state: transactionState }, cb);
+    _this.parseHash({ hash: hash }, cb);
   });
 };
 
@@ -361,7 +377,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType']);
-  this.webMessageHandler.checkSession(params, cb);
+  this.webMessageHandler.run(params, cb);
 };
 
 /**

@@ -15,7 +15,10 @@ function runWebMessageFlow(authorizeUrl, options, callback) {
       }
     },
     timeoutCallback: function() {
-      callback({ error: 'timeout', error_description: 'Timeout during fetching SSO data' });
+      callback({
+        error: 'timeout',
+        error_description: 'Timeout during executing web_message communication'
+      });
     }
   });
   handler.init();
@@ -25,7 +28,8 @@ function WebMessageHandler(webAuth) {
   this.webAuth = webAuth;
 }
 
-WebMessageHandler.prototype.checkSession = function(options, cb) {
+WebMessageHandler.prototype.run = function(options, cb) {
+  var _this = this;
   options.responseMode = 'web_message';
   options.prompt = 'none';
   runWebMessageFlow(this.webAuth.client.buildAuthorizeUrl(options), options, function(
@@ -39,7 +43,8 @@ WebMessageHandler.prototype.checkSession = function(options, cb) {
     if (error) {
       return cb(error);
     }
-    cb(null, objectHelper.toCamelCase(eventData.event.data.response));
+    var parsedHash = eventData.event.data.response;
+    _this.webAuth.validateAuthenticationResponse(options, parsedHash, cb);
   });
 };
 

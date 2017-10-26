@@ -8,6 +8,7 @@ var PopupHandler = require('../helper/popup-handler');
 var objectHelper = require('../helper/object');
 var Warn = require('../helper/warn');
 var TransactionManager = require('./transaction-manager');
+var CrossOriginAuthentication = require('./cross-origin-authentication');
 
 function Popup(webAuth, options) {
   this.baseOptions = options;
@@ -15,6 +16,7 @@ function Popup(webAuth, options) {
   this.webAuth = webAuth;
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
+  this.crossOriginAuthentication = new CrossOriginAuthentication(webAuth, this.baseOptions);
   this.warn = new Warn({
     disableWarnings: !!options._disableDeprecationWarnings
   });
@@ -187,50 +189,13 @@ Popup.prototype.authorize = function(options, cb) {
  * @param {credentialsCallback} cb
  */
 Popup.prototype.loginWithCredentials = function(options, cb) {
-  var params;
-  var popup;
-  var url;
-  var relayUrl;
-
-  /* eslint-disable */
-  assert.check(
-    options,
-    { type: 'object', message: 'options parameter is not valid' },
-    {
-      clientID: { optional: true, type: 'string', message: 'clientID option is required' },
-      redirectUri: { optional: true, type: 'string', message: 'redirectUri option is required' },
-      responseType: { optional: true, type: 'string', message: 'responseType option is required' },
-      scope: { optional: true, type: 'string', message: 'scope option is required' },
-      audience: { optional: true, type: 'string', message: 'audience option is required' }
-    }
-  );
-  /* eslint-enable */
-
-  popup = this.getPopupHandler(options);
-
+  options.realm = options.realm || options.connection;
+  options.popup = true;
   options = objectHelper
-    .merge(this.baseOptions, [
-      'clientID',
-      'scope',
-      'domain',
-      'audience',
-      '_csrf',
-      'state',
-      '_intstate',
-      'nonce'
-    ])
-    .with(objectHelper.blacklist(options, ['popupHandler']));
-
-  params = objectHelper.pick(options, ['clientID', 'domain']);
-  params.options = objectHelper.toSnakeCase(
-    objectHelper.pick(options, ['password', 'connection', 'state', 'scope', '_csrf', 'device'])
-  );
-  params.options.username = options.username || options.email;
-
-  url = urljoin(this.baseOptions.rootUrl, 'sso_dbconnection_popup', options.clientID);
-  relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');
-
-  return popup.load(url, relayUrl, { params: params }, responseHandler(cb));
+    .merge(this.baseOptions, ['responseType', 'state', 'nonce'])
+    .with(objectHelper.blacklist(options, ['popupHandler', 'connection']));
+  options = this.transactionManager.process(options);
+  this.crossOriginAuthentication.login(options, cb);
 };
 
 /**

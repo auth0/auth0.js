@@ -8,8 +8,18 @@ var WebAuth = require('../../src/web-auth');
 var RequestBuilder = require('../../src/helper/request-builder');
 var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
+var TransactionManager = require('../../src/web-auth/transaction-manager');
+var objectHelper = require('../../src/helper/object');
 
 describe('auth0.WebAuth.redirect', function() {
+  before(function() {
+    stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
+      return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
+    });
+  });
+  after(function() {
+    TransactionManager.prototype.generateTransaction.restore();
+  });
   context('signup', function() {
     before(function() {
       this.auth0 = new WebAuth({
@@ -241,7 +251,7 @@ describe('auth0.WebAuth.redirect', function() {
     it('should verify the code and redirect to the passwordless verify page', function(done) {
       stub(windowHelper, 'redirect', function(url) {
         expect(url).to.be(
-          'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&auth0Client=' +
+          'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&auth0Client=' +
             encodeURIComponent(telemetryInfo)
         );
         done();
@@ -297,7 +307,7 @@ describe('auth0.WebAuth.redirect', function() {
     it('should verify the code and redirect to the passwordless verify page', function(done) {
       stub(windowHelper, 'redirect', function(url) {
         expect(url).to.be(
-          'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc'
+          'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState'
         );
         done();
       });

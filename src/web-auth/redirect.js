@@ -26,7 +26,7 @@ function Redirect(auth0, options) {
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 Redirect.prototype.loginWithCredentials = function(options, cb) {
-  options.realm = options.connection;
+  options.realm = options.realm || options.connection;
   delete options.connection;
   this.crossOriginAuthentication.login(options, cb);
 };

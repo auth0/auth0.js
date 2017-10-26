@@ -10,21 +10,16 @@ function TransactionManager(options) {
 }
 
 TransactionManager.prototype.process = function(options) {
-  var transaction;
-
-  if (options.responseType.indexOf('code') !== -1) {
-    return options;
+  if (!options.responseType) {
+    throw new Error('responseType is required');
+  }
+  var transaction = this.generateTransaction(options.appState, options.state, options.nonce);
+  if (!options.state) {
+    options.state = transaction.state;
   }
 
-  if (options.responseType.indexOf('id_token') !== -1 && !!options.nonce) {
-    return options;
-  }
-
-  transaction = this.generateTransaction(options.appState, options.state, options.nonce);
-
-  options.state = transaction.state;
-
-  if (options.responseType.indexOf('id_token') !== -1) {
+  var responseTypeIncludesIdToken = options.responseType.indexOf('id_token') !== -1;
+  if (responseTypeIncludesIdToken && !options.nonce) {
     options.nonce = transaction.nonce;
   }
 
@@ -32,25 +27,26 @@ TransactionManager.prototype.process = function(options) {
 };
 
 TransactionManager.prototype.generateTransaction = function(appState, state, nonce) {
-  var transaction = state || random.randomString(this.keyLength);
+  state = state || random.randomString(this.keyLength);
   nonce = nonce || random.randomString(this.keyLength);
 
-  storage.setItem(this.namespace + transaction, {
+  storage.setItem(this.namespace + state, {
     nonce: nonce,
-    appState: appState
+    appState: appState,
+    state: state
   });
 
   return {
-    state: transaction,
+    state: state,
     nonce: nonce
   };
 };
 
-TransactionManager.prototype.getStoredTransaction = function(transaction) {
+TransactionManager.prototype.getStoredTransaction = function(state) {
   var transactionData;
 
-  transactionData = storage.getItem(this.namespace + transaction);
-  storage.removeItem(this.namespace + transaction);
+  transactionData = storage.getItem(this.namespace + state);
+  storage.removeItem(this.namespace + state);
   return transactionData;
 };
 
