@@ -178,7 +178,7 @@ WebAuth.prototype.parseHash = function(options, cb) {
  * @param {authorizeCallback} cb
  */
 WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash, cb) {
-  var state = parsedHash.state || options.state || this.baseOptions.state;
+  var state = parsedHash.state;
   var transaction = this.transactionManager.getStoredTransaction(state);
   var transactionStateMatchesState = transaction && transaction.state === state;
   if (state && !transactionStateMatchesState) {

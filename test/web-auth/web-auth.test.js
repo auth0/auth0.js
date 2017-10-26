@@ -425,6 +425,10 @@ describe('auth0.WebAuth', function() {
         clientID: '0HP71GSd6PuoRYJ3p',
         responseType: 'token'
       });
+      TransactionManager.prototype.getStoredTransaction.restore();
+      stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+        return null;
+      });
 
       var data = webAuth.parseHash(
         {
