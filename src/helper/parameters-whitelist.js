@@ -28,7 +28,7 @@ var authorizeParams = [
   'owp',
   'device',
   'realm',
-
+  'timeout',
   'protocol',
   '_csrf',
   '_intstate',
