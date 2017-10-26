@@ -27,6 +27,7 @@ var authorizeParams = [
   'auth0Client',
   'owp',
   'device',
+  'realm',
 
   'protocol',
   '_csrf',

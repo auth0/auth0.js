@@ -13,6 +13,7 @@ var SilentAuthenticationHandler = require('../../src/web-auth/silent-authenticat
 var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
 var WebAuth = require('../../src/web-auth');
 var windowHelper = require('../../src/helper/window');
+var WebMessageHandler = require('../../src/web-auth/web-message-handler');
 
 describe('auth0.WebAuth.crossOriginAuthentication', function() {
   context('login', function() {
@@ -34,6 +35,9 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       this.webAuthSpy.authorize = spy();
       if (windowHelper.redirect.restore) {
         windowHelper.redirect.restore();
+      }
+      if (WebMessageHandler.prototype.run.restore) {
+        WebMessageHandler.prototype.run.restore();
       }
     });
     it('should call /co/authenticate and redirect to /authorize with login_ticket', function() {
@@ -69,6 +73,51 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         loginTicket: 'a_login_ticket',
         anotherOption: 'foobar'
       });
+    });
+    it('should call /co/authenticate and call `webMessageHandler.run` when popup:true', function(
+      done
+    ) {
+      stub(request, 'post', function(url) {
+        expect(url).to.be('https://me.auth0.com/co/authenticate');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            credential_type: 'password',
+            username: 'me@example.com',
+            password: '123456'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                login_ticket: 'a_login_ticket',
+                co_verifier: 'co_verifier',
+                co_id: 'co_id'
+              }
+            });
+          }
+        });
+      });
+      stub(WebMessageHandler.prototype, 'run', function(options, callback) {
+        expect(options).to.be.eql({
+          loginTicket: 'a_login_ticket',
+          anotherOption: 'foobar'
+        });
+        callback();
+      });
+      this.co.login(
+        {
+          username: 'me@example.com',
+          password: '123456',
+          anotherOption: 'foobar',
+          popup: true
+        },
+        function() {
+          done();
+        }
+      );
     });
     it('should call /co/authenticate with realm grant and redirect to /authorize with login_ticket when realm is used', function() {
       stub(request, 'post', function(url) {

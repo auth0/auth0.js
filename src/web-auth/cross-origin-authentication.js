@@ -3,11 +3,13 @@ var urljoin = require('url-join');
 var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
 var RequestBuilder = require('../helper/request-builder');
+var WebMessageHandler = require('./web-message-handler');
 
 function CrossOriginAuthentication(webAuth, options) {
   this.webAuth = webAuth;
   this.baseOptions = options;
   this.request = new RequestBuilder(options);
+  this.webMessageHandler = new WebMessageHandler(webAuth);
 }
 
 function getFragment(name) {
@@ -70,13 +72,24 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       };
       return cb(errorObject);
     }
-    options = objectHelper.blacklist(options, ['username', 'password', 'credentialType', 'otp']);
+    var popupMode = options.popup === true;
+    options = objectHelper.blacklist(options, [
+      'username',
+      'password',
+      'credentialType',
+      'otp',
+      'popup'
+    ]);
     var authorizeOptions = objectHelper
       .merge(options)
       .with({ loginTicket: data.body.login_ticket });
     var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
     theWindow.sessionStorage[key] = data.body.co_verifier;
-    _this.webAuth.authorize(authorizeOptions);
+    if (popupMode) {
+      _this.webMessageHandler.run(authorizeOptions, cb);
+    } else {
+      _this.webAuth.authorize(authorizeOptions);
+    }
   });
 };
 
