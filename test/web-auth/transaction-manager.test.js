@@ -21,7 +21,7 @@ context('TransactionManager', function() {
       var _this = this;
       expect(function() {
         _this.tm.process({});
-      }).to.throwException(/responseType is required/);
+      }).to.throwException('responseType is required');
     });
     it('generates a state when a state is not provided', function() {
       expect(this.tm.process({ responseType: 'code' })).to.be.eql({
