@@ -32,7 +32,8 @@ TransactionManager.prototype.generateTransaction = function(appState, state, non
 
   storage.setItem(this.namespace + state, {
     nonce: nonce,
-    appState: appState
+    appState: appState,
+    state: state
   });
 
   return {

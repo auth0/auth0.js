@@ -178,9 +178,17 @@ WebAuth.prototype.parseHash = function(options, cb) {
  * @param {authorizeCallback} cb
  */
 WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash, cb) {
-  var state = parsedHash.state || options.state;
+  var state = parsedHash.state || options.state || this.baseOptions.state;
   var transaction = this.transactionManager.getStoredTransaction(state);
-  var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
+  var transactionStateMatchesState = transaction && transaction.state === state;
+  if (state && !transactionStateMatchesState) {
+    return cb({
+      error: 'invalid_token',
+      errorDescription: '`state` does not match.'
+    });
+  }
+  var transactionNonce =
+    options.nonce || (transaction && transaction.nonce) || this.baseOptions.nonce || null;
 
   var applicationStatus = (transaction && transaction.appStatus) || null;
   if (parsedHash.id_token && options._idTokenVerification) {
@@ -301,9 +309,7 @@ WebAuth.prototype.renewAuth = function(options, cb) {
 
   params.responseType = params.responseType || 'token';
   params.responseMode = params.responseMode || 'fragment';
-  if (!options.nonce) {
-    params = this.transactionManager.process(params);
-  }
+  params = this.transactionManager.process(params);
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
@@ -330,10 +336,7 @@ WebAuth.prototype.renewAuth = function(options, cb) {
       // it's here to be backwards compatible and should be removed in the next major version.
       return cb(err, hash);
     }
-    var transaction = _this.transactionManager.getStoredTransaction(params.state);
-    var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
-    var transactionState = options.state || (transaction && transaction.state) || null;
-    _this.parseHash({ hash: hash, nonce: transactionNonce, state: transactionState }, cb);
+    _this.parseHash({ hash: hash }, cb);
   });
 };
 
