@@ -353,8 +353,8 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
  * @param {Function} cb
  */
 Authentication.prototype.getSSOData = function(cb) {
-  var _this = this;
-  _this.auth0.checkSession(
+  var clientId = this.baseOptions.clientID;
+  this.auth0.checkSession(
     {
       responseType: 'id_token',
       scope: 'openid'
@@ -368,8 +368,8 @@ Authentication.prototype.getSSOData = function(cb) {
         lastUsedConnection: localStorageInfo.connection,
         lastUsedUserID: result.idTokenPayload.sub,
         lastUsedUsername: localStorageInfo.username,
-        lastUsedClientID: _this.baseOptions.clientID,
-        sessionClients: [_this.baseOptions.clientID],
+        lastUsedClientID: clientId,
+        sessionClients: [clientId],
         sso: true
       });
     }
