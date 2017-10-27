@@ -318,7 +318,8 @@ WebAuth.prototype.renewAuth = function(options, cb) {
     'usePostMessage',
     'tenant',
     'postMessageDataType',
-    'postMessageOrigin'
+    'postMessageOrigin',
+    'timeout'
   ]);
 
   handler = SilentAuthenticationHandler.create({
