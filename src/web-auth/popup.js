@@ -165,9 +165,9 @@ Popup.prototype.authorize = function(options, cb) {
 
   params = this.transactionManager.process(params);
 
-  delete params.domain;
-
-  url = this.client.buildAuthorizeUrl(params);
+  url = this.client.buildAuthorizeUrl(
+    objectHelper.blacklist(params, ['domain', 'tenant', 'popupOptions'])
+  );
 
   popup = this.getPopupHandler(options);
 
