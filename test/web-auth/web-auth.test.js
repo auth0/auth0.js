@@ -309,53 +309,6 @@ describe('auth0.WebAuth', function() {
       ); // eslint-disable-line
     });
 
-    it('should parse a valid hash with HS256 signed token and _idTokenVerification is false', function(
-      done
-    ) {
-      var webAuth = new WebAuth({
-        domain: 'auth0-tests-lock.auth0.com',
-        redirectUri: 'http://example.com/callback',
-        clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-        responseType: 'token',
-        __disableExpirationCheck: true
-      });
-
-      var data = webAuth.parseHash(
-        {
-          _idTokenVerification: false,
-          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1MDkwNDA5ODIsImV4cCI6MTU0MDU3Njk4MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.pblD21S2EYFXAZuNy-edWWNdX_qUtGnpDzWuWc8bncY&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-        },
-        function(err, data) {
-          expect(err).to.be(null);
-          expect(data).to.eql({
-            accessToken: 'VjubIMBmpgQ2W2',
-            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1MDkwNDA5ODIsImV4cCI6MTU0MDU3Njk4MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIkdpdmVuTmFtZSI6IkpvaG5ueSIsIlN1cm5hbWUiOiJSb2NrZXQiLCJFbWFpbCI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJSb2xlIjpbIk1hbmFnZXIiLCJQcm9qZWN0IEFkbWluaXN0cmF0b3IiXX0.pblD21S2EYFXAZuNy-edWWNdX_qUtGnpDzWuWc8bncY',
-            idTokenPayload: {
-              iss: 'Online JWT Builder',
-              iat: 1509040982,
-              exp: 1540576982,
-              aud: 'www.example.com',
-              sub: 'jrocket@example.com',
-              GivenName: 'Johnny',
-              Surname: 'Rocket',
-              Email: 'jrocket@example.com',
-              Role: ['Manager', 'Project Administrator']
-            },
-            appStatus: null,
-            refreshToken: 'kajshdgfkasdjhgfas',
-            state: null,
-            expiresIn: null,
-            tokenType: 'Bearer',
-            scope: null
-          });
-
-          expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
-
-          done();
-        }
-      ); // eslint-disable-line
-    });
-
     it('should parse a valid hash from the location.hash', function(done) {
       var webAuth = new WebAuth({
         domain: 'wptest.auth0.com',
@@ -542,9 +495,7 @@ describe('auth0.WebAuth', function() {
       ); // eslint-disable-line
     });
 
-    it('should fail token validation when alg is HS256 and _idTokenVerification is true', function(
-      done
-    ) {
+    it('should fail token validation when alg is HS256', function(done) {
       var webAuth = new WebAuth({
         domain: 'auth0-tests-lock.auth0.com',
         redirectUri: 'http://example.com/callback',
@@ -555,7 +506,6 @@ describe('auth0.WebAuth', function() {
 
       var data = webAuth.parseHash(
         {
-          _idTokenVerification: true,
           hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
         },
         function(err, data) {
