@@ -4,6 +4,7 @@ var RequestBuilder = require('../helper/request-builder');
 var qs = require('qs');
 var objectHelper = require('../helper/object');
 var assert = require('../helper/assert');
+var storage = require('../helper/storage');
 var responseHandler = require('../helper/response-handler');
 var parametersWhitelist = require('../helper/parameters-whitelist');
 var Warn = require('../helper/warn');
@@ -24,7 +25,7 @@ var DBConnection = require('./db-connection');
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @see {@link https://auth0.com/docs/api/authentication}
  */
-function Authentication(options) {
+function Authentication(auth0, options) {
   /* eslint-disable */
   assert.check(
     options,
@@ -57,7 +58,7 @@ function Authentication(options) {
   /* eslint-enable */
 
   this.baseOptions = options;
-
+  this.auth0 = auth0;
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
     ? this.baseOptions._sendTelemetry
     : true;
@@ -343,6 +344,36 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
   body.grant_type = body.grant_type || 'password';
 
   return this.request.post(url).send(body).end(responseHandler(cb));
+};
+
+/**
+ * Uses {@link checkSession} and localStorage to return data from the last successful authentication request.
+ *
+ * @method getSSOData
+ * @param {Function} cb
+ */
+Authentication.prototype.getSSOData = function(cb) {
+  var _this = this;
+  _this.auth0.checkSession(
+    {
+      responseType: 'id_token',
+      scope: 'openid'
+    },
+    function(err, result) {
+      if (err) {
+        return cb(null, { sso: false });
+      }
+      var localStorageInfo = storage.getItem('auth0.ssodata') || {};
+      return cb(null, {
+        lastUsedConnection: localStorageInfo.connection,
+        lastUsedUserID: result.idTokenPayload.sub,
+        lastUsedUsername: localStorageInfo.username,
+        lastUsedClientID: _this.baseOptions.clientID,
+        sessionClients: [_this.baseOptions.clientID],
+        sso: true
+      });
+    }
+  );
 };
 
 /**

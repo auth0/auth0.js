@@ -181,6 +181,10 @@
         <h2>Check if you have an active session:</h2>
         <input type="button" class="web-message-check-session" value="Check session" />
       </div>
+      <div>
+        <h2>Get information about the last successful authorizatino request</h2>
+        <input type="button" class="getssodata" value="Get SSO data" />
+      </div>
 
       <div>
         <h2>SSO Logout:</h2>
@@ -206,7 +210,7 @@
       domain: 'brucke.auth0.com',
       redirectUri: 'https://localhost:3000/example',
       clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
-      responseType: 'id_token token',
+      responseType: 'token',
       plugins: [
         new CordovaAuth0Plugin()
       ]
@@ -377,6 +381,10 @@
     $('.web-message-check-session').click(function (e) {
       e.preventDefault();
       webAuth.checkSession({}, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+    $('.getssodata').click(function (e) {
+      e.preventDefault();
+      webAuth.client.getSSOData(htmlConsole.dumpCallback.bind(htmlConsole));
     });
     $(document.body).append($('<div class="loaded">LOADED</div>'));
   </script>

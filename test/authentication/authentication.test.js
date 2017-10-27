@@ -1,21 +1,28 @@
 var expect = require('expect.js');
 
 var stub = require('sinon').stub;
+var spy = require('sinon').spy;
 
 var RequestMock = require('../mock/request-mock');
 
 var request = require('superagent');
 
 var RequestBuilder = require('../../src/helper/request-builder');
+var storage = require('../../src/helper/storage');
 var Authentication = require('../../src/authentication');
 
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
 describe('auth0.authentication', function() {
+  before(function() {
+    this.webAuthSpy = {
+      checkSession: spy()
+    };
+  });
   describe('initialization', function() {
     it('should check that options is passed', function() {
       expect(function() {
-        var auth0 = new Authentication();
+        var auth0 = new Authentication(this.webAuthSpy);
       }).to.throwException(function(e) {
         expect(e.message).to.be('options parameter is not valid');
       });
@@ -23,7 +30,7 @@ describe('auth0.authentication', function() {
 
     it('should check that domain is set', function() {
       expect(function() {
-        var auth0 = new Authentication({ clientID: '...' });
+        var auth0 = new Authentication(this.webAuthSpy, { clientID: '...' });
       }).to.throwException(function(e) {
         expect(e.message).to.be('domain option is required');
       });
@@ -31,7 +38,7 @@ describe('auth0.authentication', function() {
 
     it('should check that clientID is set', function() {
       expect(function() {
-        var auth0 = new Authentication({ domain: 'me.auth0.com' });
+        var auth0 = new Authentication(this.webAuthSpy, { domain: 'me.auth0.com' });
       }).to.throwException(function(e) {
         expect(e.message).to.be('clientID option is required');
       });
@@ -40,7 +47,7 @@ describe('auth0.authentication', function() {
 
   context('buildAuthorizeUrl', function() {
     before(function() {
-      this.auth0 = new Authentication({
+      this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',
@@ -123,7 +130,7 @@ describe('auth0.authentication', function() {
 
   context('buildAuthorizeUrl with Telemetry', function() {
     before(function() {
-      this.auth0 = new Authentication({
+      this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',
@@ -148,7 +155,7 @@ describe('auth0.authentication', function() {
 
   context('buildLogoutUrl', function() {
     before(function() {
-      this.auth0 = new Authentication({
+      this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',
@@ -194,7 +201,7 @@ describe('auth0.authentication', function() {
 
   context('buildLogoutUrl with Telemetry', function() {
     before(function() {
-      this.auth0 = new Authentication({
+      this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
         clientID: '123',
         redirectUri: 'http://page.com/callback',
@@ -216,9 +223,58 @@ describe('auth0.authentication', function() {
     });
   });
 
+  context('getSSOData', function() {
+    before(function() {
+      this.auth0 = new Authentication(this.webAuthSpy, {
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
+      stub(storage, 'getItem', function(key) {
+        expect(key).to.be('auth0.ssodata');
+        return {
+          connection: { name: 'the-connection' },
+          username: 'the-username'
+        };
+      });
+    });
+    after(function() {
+      storage.getItem.restore();
+    });
+    it('returns sso:false if checkSession fails', function(done) {
+      this.auth0.getSSOData(function(err, result) {
+        expect(err).to.be(null);
+        expect(result).to.be.eql({ sso: false });
+        done();
+      });
+
+      this.webAuthSpy.checkSession.lastCall.args[1]({ some: 'error' });
+    });
+    it('returns ssoData object', function(done) {
+      this.auth0.getSSOData(function(err, result) {
+        expect(err).to.be(null);
+        expect(result).to.be.eql({
+          lastUsedConnection: { name: 'the-connection' },
+          lastUsedUserID: 'the-user-id',
+          lastUsedUsername: 'the-username',
+          lastUsedClientID: '...',
+          sessionClients: ['...'],
+          sso: true
+        });
+        done();
+      });
+
+      this.webAuthSpy.checkSession.lastCall.args[1](null, {
+        idTokenPayload: { sub: 'the-user-id' }
+      });
+    });
+  });
+
   context('userInfo', function() {
     before(function() {
-      this.auth0 = new Authentication({
+      this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',
@@ -267,7 +323,7 @@ describe('auth0.authentication', function() {
 
   context('delegation', function() {
     before(function() {
-      this.auth0 = new Authentication({
+      this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',
@@ -326,7 +382,7 @@ describe('auth0.authentication', function() {
 
   context('login', function() {
     before(function() {
-      this.auth0 = new Authentication({
+      this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',
@@ -386,7 +442,7 @@ describe('auth0.authentication', function() {
 
   context('oauthToken', function() {
     before(function() {
-      this.auth0 = new Authentication({
+      this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',
@@ -445,7 +501,7 @@ describe('auth0.authentication', function() {
 
   context('getUserCountry', function() {
     before(function() {
-      this.auth0 = new Authentication({
+      this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',

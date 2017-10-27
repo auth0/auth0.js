@@ -2,6 +2,7 @@ var urljoin = require('url-join');
 
 var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
+var storage = require('../helper/storage');
 var RequestBuilder = require('../helper/request-builder');
 var WebMessageHandler = require('./web-message-handler');
 
@@ -72,6 +73,10 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       };
       return cb(errorObject);
     }
+    storage.setItem('auth0.ssodata', {
+      connection: { name: options.realm },
+      username: options.username
+    });
     var popupMode = options.popup === true;
     options = objectHelper.blacklist(options, [
       'username',

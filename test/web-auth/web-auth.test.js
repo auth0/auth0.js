@@ -605,9 +605,17 @@ describe('auth0.WebAuth', function() {
     });
   });
 
-  context('login', function() {
-    it('should check that responseType is present', function() {
+  context('authorize', function() {
+    beforeEach(function() {
       global.window = { location: '' };
+    });
+    afterEach(function() {
+      delete global.window;
+      if (storage.removeItem.restore) {
+        storage.removeItem.restore();
+      }
+    });
+    it('should check that responseType is present', function() {
       var webAuth = new WebAuth({
         domain: 'me.auth0.com',
         redirectUri: 'http://page.com/callback',
@@ -622,8 +630,38 @@ describe('auth0.WebAuth', function() {
       }).to.throwException(function(e) {
         expect(e.message).to.be('responseType option is required');
       });
+    });
+    it('should remove ssoData if there is not a loginTicket available', function(done) {
+      stub(storage, 'removeItem', function(key) {
+        expect(key).to.be('auth0.ssodata');
+        done();
+      });
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        responseType: 'token',
+        _sendTelemetry: false
+      });
 
-      delete global.window;
+      webAuth.authorize({ connection: 'foobar' });
+    });
+    it('should not remove ssoData if there is a loginTicket available', function() {
+      stub(storage, 'removeItem', spy());
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        responseType: 'token',
+        _sendTelemetry: false
+      });
+
+      webAuth.authorize({ connection: 'foobar', loginTicket: 'lt' });
+      expect(storage.removeItem.called).to.be(false);
     });
   });
 

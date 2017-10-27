@@ -6,6 +6,7 @@ var qs = require('qs');
 var PluginHandler = require('../helper/plugins');
 var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
+var storage = require('../helper/storage');
 var TransactionManager = require('./transaction-manager');
 var Authentication = require('../authentication');
 var Redirect = require('./redirect');
@@ -100,7 +101,7 @@ function WebAuth(options) {
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 
-  this.client = new Authentication(this.baseOptions);
+  this.client = new Authentication(this, this.baseOptions);
   this.redirect = new Redirect(this, this.baseOptions);
   this.popup = new Popup(this, this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
@@ -467,6 +468,10 @@ WebAuth.prototype.authorize = function(options) {
   );
 
   params = this.transactionManager.process(params);
+
+  if (!params.loginTicket) {
+    storage.removeItem('auth0.ssodata');
+  }
 
   windowHelper.redirect(this.client.buildAuthorizeUrl(params));
 };
