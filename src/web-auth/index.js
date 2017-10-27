@@ -82,9 +82,8 @@ function WebAuth(options) {
   this.baseOptions = options;
   this.baseOptions.plugins = new PluginHandler(this, this.baseOptions.plugins || []);
 
-  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
-    ? this.baseOptions._sendTelemetry
-    : true;
+  this.baseOptions._sendTelemetry =
+    this.baseOptions._sendTelemetry === false ? this.baseOptions._sendTelemetry : true;
 
   this.baseOptions._timesToRetryFailedRequests = options._timesToRetryFailedRequests
     ? parseInt(options._timesToRetryFailedRequests, 0)
@@ -319,7 +318,8 @@ WebAuth.prototype.renewAuth = function(options, cb) {
     'usePostMessage',
     'tenant',
     'postMessageDataType',
-    'postMessageOrigin'
+    'postMessageOrigin',
+    'timeout'
   ]);
 
   handler = SilentAuthenticationHandler.create({
