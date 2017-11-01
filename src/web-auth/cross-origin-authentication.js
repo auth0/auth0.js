@@ -73,10 +73,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       };
       return cb(errorObject);
     }
-    storage.setItem('auth0.ssodata', {
-      connection: { name: options.realm },
-      username: options.username
-    });
+    storage.setItem('auth0.ssodata.connection', options.realm);
     var popupMode = options.popup === true;
     options = objectHelper.blacklist(options, [
       'username',

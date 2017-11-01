@@ -469,9 +469,8 @@ WebAuth.prototype.authorize = function(options) {
 
   params = this.transactionManager.process(params);
 
-  if (!params.loginTicket) {
-    storage.removeItem('auth0.ssodata');
-  }
+  var connection = params.realm || params.connection;
+  storage.setItem('auth0.ssodata.connection', connection);
 
   windowHelper.redirect(this.client.buildAuthorizeUrl(params));
 };

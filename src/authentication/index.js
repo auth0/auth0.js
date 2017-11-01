@@ -357,17 +357,18 @@ Authentication.prototype.getSSOData = function(cb) {
   this.auth0.checkSession(
     {
       responseType: 'id_token',
-      scope: 'openid'
+      scope: 'openid profile email'
     },
     function(err, result) {
       if (err) {
         return cb(null, { sso: false });
       }
-      var localStorageInfo = storage.getItem('auth0.ssodata') || {};
       return cb(null, {
-        lastUsedConnection: localStorageInfo.connection,
+        lastUsedConnection: {
+          name: storage.getItem('auth0.ssodata.connection')
+        },
         lastUsedUserID: result.idTokenPayload.sub,
-        lastUsedUsername: localStorageInfo.username,
+        lastUsedUsername: result.idTokenPayload.name,
         lastUsedClientID: clientId,
         sessionClients: [clientId],
         sso: true

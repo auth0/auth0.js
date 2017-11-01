@@ -631,9 +631,10 @@ describe('auth0.WebAuth', function() {
         expect(e.message).to.be('responseType option is required');
       });
     });
-    it('should remove ssoData if there is not a loginTicket available', function(done) {
-      stub(storage, 'removeItem', function(key) {
-        expect(key).to.be('auth0.ssodata');
+    it('should set ssodata.connection', function(done) {
+      stub(storage, 'setItem', function(key, connection) {
+        expect(key).to.be('auth0.ssodata.connection');
+        expect(connection).to.be('foobar');
         done();
       });
       var webAuth = new WebAuth({
@@ -647,21 +648,6 @@ describe('auth0.WebAuth', function() {
       });
 
       webAuth.authorize({ connection: 'foobar' });
-    });
-    it('should not remove ssoData if there is a loginTicket available', function() {
-      stub(storage, 'removeItem', spy());
-      var webAuth = new WebAuth({
-        domain: 'me.auth0.com',
-        redirectUri: 'http://page.com/callback',
-        clientID: '...',
-        scope: 'openid name read:blog',
-        audience: 'urn:site:demo:blog',
-        responseType: 'token',
-        _sendTelemetry: false
-      });
-
-      webAuth.authorize({ connection: 'foobar', loginTicket: 'lt' });
-      expect(storage.removeItem.called).to.be(false);
     });
   });
 

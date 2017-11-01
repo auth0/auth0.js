@@ -69,11 +69,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         });
       });
       stub(storage, 'setItem', function(key, ssoData) {
-        expect(key).to.be.equal('auth0.ssodata');
-        expect(ssoData).to.be.eql({
-          connection: { name: 'the-connection' },
-          username: 'me@example.com'
-        });
+        expect(key).to.be.equal('auth0.ssodata.connection');
+        expect(ssoData).to.be.eql('the-connection');
         done();
       });
       this.co.login({

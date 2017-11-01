@@ -6,6 +6,7 @@ var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 var PopupHandler = require('../helper/popup-handler');
 var objectHelper = require('../helper/object');
+var storage = require('../helper/storage');
 var Warn = require('../helper/warn');
 var TransactionManager = require('./transaction-manager');
 var CrossOriginAuthentication = require('./cross-origin-authentication');
@@ -139,6 +140,9 @@ Popup.prototype.authorize = function(options, cb) {
       responseType: { type: 'string', message: 'responseType option is required' }
     }
   );
+
+  var connection = params.realm || params.connection;
+  storage.setItem('auth0.ssodata.connection', connection);
 
   // the relay page should not be necesary as long it happens in the same domain
   // (a redirectUri shoul be provided). It is necesary when using OWP

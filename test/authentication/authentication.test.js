@@ -233,11 +233,8 @@ describe('auth0.authentication', function() {
         _sendTelemetry: false
       });
       stub(storage, 'getItem', function(key) {
-        expect(key).to.be('auth0.ssodata');
-        return {
-          connection: { name: 'the-connection' },
-          username: 'the-username'
-        };
+        expect(key).to.be('auth0.ssodata.connection');
+        return 'the-connection';
       });
     });
     after(function() {
@@ -258,7 +255,7 @@ describe('auth0.authentication', function() {
         expect(result).to.be.eql({
           lastUsedConnection: { name: 'the-connection' },
           lastUsedUserID: 'the-user-id',
-          lastUsedUsername: 'the-username',
+          lastUsedUsername: 'The User',
           lastUsedClientID: '...',
           sessionClients: ['...'],
           sso: true
@@ -267,7 +264,7 @@ describe('auth0.authentication', function() {
       });
 
       this.webAuthSpy.checkSession.lastCall.args[1](null, {
-        idTokenPayload: { sub: 'the-user-id' }
+        idTokenPayload: { sub: 'the-user-id', name: 'The User' }
       });
     });
   });
