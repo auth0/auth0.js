@@ -267,84 +267,6 @@ describe('auth0.WebAuth', function() {
       TransactionManager.prototype.getStoredTransaction.restore();
     });
 
-    it('should parse a valid hash', function(done) {
-      var webAuth = new WebAuth({
-        domain: 'wptest.auth0.com',
-        redirectUri: 'http://example.com/callback',
-        clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
-        responseType: 'token',
-        __disableExpirationCheck: true
-      });
-
-      var data = webAuth.parseHash(
-        {
-          nonce: 'asfd',
-          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas&scope=foo'
-        },
-        function(err, data) {
-          expect(err).to.be(null);
-          expect(data).to.eql({
-            accessToken: 'VjubIMBmpgQ2W2',
-            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
-            idTokenPayload: {
-              iss: 'https://wptest.auth0.com/',
-              sub: 'auth0|55d48c57d5b0ad0223c408d7',
-              aud: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
-              exp: 1482969031,
-              iat: 1482933031,
-              nonce: 'asfd'
-            },
-            appStatus: null,
-            refreshToken: 'kajshdgfkasdjhgfas',
-            state: null,
-            expiresIn: null,
-            tokenType: 'Bearer',
-            scope: 'foo'
-          });
-
-          expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
-
-          done();
-        }
-      ); // eslint-disable-line
-    });
-
-    it('should parse a valid hash from the location.hash', function(done) {
-      var webAuth = new WebAuth({
-        domain: 'wptest.auth0.com',
-        redirectUri: 'http://example.com/callback',
-        clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
-        responseType: 'token',
-        __disableExpirationCheck: true
-      });
-
-      var data = webAuth.parseHash({ nonce: 'asfd' }, function(err, data) {
-        expect(err).to.be(null);
-        expect(data).to.eql({
-          accessToken: 'asldkfjahsdlkfjhasd',
-          idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
-          idTokenPayload: {
-            iss: 'https://wptest.auth0.com/',
-            sub: 'auth0|55d48c57d5b0ad0223c408d7',
-            aud: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
-            exp: 1482969031,
-            iat: 1482933031,
-            nonce: 'asfd'
-          },
-          appStatus: null,
-          refreshToken: 'kajshdgfkasdjhgfas',
-          state: null,
-          expiresIn: null,
-          tokenType: 'Bearer',
-          scope: null
-        });
-
-        expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
-
-        done();
-      });
-    });
-
     it('should parse a valid hash without id_token', function(done) {
       var webAuth = new WebAuth({
         domain: 'mdocs.auth0.com',
@@ -377,169 +299,284 @@ describe('auth0.WebAuth', function() {
       ); // eslint-disable-line
     });
 
-    it('should fail with an invalid state (null transaction)', function(done) {
-      var webAuth = new WebAuth({
-        domain: 'mdocs.auth0.com',
-        redirectUri: 'http://example.com/callback',
-        clientID: '0HP71GSd6PuoRYJ3p',
-        responseType: 'token'
-      });
-      TransactionManager.prototype.getStoredTransaction.restore();
-      stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-        return null;
-      });
+    context('with RS256 id_token', function() {
+      it('should parse a valid hash', function(done) {
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token',
+          __disableExpirationCheck: true
+        });
 
-      var data = webAuth.parseHash(
-        {
-          hash: '#state=123&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-        },
-        function(err, data) {
-          expect(err).to.eql({
-            error: 'invalid_token',
-            errorDescription: '`state` does not match.'
-          });
-          done();
-        }
-      ); // eslint-disable-line
-    });
+        var data = webAuth.parseHash(
+          {
+            nonce: 'asfd',
+            hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas&scope=foo'
+          },
+          function(err, data) {
+            expect(err).to.be(null);
+            expect(data).to.eql({
+              accessToken: 'VjubIMBmpgQ2W2',
+              idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
+              idTokenPayload: {
+                iss: 'https://wptest.auth0.com/',
+                sub: 'auth0|55d48c57d5b0ad0223c408d7',
+                aud: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+                exp: 1482969031,
+                iat: 1482933031,
+                nonce: 'asfd'
+              },
+              appStatus: null,
+              refreshToken: 'kajshdgfkasdjhgfas',
+              state: null,
+              expiresIn: null,
+              tokenType: 'Bearer',
+              scope: 'foo'
+            });
 
-    it('should fail with an invalid state (available transaction)', function(done) {
-      var webAuth = new WebAuth({
-        domain: 'mdocs.auth0.com',
-        redirectUri: 'http://example.com/callback',
-        clientID: '0HP71GSd6PuoRYJ3p',
-        responseType: 'token'
-      });
-      TransactionManager.prototype.getStoredTransaction.restore();
-      stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-        return {
-          state: 'not-123'
-        };
-      });
+            expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
 
-      var data = webAuth.parseHash(
-        {
-          hash: '#state=123&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-        },
-        function(err, data) {
-          expect(err).to.eql({
-            error: 'invalid_token',
-            errorDescription: '`state` does not match.'
-          });
-          done();
-        }
-      ); // eslint-disable-line
-    });
-
-    it('should fail with an invalid audience', function(done) {
-      var webAuth = new WebAuth({
-        domain: 'mdocs.auth0.com',
-        redirectUri: 'http://example.com/callback',
-        clientID: '0HP71GSd6PuoRYJ3p',
-        responseType: 'token'
+            done();
+          }
+        ); // eslint-disable-line
       });
 
-      var data = webAuth.parseHash(
-        {
-          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-        },
-        function(err, data) {
-          expect(err).to.eql({
-            error: 'invalid_token',
-            errorDescription: 'Audience 0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup is not valid.' // eslint-disable-line
-          });
-          done();
-        }
-      ); // eslint-disable-line
-    });
+      it('should parse a valid hash from the location.hash', function(done) {
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token',
+          __disableExpirationCheck: true
+        });
 
-    it('should fail with an invalid issuer', function(done) {
-      var webAuth = new WebAuth({
-        domain: 'mdocs_2.auth0.com',
-        redirectUri: 'http://example.com/callback',
-        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-        responseType: 'token'
-      });
-
-      var data = webAuth.parseHash(
-        {
-          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjoiMEhQNzFHU2Q2UHVvUllKM0RYS2RpWENVVWRHbUJidXAiLCJleHAiOjE0Nzg1NjIyNTMsImlhdCI6MTQ3ODUyNjI1M30.LELBxWWxcGdYTaE_gpSmlNSdcucqyrhuHQo-s7hTDBA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-        },
-        function(err, data) {
-          expect(err).to.eql({
-            error: 'invalid_token',
-            errorDescription: 'Issuer https://mdocs.auth0.com/ is not valid.' // eslint-disable-line
-          });
-          done();
-        }
-      ); // eslint-disable-line
-    });
-
-    it('should fail if there is no token', function(done) {
-      var webAuth = new WebAuth({
-        domain: 'mdocs_2.auth0.com',
-        redirectUri: 'http://example.com/callback',
-        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-        responseType: 'token'
-      });
-
-      var data = webAuth.parseHash(
-        {
-          hash: '#token_type=Bearer'
-        },
-        function(err, data) {
+        var data = webAuth.parseHash({ nonce: 'asfd' }, function(err, data) {
           expect(err).to.be(null);
-          expect(data).to.be(null);
-          done();
-        }
-      ); // eslint-disable-line
-    });
-
-    it('should fail token validation when alg is HS256', function(done) {
-      var webAuth = new WebAuth({
-        domain: 'auth0-tests-lock.auth0.com',
-        redirectUri: 'http://example.com/callback',
-        clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-        responseType: 'token',
-        __disableExpirationCheck: true
-      });
-
-      var data = webAuth.parseHash(
-        {
-          hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-        },
-        function(err, data) {
-          expect(err).to.be.eql({
-            error: 'invalid_token',
-            errorDescription: 'Algorithm HS256 is not supported. (Expected algs: [RS256])'
+          expect(data).to.eql({
+            accessToken: 'asldkfjahsdlkfjhasd',
+            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
+            idTokenPayload: {
+              iss: 'https://wptest.auth0.com/',
+              sub: 'auth0|55d48c57d5b0ad0223c408d7',
+              aud: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+              exp: 1482969031,
+              iat: 1482933031,
+              nonce: 'asfd'
+            },
+            appStatus: null,
+            refreshToken: 'kajshdgfkasdjhgfas',
+            state: null,
+            expiresIn: null,
+            tokenType: 'Bearer',
+            scope: null
           });
 
-          done();
-        }
-      ); // eslint-disable-line
-    });
+          expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
 
-    it('should parse an error response', function(done) {
-      var webAuth = new WebAuth({
-        domain: 'mdocs_2.auth0.com',
-        redirectUri: 'http://example.com/callback',
-        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-        responseType: 'token'
+          done();
+        });
       });
 
-      webAuth.parseHash(
-        {
-          hash: '#error=the_error_code&error_description=the_error_description&state=some_state'
-        },
-        function(err, data) {
-          expect(err).to.eql({
-            error: 'the_error_code',
-            errorDescription: 'the_error_description',
-            state: 'some_state'
-          });
-          done();
-        }
-      );
+      it('should fail with an invalid state (null transaction)', function(done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3p',
+          responseType: 'token'
+        });
+        TransactionManager.prototype.getStoredTransaction.restore();
+        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+          return null;
+        });
+
+        var data = webAuth.parseHash(
+          {
+            hash: '#state=123&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function(err, data) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: '`state` does not match.'
+            });
+            done();
+          }
+        ); // eslint-disable-line
+      });
+
+      it('should fail with an invalid state (available transaction)', function(done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3p',
+          responseType: 'token'
+        });
+        TransactionManager.prototype.getStoredTransaction.restore();
+        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+          return {
+            state: 'not-123'
+          };
+        });
+
+        var data = webAuth.parseHash(
+          {
+            hash: '#state=123&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function(err, data) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: '`state` does not match.'
+            });
+            done();
+          }
+        ); // eslint-disable-line
+      });
+
+      it('should fail with an invalid audience', function(done) {
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3p',
+          responseType: 'token'
+        });
+
+        var data = webAuth.parseHash(
+          {
+            hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function(err, data) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: 'Audience gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt is not valid.' // eslint-disable-line
+            });
+            done();
+          }
+        ); // eslint-disable-line
+      });
+
+      it('should fail with an invalid issuer', function(done) {
+        var webAuth = new WebAuth({
+          domain: 'wptest_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'token'
+        });
+
+        var data = webAuth.parseHash(
+          {
+            hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function(err, data) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: 'Issuer https://wptest.auth0.com/ is not valid.' // eslint-disable-line
+            });
+            done();
+          }
+        ); // eslint-disable-line
+      });
+
+      it('should fail if there is no token', function(done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'token'
+        });
+
+        var data = webAuth.parseHash(
+          {
+            hash: '#token_type=Bearer'
+          },
+          function(err, data) {
+            expect(err).to.be(null);
+            expect(data).to.be(null);
+            done();
+          }
+        ); // eslint-disable-line
+      });
+
+      it('should parse an error response', function(done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=the_error_code&error_description=the_error_description&state=some_state'
+          },
+          function(err, data) {
+            expect(err).to.eql({
+              error: 'the_error_code',
+              errorDescription: 'the_error_description',
+              state: 'some_state'
+            });
+            done();
+          }
+        );
+      });
+    });
+    context('with HS256 id_token', function() {
+      beforeEach(function() {
+        this.webAuth = new WebAuth({
+          domain: 'auth0-tests-lock.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+          responseType: 'token id_token',
+          __disableExpirationCheck: true
+        });
+      });
+      afterEach(function() {
+        this.webAuth.client.userInfo.restore();
+      });
+      it('should use result from /userinfo as idTokenPayload', function(done) {
+        stub(this.webAuth.client, 'userInfo', function(accessToken, cb) {
+          expect(accessToken).to.be('VjubIMBmpgQ2W2');
+          cb(null, { from: 'userinfo' });
+        });
+
+        var data = this.webAuth.parseHash(
+          {
+            hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function(err, data) {
+            expect(err).to.be(null);
+            expect(data).to.be.eql({
+              accessToken: 'VjubIMBmpgQ2W2',
+              idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg',
+              idTokenPayload: { from: 'userinfo' },
+              appStatus: null,
+              refreshToken: 'kajshdgfkasdjhgfas',
+              state: null,
+              expiresIn: null,
+              tokenType: 'Bearer',
+              scope: null
+            });
+            done();
+          }
+        );
+      });
+      it('should throw validationError when /userinfo call has an error', function(done) {
+        stub(this.webAuth.client, 'userInfo', function(accessToken, cb) {
+          cb({ any: 'error' });
+        });
+
+        var data = this.webAuth.parseHash(
+          {
+            hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function(err, data) {
+            expect(err).to.be.eql({
+              error: 'invalid_token',
+              errorDescription: 'Algorithm HS256 is not supported. (Expected algs: [RS256])'
+            });
+            done();
+          }
+        );
+      });
     });
   });
 
@@ -783,12 +820,12 @@ describe('auth0.WebAuth', function() {
       stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
         cb(
           null,
-          '#id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL21kb2NzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw0QVpERjU2Nzg5IiwiYXVkIjpbIjBIUDcxR1NkNlB1b1JZSjNEWEtkaVhDVVVkR21CYnVwIl0sImV4cCI6MTQ3ODU2MjI1MywiaWF0IjoxNDc4NTI2MjUzfQ.3x97RcBqXq9UE3isgbPdVlC0XdU7kQrPhaOFR-Fb4TA'
+          '#id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
         );
       });
 
       var webAuth = new WebAuth({
-        domain: 'mdocs.auth0.com',
+        domain: 'wptest.auth0.com',
         redirectUri: 'http://page.com/callback',
         clientID: '...',
         responseType: 'id_token',
@@ -805,7 +842,7 @@ describe('auth0.WebAuth', function() {
         expect(data).to.be(undefined);
         expect(err).to.eql({
           error: 'invalid_token',
-          errorDescription: 'Audience 0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup is not valid.'
+          errorDescription: 'Audience gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt is not valid.'
         });
         done();
       });

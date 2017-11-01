@@ -175,6 +175,7 @@ WebAuth.prototype.parseHash = function(options, cb) {
  * @param {authorizeCallback} cb
  */
 WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash, cb) {
+  var _this = this;
   var state = parsedHash.state;
   var transaction = this.transactionManager.getStoredTransaction(state);
   var transactionStateMatchesState = transaction && transaction.state === state;
@@ -188,18 +189,34 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
 
   var applicationStatus = (transaction && transaction.appStatus) || null;
 
-  if (parsedHash.id_token) {
-    return this.validateToken(parsedHash.id_token, transactionNonce, function(
-      validationError,
-      payload
-    ) {
-      if (validationError) {
+  if (!parsedHash.id_token) {
+    return cb(null, buildParseHashResponse(parsedHash, applicationStatus, null));
+  }
+  return this.validateToken(parsedHash.id_token, transactionNonce, function(
+    validationError,
+    payload
+  ) {
+    if (!validationError) {
+      return cb(null, buildParseHashResponse(parsedHash, applicationStatus, payload));
+    }
+    if (validationError.error !== 'invalid_token') {
+      return cb(validationError);
+    }
+    // if it's an invalid_token error, decode the token
+    var decodedToken = new IdTokenVerifier().decode(parsedHash.id_token);
+    // if the alg is not HS256, return the raw error
+    if (decodedToken.header.alg !== 'HS256') {
+      return cb(validationError);
+    }
+    // if the alg is HS256, use the /userinfo endpoint to build the payload
+    return _this.client.userInfo(parsedHash.access_token, function(errUserInfo, profile) {
+      // if the /userinfo request fails, use the validationError instead
+      if (errUserInfo) {
         return cb(validationError);
       }
-      return cb(null, buildParseHashResponse(parsedHash, applicationStatus, payload));
+      return cb(null, buildParseHashResponse(parsedHash, applicationStatus, profile));
     });
-  }
-  cb(null, buildParseHashResponse(parsedHash, applicationStatus, null));
+  });
 };
 
 function buildParseHashResponse(qsParams, appStatus, token) {
