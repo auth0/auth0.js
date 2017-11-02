@@ -6,7 +6,7 @@ var qs = require('qs');
 var PluginHandler = require('../helper/plugins');
 var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
-var storage = require('../helper/storage');
+var ssodata = require('../helper/ssodata');
 var TransactionManager = require('./transaction-manager');
 var Authentication = require('../authentication');
 var Redirect = require('./redirect');
@@ -488,7 +488,7 @@ WebAuth.prototype.authorize = function(options) {
   params.scope = params.scope || 'openid profile email';
 
   var connection = params.realm || params.connection;
-  storage.setItem('auth0.ssodata.connection', connection);
+  ssodata.set(connection);
 
   windowHelper.redirect(this.client.buildAuthorizeUrl(params));
 };
