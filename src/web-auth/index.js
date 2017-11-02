@@ -485,6 +485,7 @@ WebAuth.prototype.authorize = function(options) {
   );
 
   params = this.transactionManager.process(params);
+  params.scope = params.scope || 'openid profile email';
 
   var connection = params.realm || params.connection;
   storage.setItem('auth0.ssodata.connection', connection);

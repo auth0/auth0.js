@@ -652,6 +652,24 @@ describe('auth0.WebAuth', function() {
         storage.removeItem.restore();
       }
     });
+    it('should default scope to openid profile email', function(done) {
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'token',
+        _sendTelemetry: false
+      });
+      stub(windowHelper, 'redirect', function(url) {
+        expect(url).to.be(
+          'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=foobar&state=randomState&scope=openid%20profile%20email'
+        );
+        windowHelper.redirect.restore();
+        done();
+      });
+
+      webAuth.authorize({ connection: 'foobar' });
+    });
     it('should check that responseType is present', function() {
       var webAuth = new WebAuth({
         domain: 'me.auth0.com',
