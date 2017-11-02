@@ -4,7 +4,7 @@ var RequestBuilder = require('../helper/request-builder');
 var qs = require('qs');
 var objectHelper = require('../helper/object');
 var assert = require('../helper/assert');
-var storage = require('../helper/storage');
+var ssodata = require('../helper/ssodata');
 var responseHandler = require('../helper/response-handler');
 var parametersWhitelist = require('../helper/parameters-whitelist');
 var Warn = require('../helper/warn');
@@ -363,9 +363,10 @@ Authentication.prototype.getSSOData = function(cb) {
       if (err) {
         return cb(null, { sso: false });
       }
+      var connectionName = ssodata.get();
       return cb(null, {
         lastUsedConnection: {
-          name: storage.getItem('auth0.ssodata.connection')
+          name: connectionName
         },
         lastUsedUserID: result.idTokenPayload.sub,
         lastUsedUsername: result.idTokenPayload.name,
