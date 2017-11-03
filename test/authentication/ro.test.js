@@ -13,12 +13,15 @@ var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 describe('auth0.authentication', function() {
   context('/oauth/ro', function() {
     before(function() {
-      this.auth0 = new Authentication({
-        domain: 'me.auth0.com',
-        clientID: '...',
-        redirectUri: 'http://page.com/callback',
-        responseType: 'code'
-      });
+      this.auth0 = new Authentication(
+        {},
+        {
+          domain: 'me.auth0.com',
+          clientID: '...',
+          redirectUri: 'http://page.com/callback',
+          responseType: 'code'
+        }
+      );
     });
 
     afterEach(function() {

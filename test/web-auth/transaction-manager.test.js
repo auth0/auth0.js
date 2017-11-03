@@ -44,7 +44,6 @@ context('TransactionManager', function() {
         generateNonce
       ) {
         expect(generateNonce).to.be(true);
-        console.log('asdlkhalsdhalskhd');
         return {
           state: state || 'randomState',
           nonce: nonce || 'randomNonce'

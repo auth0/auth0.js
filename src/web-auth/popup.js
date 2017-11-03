@@ -6,6 +6,7 @@ var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 var PopupHandler = require('../helper/popup-handler');
 var objectHelper = require('../helper/object');
+var ssodata = require('../helper/ssodata');
 var Warn = require('../helper/warn');
 var TransactionManager = require('./transaction-manager');
 var CrossOriginAuthentication = require('./cross-origin-authentication');
@@ -79,7 +80,6 @@ Popup.prototype.getPopupHandler = function(options, preload) {
  * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
  * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
- * @param {String} [options._idTokenVerification] makes parseHash perform or skip `id_token` verification. We **strongly** recommend validating the `id_token` yourself if you disable the verification.
  * @see   {@link parseHash}
  */
 Popup.prototype.callback = function(options) {
@@ -141,6 +141,9 @@ Popup.prototype.authorize = function(options, cb) {
     }
   );
 
+  var connection = params.realm || params.connection;
+  ssodata.set(connection);
+
   // the relay page should not be necesary as long it happens in the same domain
   // (a redirectUri shoul be provided). It is necesary when using OWP
   relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');
@@ -164,7 +167,7 @@ Popup.prototype.authorize = function(options, cb) {
   }
 
   params = this.transactionManager.process(params);
-
+  params.scope = params.scope || 'openid profile email';
   delete params.domain;
 
   url = this.client.buildAuthorizeUrl(params);

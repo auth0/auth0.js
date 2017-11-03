@@ -98,7 +98,7 @@ describe('auth0.WebAuth extensibility', function() {
     it('should change the content of the params', function(done) {
       stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
         expect(url).to.be(
-          'https://test.auth0.com/authorize?client_id=...&response_type=code&tenant=test&owp=true&redirect_uri=http%3A%2F%2Fcustom-url.com&state=randomState'
+          'https://test.auth0.com/authorize?client_id=...&response_type=code&tenant=test&owp=true&scope=openid&redirect_uri=http%3A%2F%2Fcustom-url.com&state=randomState'
         );
         expect(relayUrl).to.be('https://test.auth0.com/relay.html');
         expect(options).to.eql({});
@@ -108,7 +108,7 @@ describe('auth0.WebAuth extensibility', function() {
         });
       });
 
-      this.webAuth.popup.authorize({ owp: true }, function(err, data) {
+      this.webAuth.popup.authorize({ owp: true, scope: 'openid' }, function(err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
           emailVerified: false,
