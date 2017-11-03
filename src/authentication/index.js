@@ -361,7 +361,11 @@ Authentication.prototype.getSSOData = function(cb) {
     },
     function(err, result) {
       if (err) {
-        return cb(null, { sso: false });
+        if (err.error === 'consent_required') {
+          err.error_description =
+            'Consent required. When using `getSSOData`, the user has to be authenticated with the following the scope: `openid profile email`.';
+        }
+        return cb(err, { sso: false });
       }
       var connectionName = ssodata.get();
       return cb(null, {
