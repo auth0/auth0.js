@@ -1,5 +1,9 @@
 # Change Log
 
+## [v9.0.0-beta.5](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.5) (2017-11-03)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.4...v9.0.0-beta.5)
+# Change Log
+
 ## [v9.0.0-beta.4](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.4) (2017-11-03)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.3...v9.0.0-beta.4)
 # Change Log
