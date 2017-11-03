@@ -419,9 +419,14 @@ describe('auth0.WebAuth.redirect', function() {
     });
 
     it('should redirect to authorize', function() {
-      this.auth0.authorize({ responseType: 'code', connection: 'facebook', state: '1234' });
+      this.auth0.authorize({
+        responseType: 'code',
+        connection: 'facebook',
+        state: '1234',
+        scope: 'openid'
+      });
       expect(global.window.location).to.be(
-        'https://me.auth0.com/authorize?client_id=...&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&response_type=code&connection=facebook&state=1234'
+        'https://me.auth0.com/authorize?client_id=...&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&response_type=code&connection=facebook&state=1234&scope=openid'
       );
     });
 

@@ -6,6 +6,7 @@ var qs = require('qs');
 var PluginHandler = require('../helper/plugins');
 var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
+var ssodata = require('../helper/ssodata');
 var TransactionManager = require('./transaction-manager');
 var Authentication = require('../authentication');
 var Redirect = require('./redirect');
@@ -100,7 +101,7 @@ function WebAuth(options) {
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 
-  this.client = new Authentication(this.baseOptions);
+  this.client = new Authentication(this, this.baseOptions);
   this.redirect = new Redirect(this, this.baseOptions);
   this.popup = new Popup(this, this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
@@ -119,7 +120,6 @@ function WebAuth(options) {
  * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
  * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
- * @param {String} [options._idTokenVerification] makes parseHash perform or skip `id_token` verification. We **strongly** recommend validating the `id_token` yourself if you disable the verification.
  * @param {authorizeCallback} cb
  */
 WebAuth.prototype.parseHash = function(options, cb) {
@@ -132,8 +132,6 @@ WebAuth.prototype.parseHash = function(options, cb) {
   } else {
     options = options || {};
   }
-
-  options._idTokenVerification = !(options._idTokenVerification === false);
 
   var _window = windowHelper.getWindow();
 
@@ -174,10 +172,10 @@ WebAuth.prototype.parseHash = function(options, cb) {
  * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
  * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
- * @param {String} [options._idTokenVerification] makes parseHash perform or skip `id_token` verification. We **strongly** recommend validating the `id_token` yourself if you disable the verification.
  * @param {authorizeCallback} cb
  */
 WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash, cb) {
+  var _this = this;
   var state = parsedHash.state;
   var transaction = this.transactionManager.getStoredTransaction(state);
   var transactionStateMatchesState = transaction && transaction.state === state;
@@ -189,40 +187,44 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
   }
   var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
 
-  var applicationStatus = (transaction && transaction.appStatus) || null;
-  if (parsedHash.id_token && options._idTokenVerification) {
-    return this.validateToken(parsedHash.id_token, transactionNonce, function(
-      validationError,
-      payload
-    ) {
-      if (validationError) {
+  var appState = (transaction && transaction.appState) || null;
+
+  if (!parsedHash.id_token) {
+    return cb(null, buildParseHashResponse(parsedHash, appState, null));
+  }
+  return this.validateToken(parsedHash.id_token, transactionNonce, function(
+    validationError,
+    payload
+  ) {
+    if (!validationError) {
+      return cb(null, buildParseHashResponse(parsedHash, appState, payload));
+    }
+    if (validationError.error !== 'invalid_token') {
+      return cb(validationError);
+    }
+    // if it's an invalid_token error, decode the token
+    var decodedToken = new IdTokenVerifier().decode(parsedHash.id_token);
+    // if the alg is not HS256, return the raw error
+    if (decodedToken.header.alg !== 'HS256') {
+      return cb(validationError);
+    }
+    // if the alg is HS256, use the /userinfo endpoint to build the payload
+    return _this.client.userInfo(parsedHash.access_token, function(errUserInfo, profile) {
+      // if the /userinfo request fails, use the validationError instead
+      if (errUserInfo) {
         return cb(validationError);
       }
-      return cb(null, buildParseHashResponse(parsedHash, applicationStatus, payload));
+      return cb(null, buildParseHashResponse(parsedHash, appState, profile));
     });
-  }
-
-  if (parsedHash.id_token) {
-    var verifier = new IdTokenVerifier({
-      issuer: this.baseOptions.token_issuer,
-      audience: this.baseOptions.clientID,
-      leeway: this.baseOptions.leeway || 0,
-      __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
-    });
-
-    var decodedToken = verifier.decode(parsedHash.id_token);
-    cb(null, buildParseHashResponse(parsedHash, applicationStatus, decodedToken.payload));
-  } else {
-    cb(null, buildParseHashResponse(parsedHash, applicationStatus, null));
-  }
+  });
 };
 
-function buildParseHashResponse(qsParams, appStatus, token) {
+function buildParseHashResponse(qsParams, appState, token) {
   return {
     accessToken: qsParams.access_token || null,
     idToken: qsParams.id_token || null,
     idTokenPayload: token || null,
-    appStatus: appStatus || null,
+    appState: appState || null,
     refreshToken: qsParams.refresh_token || null,
     state: qsParams.state || null,
     expiresIn: qsParams.expires_in ? parseInt(qsParams.expires_in, 10) : null,
@@ -483,6 +485,10 @@ WebAuth.prototype.authorize = function(options) {
   );
 
   params = this.transactionManager.process(params);
+  params.scope = params.scope || 'openid profile email';
+
+  var connection = params.realm || params.connection;
+  ssodata.set(connection);
 
   windowHelper.redirect(this.client.buildAuthorizeUrl(params));
 };
