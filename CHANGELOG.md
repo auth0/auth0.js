@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.0.0-beta.4](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.4) (2017-11-03)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.3...v9.0.0-beta.4)
+# Change Log
+
+- Adding `getSSOData` method. Fix state checking. Fix appState/appStatus usage. [\#539](https://github.com/auth0/auth0.js/pull/539).
+
 ## [v9.0.0-beta.3](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.3) (2017-10-26)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.2...v9.0.0-beta.3)
 # Change Log
