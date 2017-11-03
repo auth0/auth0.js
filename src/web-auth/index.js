@@ -187,17 +187,17 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
   }
   var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
 
-  var applicationStatus = (transaction && transaction.appStatus) || null;
+  var appState = (transaction && transaction.appState) || null;
 
   if (!parsedHash.id_token) {
-    return cb(null, buildParseHashResponse(parsedHash, applicationStatus, null));
+    return cb(null, buildParseHashResponse(parsedHash, appState, null));
   }
   return this.validateToken(parsedHash.id_token, transactionNonce, function(
     validationError,
     payload
   ) {
     if (!validationError) {
-      return cb(null, buildParseHashResponse(parsedHash, applicationStatus, payload));
+      return cb(null, buildParseHashResponse(parsedHash, appState, payload));
     }
     if (validationError.error !== 'invalid_token') {
       return cb(validationError);
@@ -214,17 +214,17 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
       if (errUserInfo) {
         return cb(validationError);
       }
-      return cb(null, buildParseHashResponse(parsedHash, applicationStatus, profile));
+      return cb(null, buildParseHashResponse(parsedHash, appState, profile));
     });
   });
 };
 
-function buildParseHashResponse(qsParams, appStatus, token) {
+function buildParseHashResponse(qsParams, appState, token) {
   return {
     accessToken: qsParams.access_token || null,
     idToken: qsParams.id_token || null,
     idTokenPayload: token || null,
-    appStatus: appStatus || null,
+    appState: appState || null,
     refreshToken: qsParams.refresh_token || null,
     state: qsParams.state || null,
     expiresIn: qsParams.expires_in ? parseInt(qsParams.expires_in, 10) : null,

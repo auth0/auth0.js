@@ -284,7 +284,46 @@ describe('auth0.WebAuth', function() {
             accessToken: 'VjubIMBmpgQ2W2',
             idToken: null,
             idTokenPayload: null,
-            appStatus: null,
+            appState: null,
+            refreshToken: 'kajshdgfkasdjhgfas',
+            state: null,
+            expiresIn: null,
+            tokenType: 'Bearer',
+            scope: null
+          });
+
+          expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+
+          done();
+        }
+      ); // eslint-disable-line
+    });
+
+    it('should return transaction.appState', function(done) {
+      var webAuth = new WebAuth({
+        domain: 'mdocs.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+        responseType: 'token'
+      });
+      TransactionManager.prototype.getStoredTransaction.restore();
+      stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+        return {
+          nonce: 'asfd',
+          appState: 'the-app-state'
+        };
+      });
+
+      var data = webAuth.parseHash(
+        {
+          hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+        },
+        function(err, data) {
+          expect(data).to.eql({
+            accessToken: 'VjubIMBmpgQ2W2',
+            idToken: null,
+            idTokenPayload: null,
+            appState: 'the-app-state',
             refreshToken: 'kajshdgfkasdjhgfas',
             state: null,
             expiresIn: null,
@@ -327,7 +366,7 @@ describe('auth0.WebAuth', function() {
                 iat: 1482933031,
                 nonce: 'asfd'
               },
-              appStatus: null,
+              appState: null,
               refreshToken: 'kajshdgfkasdjhgfas',
               state: null,
               expiresIn: null,
@@ -364,7 +403,7 @@ describe('auth0.WebAuth', function() {
               iat: 1482933031,
               nonce: 'asfd'
             },
-            appStatus: null,
+            appState: null,
             refreshToken: 'kajshdgfkasdjhgfas',
             state: null,
             expiresIn: null,
@@ -548,7 +587,7 @@ describe('auth0.WebAuth', function() {
               accessToken: 'VjubIMBmpgQ2W2',
               idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg',
               idTokenPayload: { from: 'userinfo' },
-              appStatus: null,
+              appState: null,
               refreshToken: 'kajshdgfkasdjhgfas',
               state: null,
               expiresIn: null,
@@ -762,7 +801,7 @@ describe('auth0.WebAuth', function() {
             iat: 1482933031,
             nonce: 'asfd'
           },
-          appStatus: null,
+          appState: null,
           refreshToken: null,
           state: null,
           expiresIn: null,
@@ -822,7 +861,7 @@ describe('auth0.WebAuth', function() {
             accessToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1',
             idToken: null,
             idTokenPayload: null,
-            appStatus: null,
+            appState: null,
             refreshToken: null,
             state: null,
             expiresIn: null,
