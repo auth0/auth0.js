@@ -249,6 +249,18 @@ describe('auth0.authentication', function() {
 
       this.webAuthSpy.checkSession.lastCall.args[1]({ some: 'error' });
     });
+    it('do not return error if error === login_required', function(done) {
+      this.auth0.getSSOData(function(err, result) {
+        expect(err).to.be(null);
+        expect(result).to.be.eql({ sso: false });
+        done();
+      });
+
+      this.webAuthSpy.checkSession.lastCall.args[1]({
+        error: 'login_required',
+        error_description: 'foobar'
+      });
+    });
     it('provides a better description for consent_required error', function(done) {
       this.auth0.getSSOData(function(err, result) {
         expect(err).to.be.eql({
