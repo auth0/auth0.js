@@ -1543,14 +1543,17 @@ describe('auth0.WebAuth', function() {
     });
     it('eventValidator validates the event data type is `authorization_response`', function(done) {
       stub(IframeHandler.prototype, 'init', function() {
-        var getEvent = function(type) {
-          return { event: { data: { type: type, response: {} } } };
+        var getEvent = function(type, state) {
+          return { event: { data: { type: type, response: { state: state } } } };
         };
-        expect(this.eventValidator.isValid(getEvent('wrong'))).to.be(false);
-        expect(this.eventValidator.isValid(getEvent('authorization_response'))).to.be(true);
+        expect(this.eventValidator.isValid(getEvent('wrong', 'wrong'))).to.be(false);
+        expect(this.eventValidator.isValid(getEvent('authorization_response', 'wrong'))).to.be(
+          false
+        );
+        expect(this.eventValidator.isValid(getEvent('authorization_response', '123'))).to.be(true);
         done();
       });
-      this.auth0.checkSession({}, function(err, data) {});
+      this.auth0.checkSession({ state: '123' }, function(err, data) {});
     });
     it('timeoutCallback calls callback with error response', function(done) {
       stub(IframeHandler.prototype, 'init', function() {
