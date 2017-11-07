@@ -276,7 +276,27 @@ describe('auth0.authentication', function() {
         error_description: 'foobar'
       });
     });
-    it('returns ssoData object', function(done) {
+    it('returns ssoData object with email as lastUsedUsername', function(done) {
+      this.auth0.getSSOData(function(err, result) {
+        expect(err).to.be(null);
+        expect(result).to.be.eql({
+          lastUsedConnection: { name: 'the-connection' },
+          lastUsedUserID: 'the-user-id',
+          lastUsedUsername: 'the@user.com',
+          lastUsedClientID: '...',
+          sessionClients: ['...'],
+          sso: true
+        });
+        done();
+      });
+
+      this.webAuthSpy.checkSession.lastCall.args[1](null, {
+        idTokenPayload: { sub: 'the-user-id', email: 'the@user.com', name: 'Will not be used' }
+      });
+    });
+    it('returns ssoData object with name as lastUsedUsername when email is not available', function(
+      done
+    ) {
       this.auth0.getSSOData(function(err, result) {
         expect(err).to.be(null);
         expect(result).to.be.eql({

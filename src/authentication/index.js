@@ -376,7 +376,7 @@ Authentication.prototype.getSSOData = function(cb) {
           name: connectionName
         },
         lastUsedUserID: result.idTokenPayload.sub,
-        lastUsedUsername: result.idTokenPayload.name,
+        lastUsedUsername: result.idTokenPayload.email || result.idTokenPayload.name,
         lastUsedClientID: clientId,
         sessionClients: [clientId],
         sso: true
