@@ -8,6 +8,7 @@ var request = require('superagent');
 var PopupHandler = require('../../src/helper/popup-handler');
 var windowHandler = require('../../src/helper/window');
 var WebAuth = require('../../src/web-auth');
+var TransactionManager = require('../../src/web-auth/transaction-manager');
 
 describe('auth0.WebAuth.popup', function() {
   before(function() {
@@ -18,6 +19,12 @@ describe('auth0.WebAuth.popup', function() {
       responseType: 'id_token',
       _sendTelemetry: false
     });
+    stub(TransactionManager.prototype, 'process', function(params) {
+      return params;
+    });
+  });
+  after(function() {
+    TransactionManager.prototype.process.restore();
   });
 
   describe('getPopupHandler', function() {

@@ -6,11 +6,20 @@ var RequestMock = require('../mock/request-mock');
 var UsernamePassword = require('../../src/web-auth/username-password');
 var windowHelper = require('../../src/helper/window');
 var WebAuth = require('../../src/web-auth');
+var TransactionManager = require('../../src/web-auth/transaction-manager');
 var RequestBuilder = require('../../src/helper/request-builder');
 
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
 describe('auth0.WebAuth.redirect', function() {
+  before(function() {
+    stub(TransactionManager.prototype, 'process', function(params) {
+      return params;
+    });
+  });
+  after(function() {
+    TransactionManager.prototype.process.restore();
+  });
   context('signup', function() {
     before(function() {
       this.auth0 = new WebAuth({
