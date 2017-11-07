@@ -240,6 +240,13 @@ describe('auth0.authentication', function() {
     after(function() {
       storage.getItem.restore();
     });
+    it('uses correct scope and responseType', function() {
+      this.auth0.getSSOData();
+      expect(this.webAuthSpy.checkSession.lastCall.args[0]).to.be.eql({
+        responseType: 'token id_token',
+        scope: 'openid profile email'
+      });
+    });
     it('returns sso:false if checkSession fails', function(done) {
       this.auth0.getSSOData(function(err, result) {
         expect(err).to.be.eql({ some: 'error' });

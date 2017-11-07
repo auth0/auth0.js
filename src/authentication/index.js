@@ -356,7 +356,7 @@ Authentication.prototype.getSSOData = function(cb) {
   var clientId = this.baseOptions.clientID;
   this.auth0.checkSession(
     {
-      responseType: 'id_token',
+      responseType: 'token id_token',
       scope: 'openid profile email'
     },
     function(err, result) {
