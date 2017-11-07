@@ -1,5 +1,18 @@
 # Change Log
 
+## [v8.11.0](https://github.com/auth0/auth0.js/tree/v8.11.0) (2017-11-07)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.1...v8.11.0)
+
+**Added**
+- Add origin and source verification for silent authentication iframe postMessage. [\#510](https://github.com/auth0/auth0.js/pull/510) ([phBalance](https://github.com/phBalance))
+
+**Changed**
+- Correctly checking nonce and state [\#548](https://github.com/auth0/auth0.js/pull/548) ([luisrudge](https://github.com/luisrudge))
+
+**Fixed**
+- Correctly checking nonce and state [\#548](https://github.com/auth0/auth0.js/pull/548) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
 ## [v8.10.1](https://github.com/auth0/auth0.js/tree/v8.10.1) (2017-09-19)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.0...v8.10.1)
 

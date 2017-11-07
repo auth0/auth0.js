@@ -1,1 +1,1 @@
-module.exports = { raw: '8.10.1' };
+module.exports = { raw: '8.11.0' };
