@@ -1478,9 +1478,15 @@ describe('auth0.WebAuth', function() {
         return 'cb';
       });
     });
-    it('should call callback', function(done) {
+    it('should call callback with deprecated method `crossOriginAuthenticationCallback`', function(
+      done
+    ) {
       stub(CrossOriginAuthentication.prototype, 'callback', done);
       this.auth0.crossOriginAuthenticationCallback();
+    });
+    it('should call callback', function(done) {
+      stub(CrossOriginAuthentication.prototype, 'callback', done);
+      this.auth0.crossOriginVerification();
     });
   });
 
