@@ -205,7 +205,7 @@ For auth0 related questions/support please use the [Support Center](https://supp
 
 This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more info.
 
-<!-- Vaaaaarrrrsss -->
+<!-- Vaaaaarrrsss -->
 
 [npm-image]: https://img.shields.io/npm/v/auth0-js.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/auth0-js
