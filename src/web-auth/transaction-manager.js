@@ -10,47 +10,49 @@ function TransactionManager(options) {
 }
 
 TransactionManager.prototype.process = function(options) {
-  var transaction;
+  if (!options.responseType) {
+    throw new Error('responseType is required');
+  }
+  var responseTypeIncludesIdToken = options.responseType.indexOf('id_token') !== -1;
 
-  if (options.responseType.indexOf('code') !== -1) {
-    return options;
+  var transaction = this.generateTransaction(
+    options.appState,
+    options.state,
+    options.nonce,
+    responseTypeIncludesIdToken
+  );
+  if (!options.state) {
+    options.state = transaction.state;
   }
 
-  if (options.responseType.indexOf('id_token') !== -1 && !!options.nonce) {
-    return options;
-  }
-
-  transaction = this.generateTransaction(options.appState, options.state, options.nonce);
-
-  options.state = transaction.state;
-
-  if (options.responseType.indexOf('id_token') !== -1) {
+  if (responseTypeIncludesIdToken && !options.nonce) {
     options.nonce = transaction.nonce;
   }
 
   return options;
 };
 
-TransactionManager.prototype.generateTransaction = function(appState, state, nonce) {
-  var transaction = state || random.randomString(this.keyLength);
-  nonce = nonce || random.randomString(this.keyLength);
+TransactionManager.prototype.generateTransaction = function(appState, state, nonce, generateNonce) {
+  state = state || random.randomString(this.keyLength);
+  nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
 
-  storage.setItem(this.namespace + transaction, {
+  storage.setItem(this.namespace + state, {
     nonce: nonce,
-    appState: appState
+    appState: appState,
+    state: state
   });
 
   return {
-    state: transaction,
+    state: state,
     nonce: nonce
   };
 };
 
-TransactionManager.prototype.getStoredTransaction = function(transaction) {
+TransactionManager.prototype.getStoredTransaction = function(state) {
   var transactionData;
 
-  transactionData = storage.getItem(this.namespace + transaction);
-  storage.removeItem(this.namespace + transaction);
+  transactionData = storage.getItem(this.namespace + state);
+  storage.removeItem(this.namespace + state);
   return transactionData;
 };
 
