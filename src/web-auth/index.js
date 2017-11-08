@@ -360,7 +360,6 @@ WebAuth.prototype.checkSession = function(options, cb) {
   var params = objectHelper
     .merge(this.baseOptions, [
       'clientID',
-      'redirectUri',
       'responseType',
       'scope',
       'audience',
