@@ -1582,7 +1582,6 @@ describe('auth0.WebAuth', function() {
       stub(WebAuth.prototype, 'validateAuthenticationResponse', function(options, parsedHash, cb) {
         expect(options).to.be.eql({
           clientID: '...',
-          redirectUri: 'http://page.com/callback',
           responseType: 'token',
           from: 'transaction-manager',
           responseMode: 'web_message',
