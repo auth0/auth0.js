@@ -4,10 +4,12 @@ var objectHelper = require('../helper/object');
 var RequestBuilder = require('../helper/request-builder');
 var responseHandler = require('../helper/response-handler');
 var windowHelper = require('../helper/window');
+var TransactionManager = require('./transaction-manager');
 
 function UsernamePassword(options) {
   this.baseOptions = options;
   this.request = new RequestBuilder(options);
+  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 }
 
 UsernamePassword.prototype.login = function(options, cb) {
@@ -31,6 +33,7 @@ UsernamePassword.prototype.login = function(options, cb) {
       'audience'
     ])
     .with(options);
+  body = this.transactionManager.process(body);
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
