@@ -115,7 +115,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
     { type: 'object', message: 'options parameter is not valid' },
     {
       clientID: { type: 'string', message: 'clientID option is required' },
-      redirectUri: { optional: true, type: 'string', message: 'redirectUri option is required' },
+      redirectUri: { type: 'string', message: 'redirectUri option is required' },
       responseType: { type: 'string', message: 'responseType option is required' },
       nonce: {
         type: 'string',

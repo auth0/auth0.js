@@ -63,6 +63,18 @@ describe('auth0.authentication', function() {
         expect(e.message).to.be('options parameter is not valid');
       });
     });
+    it('should check if redirect_uri is not empty', function() {
+      expect(() => {
+        new Authentication(this.webAuthSpy, {
+          domain: 'me.auth0.com',
+          clientID: '...',
+          responseType: 'code',
+          _sendTelemetry: false
+        }).buildAuthorizeUrl({});
+      }).to.throwException(function(e) {
+        expect(e.message).to.be('redirectUri option is required');
+      });
+    });
 
     it('should return a url using the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl({ state: '1234' });
