@@ -161,7 +161,7 @@ describe('auth0.WebAuth.redirect', function() {
         }
       );
     });
-    it.only('should use transactionManager.process', function() {
+    it('should use transactionManager.process', function() {
       stub(windowHelper, 'getWindow', function() {
         return {
           crypto: {
