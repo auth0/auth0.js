@@ -12,12 +12,12 @@ var RequestBuilder = require('../../src/helper/request-builder');
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
 describe('auth0.WebAuth.redirect', function() {
-  before(function() {
+  beforeEach(function() {
     stub(TransactionManager.prototype, 'process', function(params) {
       return params;
     });
   });
-  after(function() {
+  afterEach(function() {
     TransactionManager.prototype.process.restore();
   });
   context('signup', function() {
@@ -78,13 +78,7 @@ describe('auth0.WebAuth.redirect', function() {
   });
 
   context('login', function() {
-    afterEach(function() {
-      request.post.restore();
-      windowHelper.getDocument.restore();
-      windowHelper.getWindow.restore();
-    });
-
-    it('should authenticate the user, render the callback form and submit it', function(done) {
+    beforeEach(function() {
       stub(windowHelper, 'getWindow', function() {
         return {
           crypto: {
@@ -94,6 +88,16 @@ describe('auth0.WebAuth.redirect', function() {
           }
         };
       });
+    });
+    afterEach(function() {
+      request.post.restore();
+      windowHelper.getWindow.restore();
+      if (windowHelper.getDocument.restore) {
+        windowHelper.getDocument.restore();
+      }
+    });
+
+    it('should authenticate the user, render the callback form and submit it', function(done) {
       stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/usernamepassword/login');
         return new RequestMock({
@@ -161,24 +165,27 @@ describe('auth0.WebAuth.redirect', function() {
         }
       );
     });
-  });
-
-  context('login', function() {
-    afterEach(function() {
-      request.post.restore();
-      windowHelper.getWindow.restore();
-    });
-
-    it('should propagate the error', function(done) {
-      stub(windowHelper, 'getWindow', function() {
-        return {
-          crypto: {
-            getRandomValues: function() {
-              return [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-            }
-          }
-        };
+    it('should use transactionManager.process', function(done) {
+      stub(request, 'post', function() {
+        expect(TransactionManager.prototype.process.calledOnce).to.be(true);
+        done();
       });
+
+      var auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'https://localhost:3000/example/',
+        clientID: '0HP71GSd6PuoRY',
+        responseType: 'id_token'
+      });
+
+      auth0.redirect.loginWithCredentials({
+        connection: 'tests',
+        username: 'me@example.com',
+        password: '1234',
+        scope: 'openid'
+      });
+    });
+    it('should propagate the error', function(done) {
       stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/usernamepassword/login');
         return new RequestMock({
