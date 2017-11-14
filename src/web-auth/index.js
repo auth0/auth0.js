@@ -178,7 +178,8 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
   var _this = this;
   var state = parsedHash.state;
   var transaction = this.transactionManager.getStoredTransaction(state);
-  var transactionStateMatchesState = transaction && transaction.state === state;
+  var transactionState = options.state || (transaction && transaction.state) || null;
+  var transactionStateMatchesState = transactionState === state;
   if (state && !transactionStateMatchesState) {
     return cb({
       error: 'invalid_token',
@@ -187,7 +188,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
   }
   var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
 
-  var appState = (transaction && transaction.appState) || null;
+  var appState = options.state || (transaction && transaction.appState) || null;
 
   if (!parsedHash.id_token) {
     return cb(null, buildParseHashResponse(parsedHash, appState, null));
