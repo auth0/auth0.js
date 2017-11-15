@@ -1,22 +1,28 @@
 var expect = require('expect.js');
 var stub = require('sinon').stub;
+var spy = require('sinon').spy;
 
 var TransactionManager = require('../../src/web-auth/transaction-manager');
 var objectHelper = require('../../src/helper/object');
+var random = require('../../src/helper/random');
+var storage = require('../../src/helper/storage');
 
 context('TransactionManager', function() {
-  before(function() {
-    stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
-      return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
-    });
-  });
-  after(function() {
-    TransactionManager.prototype.generateTransaction.restore();
-  });
   beforeEach(function() {
     this.tm = new TransactionManager();
   });
   context('process', function() {
+    beforeEach(function() {
+      stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
+        return {
+          state: state || 'randomState',
+          nonce: nonce || 'randomNonce'
+        };
+      });
+    });
+    afterEach(function() {
+      TransactionManager.prototype.generateTransaction.restore();
+    });
     it('throws when responseType is not available', function() {
       var _this = this;
       expect(function() {
@@ -30,6 +36,19 @@ context('TransactionManager', function() {
       });
     });
     it('generates a nonce when responseType contains id_token and a nonce is not provided', function() {
+      TransactionManager.prototype.generateTransaction.restore();
+      stub(TransactionManager.prototype, 'generateTransaction', function(
+        appState,
+        state,
+        nonce,
+        generateNonce
+      ) {
+        expect(generateNonce).to.be(true);
+        return {
+          state: state || 'randomState',
+          nonce: nonce || 'randomNonce'
+        };
+      });
       expect(this.tm.process({ responseType: 'code id_token', state: 'some-state' })).to.be.eql({
         responseType: 'code id_token',
         state: 'some-state',
@@ -43,6 +62,51 @@ context('TransactionManager', function() {
         responseType: 'code id_token',
         state: 'some-state',
         nonce: 'some-nonce'
+      });
+    });
+  });
+  context('generateTransaction', function() {
+    beforeEach(function() {
+      stub(random, 'randomString', function() {
+        return 'randomString';
+      });
+      stub(storage, 'setItem');
+    });
+    afterEach(function() {
+      random.randomString.restore();
+      storage.setItem.restore();
+    });
+    it('always stores random state', function() {
+      var result = this.tm.generateTransaction('appState', null, null, false);
+      expect(result).to.be.eql({ state: 'randomString', nonce: null });
+      expect(storage.setItem.calledOnce).to.be(true);
+      expect(storage.setItem.lastCall.args[0]).to.be('com.auth0.auth.randomString');
+      expect(storage.setItem.lastCall.args[1]).to.be.eql({
+        nonce: null,
+        appState: 'appState',
+        state: 'randomString'
+      });
+    });
+    it('only stores random nonce when generateNonce is true', function() {
+      var result = this.tm.generateTransaction('appState', null, null, true);
+      expect(result).to.be.eql({ state: 'randomString', nonce: 'randomString' });
+      expect(storage.setItem.calledOnce).to.be(true);
+      expect(storage.setItem.lastCall.args[0]).to.be('com.auth0.auth.randomString');
+      expect(storage.setItem.lastCall.args[1]).to.be.eql({
+        nonce: 'randomString',
+        appState: 'appState',
+        state: 'randomString'
+      });
+    });
+    it('uses nonce/state when provided', function() {
+      var result = this.tm.generateTransaction('appState', 'state', 'nonce');
+      expect(result).to.be.eql({ state: 'state', nonce: 'nonce' });
+      expect(storage.setItem.calledOnce).to.be(true);
+      expect(storage.setItem.lastCall.args[0]).to.be('com.auth0.auth.state');
+      expect(storage.setItem.lastCall.args[1]).to.be.eql({
+        nonce: 'nonce',
+        appState: 'appState',
+        state: 'state'
       });
     });
   });

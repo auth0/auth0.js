@@ -13,12 +13,18 @@ TransactionManager.prototype.process = function(options) {
   if (!options.responseType) {
     throw new Error('responseType is required');
   }
-  var transaction = this.generateTransaction(options.appState, options.state, options.nonce);
+  var responseTypeIncludesIdToken = options.responseType.indexOf('id_token') !== -1;
+
+  var transaction = this.generateTransaction(
+    options.appState,
+    options.state,
+    options.nonce,
+    responseTypeIncludesIdToken
+  );
   if (!options.state) {
     options.state = transaction.state;
   }
 
-  var responseTypeIncludesIdToken = options.responseType.indexOf('id_token') !== -1;
   if (responseTypeIncludesIdToken && !options.nonce) {
     options.nonce = transaction.nonce;
   }
@@ -26,9 +32,9 @@ TransactionManager.prototype.process = function(options) {
   return options;
 };
 
-TransactionManager.prototype.generateTransaction = function(appState, state, nonce) {
+TransactionManager.prototype.generateTransaction = function(appState, state, nonce, generateNonce) {
   state = state || random.randomString(this.keyLength);
-  nonce = nonce || random.randomString(this.keyLength);
+  nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
 
   storage.setItem(this.namespace + state, {
     nonce: nonce,

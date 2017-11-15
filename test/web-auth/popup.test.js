@@ -7,6 +7,7 @@ var request = require('superagent');
 
 var PopupHandler = require('../../src/helper/popup-handler');
 var windowHandler = require('../../src/helper/window');
+var storage = require('../../src/helper/storage');
 var WebAuth = require('../../src/web-auth');
 var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
 var TransactionManager = require('../../src/web-auth/transaction-manager');
@@ -84,6 +85,39 @@ describe('auth0.WebAuth.popup', function() {
 
     afterEach(function() {
       PopupHandler.prototype.load.restore();
+    });
+
+    it('should default scope to openid profile email', function(done) {
+      stub(PopupHandler.prototype, 'load', function(url) {
+        expect(url).to.be(
+          'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&tenant=me&connection=the_connection&state=123&nonce=456&scope=openid%20profile%20email'
+        );
+        storage.setItem.restore();
+        TransactionManager.prototype.process.restore();
+        done();
+      });
+      stub(storage, 'setItem', function() {});
+      stub(TransactionManager.prototype, 'process', function(options) {
+        return options;
+      });
+
+      this.auth0.popup.authorize({
+        connection: 'the_connection',
+        state: '123',
+        nonce: '456'
+      });
+    });
+
+    it('should set ssodata.connection', function(done) {
+      stub(PopupHandler.prototype, 'load', function() {});
+      stub(storage, 'setItem', function(key, connection) {
+        expect(key).to.be('auth0.ssodata.connection');
+        expect(connection).to.be('foobar');
+        storage.setItem.restore();
+        done();
+      });
+
+      this.auth0.popup.authorize({ connection: 'foobar' });
     });
 
     it('should open the popup a with the proper parameters', function(done) {

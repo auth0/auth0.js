@@ -142,7 +142,7 @@ describe('auth0.plugins.cordova', function() {
             iat: 1482933031,
             nonce: 'asfd'
           },
-          appStatus: null,
+          appState: null,
           refreshToken: 'kajshdgfkasdjhgfas',
           state: null,
           expiresIn: null,
@@ -166,7 +166,7 @@ describe('auth0.plugins.cordova', function() {
           accessToken: 'asldkfjahsdlkfjhasd',
           idToken: null,
           idTokenPayload: null,
-          appStatus: null,
+          appState: null,
           refreshToken: null,
           state: null,
           expiresIn: null,
