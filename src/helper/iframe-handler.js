@@ -29,7 +29,6 @@ IframeHandler.prototype.init = function() {
 
   this.iframe = _window.document.createElement('iframe');
   this.iframe.style.display = 'none';
-  this.iframe.src = this.url;
 
   // Workaround to avoid using bind that does not work in IE8
   this.proxyEventListener = function(e) {
@@ -50,6 +49,7 @@ IframeHandler.prototype.init = function() {
   this.eventSourceObject.addEventListener(this.eventListenerType, this.proxyEventListener, false);
 
   _window.document.body.appendChild(this.iframe);
+  this.iframe.src = this.url;
 
   this.timeoutHandle = setTimeout(function() {
     _this.timeoutHandler();
