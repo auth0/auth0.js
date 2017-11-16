@@ -1,5 +1,9 @@
 # Change Log
 
+## [v8.11.3](https://github.com/auth0/auth0.js/tree/v8.11.3) (2017-11-16)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.2...v8.11.3)
+# Change Log
+
 ## [v8.11.2](https://github.com/auth0/auth0.js/tree/v8.11.2) (2017-11-09)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.1...v8.11.2)
 # Change Log
