@@ -1541,7 +1541,9 @@ describe('auth0.WebAuth', function() {
         function(err, data) {}
       );
     });
-    it('eventValidator validates the event data type is `authorization_response`', function(done) {
+    it('eventValidator validates the event data type is `authorization_response` and the state matches the transaction state', function(
+      done
+    ) {
       stub(IframeHandler.prototype, 'init', function() {
         var getEvent = function(type, state) {
           return { event: { data: { type: type, response: { state: state } } } };
@@ -1550,6 +1552,7 @@ describe('auth0.WebAuth', function() {
         expect(this.eventValidator.isValid(getEvent('authorization_response', 'wrong'))).to.be(
           false
         );
+        expect(this.eventValidator.isValid(getEvent('wrong', '123'))).to.be(false);
         expect(this.eventValidator.isValid(getEvent('authorization_response', '123'))).to.be(true);
         done();
       });
