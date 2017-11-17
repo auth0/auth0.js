@@ -10,27 +10,15 @@
 
 Client Side Javascript toolkit for Auth0 API
 
-> We recommend using auth0.js v8 if you need to use [API Auth](https://auth0.com/docs/api-auth) features. For auth0.js v7 code please check the [v7 branch](https://github.com/auth0/auth0.js/tree/v7), this version will be supported and maintained alongside v8.
-
-Need help migrating from v7? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide)
+> This is a BETA release. The recommended version is [https://auth0.com/docs/libraries/auth0js/v8](https://auth0.com/docs/libraries/auth0js/v8)
 
 ## Install
 
 From CDN
 
 ```html
-<!-- Latest patch release (recommended for production) -->
+<!-- Latest patch release -->
 <script src="http://cdn.auth0.com/js/auth0/9.0.0-beta.5/auth0.min.js"></script>
-```
-
-From [bower](http://bower.io)
-
-```sh
-bower install auth0-js
-```
-
-```html
-<script src="bower_components/auth0.js/build/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org)
@@ -212,8 +200,8 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 [npm-url]: https://npmjs.org/package/auth0-js
 [circleci-image]: http://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&style=flat-square
 [circleci-url]: https://circleci.com/gh/auth0/auth0.js
-[codecov-image]: https://img.shields.io/codecov/c/github/auth0/auth0.js/v8.svg?style=flat-square
-[codecov-url]: https://codecov.io/github/auth0/auth0.js?branch=v8
+[codecov-image]: https://img.shields.io/codecov/c/github/auth0/auth0.js/master.svg?style=flat-square
+[codecov-url]: https://codecov.io/github/auth0/auth0.js?branch=master
 [license-image]: http://img.shields.io/npm/l/auth0-js.svg?style=flat-square
 [license-url]: #license
 [downloads-image]: http://img.shields.io/npm/dm/auth0-js.svg?style=flat-square

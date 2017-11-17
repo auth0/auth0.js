@@ -240,6 +240,13 @@ describe('auth0.authentication', function() {
     after(function() {
       storage.getItem.restore();
     });
+    it('uses correct scope and responseType', function() {
+      this.auth0.getSSOData();
+      expect(this.webAuthSpy.checkSession.lastCall.args[0]).to.be.eql({
+        responseType: 'token id_token',
+        scope: 'openid profile email'
+      });
+    });
     it('returns sso:false if checkSession fails', function(done) {
       this.auth0.getSSOData(function(err, result) {
         expect(err).to.be.eql({ some: 'error' });
@@ -276,7 +283,27 @@ describe('auth0.authentication', function() {
         error_description: 'foobar'
       });
     });
-    it('returns ssoData object', function(done) {
+    it('returns ssoData object with email as lastUsedUsername', function(done) {
+      this.auth0.getSSOData(function(err, result) {
+        expect(err).to.be(null);
+        expect(result).to.be.eql({
+          lastUsedConnection: { name: 'the-connection' },
+          lastUsedUserID: 'the-user-id',
+          lastUsedUsername: 'the@user.com',
+          lastUsedClientID: '...',
+          sessionClients: ['...'],
+          sso: true
+        });
+        done();
+      });
+
+      this.webAuthSpy.checkSession.lastCall.args[1](null, {
+        idTokenPayload: { sub: 'the-user-id', email: 'the@user.com', name: 'Will not be used' }
+      });
+    });
+    it('returns ssoData object with name as lastUsedUsername when email is not available', function(
+      done
+    ) {
       this.auth0.getSSOData(function(err, result) {
         expect(err).to.be(null);
         expect(result).to.be.eql({

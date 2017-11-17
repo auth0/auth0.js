@@ -1489,9 +1489,15 @@ describe('auth0.WebAuth', function() {
         return 'cb';
       });
     });
-    it('should call callback', function(done) {
+    it('should call callback with deprecated method `crossOriginAuthenticationCallback`', function(
+      done
+    ) {
       stub(CrossOriginAuthentication.prototype, 'callback', done);
       this.auth0.crossOriginAuthenticationCallback();
+    });
+    it('should call callback', function(done) {
+      stub(CrossOriginAuthentication.prototype, 'callback', done);
+      this.auth0.crossOriginVerification();
     });
   });
 
@@ -1593,7 +1599,6 @@ describe('auth0.WebAuth', function() {
       stub(WebAuth.prototype, 'validateAuthenticationResponse', function(options, parsedHash, cb) {
         expect(options).to.be.eql({
           clientID: '...',
-          redirectUri: 'http://page.com/callback',
           responseType: 'token',
           from: 'transaction-manager',
           responseMode: 'web_message',

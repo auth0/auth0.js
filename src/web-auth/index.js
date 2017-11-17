@@ -360,7 +360,6 @@ WebAuth.prototype.checkSession = function(options, cb) {
   var params = objectHelper
     .merge(this.baseOptions, [
       'clientID',
-      'redirectUri',
       'responseType',
       'scope',
       'audience',
@@ -575,8 +574,18 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
  * Runs the callback code for the cross origin authentication call. This method is meant to be called by the cross origin authentication callback url.
  *
  * @method crossOriginAuthenticationCallback
+ * @deprecated Use {@link crossOriginVerification} instead.
  */
 WebAuth.prototype.crossOriginAuthenticationCallback = function() {
+  this.crossOriginVerification();
+};
+
+/**
+ * Runs the callback code for the cross origin authentication call. This method is meant to be called by the cross origin authentication callback url.
+ *
+ * @method crossOriginVerification
+ */
+WebAuth.prototype.crossOriginVerification = function() {
   this.crossOriginAuthentication.callback();
 };
 
