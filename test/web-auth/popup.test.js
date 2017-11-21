@@ -7,7 +7,10 @@ var request = require('superagent');
 
 var PopupHandler = require('../../src/helper/popup-handler');
 var windowHandler = require('../../src/helper/window');
+var storage = require('../../src/helper/storage');
 var WebAuth = require('../../src/web-auth');
+var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
+var TransactionManager = require('../../src/web-auth/transaction-manager');
 
 describe('auth0.WebAuth.popup', function() {
   before(function() {
@@ -82,6 +85,39 @@ describe('auth0.WebAuth.popup', function() {
 
     afterEach(function() {
       PopupHandler.prototype.load.restore();
+    });
+
+    it('should default scope to openid profile email', function(done) {
+      stub(PopupHandler.prototype, 'load', function(url) {
+        expect(url).to.be(
+          'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&tenant=me&connection=the_connection&state=123&nonce=456&scope=openid%20profile%20email'
+        );
+        storage.setItem.restore();
+        TransactionManager.prototype.process.restore();
+        done();
+      });
+      stub(storage, 'setItem', function() {});
+      stub(TransactionManager.prototype, 'process', function(options) {
+        return options;
+      });
+
+      this.auth0.popup.authorize({
+        connection: 'the_connection',
+        state: '123',
+        nonce: '456'
+      });
+    });
+
+    it('should set ssodata.connection', function(done) {
+      stub(PopupHandler.prototype, 'load', function() {});
+      stub(storage, 'setItem', function(key, connection) {
+        expect(key).to.be('auth0.ssodata.connection');
+        expect(connection).to.be('foobar');
+        storage.setItem.restore();
+        done();
+      });
+
+      this.auth0.popup.authorize({ connection: 'foobar' });
     });
 
     it('should open the popup a with the proper parameters', function(done) {
@@ -165,50 +201,36 @@ describe('auth0.WebAuth.popup', function() {
     });
 
     afterEach(function() {
-      PopupHandler.prototype.load.restore();
+      if (CrossOriginAuthentication.prototype.login.restore) {
+        CrossOriginAuthentication.prototype.login.restore();
+      }
+      if (CrossOriginAuthentication.prototype.callback.restore) {
+        CrossOriginAuthentication.prototype.callback.restore();
+      }
+      if (TransactionManager.prototype.process.restore) {
+        TransactionManager.prototype.process.restore();
+      }
     });
-
-    it('should do the redirections in the popup', function(done) {
-      stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
-        expect(url).to.be('https://me.auth0.com/sso_dbconnection_popup/...');
-        expect(relayUrl).to.be('https://me.auth0.com/relay.html');
-        expect(options).to.eql({
-          params: {
-            clientID: '...',
-            domain: 'me.auth0.com',
-            options: {
-              connection: 'the_connection',
-              state: '456',
-              username: 'theUsername',
-              password: 'thepassword',
-              scope: 'openid'
-            }
-          }
-        });
-
-        cb(null, {
-          emailVerified: false,
-          email: 'me@example.com'
-        });
+    it('should call CrossOriginAuthentication.login', function(done) {
+      var inputOptions = { foo: 'bar', connection: 'realm' };
+      var expectedOptions = {
+        foo: 'bar',
+        realm: 'realm',
+        responseType: 'id_token',
+        popup: true
+      };
+      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
+        expect(options).to.be.eql(expectedOptions);
+        expect(cb()).to.be('cb');
+        done();
       });
-
-      this.auth0.popup.loginWithCredentials(
-        {
-          connection: 'the_connection',
-          state: '456',
-          username: 'theUsername',
-          password: 'thepassword',
-          scope: 'openid'
-        },
-        function(err, data) {
-          expect(err).to.be(null);
-          expect(data).to.eql({
-            emailVerified: false,
-            email: 'me@example.com'
-          });
-          done();
-        }
-      );
+      stub(TransactionManager.prototype, 'process', function(options) {
+        expect(options).to.be.eql(expectedOptions);
+        return options;
+      });
+      this.auth0.popup.loginWithCredentials(inputOptions, function() {
+        return 'cb';
+      });
     });
   });
 
@@ -453,6 +475,15 @@ describe('auth0.WebAuth.popup', function() {
 
     afterEach(function() {
       request.post.restore();
+      if (CrossOriginAuthentication.prototype.login.restore) {
+        CrossOriginAuthentication.prototype.login.restore();
+      }
+      if (CrossOriginAuthentication.prototype.callback.restore) {
+        CrossOriginAuthentication.prototype.callback.restore();
+      }
+      if (TransactionManager.prototype.process.restore) {
+        TransactionManager.prototype.process.restore();
+      }
     });
 
     after(function() {
@@ -484,6 +515,25 @@ describe('auth0.WebAuth.popup', function() {
             });
           }
         });
+      });
+
+      var expectedOptions = {
+        email: 'me@example.com',
+        password: '123456',
+        scope: 'openid',
+        realm: 'the_connection',
+        popup: true,
+        responseType: 'token'
+      };
+      stub(TransactionManager.prototype, 'process', function(options) {
+        delete options.popupHandler;
+        expect(options).to.be.eql(expectedOptions);
+        return options;
+      });
+      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
+        delete options.popupHandler;
+        expect(options).to.be.eql(expectedOptions);
+        cb();
       });
 
       this.auth0.popup.signupAndLogin(

@@ -13,6 +13,7 @@ var SilentAuthenticationHandler = require('../../src/web-auth/silent-authenticat
 var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
 var WebAuth = require('../../src/web-auth');
 var windowHelper = require('../../src/helper/window');
+var WebMessageHandler = require('../../src/web-auth/web-message-handler');
 
 describe('auth0.WebAuth.crossOriginAuthentication', function() {
   context('login', function() {
@@ -35,6 +36,49 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       if (windowHelper.redirect.restore) {
         windowHelper.redirect.restore();
       }
+      if (WebMessageHandler.prototype.run.restore) {
+        WebMessageHandler.prototype.run.restore();
+      }
+      if (storage.setItem.restore) {
+        storage.setItem.restore();
+      }
+    });
+    it('should store sso data when co/authenticate call succeeds', function(done) {
+      stub(request, 'post', function(url) {
+        expect(url).to.be('https://me.auth0.com/co/authenticate');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            credential_type: 'http://auth0.com/oauth/grant-type/password-realm',
+            username: 'me@example.com',
+            password: '123456',
+            realm: 'the-connection'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                login_ticket: 'a_login_ticket',
+                co_verifier: 'co_verifier',
+                co_id: 'co_id'
+              }
+            });
+          }
+        });
+      });
+      stub(storage, 'setItem', function(key, ssoData) {
+        expect(key).to.be.equal('auth0.ssodata.connection');
+        expect(ssoData).to.be.eql('the-connection');
+        done();
+      });
+      this.co.login({
+        username: 'me@example.com',
+        password: '123456',
+        anotherOption: 'foobar',
+        realm: 'the-connection'
+      });
     });
     it('should call /co/authenticate and redirect to /authorize with login_ticket', function() {
       stub(request, 'post', function(url) {
@@ -70,6 +114,51 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         anotherOption: 'foobar'
       });
     });
+    it('should call /co/authenticate and call `webMessageHandler.run` when popup:true', function(
+      done
+    ) {
+      stub(request, 'post', function(url) {
+        expect(url).to.be('https://me.auth0.com/co/authenticate');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            credential_type: 'password',
+            username: 'me@example.com',
+            password: '123456'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                login_ticket: 'a_login_ticket',
+                co_verifier: 'co_verifier',
+                co_id: 'co_id'
+              }
+            });
+          }
+        });
+      });
+      stub(WebMessageHandler.prototype, 'run', function(options, callback) {
+        expect(options).to.be.eql({
+          loginTicket: 'a_login_ticket',
+          anotherOption: 'foobar'
+        });
+        callback();
+      });
+      this.co.login(
+        {
+          username: 'me@example.com',
+          password: '123456',
+          anotherOption: 'foobar',
+          popup: true
+        },
+        function() {
+          done();
+        }
+      );
+    });
     it('should call /co/authenticate with realm grant and redirect to /authorize with login_ticket when realm is used', function() {
       stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
@@ -103,6 +192,42 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({
         loginTicket: 'a_login_ticket',
         realm: 'a-connection'
+      });
+    });
+    it('should work with custom realm, grant and otp', function() {
+      stub(request, 'post', function(url) {
+        expect(url).to.be('https://me.auth0.com/co/authenticate');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            credential_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+            username: 'me@example.com',
+            otp: '123456',
+            realm: 'email'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                login_ticket: 'a_login_ticket',
+                co_verifier: 'co_verifier',
+                co_id: 'co_id'
+              }
+            });
+          }
+        });
+      });
+      this.co.login({
+        username: 'me@example.com',
+        otp: '123456',
+        realm: 'email',
+        credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp'
+      });
+      expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({
+        loginTicket: 'a_login_ticket',
+        realm: 'email'
       });
     });
     it('should call /co/authenticate and save the verifier in sessionStorage', function() {
@@ -305,6 +430,30 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         expect(theCall.args[0]).to.be.eql({
           type: 'co_verifier_response',
           response: { verifier: 'co_verifier' }
+        });
+        expect(theCall.args[1]).to.be('https://me.auth0.com');
+      });
+      it('should send empty verifier in the response when sessionStorage can not be accessed', function() {
+        global.window.sessionStorage = undefined;
+        this.co.callback();
+        var onMessageHandler = global.window.addEventListener.getCall(0).args[1];
+        var evt = {
+          origin: 'https://me.auth0.com',
+          data: {
+            type: 'co_verifier_request',
+            request: {
+              id: 'co_id'
+            }
+          },
+          source: {
+            postMessage: spy()
+          }
+        };
+        onMessageHandler(evt);
+        var theCall = evt.source.postMessage.getCall(0);
+        expect(theCall.args[0]).to.be.eql({
+          type: 'co_verifier_response',
+          response: { verifier: '' }
         });
         expect(theCall.args[1]).to.be('https://me.auth0.com');
       });

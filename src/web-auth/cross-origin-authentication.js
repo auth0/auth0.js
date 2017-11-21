@@ -2,12 +2,15 @@ var urljoin = require('url-join');
 
 var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
+var ssodata = require('../helper/ssodata');
 var RequestBuilder = require('../helper/request-builder');
+var WebMessageHandler = require('./web-message-handler');
 
 function CrossOriginAuthentication(webAuth, options) {
   this.webAuth = webAuth;
   this.baseOptions = options;
   this.request = new RequestBuilder(options);
+  this.webMessageHandler = new WebMessageHandler(webAuth);
 }
 
 function getFragment(name) {
@@ -25,7 +28,8 @@ function createKey(origin, coId) {
 
 /**
  * Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
- * This only works when 3rd party cookies are enabled in the browser. After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
+ * Some browsers might not be able to successfully authenticate if 3rd party cookies are disabled in your browser. [See here for more information.]{@link https://auth0.com/docs/cross-origin-authentication}.
+ * After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
  *
  * @method login
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
@@ -41,14 +45,25 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
   var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate');
   var authenticateBody = {
     client_id: options.clientID || this.baseOptions.clientID,
-    credential_type: 'password',
-    username: options.username || options.email,
-    password: options.password
+    username: options.username || options.email
   };
+  if (options.password) {
+    authenticateBody.password = options.password;
+  }
+  if (options.otp) {
+    authenticateBody.otp = options.otp;
+  }
   var realm = options.realm || this.baseOptions.realm;
+
   if (realm) {
+    var credentialType =
+      options.credentialType ||
+      this.baseOptions.credentialType ||
+      'http://auth0.com/oauth/grant-type/password-realm';
     authenticateBody.realm = realm;
-    authenticateBody.credential_type = 'http://auth0.com/oauth/grant-type/password-realm';
+    authenticateBody.credential_type = credentialType;
+  } else {
+    authenticateBody.credential_type = 'password';
   }
   this.request.post(url).withCredentials().send(authenticateBody).end(function(err, data) {
     if (err) {
@@ -58,15 +73,37 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       };
       return cb(errorObject);
     }
-    options = objectHelper.blacklist(options, ['username', 'password']);
+    ssodata.set(options.realm);
+    var popupMode = options.popup === true;
+    options = objectHelper.blacklist(options, [
+      'username',
+      'password',
+      'credentialType',
+      'otp',
+      'popup'
+    ]);
     var authorizeOptions = objectHelper
       .merge(options)
       .with({ loginTicket: data.body.login_ticket });
     var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
     theWindow.sessionStorage[key] = data.body.co_verifier;
-    _this.webAuth.authorize(authorizeOptions);
+    if (popupMode) {
+      _this.webMessageHandler.run(authorizeOptions, cb);
+    } else {
+      _this.webAuth.authorize(authorizeOptions);
+    }
   });
 };
+
+function tryGetVerifier(theWindow, key) {
+  try {
+    var verifier = theWindow.sessionStorage[key];
+    theWindow.sessionStorage.removeItem(key);
+    return verifier;
+  } catch (e) {
+    return '';
+  }
+}
 
 /**
  * Runs the callback code for the cross origin authentication call. This method is meant to be called by the cross origin authentication callback url.
@@ -82,8 +119,7 @@ CrossOriginAuthentication.prototype.callback = function() {
       return;
     }
     var key = createKey(evt.origin, evt.data.request.id);
-    var verifier = theWindow.sessionStorage[key];
-    theWindow.sessionStorage.removeItem(key);
+    var verifier = tryGetVerifier(theWindow, key);
 
     evt.source.postMessage(
       {

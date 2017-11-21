@@ -1,5 +1,86 @@
 # Change Log
 
+## [v9.0.0-beta.5](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.5) (2017-11-03)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.4...v9.0.0-beta.5)
+# Change Log
+
+- Don't return an error in `getSSOData` when the error is `login_required`. [\#544](https://github.com/auth0/auth0.js/pull/544)
+
+## [v9.0.0-beta.4](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.4) (2017-11-03)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.3...v9.0.0-beta.4)
+# Change Log
+
+- Adding `getSSOData` method. Fix state checking. Fix appState/appStatus usage. [\#539](https://github.com/auth0/auth0.js/pull/539).
+
+## [v9.0.0-beta.3](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.3) (2017-10-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.2...v9.0.0-beta.3)
+# Change Log
+
+- Changing `popup.loginWithCredentials` to work with Cross Origin Authentication and web_message flows. [\#528](https://github.com/auth0/auth0.js/pull/528)
+
+## [v9.0.0-beta.2](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.2) (2017-10-19)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.1...v9.0.0-beta.2)
+# Change Log
+- Better handling errors in `checkSession`. [\#524](https://github.com/auth0/auth0.js/pull/524)
+
+## [v9.0.0-beta.1](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.1) (2017-10-19)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.1...v9.0.0-beta.1)
+# Change Log
+- Removes a few legacy endpoints and deprecates `auth0.client.loginWithCredentials`, which is now calling the co/authenticate method instead of usernamepassword/login. [\#521](https://github.com/auth0/auth0.js/pull/521)
+
+## [v8.10.1](https://github.com/auth0/auth0.js/tree/v8.10.1) (2017-09-19)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.0...v8.10.1)
+
+**Changed**
+- Removing renewSession and keeping only checkSession [\#505](https://github.com/auth0/auth0.js/pull/505) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
+## [v8.10.0](https://github.com/auth0/auth0.js/tree/v8.10.0) (2017-09-18)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.3...v8.10.0)
+
+**Added**
+- Adding web_message flow [\#500](https://github.com/auth0/auth0.js/pull/500) ([luisrudge](https://github.com/luisrudge))
+
+**Fixed**
+- Fixing tenant override in popup mode [\#501](https://github.com/auth0/auth0.js/pull/501) ([luisrudge](https://github.com/luisrudge))
+- Allow overriding the timeout as part of the renewAuth method [\#497](https://github.com/auth0/auth0.js/pull/497) ([dctoon](https://github.com/dctoon))
+# Change Log
+
+## [v8.9.3](https://github.com/auth0/auth0.js/tree/v8.9.3) (2017-08-21)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.2...v8.9.3)
+
+**Fixed**
+- Using transaction manager on passwordlessStart [\#492](https://github.com/auth0/auth0.js/pull/492) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
+## [v8.9.2](https://github.com/auth0/auth0.js/tree/v8.9.2) (2017-08-17)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.1...v8.9.2)
+
+**Fixed**
+- Fix passwordlessVerify not sending nonce [\#489](https://github.com/auth0/auth0.js/pull/489) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
+## [v8.9.1](https://github.com/auth0/auth0.js/tree/v8.9.1) (2017-08-11)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.0...v8.9.1)
+
+**Fixed**
+- Fixed credentialType url [\#487](https://github.com/auth0/auth0.js/pull/487) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
+## [v8.9.0](https://github.com/auth0/auth0.js/tree/v8.9.0) (2017-08-10)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.8.0...v8.9.0)
+
+**Added**
+- Add flag to retry requests [\#484](https://github.com/auth0/auth0.js/pull/484) ([luisrudge](https://github.com/luisrudge))
+- Add cross-origin-auth support to Passwordless [\#482](https://github.com/auth0/auth0.js/pull/482) ([luisrudge](https://github.com/luisrudge))
+
+**Changed**
+- Avoid snake casing of metadata on signup [\#475](https://github.com/auth0/auth0.js/pull/475) ([hzalaz](https://github.com/hzalaz))
+
+**Fixed**
+- Send empty verifier when can't access sessionStorage [\#470](https://github.com/auth0/auth0.js/pull/470) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
 ## [v8.8.0](https://github.com/auth0/auth0.js/tree/v8.8.0) (2017-06-20)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.7.0...v8.8.0)
 

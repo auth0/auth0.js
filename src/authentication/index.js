@@ -4,6 +4,7 @@ var RequestBuilder = require('../helper/request-builder');
 var qs = require('qs');
 var objectHelper = require('../helper/object');
 var assert = require('../helper/assert');
+var ssodata = require('../helper/ssodata');
 var responseHandler = require('../helper/response-handler');
 var parametersWhitelist = require('../helper/parameters-whitelist');
 var Warn = require('../helper/warn');
@@ -24,7 +25,7 @@ var DBConnection = require('./db-connection');
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @see {@link https://auth0.com/docs/api/authentication}
  */
-function Authentication(options) {
+function Authentication(auth0, options) {
   /* eslint-disable */
   assert.check(
     options,
@@ -57,7 +58,7 @@ function Authentication(options) {
   /* eslint-enable */
 
   this.baseOptions = options;
-
+  this.auth0 = auth0;
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
     ? this.baseOptions._sendTelemetry
     : true;
@@ -346,40 +347,42 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
 };
 
 /**
- * Makes a call to the `/ssodata` endpoint.
- * We recommend to avoid using this method and rely on your tenant hosted login page and using prompt=none via {@link renewAuth} method.
+ * Uses {@link checkSession} and localStorage to return data from the last successful authentication request.
  *
  * @method getSSOData
- * @param {Boolean} withActiveDirectories tells Auth0 to return AD data
  * @param {Function} cb
  */
-Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
-  var url;
-  var params = '';
-
-  if (typeof withActiveDirectories === 'function') {
-    cb = withActiveDirectories;
-    withActiveDirectories = false;
-  }
-
-  assert.check(withActiveDirectories, {
-    type: 'boolean',
-    message: 'withActiveDirectories parameter is not valid'
-  });
-  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
-  if (withActiveDirectories) {
-    params =
-      '?' +
-      qs.stringify({
-        ldaps: 1,
-        client_id: this.baseOptions.clientID
+Authentication.prototype.getSSOData = function(cb) {
+  var clientId = this.baseOptions.clientID;
+  this.auth0.checkSession(
+    {
+      responseType: 'token id_token',
+      scope: 'openid profile email'
+    },
+    function(err, result) {
+      if (err) {
+        if (err.error === 'login_required') {
+          return cb(null, { sso: false });
+        }
+        if (err.error === 'consent_required') {
+          err.error_description =
+            'Consent required. When using `getSSOData`, the user has to be authenticated with the following the scope: `openid profile email`.';
+        }
+        return cb(err, { sso: false });
+      }
+      var connectionName = ssodata.get();
+      return cb(null, {
+        lastUsedConnection: {
+          name: connectionName
+        },
+        lastUsedUserID: result.idTokenPayload.sub,
+        lastUsedUsername: result.idTokenPayload.email || result.idTokenPayload.name,
+        lastUsedClientID: clientId,
+        sessionClients: [clientId],
+        sso: true
       });
-  }
-
-  url = urljoin(this.baseOptions.rootUrl, 'user', 'ssodata', params);
-
-  return this.request.get(url, { noHeaders: true }).withCredentials().end(responseHandler(cb));
+    }
+  );
 };
 
 /**

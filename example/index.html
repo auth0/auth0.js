@@ -1,45 +1,54 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Auth0.js Demo Examples</title>
-    <link rel="stylesheet" type="text/css" href="//cdn.auth0.com/styleguide/1/index.css">
-    <script src="/webpack-dev-server.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="/auth0.js"></script>
-    <script src="/cordova-auth0-plugin.js"></script>
 
-    <style>
-      .row {
-        margin:10px 0;
-      }
-      pre {
-        margin: 0 0 10px 0;
-        min-height: 300px;
-      }
-      code {
-        min-height: 300px;
-      }
-      h2 {
-        margin: 20px 0;
-      }
-      code span {
-        color:red;
-      }
-      code details {
-        padding: 5px;
-        border-radius: 4px;
-      }
-      code details p {
-        margin: 5px 0 0 0;
-      }
-      code details.error {
-        background: rgba(255,0,0,0.1);
-      }
-      #clear-console {
-        cursor: pointer;
-      }
-    </style>
-    <script type="text/javascript">
+<head>
+  <title>Auth0.js Demo Examples</title>
+  <link rel="stylesheet" type="text/css" href="//cdn.auth0.com/styleguide/1/index.css">
+  <script src="/webpack-dev-server.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="/auth0.js"></script>
+  <script src="/cordova-auth0-plugin.js"></script>
+
+  <style>
+    .row {
+      margin: 10px 0;
+    }
+
+    pre {
+      margin: 0 0 10px 0;
+      min-height: 300px;
+    }
+
+    code {
+      min-height: 300px;
+    }
+
+    h2 {
+      margin: 20px 0;
+    }
+
+    code span {
+      color: red;
+    }
+
+    code details {
+      padding: 5px;
+      border-radius: 4px;
+    }
+
+    code details p {
+      margin: 5px 0 0 0;
+    }
+
+    code details.error {
+      background: rgba(255, 0, 0, 0.1);
+    }
+
+    #clear-console {
+      cursor: pointer;
+    }
+  </style>
+  <script type="text/javascript">
     function HTMLConsole(options) {
       this.ele = $(options.selector);
       this.data = [];
@@ -47,7 +56,7 @@
       var data;
       if (data = localStorage.getItem("consoleData")) {
         data = JSON.parse(data);
-        data.forEach(function(d){
+        data.forEach(function (d) {
           _this.dumpCallback(d.error ? d : null, d.error ? null : d);
         });
       }
@@ -84,104 +93,115 @@
         return '<span>' + value + '</span>';
       }
 
-      var plainStr = JSON.stringify(o).substr(0,50);
+      var plainStr = JSON.stringify(o).substr(0, 50);
       var str = JSON.stringify(o, replacer, 4);
-      var html = '<details class="'+ className +'">' +
-                  '<summary>' + plainStr + '</summary>' +
-                  '<p>' + str + '</p>' +
-                  '</details>';
+      var html = '<details class="' + className + '">' +
+        '<summary>' + plainStr + '</summary>' +
+        '<p>' + str + '</p>' +
+        '</details>';
 
       this.ele.append(html);
 
       this.ele.find('details').removeAttr('open');
       this.ele.find('details').last().attr('open', true);
     };
-    </script>
-  </head>
-  <body class="container">
+  </script>
+</head>
 
-    <div class="row">
-      <div class="col-xs-12">
-        <h1>Auth0.JS playground</h1>
+<body class="container">
+
+  <div class="row">
+    <div class="col-xs-12">
+      <h1>Auth0.JS playground</h1>
+    </div>
+    <div class="col-xs-6">
+
+      <div>
+        <h2>Login with database connection:</h2>
+        <input class="login-username" value="johnfoo@gmail.com" />
+        <input class="login-password" value="1234" />
+        <input type="button" class="login-db" value="login" />
       </div>
-      <div class="col-xs-6">
 
+      <div>
+        <h2>Login with passwordless connection:</h2>
         <div>
-          <h2>Login with database connection:</h2>
-          <input class="login-username" value="johnfoo@gmail.com" />
-          <input class="login-password" value="1234" />
-          <input type="button" class="login-db" value="login" />
+          <input class="passwordless-login-username" value="" />
+          <input type="button" class="passwordless-login-db" value="login" />
         </div>
-
         <div>
-          <h2>Login with passwordless connection:</h2>
-          <div>
-            <input class="passwordless-login-username" value="" />
-            <input type="button" class="passwordless-login-db" value="login" />
-          </div>
-          <div>
-            <input class="passwordless-login-code" value="Code" />
-            <input type="button" class="passwordless-login-verify" value="verify" />
-          </div>
+          <input class="passwordless-login-code" value="Code" />
+          <input type="button" class="passwordless-login-verify" value="verify" />
         </div>
-
-        <div>
-          <h2>Login with database connection (popup):</h2>
-          <input class="popup-login-username" value="johnfoo@gmail.com" />
-          <input class="popup-login-password" value="1234" />
-          <input type="button" class="popup-login-db-preload" value="preload" />
-          <input type="button" class="popup-login-db" value="login" />
-        </div>
-
-        <div>
-          <h2>Login with database connection (client login):</h2>
-          <input class="client-login-username" value="johnfoo@gmail.com" />
-          <input class="client-login-password" value="1234" />
-          <input type="button" class="client-login-db" value="login" />
-        </div>
-
-        <div>
-          <h2>Login with /authorize:</h2>
-          <input type="button" class="login-hosted" value="Hosted login page" />
-          <input type="button" class="login-facebook" value="Facebook" />
-          <input type="button" class="login-twitter" value="Twitter" />
-          <input type="button" class="login-github" value="Github" />
-        </div>
-
-        <div>
-          <h2>Login with /authorize (popup):</h2>
-          <input type="button" class="popup-login-hosted" value="Hosted login page" />
-          <input type="button" class="popup-login-facebook" value="Facebook" />
-          <input type="button" class="popup-login-twitter" value="Twitter" />
-          <input type="button" class="popup-login-github" value="Github" />
-        </div>
-
-        <div>
-          <h2>Renew authentication:</h2>
-          <input type="button" class="renew-auth" value="Renew" />
-        </div>
-
-        <div>
-          <h2>Login with new Login Ticket flow:</h2>
-          <input class="login-ticket-username" value="johnfoo@gmail.com" />
-          <input class="login-ticket-password" value="1234" />
-          <input type="button" class="login-ticket" value="Login" />
-        </div>
-
-        <div>
-          <h2>SSO Logout:</h2>
-          <input type="button" class="logout" value="Logout" />
-        </div>
-
       </div>
-      <div class="col-xs-6">
-        <h2>Console:</h2>
-        <pre><code id="console"></code></pre>
-        <div class="text-right"><i id="clear-console" aria-hidden="true" class="icon-budicon-498 icon"></i></div>
+
+      <div>
+        <h2>Login with database connection (popup):</h2>
+        <input class="popup-login-username" value="johnfoo@gmail.com" />
+        <input class="popup-login-password" value="1234" />
+        <input type="button" class="popup-login-db-preload" value="preload" />
+        <input type="button" class="popup-login-db" value="login" />
+      </div>
+
+      <div>
+        <h2>Login with database connection (client login):</h2>
+        <input class="client-login-username" value="johnfoo@gmail.com" />
+        <input class="client-login-password" value="1234" />
+        <input type="button" class="client-login-db" value="login" />
+      </div>
+
+      <div>
+        <h2>Login with /authorize:</h2>
+        <input type="button" class="login-hosted" value="Hosted login page" />
+        <input type="button" class="login-facebook" value="Facebook" />
+        <input type="button" class="login-twitter" value="Twitter" />
+        <input type="button" class="login-github" value="Github" />
+      </div>
+
+      <div>
+        <h2>Login with /authorize (popup):</h2>
+        <input type="button" class="popup-login-hosted" value="Hosted login page" />
+        <input type="button" class="popup-login-facebook" value="Facebook" />
+        <input type="button" class="popup-login-twitter" value="Twitter" />
+        <input type="button" class="popup-login-github" value="Github" />
+      </div>
+
+      <div>
+        <h2>Renew authentication:</h2>
+        <input type="button" class="renew-auth" value="Renew" />
+      </div>
+
+      <div>
+        <h2>Login with Cross Origin Authentication flow:</h2>
+        <input class="cross-origin-auth-username" value="johnfoo@gmail.com" />
+        <input class="cross-origin-auth-password" value="1234" />
+        <input type="button" class="cross-origin-auth" value="Login" />
+      </div>
+      <div>
+        <h2>Check if you have an active session:</h2>
+        <input type="button" class="web-message-check-session" value="Check session" />
+      </div>
+      <div>
+        <h2>Get information about the last successful authorizatino request</h2>
+        <input type="button" class="getssodata" value="Get SSO data" />
+      </div>
+
+      <div>
+        <h2>SSO Logout:</h2>
+        <input type="button" class="logout" value="Logout" />
+      </div>
+
+    </div>
+    <div class="col-xs-6">
+      <h2>Console:</h2>
+      <pre><code id="console"></code></pre>
+      <div class="text-right">
+        <i id="clear-console" aria-hidden="true" class="icon-budicon-498 icon"></i>
       </div>
     </div>
+  </div>
 
-    <script type="text/javascript">
+  <script type="text/javascript">
     var htmlConsole = new HTMLConsole({
       selector: '#console'
     });
@@ -190,7 +210,7 @@
       domain: 'brucke.auth0.com',
       redirectUri: 'https://localhost:3000/example',
       clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
-      responseType: 'token',
+      responseType: 'token id_token',
       plugins: [
         new CordovaAuth0Plugin()
       ]
@@ -199,12 +219,12 @@
     var webAuthPasswordless = new auth0.WebAuth({
       domain: 'brucke.auth0.com',
       redirectUri: 'https://localhost:3000/example',
-      clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+      clientID: 'VZUvmnj3pd9yNgq8BjX4YA8Km14jQ0PN',
       responseType: 'token'
     });
 
-    webAuth.parseHash(function(err, data) {
-      console.log(err,data);
+    webAuth.parseHash(function (err, data) {
+      console.log(err, data);
       if (err) {
         return htmlConsole.dumpCallback(err);
       }
@@ -244,7 +264,7 @@
 
     $('.passwordless-login-verify').click(function (e) {
       e.preventDefault();
-      webAuthPasswordless.passwordlessVerify({
+      webAuthPasswordless.passwordlessLogin({
         connection: 'email',
         email: $('.passwordless-login-username').val(),
         verificationCode: $('.passwordless-login-code').val()
@@ -274,8 +294,7 @@
         connection: 'acme',
         username: $('.popup-login-username').val(),
         password: $('.popup-login-password').val(),
-        scope: 'openid',
-        popupHandler: popupHandler
+        scope: 'openid'
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
@@ -285,9 +304,8 @@
         realm: 'acme',
         username: $('.client-login-username').val(),
         password: $('.client-login-password').val(),
-        scope: 'openid profile',
-        audience: 'urn:test'
-      }, function(err, data) {
+        scope: 'openid profile'
+      }, function (err, data) {
         htmlConsole.dumpCallback.bind(htmlConsole)(err, data);
         this.webAuth.client.userInfo(data.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
       });
@@ -344,22 +362,31 @@
       e.preventDefault();
       webAuth.renewAuth({
         usePostMessage: true,
-        scope:'',
+        scope: '',
         redirectURI: 'https://localhost:3000/example/callback.html'
       },
         htmlConsole.dumpCallback.bind(htmlConsole)
       );
     });
-     $('.login-ticket').click(function (e) {
+    $('.cross-origin-auth').click(function (e) {
       e.preventDefault();
       webAuth.login({
-        username: $('.login-ticket-username').val(),
-        password: $('.login-ticket-password').val(),
+        username: $('.cross-origin-auth-username').val(),
+        password: $('.cross-origin-auth-password').val(),
         redirectURI: 'https://localhost:3000/example/',
         realm: 'acme'
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
+    $('.web-message-check-session').click(function (e) {
+      e.preventDefault();
+      webAuth.checkSession({}, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+    $('.getssodata').click(function (e) {
+      e.preventDefault();
+      webAuth.client.getSSOData(htmlConsole.dumpCallback.bind(htmlConsole));
+    });
     $(document.body).append($('<div class="loaded">LOADED</div>'));
-    </script>
-  </body>
+  </script>
+</body>
+
 </html>

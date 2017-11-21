@@ -10,27 +10,15 @@
 
 Client Side Javascript toolkit for Auth0 API
 
-> We recommend using auth0.js v8 if you need to use [API Auth](https://auth0.com/docs/api-auth) features. For auth0.js v7 code please check the [v7 branch](https://github.com/auth0/auth0.js/tree/v7), this version will be supported and maintained alongside v8.
-
-Need help migrating from v7? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide)
+> This is a BETA release. The recommended version is [https://auth0.com/docs/libraries/auth0js/v8](https://auth0.com/docs/libraries/auth0js/v8)
 
 ## Install
 
 From CDN
 
 ```html
-<!-- Latest patch release (recommended for production) -->
-<script src="http://cdn.auth0.com/js/auth0/8.8.0/auth0.min.js"></script>
-```
-
-From [bower](http://bower.io)
-
-```sh
-bower install auth0-lock
-```
-
-```html
-<script src="bower_components/auth0.js/build/auth0.min.js"></script>
+<!-- Latest patch release -->
+<script src="http://cdn.auth0.com/js/auth0/9.0.0-beta.5/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org)
@@ -60,8 +48,8 @@ Parameters:
 - **redirectUri {OPTIONAL, string}**: The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be whitelisted in the "Allowed Callback URLs" in your Auth0 client's settings.
 - **scope {OPTIONAL, string}**: The default scope used for all authorization requests.
 - **audience {OPTIONAL, string}**: The default audience, used if requesting access to an API.
-- **responseType {OPTIONAL, string}**: Response type for all authentication requests. Defaults to `'token'`. It can be any space separated list of the values `code`, `token`, `id_token`.
-- **responseMode {OPTIONAL, string}**: The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`.
+- **responseType {OPTIONAL, string}**: Response type for all authentication requests. Defaults to `'token'`. It can be any space separated list of the values `code`, `token`, `id_token`. **If you don't provide a global `responseType`, you will have to provide a `responseType` for each method that you use**
+- **responseMode {OPTIONAL, string}**: The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`.
 - **_disableDeprecationWarnings {OPTIONAL, boolean}**: Disables the deprecation warnings, defaults to `false`.
 
 ### API
@@ -83,7 +71,7 @@ auth0.authorize({
 > This method requires that your tokens are signed with **RS256**. Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide#switching-from-hs256-to-rs256) for more information.
 
 ```js
-auth0.parseHash(window.location.hash, function(err, authResult) {
+auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
   if (err) {
     return console.log(err);
   }
@@ -100,57 +88,24 @@ auth0.parseHash(window.location.hash, function(err, authResult) {
 });
 ```
 
-- **renewAuth(options, callback)**: Attempts to get a new token from Auth0 by using [silent authentication](https://auth0.com/docs/api-auth/tutorials/silent-authentication), or invokes `callback` with an error if the user does not have an active SSO session at your Auth0 domain.
-
-This method can be used to detect a locally unauthenticated user's SSO session status, or to renew an authenticated user's access token.
-The actual redirect to `/authorize` happens inside an iframe, so it will not reload your application or redirect away from it.
+- **checkSession(options, callback)**: Allows you to acquire a new token from Auth0 for a user who is already authenticated against the hosted login page for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
+Everything happens inside an iframe, so it will not reload your application or redirect away from it.
 
 ```js
-auth0.renewAuth({
+auth0.checkSession({
   audience: 'https://mystore.com/api/v2',
   scope: 'read:order write:order',
-  redirectUri: 'https://example.com/auth/silent-callback',
-
-  // this will use postMessage to comunicate between the silent callback
-  // and the SPA. When false the SDK will attempt to parse the url hash
-  // should ignore the url hash and no extra behaviour is needed.
-  usePostMessage: true
+  redirectUri: 'https://example.com/auth/silent-callback'
   }, function (err, authResult) {
-    // Renewed tokens or error
+    // Authentication tokens or error
 });
 ```
 
 The contents of `authResult` are identical to those returned by `parseHash()`.
-For this request to succeed, the user must have an active SSO session at Auth0 by having logged in through the [hosted login page](https://manage.auth0.com/#/login_page) of your Auth0 domain.
 
-> ***Important:*** this will use postMessage to communicate between the silent callback and the SPA. When false the SDK will attempt to parse the url hash should ignore the url hash and no extra behaviour is needed.
+> **Important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `checkSession`.
 
-> **Also important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `renewAuth`.
-
-It is strongly recommended to have a dedicated callback page for silent authentication in order to avoid loading your entire application again inside an iframe.
-This callback page should only parse the URL hash and post it to the parent document so that your application can take action depending on the outcome of the silent authentication attempt.
-For example:
-
-```js
-<!DOCTYPE html>
-<html>
-  <head>
-    <script src="/auth0.js"></script>
-    <script type="text/javascript">
-      var auth0 = new auth0.WebAuth({
-        domain: '{YOUR_AUTH0_DOMAIN}',
-        clientID: '{YOUR_AUTH0_CLIENT_ID}'
-      });
-      auth0.parseHash(window.location.hash, function (err, result) {
-        parent.postMessage(err || result, 'https://example.com/');
-      });
-    </script>
-  </head>
-  <body></body>
-</html>
-```
-
-Remember to add the URL of the silent authentication callback page to the "Allowed Callback URLs" list of your Auth0 client.
+Remember to add the URL where the authorization request originates from, to the Allowed Web Origins list of your Auth0 client in the [Dashboard](https://manage.auth0.com/) under your client's **Settings**.
 
 - **client.login(options, callback)**: Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
 
@@ -245,8 +200,8 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 [npm-url]: https://npmjs.org/package/auth0-js
 [circleci-image]: http://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&style=flat-square
 [circleci-url]: https://circleci.com/gh/auth0/auth0.js
-[codecov-image]: https://img.shields.io/codecov/c/github/auth0/auth0.js/v8.svg?style=flat-square
-[codecov-url]: https://codecov.io/github/auth0/auth0.js?branch=v8
+[codecov-image]: https://img.shields.io/codecov/c/github/auth0/auth0.js/master.svg?style=flat-square
+[codecov-url]: https://codecov.io/github/auth0/auth0.js?branch=master
 [license-image]: http://img.shields.io/npm/l/auth0-js.svg?style=flat-square
 [license-url]: #license
 [downloads-image]: http://img.shields.io/npm/dm/auth0-js.svg?style=flat-square

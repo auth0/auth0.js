@@ -8,7 +8,7 @@ function PopupHandler(webAuth) {
   this.options = null;
 }
 
-PopupHandler.prototype.preload = function (options) {
+PopupHandler.prototype.preload = function(options) {
   var _this = this;
   var _window = windowHandler.getWindow();
 
@@ -30,7 +30,7 @@ PopupHandler.prototype.preload = function (options) {
 
   this._current_popup = _window.open(url, '_blank', windowFeatures);
 
-  this._current_popup.kill = function (success) {
+  this._current_popup.kill = function(success) {
     _this._current_popup.success = success;
     this.close();
     _this._current_popup = null;
@@ -39,7 +39,7 @@ PopupHandler.prototype.preload = function (options) {
   return this._current_popup;
 };
 
-PopupHandler.prototype.load = function (url, _, options, cb) {
+PopupHandler.prototype.load = function(url, _, options, cb) {
   var _this = this;
   this.url = url;
   this.options = options;
@@ -50,15 +50,15 @@ PopupHandler.prototype.load = function (url, _, options, cb) {
     this._current_popup.location.href = url;
   }
 
-  this.transientErrorHandler = function (event) {
+  this.transientErrorHandler = function(event) {
     _this.errorHandler(event, cb);
   };
 
-  this.transientStartHandler = function (event) {
+  this.transientStartHandler = function(event) {
     _this.startHandler(event, cb);
   };
 
-  this.transientExitHandler = function () {
+  this.transientExitHandler = function() {
     _this.exitHandler(cb);
   };
 
@@ -67,7 +67,7 @@ PopupHandler.prototype.load = function (url, _, options, cb) {
   this._current_popup.addEventListener('exit', this.transientExitHandler);
 };
 
-PopupHandler.prototype.errorHandler = function (event, cb) {
+PopupHandler.prototype.errorHandler = function(event, cb) {
   if (!this._current_popup) {
     return;
   }
@@ -77,13 +77,13 @@ PopupHandler.prototype.errorHandler = function (event, cb) {
   cb({ error: 'window_error', errorDescription: event.message });
 };
 
-PopupHandler.prototype.unhook = function () {
+PopupHandler.prototype.unhook = function() {
   this._current_popup.removeEventListener('loaderror', this.transientErrorHandler);
   this._current_popup.removeEventListener('loadstart', this.transientStartHandler);
   this._current_popup.removeEventListener('exit', this.transientExitHandler);
 };
 
-PopupHandler.prototype.exitHandler = function (cb) {
+PopupHandler.prototype.exitHandler = function(cb) {
   if (!this._current_popup) {
     return;
   }
@@ -98,7 +98,7 @@ PopupHandler.prototype.exitHandler = function (cb) {
   }
 };
 
-PopupHandler.prototype.startHandler = function (event, cb) {
+PopupHandler.prototype.startHandler = function(event, cb) {
   var _this = this;
 
   if (!this._current_popup) {
@@ -107,7 +107,9 @@ PopupHandler.prototype.startHandler = function (event, cb) {
 
   var callbackUrl = urljoin('https:', this.webAuth.baseOptions.domain, '/mobile');
 
-  if (event.url && !(event.url.indexOf(callbackUrl + '#') === 0)) { return; }
+  if (event.url && !(event.url.indexOf(callbackUrl + '#') === 0)) {
+    return;
+  }
 
   var parts = event.url.split('#');
 
@@ -115,21 +117,18 @@ PopupHandler.prototype.startHandler = function (event, cb) {
     return;
   }
 
-  var opts = { hash: parts.pop(), _idTokenVerification: false };
+  var opts = { hash: parts.pop() };
 
   if (this.options.nonce) {
     opts.nonce = this.options.nonce;
   }
 
-  this.webAuth.parseHash(
-    opts,
-    function (error, result) {
-      if (error || result) {
-        _this._current_popup.kill(true);
-        cb(error, result);
-      }
+  this.webAuth.parseHash(opts, function(error, result) {
+    if (error || result) {
+      _this._current_popup.kill(true);
+      cb(error, result);
     }
-  );
+  });
 };
 
 module.exports = PopupHandler;
