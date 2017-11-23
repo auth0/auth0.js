@@ -11,7 +11,8 @@ function runWebMessageFlow(authorizeUrl, options, callback) {
     timeout: options.timeout,
     eventValidator: {
       isValid: function(eventData) {
-        return eventData.event.data.type === 'authorization_response';
+        return eventData.event.data.type === 'authorization_response' 
+          && options.state === eventData.event.data.response.state;
       }
     },
     timeoutCallback: function() {
