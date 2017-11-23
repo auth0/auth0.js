@@ -33,7 +33,8 @@ WebMessageHandler.prototype.run = function(options, cb) {
   var _this = this;
   options.responseMode = 'web_message';
   options.prompt = 'none';
-  runWebMessageFlow(this.webAuth.client.buildAuthorizeUrl(options), options, function(
+  var urlOptions = objectHelper.blacklist(options, ['timeout']);
+  runWebMessageFlow(this.webAuth.client.buildAuthorizeUrl(urlOptions), options, function(
     err,
     eventData
   ) {
