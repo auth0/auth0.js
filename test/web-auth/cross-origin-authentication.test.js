@@ -110,6 +110,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         anotherOption: 'foobar'
       });
       expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({
+        username: 'me@example.com',
         loginTicket: 'a_login_ticket',
         anotherOption: 'foobar'
       });
@@ -142,6 +143,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       });
       stub(WebMessageHandler.prototype, 'run', function(options, callback) {
         expect(options).to.be.eql({
+          username: 'me@example.com',
           loginTicket: 'a_login_ticket',
           anotherOption: 'foobar'
         });
@@ -190,6 +192,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         realm: 'a-connection'
       });
       expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({
+        username: 'me@example.com',
         loginTicket: 'a_login_ticket',
         realm: 'a-connection'
       });
@@ -226,6 +229,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp'
       });
       expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({
+        username: 'me@example.com',
         loginTicket: 'a_login_ticket',
         realm: 'email'
       });
