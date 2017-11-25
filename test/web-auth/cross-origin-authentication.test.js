@@ -43,43 +43,6 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         storage.setItem.restore();
       }
     });
-    it('should store sso data when co/authenticate call succeeds', function(done) {
-      stub(request, 'post', function(url) {
-        expect(url).to.be('https://me.auth0.com/co/authenticate');
-        return new RequestMock({
-          body: {
-            client_id: '...',
-            credential_type: 'http://auth0.com/oauth/grant-type/password-realm',
-            username: 'me@example.com',
-            password: '123456',
-            realm: 'the-connection'
-          },
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          cb: function(cb) {
-            cb(null, {
-              body: {
-                login_ticket: 'a_login_ticket',
-                co_verifier: 'co_verifier',
-                co_id: 'co_id'
-              }
-            });
-          }
-        });
-      });
-      stub(storage, 'setItem', function(key, ssoData) {
-        expect(key).to.be.equal('auth0.ssodata.connection');
-        expect(ssoData).to.be.eql('the-connection');
-        done();
-      });
-      this.co.login({
-        username: 'me@example.com',
-        password: '123456',
-        anotherOption: 'foobar',
-        realm: 'the-connection'
-      });
-    });
     it('should call /co/authenticate and redirect to /authorize with login_ticket', function() {
       stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');

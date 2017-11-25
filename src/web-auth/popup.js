@@ -163,7 +163,7 @@ Popup.prototype.authorize = function(options, cb) {
   }
 
   params = this.transactionManager.process(params);
-  params.scope = params.scope || 'openid profile email';
+  params.scope = params.scope || 'openid';
   delete params.domain;
 
   url = this.client.buildAuthorizeUrl(params);

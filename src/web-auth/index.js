@@ -189,32 +189,48 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
 
   var appState = (transaction && transaction.appState) || null;
 
+  var callback = function(err, payload) {
+    if (err) {
+      console.log(err);
+      return cb(err);
+    }
+    if (transaction && transaction.lastUsedConnection) {
+      var username = transaction.lastUsedUsername;
+      if (payload) {
+        var payloadUsername = payload.email || payload.name;
+        username = payloadUsername || username;
+      }
+      ssodata.set(transaction.lastUsedConnection, username);
+    }
+    return cb(null, buildParseHashResponse(parsedHash, appState, payload));
+  };
+
   if (!parsedHash.id_token) {
-    return cb(null, buildParseHashResponse(parsedHash, appState, null));
+    return callback(null, null);
   }
   return this.validateToken(parsedHash.id_token, transactionNonce, function(
     validationError,
     payload
   ) {
     if (!validationError) {
-      return cb(null, buildParseHashResponse(parsedHash, appState, payload));
+      return callback(null, payload);
     }
     if (validationError.error !== 'invalid_token') {
-      return cb(validationError);
+      return callback(validationError);
     }
     // if it's an invalid_token error, decode the token
     var decodedToken = new IdTokenVerifier().decode(parsedHash.id_token);
     // if the alg is not HS256, return the raw error
     if (decodedToken.header.alg !== 'HS256') {
-      return cb(validationError);
+      return callback(validationError);
     }
     // if the alg is HS256, use the /userinfo endpoint to build the payload
     return _this.client.userInfo(parsedHash.access_token, function(errUserInfo, profile) {
       // if the /userinfo request fails, use the validationError instead
       if (errUserInfo) {
-        return cb(validationError);
+        return callback(validationError);
       }
-      return cb(null, buildParseHashResponse(parsedHash, appState, profile));
+      return callback(null, profile);
     });
   });
 };
@@ -485,10 +501,7 @@ WebAuth.prototype.authorize = function(options) {
   );
 
   params = this.transactionManager.process(params);
-  params.scope = params.scope || 'openid profile email';
-
-  var connection = params.realm || params.connection;
-  ssodata.set(connection);
+  params.scope = params.scope || 'openid';
 
   windowHelper.redirect(this.client.buildAuthorizeUrl(params));
 };

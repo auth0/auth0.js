@@ -140,6 +140,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
   }
 
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
+  params = objectHelper.blacklist(params, ['username']);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 
   qString = qs.stringify(params);
@@ -356,8 +357,8 @@ Authentication.prototype.getSSOData = function(cb) {
   var clientId = this.baseOptions.clientID;
   this.auth0.checkSession(
     {
-      responseType: 'token id_token',
-      scope: 'openid profile email'
+      responseType: 'id_token',
+      scope: 'openid'
     },
     function(err, result) {
       if (err) {
@@ -366,17 +367,17 @@ Authentication.prototype.getSSOData = function(cb) {
         }
         if (err.error === 'consent_required') {
           err.error_description =
-            'Consent required. When using `getSSOData`, the user has to be authenticated with the following the scope: `openid profile email`.';
+            'Consent required. When using `getSSOData`, the user has to be authenticated with the following the scope: `openid`.';
         }
         return cb(err, { sso: false });
       }
-      var connectionName = ssodata.get();
+      var ssodataInformation = ssodata.get() || {};
       return cb(null, {
         lastUsedConnection: {
-          name: connectionName
+          name: ssodataInformation.lastUsedConnection
         },
         lastUsedUserID: result.idTokenPayload.sub,
-        lastUsedUsername: result.idTokenPayload.email || result.idTokenPayload.name,
+        lastUsedUsername: ssodataInformation.lastUsedUsername,
         lastUsedClientID: clientId,
         sessionClients: [clientId],
         sso: true
