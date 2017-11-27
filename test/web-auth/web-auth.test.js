@@ -347,7 +347,8 @@ describe('auth0.WebAuth', function() {
             domain: 'brucke.auth0.com',
             redirectUri: 'http://example.com/callback',
             clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
-            responseType: 'token id_token'
+            responseType: 'token id_token',
+            __disableExpirationCheck: true
           });
           TransactionManager.prototype.getStoredTransaction.restore();
           stub(TransactionManager.prototype, 'getStoredTransaction', function() {
