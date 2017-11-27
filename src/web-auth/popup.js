@@ -6,7 +6,6 @@ var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 var PopupHandler = require('../helper/popup-handler');
 var objectHelper = require('../helper/object');
-var ssodata = require('../helper/ssodata');
 var Warn = require('../helper/warn');
 var TransactionManager = require('./transaction-manager');
 var CrossOriginAuthentication = require('./cross-origin-authentication');
@@ -141,9 +140,6 @@ Popup.prototype.authorize = function(options, cb) {
     }
   );
 
-  var connection = params.realm || params.connection;
-  ssodata.set(connection);
-
   // the relay page should not be necesary as long it happens in the same domain
   // (a redirectUri shoul be provided). It is necesary when using OWP
   relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');
@@ -167,7 +163,7 @@ Popup.prototype.authorize = function(options, cb) {
   }
 
   params = this.transactionManager.process(params);
-  params.scope = params.scope || 'openid profile email';
+  params.scope = params.scope || 'openid';
   delete params.domain;
 
   url = this.client.buildAuthorizeUrl(params);
