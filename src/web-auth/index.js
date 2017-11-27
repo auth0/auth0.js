@@ -191,7 +191,6 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
 
   var callback = function(err, payload) {
     if (err) {
-      console.log(err);
       return cb(err);
     }
     if (transaction && transaction.lastUsedConnection) {

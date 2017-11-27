@@ -656,6 +656,30 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
+
+      it('should return default error if it is not a validation error', function(done) {
+        var expectedError = { error: 'some_error' };
+        stub(WebAuth.prototype, 'validateToken', function(token, nonce, callback) {
+          return callback(expectedError);
+        });
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'token'
+        });
+
+        var data = webAuth.parseHash(
+          {
+            hash: '#token_type=Bearer&id_token=0as98da09s8d_not_a_token'
+          },
+          function(err, data) {
+            expect(err).to.be.eql(expectedError);
+            WebAuth.prototype.validateToken.restore();
+            done();
+          }
+        );
+      });
     });
     context('with HS256 id_token', function() {
       beforeEach(function() {
