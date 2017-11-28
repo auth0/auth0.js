@@ -43,6 +43,7 @@ function WebAuth(options) {
       redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
       scope: { optional: true, type: 'string', message: 'scope is not valid' },
       audience: { optional: true, type: 'string', message: 'audience is not valid' },
+      popupOrigin: { optional: true, type: 'string', message: 'popupOrigin is not valid' },
       leeway: { optional: true, type: 'number', message: 'leeway is not valid' },
       plugins: { optional: true, type: 'array', message: 'plugins is not valid' },
       _disableDeprecationWarnings: {
