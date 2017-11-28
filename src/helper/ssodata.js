@@ -1,10 +1,11 @@
 var storage = require('./storage');
 
 module.exports = {
-  set: function(connection, username) {
+  set: function(connection, username, sub) {
     var ssodata = {
       lastUsedUsername: username,
-      lastUsedConnection: connection
+      lastUsedConnection: connection,
+      lastUsedSub: sub
     };
     storage.setItem('auth0.ssodata', JSON.stringify(ssodata));
   },

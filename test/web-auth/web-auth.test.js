@@ -369,7 +369,8 @@ describe('auth0.WebAuth', function() {
               expect(ssodata.set.calledOnce).to.be.ok();
               expect(ssodata.set.firstCall.args).to.be.eql([
                 'lastUsedConnection',
-                'lastUsedUsername'
+                'lastUsedUsername',
+                undefined
               ]);
               expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
 
@@ -389,7 +390,8 @@ describe('auth0.WebAuth', function() {
               expect(ssodata.set.calledOnce).to.be.ok();
               expect(ssodata.set.firstCall.args).to.be.eql([
                 'lastUsedConnection',
-                'lastUsedUsername'
+                'lastUsedUsername',
+                'auth0|59fbe11937039b263a8b29a2'
               ]);
               expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
 
@@ -407,7 +409,8 @@ describe('auth0.WebAuth', function() {
               expect(ssodata.set.calledOnce).to.be.ok();
               expect(ssodata.set.firstCall.args).to.be.eql([
                 'lastUsedConnection',
-                'johnfoo@gmail.com'
+                'johnfoo@gmail.com',
+                'auth0|59fbe11937039b263a8b29a2'
               ]);
               expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
 
@@ -427,7 +430,8 @@ describe('auth0.WebAuth', function() {
               expect(ssodata.set.calledOnce).to.be.ok();
               expect(ssodata.set.firstCall.args).to.be.eql([
                 'lastUsedConnection',
-                'johnfoo@gmail.com'
+                'johnfoo@gmail.com',
+                'auth0|59fbe11937039b263a8b29a2'
               ]);
               expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
 

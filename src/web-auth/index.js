@@ -196,11 +196,13 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
     }
     if (transaction && transaction.lastUsedConnection) {
       var username = transaction.lastUsedUsername;
+      var sub;
       if (payload) {
         var payloadUsername = payload.email || payload.name;
         username = payloadUsername || username;
+        sub = payload.sub;
       }
-      ssodata.set(transaction.lastUsedConnection, username);
+      ssodata.set(transaction.lastUsedConnection, username, sub);
     }
     return cb(null, buildParseHashResponse(parsedHash, appState, payload));
   };

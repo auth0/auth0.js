@@ -37,11 +37,12 @@ describe('helpers', function() {
           expect(key).to.be('auth0.ssodata');
           expect(JSON.parse(value)).to.be.eql({
             lastUsedUsername: 'username',
-            lastUsedConnection: 'connection'
+            lastUsedConnection: 'connection',
+            lastUsedSub: 'sub'
           });
           done();
         });
-        ssodata.set('connection', 'username');
+        ssodata.set('connection', 'username', 'sub');
       });
     });
   });
