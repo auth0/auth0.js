@@ -191,7 +191,9 @@
     <div class="col-xs-6">
       <h2>Console:</h2>
       <pre><code id="console"></code></pre>
-      <div class="text-right"><i id="clear-console" aria-hidden="true" class="icon-budicon-498 icon"></i></div>
+      <div class="text-right">
+        <i id="clear-console" aria-hidden="true" class="icon-budicon-498 icon"></i>
+      </div>
     </div>
   </div>
 
@@ -341,7 +343,7 @@
 
     $('.popup-login-twitter').click(function (e) {
       e.preventDefault();
-      webAuth.popup.authorize({ connection: 'twitter' }, htmlConsole.dumpCallback.bind(htmlConsole));
+      webAuth.popup.authorize({ connection: 'twitter', redirectURI: 'https://localhost:3000/example/callback_popup.html' }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
     $('.popup-login-github').click(function (e) {

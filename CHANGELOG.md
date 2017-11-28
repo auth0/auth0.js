@@ -2,14 +2,22 @@
 
 ## [v8.11.3](https://github.com/auth0/auth0.js/tree/v8.11.3) (2017-11-16)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.2...v8.11.3)
+
+**Fixed**
+- Set the url after the iframe is appended to the dom [\#563](https://github.com/auth0/auth0.js/pull/563)
+
 # Change Log
 
 ## [v8.11.2](https://github.com/auth0/auth0.js/tree/v8.11.2) (2017-11-09)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.1...v8.11.2)
+- Fix transaction not being created with loginWithCredentials [\#560](https://github.com/auth0/auth0.js/pull/560)
+
 # Change Log
 
 ## [v8.11.1](https://github.com/auth0/auth0.js/tree/v8.11.1) (2017-11-08)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.0...v8.11.1)
+- Whitelisting realm param [\#556](https://github.com/auth0/auth0.js/pull/556)
+
 # Change Log
 
 ## [v8.11.0](https://github.com/auth0/auth0.js/tree/v8.11.0) (2017-11-07)
