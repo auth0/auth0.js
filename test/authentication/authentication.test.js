@@ -236,7 +236,8 @@ describe('auth0.authentication', function() {
         expect(key).to.be('auth0.ssodata');
         return JSON.stringify({
           lastUsedConnection: 'lastUsedConnection',
-          lastUsedUsername: 'lastUsedUsername'
+          lastUsedUsername: 'lastUsedUsername',
+          lastUsedSub: 'the-user-id'
         });
       });
     });
@@ -258,6 +259,17 @@ describe('auth0.authentication', function() {
       });
 
       this.webAuthSpy.checkSession.lastCall.args[1]({ some: 'error' });
+    });
+    it("returns sso:false if lastUsedSub is different from checkSesion's sub", function(done) {
+      this.auth0.getSSOData(function(err, result) {
+        expect(err).to.be.eql(null);
+        expect(result).to.be.eql({ sso: false });
+        done();
+      });
+
+      this.webAuthSpy.checkSession.lastCall.args[1](null, {
+        idTokenPayload: { sub: 'some-other-id' }
+      });
     });
     it('do not return error if error === login_required', function(done) {
       this.auth0.getSSOData(function(err, result) {
