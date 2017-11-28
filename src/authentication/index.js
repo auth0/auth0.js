@@ -355,6 +355,8 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
  */
 Authentication.prototype.getSSOData = function(cb) {
   var clientId = this.baseOptions.clientID;
+  var ssodataInformation = ssodata.get() || {};
+
   this.auth0.checkSession(
     {
       responseType: 'id_token',
@@ -371,12 +373,17 @@ Authentication.prototype.getSSOData = function(cb) {
         }
         return cb(err, { sso: false });
       }
-      var ssodataInformation = ssodata.get() || {};
+      if (
+        ssodataInformation.lastUsedSub &&
+        ssodataInformation.lastUsedSub !== result.idTokenPayload.sub
+      ) {
+        return cb(err, { sso: false });
+      }
       return cb(null, {
         lastUsedConnection: {
           name: ssodataInformation.lastUsedConnection
         },
-        lastUsedUserID: result.idTokenPayload.sub,
+        lastUsedUserID: ssodataInformation.lastUsedSub,
         lastUsedUsername: ssodataInformation.lastUsedUsername,
         lastUsedClientID: clientId,
         sessionClients: [clientId],
