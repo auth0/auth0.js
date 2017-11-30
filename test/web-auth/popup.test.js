@@ -106,7 +106,8 @@ describe('auth0.WebAuth.popup', function() {
       this.auth0.popup.authorize({
         connection: 'the_connection',
         state: '123',
-        nonce: '456'
+        nonce: '456',
+        scope: 'openid'
       });
     });
 

@@ -248,7 +248,8 @@ describe('auth0.authentication', function() {
       this.auth0.getSSOData();
       expect(this.webAuthSpy.checkSession.lastCall.args[0]).to.be.eql({
         responseType: 'id_token',
-        scope: 'openid'
+        scope: 'openid profile email',
+        connection: 'lastUsedConnection'
       });
     });
     it('returns sso:false if checkSession fails', function(done) {
@@ -287,7 +288,7 @@ describe('auth0.authentication', function() {
       this.auth0.getSSOData(function(err, result) {
         expect(err).to.be.eql({
           error: 'consent_required',
-          error_description: 'Consent required. When using `getSSOData`, the user has to be authenticated with the following the scope: `openid`.'
+          error_description: 'Consent required. When using `getSSOData`, the user has to be authenticated with the following scope: `openid profile email`.'
         });
         expect(result).to.be.eql({ sso: false });
         done();
@@ -298,13 +299,13 @@ describe('auth0.authentication', function() {
         error_description: 'foobar'
       });
     });
-    it('returns ssoData object with lastUsedConnection and lastUsedUsername', function(done) {
+    it('returns ssoData object with lastUsedConnection and idtokenpayload.name', function(done) {
       this.auth0.getSSOData(function(err, result) {
         expect(err).to.be(null);
         expect(result).to.be.eql({
           lastUsedConnection: { name: 'lastUsedConnection' },
           lastUsedUserID: 'the-user-id',
-          lastUsedUsername: 'lastUsedUsername',
+          lastUsedUsername: 'last-used-user-name',
           lastUsedClientID: '...',
           sessionClients: ['...'],
           sso: true
@@ -313,7 +314,27 @@ describe('auth0.authentication', function() {
       });
 
       this.webAuthSpy.checkSession.lastCall.args[1](null, {
-        idTokenPayload: { sub: 'the-user-id' }
+        idTokenPayload: { sub: 'the-user-id', name: 'last-used-user-name' }
+      });
+    });
+    it('returns ssoData object with lastUsedConnection and idtokenpayload.email when there is no name', function(
+      done
+    ) {
+      this.auth0.getSSOData(function(err, result) {
+        expect(err).to.be(null);
+        expect(result).to.be.eql({
+          lastUsedConnection: { name: 'lastUsedConnection' },
+          lastUsedUserID: 'the-user-id',
+          lastUsedUsername: 'last-used-user-email',
+          lastUsedClientID: '...',
+          sessionClients: ['...'],
+          sso: true
+        });
+        done();
+      });
+
+      this.webAuthSpy.checkSession.lastCall.args[1](null, {
+        idTokenPayload: { sub: 'the-user-id', email: 'last-used-user-email' }
       });
     });
   });

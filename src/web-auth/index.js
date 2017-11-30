@@ -195,14 +195,11 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
       return cb(err);
     }
     if (transaction && transaction.lastUsedConnection) {
-      var username = transaction.lastUsedUsername;
       var sub;
       if (payload) {
-        var payloadUsername = payload.email || payload.name;
-        username = payloadUsername || username;
         sub = payload.sub;
       }
-      ssodata.set(transaction.lastUsedConnection, username, sub);
+      ssodata.set(transaction.lastUsedConnection, sub);
     }
     return cb(null, buildParseHashResponse(parsedHash, appState, payload));
   };
@@ -503,7 +500,7 @@ WebAuth.prototype.authorize = function(options) {
   );
 
   params = this.transactionManager.process(params);
-  params.scope = params.scope || 'openid';
+  params.scope = params.scope || 'openid profile email';
 
   windowHelper.redirect(this.client.buildAuthorizeUrl(params));
 };

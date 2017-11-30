@@ -17,13 +17,11 @@ context('TransactionManager', function() {
         appState,
         state,
         nonce,
-        lastUsedUsername,
         lastUsedConnection
       ) {
         return {
           state: state || 'randomState',
           nonce: nonce || 'randomNonce',
-          lastUsedUsername: lastUsedUsername,
           lastUsedConnection: lastUsedConnection
         };
       });
@@ -49,7 +47,6 @@ context('TransactionManager', function() {
         appState,
         state,
         nonce,
-        lastUsedUsername,
         lastUsedConnection,
         generateNonce
       ) {
@@ -57,7 +54,6 @@ context('TransactionManager', function() {
         return {
           state: state || 'randomState',
           nonce: nonce || 'randomNonce',
-          lastUsedUsername: lastUsedUsername,
           lastUsedConnection: lastUsedConnection
         };
       });
@@ -89,7 +85,7 @@ context('TransactionManager', function() {
       storage.setItem.restore();
     });
     it('always stores random state', function() {
-      var result = this.tm.generateTransaction('appState', null, null, null, null, false);
+      var result = this.tm.generateTransaction('appState', null, null, null, false);
       expect(result).to.be.eql({ state: 'randomString', nonce: null });
       expect(storage.setItem.calledOnce).to.be(true);
       expect(storage.setItem.lastCall.args[0]).to.be('com.auth0.auth.randomString');
@@ -97,12 +93,11 @@ context('TransactionManager', function() {
         nonce: null,
         appState: 'appState',
         state: 'randomString',
-        lastUsedConnection: null,
-        lastUsedUsername: null
+        lastUsedConnection: null
       });
     });
     it('only stores random nonce when generateNonce is true', function() {
-      var result = this.tm.generateTransaction('appState', null, null, null, null, true);
+      var result = this.tm.generateTransaction('appState', null, null, null, true);
       expect(result).to.be.eql({ state: 'randomString', nonce: 'randomString' });
       expect(storage.setItem.calledOnce).to.be(true);
       expect(storage.setItem.lastCall.args[0]).to.be('com.auth0.auth.randomString');
@@ -110,12 +105,11 @@ context('TransactionManager', function() {
         nonce: 'randomString',
         appState: 'appState',
         state: 'randomString',
-        lastUsedConnection: null,
-        lastUsedUsername: null
+        lastUsedConnection: null
       });
     });
     it('uses nonce/state when provided', function() {
-      var result = this.tm.generateTransaction('appState', 'state', 'nonce', null, null);
+      var result = this.tm.generateTransaction('appState', 'state', 'nonce', null);
       expect(result).to.be.eql({ state: 'state', nonce: 'nonce' });
       expect(storage.setItem.calledOnce).to.be(true);
       expect(storage.setItem.lastCall.args[0]).to.be('com.auth0.auth.state');
@@ -123,18 +117,11 @@ context('TransactionManager', function() {
         nonce: 'nonce',
         appState: 'appState',
         state: 'state',
-        lastUsedConnection: null,
-        lastUsedUsername: null
+        lastUsedConnection: null
       });
     });
-    it('uses lastUsedUsername and lastUsedConnection when provided', function() {
-      var result = this.tm.generateTransaction(
-        'appState',
-        'state',
-        'nonce',
-        'lastUsedUsername',
-        'lastUsedConnection'
-      );
+    it('uses lastUsedConnection when provided', function() {
+      var result = this.tm.generateTransaction('appState', 'state', 'nonce', 'lastUsedConnection');
       expect(result).to.be.eql({ state: 'state', nonce: 'nonce' });
       expect(storage.setItem.calledOnce).to.be(true);
       expect(storage.setItem.lastCall.args[0]).to.be('com.auth0.auth.state');
@@ -142,7 +129,6 @@ context('TransactionManager', function() {
         nonce: 'nonce',
         appState: 'appState',
         state: 'state',
-        lastUsedUsername: 'lastUsedUsername',
         lastUsedConnection: 'lastUsedConnection'
       });
     });
