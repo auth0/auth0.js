@@ -1,9 +1,8 @@
 var storage = require('./storage');
 
 module.exports = {
-  set: function(connection, username, sub) {
+  set: function(connection, sub) {
     var ssodata = {
-      lastUsedUsername: username,
       lastUsedConnection: connection,
       lastUsedSub: sub
     };

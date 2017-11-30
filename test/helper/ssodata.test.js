@@ -36,13 +36,12 @@ describe('helpers', function() {
         stub(storage, 'setItem', function(key, value) {
           expect(key).to.be('auth0.ssodata');
           expect(JSON.parse(value)).to.be.eql({
-            lastUsedUsername: 'username',
             lastUsedConnection: 'connection',
             lastUsedSub: 'sub'
           });
           done();
         });
-        ssodata.set('connection', 'username', 'sub');
+        ssodata.set('connection', 'sub');
       });
     });
   });

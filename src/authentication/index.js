@@ -360,7 +360,8 @@ Authentication.prototype.getSSOData = function(cb) {
   this.auth0.checkSession(
     {
       responseType: 'id_token',
-      scope: 'openid'
+      scope: 'openid profile email',
+      connection: ssodataInformation.lastUsedConnection
     },
     function(err, result) {
       if (err) {
@@ -369,7 +370,7 @@ Authentication.prototype.getSSOData = function(cb) {
         }
         if (err.error === 'consent_required') {
           err.error_description =
-            'Consent required. When using `getSSOData`, the user has to be authenticated with the following the scope: `openid`.';
+            'Consent required. When using `getSSOData`, the user has to be authenticated with the following scope: `openid profile email`.';
         }
         return cb(err, { sso: false });
       }
@@ -383,8 +384,8 @@ Authentication.prototype.getSSOData = function(cb) {
         lastUsedConnection: {
           name: ssodataInformation.lastUsedConnection
         },
-        lastUsedUserID: ssodataInformation.lastUsedSub,
-        lastUsedUsername: ssodataInformation.lastUsedUsername,
+        lastUsedUserID: result.idTokenPayload.sub,
+        lastUsedUsername: result.idTokenPayload.name || result.idTokenPayload.email,
         lastUsedClientID: clientId,
         sessionClients: [clientId],
         sso: true

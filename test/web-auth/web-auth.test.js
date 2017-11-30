@@ -353,12 +353,11 @@ describe('auth0.WebAuth', function() {
           TransactionManager.prototype.getStoredTransaction.restore();
           stub(TransactionManager.prototype, 'getStoredTransaction', function() {
             return {
-              lastUsedUsername: 'lastUsedUsername',
               lastUsedConnection: 'lastUsedConnection'
             };
           });
         });
-        it('sets ssodata with transaction.lastUsedUsername when there is no payload', function(
+        it('sets ssodata with a connection and without a sub when there is no payload', function(
           done
         ) {
           var data = this.webAuth.parseHash(
@@ -367,20 +366,14 @@ describe('auth0.WebAuth', function() {
             },
             function() {
               expect(ssodata.set.calledOnce).to.be.ok();
-              expect(ssodata.set.firstCall.args).to.be.eql([
-                'lastUsedConnection',
-                'lastUsedUsername',
-                undefined
-              ]);
+              expect(ssodata.set.firstCall.args).to.be.eql(['lastUsedConnection', undefined]);
               expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
 
               done();
             }
           ); // eslint-disable-line
         });
-        it('sets ssodata with transaction.lastUsedUsername when there is a payload but no email or name', function(
-          done
-        ) {
+        it('sets ssodata with a connection and a sub when there is a payload', function(done) {
           var data = this.webAuth.parseHash(
             {
               hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJpc3MiOiJodHRwczovL2JydWNrZS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTlmYmUxMTkzNzAzOWIyNjNhOGIyOWEyIiwiYXVkIjoiazV1M28yZmlBQThYd2VYRUVYNjA0S0N3Q2p6anRNVTYiLCJpYXQiOjE1MTE1NTE3ODMsImV4cCI6MTUxMTU4Nzc4MywiYXRfaGFzaCI6IkxGTDMxMlRXWDFGc1VNay00R2gxYWciLCJub25jZSI6IndFT2U3LUxDOG5sMUF1SHA3bnVjRl81TE1WUFZrTUJZIn0.fUJhEIPded3aO4iDrbniwGnAEZHX66Mjl7yCgIxSSCXlgrHlOATvbMi7XGQXNfPjGCivySoalMCS3MikvMGBFPFguChyJZ3myswT6US33hZSTycUYODvWSz8j7PeEpJrHdF4nAO4NvbC4JjogG92Xg2zx0KCZtoLK9datZiWEWHVUEVEXZCwceyowxQ4J5dqDzzLm9_V9qBsUYJtINqMM6jhHazk7OQUFZlE35R3l-Lps2oofqxZf11X7g0bgxo5ykSSr_KDvj9Hx0flk_u-eTTD2XVGMWe1TreJm1KMMuD01PicU1JGsJRA0hqE6Fd943OAEAIM6feMximK22rrHg',
@@ -390,47 +383,6 @@ describe('auth0.WebAuth', function() {
               expect(ssodata.set.calledOnce).to.be.ok();
               expect(ssodata.set.firstCall.args).to.be.eql([
                 'lastUsedConnection',
-                'lastUsedUsername',
-                'auth0|59fbe11937039b263a8b29a2'
-              ]);
-              expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
-
-              done();
-            }
-          ); // eslint-disable-line
-        });
-        it('sets ssodata with payload.email when there is a payload and email', function(done) {
-          var data = this.webAuth.parseHash(
-            {
-              hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJlbWFpbCI6ImpvaG5mb29AZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJpc3MiOiJodHRwczovL2JydWNrZS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTlmYmUxMTkzNzAzOWIyNjNhOGIyOWEyIiwiYXVkIjoiazV1M28yZmlBQThYd2VYRUVYNjA0S0N3Q2p6anRNVTYiLCJpYXQiOjE1MTE1NTMyMTIsImV4cCI6MTUxMTU4OTIxMiwiYXRfaGFzaCI6IkRUQVlrUVpXSUNsRU5LdFVnbFpYT1EiLCJub25jZSI6InM4QzcyQ250YWczcHIwdVE3UHJzMHp1UVNrbWJ6LW9UIn0.K8OkMPcPNOe51gPHCpgV28q_QSQ6cwu4x3iuR0-oRbQI-VlaleenFuIWX-td4AGpO_kp5ZqTOURDDcW7ZKaNkrcEj0TX1rBTph2p9bR5WXgdNumtrjWTV4GFgVfGF0qiGnuP5KZkZjQaEJtwSWCf7WdQGv6A0-h54Mk5tYi1LgQkdIRhM5PU1wSe1sPv-02S_FA2WomP9XkRuZ8MyCMhlay1JMwFABFrUh6sAV3IF4iboi8yx73HQNliNSqEe9scn8M6ok-u8MKXYB-wcvELfLvqWTYGW0n2NpxZc5ktTXkmlWDgdbmd7yIaBr143LN7k0g4jP_R-pRl2gf00DdA_w',
-              nonce: 's8C72Cntag3pr0uQ7Prs0zuQSkmbz-oT'
-            },
-            function() {
-              expect(ssodata.set.calledOnce).to.be.ok();
-              expect(ssodata.set.firstCall.args).to.be.eql([
-                'lastUsedConnection',
-                'johnfoo@gmail.com',
-                'auth0|59fbe11937039b263a8b29a2'
-              ]);
-              expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
-
-              done();
-            }
-          ); // eslint-disable-line
-        });
-        it('sets ssodata with payload.name when there is a payload but no payload.email', function(
-          done
-        ) {
-          var data = this.webAuth.parseHash(
-            {
-              hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJuaWNrbmFtZSI6ImpvaG5mb28iLCJuYW1lIjoiam9obmZvb0BnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvMzhmYTAwMjQyM2JkOGM5NDFjNmVkMDU4OGI2MGZmZWQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZqby5wbmciLCJ1cGRhdGVkX2F0IjoiMjAxNy0xMS0yNFQxOTo1NTozNC4xNjhaIiwiaXNzIjoiaHR0cHM6Ly9icnVja2UuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDU5ZmJlMTE5MzcwMzliMjYzYThiMjlhMiIsImF1ZCI6Ims1dTNvMmZpQUE4WHdlWEVFWDYwNEtDd0Nqemp0TVU2IiwiaWF0IjoxNTExNTUzMzM1LCJleHAiOjE1MTE1ODkzMzUsImF0X2hhc2giOiJYWnhkdjFKSG10RjNNbjU2UmNYemlnIiwibm9uY2UiOiJVai1TRjF6UnR2RlpIZ2pfVkhjTTJicEFUS015ZElNRiJ9.OJOhUnNtU8IaVUkfUFSZd9YuGTjb0LptC6AQe0JXiKKBqJ5T5p0LqdkQCQgPOvi5PufoUe-6UUD_hPOw7B02rpZb02vTsbD3dCz6T7rVu8X7CFGvdBpnMNqjl5rh0bSm_6dDnzAIvheaEuQqULRBPlWQNUu2vnHu6PWjz9xIzaZakpB7YnRCjqy3PhM7t7oE-wCi8qUnrkcisRPj9GqKDKV4a5H7V4_MMWgCFQb8v5LDcuvgUvM-uOZot3LQI_kTuQXA1Xnvppqbv-Nc757RK-caWJedtlDV0sTgAuALOGx8kLWk9V1RndwpO86KTK-SQBqB-FnkEhsgR_YR_FhPJw',
-              nonce: 'Uj-SF1zRtvFZHgj_VHcM2bpATKMydIMF'
-            },
-            function() {
-              expect(ssodata.set.calledOnce).to.be.ok();
-              expect(ssodata.set.firstCall.args).to.be.eql([
-                'lastUsedConnection',
-                'johnfoo@gmail.com',
                 'auth0|59fbe11937039b263a8b29a2'
               ]);
               expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
@@ -819,7 +771,7 @@ describe('auth0.WebAuth', function() {
         storage.removeItem.restore();
       }
     });
-    it('should default scope to openid', function(done) {
+    it('should default scope to openid profile email', function(done) {
       var webAuth = new WebAuth({
         domain: 'me.auth0.com',
         redirectUri: 'http://page.com/callback',
@@ -829,7 +781,7 @@ describe('auth0.WebAuth', function() {
       });
       stub(windowHelper, 'redirect', function(url) {
         expect(url).to.be(
-          'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=foobar&state=randomState&scope=openid'
+          'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=foobar&state=randomState&scope=openid%20profile%20email'
         );
         windowHelper.redirect.restore();
         done();

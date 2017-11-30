@@ -13,7 +13,6 @@ TransactionManager.prototype.process = function(options) {
   if (!options.responseType) {
     throw new Error('responseType is required');
   }
-  var lastUsedUsername = options.username || options.email;
   var lastUsedConnection = options.realm || options.connection;
   var responseTypeIncludesIdToken = options.responseType.indexOf('id_token') !== -1;
 
@@ -21,7 +20,6 @@ TransactionManager.prototype.process = function(options) {
     options.appState,
     options.state,
     options.nonce,
-    lastUsedUsername,
     lastUsedConnection,
     responseTypeIncludesIdToken
   );
@@ -40,7 +38,6 @@ TransactionManager.prototype.generateTransaction = function(
   appState,
   state,
   nonce,
-  lastUsedUsername,
   lastUsedConnection,
   generateNonce
 ) {
@@ -51,7 +48,6 @@ TransactionManager.prototype.generateTransaction = function(
     nonce: nonce,
     appState: appState,
     state: state,
-    lastUsedUsername: lastUsedUsername,
     lastUsedConnection: lastUsedConnection
   });
   return {
