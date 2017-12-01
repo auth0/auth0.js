@@ -23,6 +23,12 @@
 ## [v8.11.0](https://github.com/auth0/auth0.js/tree/v8.11.0) (2017-11-07)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.1...v8.11.0)
 
+## Security Improvements:
+
+- Fixed an issue where state would not be automatically checked in some scenarios
+- Forced id_token validation for RS256-signed id_tokens
+- Use /userinfo to get id_token payload for HS256-signed id_tokens
+
 **Added**
 - Add origin and source verification for silent authentication iframe postMessage. [\#510](https://github.com/auth0/auth0.js/pull/510) ([phBalance](https://github.com/phBalance))
 
