@@ -8,7 +8,7 @@ Updated packages are available on npm. To ensure delivery of additional bug fixe
 ```
 {
   "dependencies": {
-    "auth0-js": "^8.12.0"
+    "auth0-js": "^9.0.0"
   }
 }
 ```
