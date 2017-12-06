@@ -94,8 +94,7 @@ Everything happens inside an iframe, so it will not reload your application or r
 ```js
 auth0.checkSession({
   audience: 'https://mystore.com/api/v2',
-  scope: 'read:order write:order',
-  redirectUri: 'https://example.com/auth/silent-callback'
+  scope: 'read:order write:order'
   }, function (err, authResult) {
     // Authentication tokens or error
 });
