@@ -358,6 +358,7 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
   if (typeof withActiveDirectories === 'function') {
     cb = withActiveDirectories;
   }
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
   var clientId = this.baseOptions.clientID;
   var ssodataInformation = ssodata.get() || {};
 

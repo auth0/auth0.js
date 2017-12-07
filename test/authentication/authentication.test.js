@@ -223,7 +223,7 @@ describe('auth0.authentication', function() {
     });
   });
 
-  context.only('getSSOData', function() {
+  context('getSSOData', function() {
     before(function() {
       this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
@@ -244,6 +244,12 @@ describe('auth0.authentication', function() {
     after(function() {
       storage.getItem.restore();
     });
+    it('fails if callback is not a function', function() {
+      var _this = this;
+      expect(function() {
+        _this.auth0.getSSOData(null, null);
+      }).to.throwError();
+    });
     it('works if callback is the second param', function(done) {
       this.auth0.getSSOData(null, function(err, result) {
         done();
@@ -254,7 +260,7 @@ describe('auth0.authentication', function() {
       });
     });
     it('uses correct scope and responseType', function() {
-      this.auth0.getSSOData();
+      this.auth0.getSSOData(function() {});
       expect(this.webAuthSpy.checkSession.lastCall.args[0]).to.be.eql({
         responseType: 'token id_token',
         scope: 'openid profile email',
