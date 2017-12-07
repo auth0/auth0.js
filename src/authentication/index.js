@@ -351,9 +351,14 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
  * Uses {@link checkSession} and localStorage to return data from the last successful authentication request.
  *
  * @method getSSOData
+ * @param {Boolean} withActiveDirectories this parameter is not used anymore. It's here to be backward compatible
  * @param {Function} cb
  */
-Authentication.prototype.getSSOData = function(cb) {
+Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
+  if (typeof withActiveDirectories === 'function') {
+    cb = withActiveDirectories;
+  }
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
   var clientId = this.baseOptions.clientID;
   var ssodataInformation = ssodata.get() || {};
 
