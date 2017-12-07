@@ -247,7 +247,7 @@ describe('auth0.authentication', function() {
     it('uses correct scope and responseType', function() {
       this.auth0.getSSOData();
       expect(this.webAuthSpy.checkSession.lastCall.args[0]).to.be.eql({
-        responseType: 'id_token',
+        responseType: 'token id_token',
         scope: 'openid profile email',
         connection: 'lastUsedConnection'
       });

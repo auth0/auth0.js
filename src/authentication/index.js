@@ -359,7 +359,7 @@ Authentication.prototype.getSSOData = function(cb) {
 
   this.auth0.checkSession(
     {
-      responseType: 'id_token',
+      responseType: 'token id_token',
       scope: 'openid profile email',
       connection: ssodataInformation.lastUsedConnection
     },
