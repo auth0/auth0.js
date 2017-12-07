@@ -223,7 +223,7 @@ describe('auth0.authentication', function() {
     });
   });
 
-  context('getSSOData', function() {
+  context.only('getSSOData', function() {
     before(function() {
       this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
@@ -243,6 +243,15 @@ describe('auth0.authentication', function() {
     });
     after(function() {
       storage.getItem.restore();
+    });
+    it('works if callback is the second param', function(done) {
+      this.auth0.getSSOData(null, function(err, result) {
+        done();
+      });
+
+      this.webAuthSpy.checkSession.lastCall.args[1](null, {
+        idTokenPayload: { sub: 'some-other-id' }
+      });
     });
     it('uses correct scope and responseType', function() {
       this.auth0.getSSOData();
