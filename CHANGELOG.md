@@ -9,7 +9,7 @@ Auth0.js v9 uses our latest embedded login API. This version removes API calls t
 
 The scenarios below use a mix of Cross Origin Authentication and `WebAuth.checkSession`. Read more about Cross Origin Authentication and how to enable Web Origins [here](https://auth0.com/docs/cross-origin-authentication).
 
-We wrote a [Migration Guide](link_to_migration_guide) to make upgrading your app easy. If you need help, please reach out to our amazing support team at https://support.auth0.com.
+We wrote a [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide) to make upgrading your app easy. If you need help, please reach out to our amazing support team at https://support.auth0.com.
 
 **Breaking change**
 `WebAuth.client.getSSOData` now uses `WebAuth.checkSession` and a local cache to obtain the resulting data.
