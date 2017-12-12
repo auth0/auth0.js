@@ -1,5 +1,12 @@
 # Change Log
 
+## [v8.12.1](https://github.com/auth0/auth0.js/tree/v8.12.1) (2017-12-12)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.12.0...v8.12.1)
+
+**Fixed**
+- Fix options.state in WebAuth.validateAuthenticationResponse (#561) [\#591](https://github.com/auth0/auth0.js/pull/591) ([damien-gl](https://github.com/damien-gl))
+# Change Log
+
 ## [v8.12.0](https://github.com/auth0/auth0.js/tree/v8.12.0) (2017-12-01)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.3...v8.12.0)
 
