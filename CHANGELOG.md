@@ -1,5 +1,14 @@
 # Change Log
 
+## [v8.12.0](https://github.com/auth0/auth0.js/tree/v8.12.0) (2017-12-01)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.3...v8.12.0)
+
+**Fixed**
+- Security update for popup callback vulnerability [\#569](https://github.com/auth0/auth0.js/pull/569) ([luisrudge](https://github.com/luisrudge))
+
+See more [here](https://github.com/auth0/auth0.js/blob/v8/security-incidents.md).
+# Change Log
+
 ## [v8.11.3](https://github.com/auth0/auth0.js/tree/v8.11.3) (2017-11-16)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.2...v8.11.3)
 
