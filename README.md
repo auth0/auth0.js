@@ -18,7 +18,7 @@ From CDN
 
 ```html
 <!-- Latest patch release -->
-<script src="http://cdn.auth0.com/js/auth0/9.0.0-beta.5/auth0.min.js"></script>
+<script src="http://cdn.auth0.com/js/auth0/9.0.0-beta.9/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org)
@@ -88,14 +88,13 @@ auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
 });
 ```
 
-- **checkSession(options, callback)**: Allows you to acquire a new token from Auth0 for a user who is already authenticated against the hosted login page for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
+- **checkSession(options, callback)**: Allows you to acquire a new token from Auth0 for a user who already has an SSO session established against Auth0 for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
 Everything happens inside an iframe, so it will not reload your application or redirect away from it.
 
 ```js
 auth0.checkSession({
   audience: 'https://mystore.com/api/v2',
-  scope: 'read:order write:order',
-  redirectUri: 'https://example.com/auth/silent-callback'
+  scope: 'read:order write:order'
   }, function (err, authResult) {
     // Authentication tokens or error
 });

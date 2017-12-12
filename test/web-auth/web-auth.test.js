@@ -5,6 +5,7 @@ var request = require('superagent');
 
 var storage = require('../../src/helper/storage');
 var windowHelper = require('../../src/helper/window');
+var ssodata = require('../../src/helper/ssodata');
 
 var RequestMock = require('../mock/request-mock');
 
@@ -262,9 +263,11 @@ describe('auth0.WebAuth', function() {
 
     beforeEach(function() {
       spy(TransactionManager.prototype, 'getStoredTransaction');
+      spy(ssodata, 'set');
     });
     afterEach(function() {
       TransactionManager.prototype.getStoredTransaction.restore();
+      ssodata.set.restore();
     });
 
     it('should parse a valid hash without id_token', function(done) {
@@ -299,43 +302,96 @@ describe('auth0.WebAuth', function() {
       ); // eslint-disable-line
     });
 
-    it('should return transaction.appState', function(done) {
-      var webAuth = new WebAuth({
-        domain: 'mdocs.auth0.com',
-        redirectUri: 'http://example.com/callback',
-        clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-        responseType: 'token'
-      });
-      TransactionManager.prototype.getStoredTransaction.restore();
-      stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-        return {
-          nonce: 'asfd',
-          appState: 'the-app-state'
-        };
-      });
+    context('when there is a transaction', function() {
+      it('should return transaction.appState', function(done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'token'
+        });
+        TransactionManager.prototype.getStoredTransaction.restore();
+        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+          return {
+            nonce: 'asfd',
+            appState: 'the-app-state'
+          };
+        });
 
-      var data = webAuth.parseHash(
-        {
-          hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-        },
-        function(err, data) {
-          expect(data).to.eql({
-            accessToken: 'VjubIMBmpgQ2W2',
-            idToken: null,
-            idTokenPayload: null,
-            appState: 'the-app-state',
-            refreshToken: 'kajshdgfkasdjhgfas',
-            state: null,
-            expiresIn: null,
-            tokenType: 'Bearer',
-            scope: null
+        var data = webAuth.parseHash(
+          {
+            hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function(err, data) {
+            expect(data).to.eql({
+              accessToken: 'VjubIMBmpgQ2W2',
+              idToken: null,
+              idTokenPayload: null,
+              appState: 'the-app-state',
+              refreshToken: 'kajshdgfkasdjhgfas',
+              state: null,
+              expiresIn: null,
+              tokenType: 'Bearer',
+              scope: null
+            });
+
+            expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+
+            done();
+          }
+        ); // eslint-disable-line
+      });
+      context('when there is a transaction.lastUsedConnection', function() {
+        beforeEach(function() {
+          this.webAuth = new WebAuth({
+            domain: 'brucke.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+            responseType: 'token id_token',
+            __disableExpirationCheck: true
           });
+          TransactionManager.prototype.getStoredTransaction.restore();
+          stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+            return {
+              lastUsedConnection: 'lastUsedConnection'
+            };
+          });
+        });
+        it('sets ssodata with a connection and without a sub when there is no payload', function(
+          done
+        ) {
+          var data = this.webAuth.parseHash(
+            {
+              hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+            },
+            function() {
+              expect(ssodata.set.calledOnce).to.be.ok();
+              expect(ssodata.set.firstCall.args).to.be.eql(['lastUsedConnection', undefined]);
+              expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
 
-          expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+              done();
+            }
+          ); // eslint-disable-line
+        });
+        it('sets ssodata with a connection and a sub when there is a payload', function(done) {
+          var data = this.webAuth.parseHash(
+            {
+              hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJpc3MiOiJodHRwczovL2JydWNrZS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTlmYmUxMTkzNzAzOWIyNjNhOGIyOWEyIiwiYXVkIjoiazV1M28yZmlBQThYd2VYRUVYNjA0S0N3Q2p6anRNVTYiLCJpYXQiOjE1MTE1NTE3ODMsImV4cCI6MTUxMTU4Nzc4MywiYXRfaGFzaCI6IkxGTDMxMlRXWDFGc1VNay00R2gxYWciLCJub25jZSI6IndFT2U3LUxDOG5sMUF1SHA3bnVjRl81TE1WUFZrTUJZIn0.fUJhEIPded3aO4iDrbniwGnAEZHX66Mjl7yCgIxSSCXlgrHlOATvbMi7XGQXNfPjGCivySoalMCS3MikvMGBFPFguChyJZ3myswT6US33hZSTycUYODvWSz8j7PeEpJrHdF4nAO4NvbC4JjogG92Xg2zx0KCZtoLK9datZiWEWHVUEVEXZCwceyowxQ4J5dqDzzLm9_V9qBsUYJtINqMM6jhHazk7OQUFZlE35R3l-Lps2oofqxZf11X7g0bgxo5ykSSr_KDvj9Hx0flk_u-eTTD2XVGMWe1TreJm1KMMuD01PicU1JGsJRA0hqE6Fd943OAEAIM6feMximK22rrHg',
+              nonce: 'wEOe7-LC8nl1AuHp7nucF_5LMVPVkMBY'
+            },
+            function() {
+              expect(ssodata.set.calledOnce).to.be.ok();
+              expect(ssodata.set.firstCall.args).to.be.eql([
+                'lastUsedConnection',
+                'auth0|59fbe11937039b263a8b29a2'
+              ]);
+              expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
 
-          done();
-        }
-      ); // eslint-disable-line
+              done();
+            }
+          ); // eslint-disable-line
+        });
+      });
     });
 
     context('with RS256 id_token', function() {
@@ -598,6 +654,30 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
+
+      it('should return default error if it is not a validation error', function(done) {
+        var expectedError = { error: 'some_error' };
+        stub(WebAuth.prototype, 'validateToken', function(token, nonce, callback) {
+          return callback(expectedError);
+        });
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'token'
+        });
+
+        var data = webAuth.parseHash(
+          {
+            hash: '#token_type=Bearer&id_token=0as98da09s8d_not_a_token'
+          },
+          function(err, data) {
+            expect(err).to.be.eql(expectedError);
+            WebAuth.prototype.validateToken.restore();
+            done();
+          }
+        );
+      });
     });
     context('with HS256 id_token', function() {
       beforeEach(function() {
@@ -765,24 +845,6 @@ describe('auth0.WebAuth', function() {
       }).to.throwException(function(e) {
         expect(e.message).to.be('responseType option is required');
       });
-    });
-    it('should set ssodata.connection', function(done) {
-      stub(storage, 'setItem', function(key, connection) {
-        expect(key).to.be('auth0.ssodata.connection');
-        expect(connection).to.be('foobar');
-        done();
-      });
-      var webAuth = new WebAuth({
-        domain: 'me.auth0.com',
-        redirectUri: 'http://page.com/callback',
-        clientID: '...',
-        scope: 'openid name read:blog',
-        audience: 'urn:site:demo:blog',
-        responseType: 'token',
-        _sendTelemetry: false
-      });
-
-      webAuth.authorize({ connection: 'foobar' });
     });
   });
 
@@ -1577,20 +1639,25 @@ describe('auth0.WebAuth', function() {
         function(err, data) {}
       );
     });
-    it('eventValidator validates the event data type is `authorization_response`', function(done) {
+    it('eventValidator validates the event data type is `authorization_response` and the state matches the transaction state', function(
+      done
+    ) {
       stub(IframeHandler.prototype, 'init', function() {
-        var getEvent = function(type) {
-          return { event: { data: { type: type } } };
+        var getEvent = function(type, state) {
+          return { event: { data: { type: type, response: { state: state } } } };
         };
-        expect(this.eventValidator.isValid(getEvent('wrong'))).to.be(false);
-        expect(this.eventValidator.isValid(getEvent('authorization_response'))).to.be(true);
+        expect(this.eventValidator.isValid(getEvent('wrong', 'wrong'))).to.be(false);
+        expect(this.eventValidator.isValid(getEvent('authorization_response', 'wrong'))).to.be(
+          false
+        );
+        expect(this.eventValidator.isValid(getEvent('wrong', '123'))).to.be(false);
+        expect(this.eventValidator.isValid(getEvent('authorization_response', '123'))).to.be(true);
         done();
       });
-      this.auth0.checkSession({}, function(err, data) {});
+      this.auth0.checkSession({ state: '123' }, function(err, data) {});
     });
     it('timeoutCallback calls callback with error response', function(done) {
       stub(IframeHandler.prototype, 'init', function() {
-        console.log('ca;llleleled');
         this.timeoutCallback();
       });
       this.auth0.checkSession({}, function(err, data) {

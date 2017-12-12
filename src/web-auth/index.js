@@ -43,6 +43,7 @@ function WebAuth(options) {
       redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
       scope: { optional: true, type: 'string', message: 'scope is not valid' },
       audience: { optional: true, type: 'string', message: 'audience is not valid' },
+      popupOrigin: { optional: true, type: 'string', message: 'popupOrigin is not valid' },
       leeway: { optional: true, type: 'number', message: 'leeway is not valid' },
       plugins: { optional: true, type: 'array', message: 'plugins is not valid' },
       _disableDeprecationWarnings: {
@@ -190,32 +191,46 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
 
   var appState = options.state || (transaction && transaction.appState) || null;
 
+  var callback = function(err, payload) {
+    if (err) {
+      return cb(err);
+    }
+    if (transaction && transaction.lastUsedConnection) {
+      var sub;
+      if (payload) {
+        sub = payload.sub;
+      }
+      ssodata.set(transaction.lastUsedConnection, sub);
+    }
+    return cb(null, buildParseHashResponse(parsedHash, appState, payload));
+  };
+
   if (!parsedHash.id_token) {
-    return cb(null, buildParseHashResponse(parsedHash, appState, null));
+    return callback(null, null);
   }
   return this.validateToken(parsedHash.id_token, transactionNonce, function(
     validationError,
     payload
   ) {
     if (!validationError) {
-      return cb(null, buildParseHashResponse(parsedHash, appState, payload));
+      return callback(null, payload);
     }
     if (validationError.error !== 'invalid_token') {
-      return cb(validationError);
+      return callback(validationError);
     }
     // if it's an invalid_token error, decode the token
     var decodedToken = new IdTokenVerifier().decode(parsedHash.id_token);
     // if the alg is not HS256, return the raw error
     if (decodedToken.header.alg !== 'HS256') {
-      return cb(validationError);
+      return callback(validationError);
     }
     // if the alg is HS256, use the /userinfo endpoint to build the payload
     return _this.client.userInfo(parsedHash.access_token, function(errUserInfo, profile) {
       // if the /userinfo request fails, use the validationError instead
       if (errUserInfo) {
-        return cb(validationError);
+        return callback(validationError);
       }
-      return cb(null, buildParseHashResponse(parsedHash, appState, profile));
+      return callback(null, profile);
     });
   });
 };
@@ -285,6 +300,7 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
  * @param {String} [options.postMessageDataType] identifier data type to look for in postMessage event data, where events are initiated from silent callback urls, before accepting a message event is the event expected. A value of false means any postMessage event will trigger a callback.
  * @param {String} [options.postMessageOrigin] origin of redirectUri to expect postMessage response from.  Defaults to the origin of the receiving window. Only used if usePostMessage is truthy.
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
+ * @param {Boolean} [options.usePostMessage] use postMessage to comunicate between the silent callback and the SPA. When false the SDK will attempt to parse the url hash should ignore the url hash and no extra behaviour is needed
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
 WebAuth.prototype.renewAuth = function(options, cb) {
@@ -349,7 +365,6 @@ WebAuth.prototype.renewAuth = function(options, cb) {
  * @param {Object} options
  * @param {String} [options.domain] your Auth0 domain
  * @param {String} [options.clientID] your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard
- * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
  * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
  * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
@@ -486,9 +501,6 @@ WebAuth.prototype.authorize = function(options) {
 
   params = this.transactionManager.process(params);
   params.scope = params.scope || 'openid profile email';
-
-  var connection = params.realm || params.connection;
-  ssodata.set(connection);
 
   windowHelper.redirect(this.client.buildAuthorizeUrl(params));
 };

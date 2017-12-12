@@ -13,12 +13,14 @@ TransactionManager.prototype.process = function(options) {
   if (!options.responseType) {
     throw new Error('responseType is required');
   }
+  var lastUsedConnection = options.realm || options.connection;
   var responseTypeIncludesIdToken = options.responseType.indexOf('id_token') !== -1;
 
   var transaction = this.generateTransaction(
     options.appState,
     options.state,
     options.nonce,
+    lastUsedConnection,
     responseTypeIncludesIdToken
   );
   if (!options.state) {
@@ -32,16 +34,22 @@ TransactionManager.prototype.process = function(options) {
   return options;
 };
 
-TransactionManager.prototype.generateTransaction = function(appState, state, nonce, generateNonce) {
+TransactionManager.prototype.generateTransaction = function(
+  appState,
+  state,
+  nonce,
+  lastUsedConnection,
+  generateNonce
+) {
   state = state || random.randomString(this.keyLength);
   nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
 
   storage.setItem(this.namespace + state, {
     nonce: nonce,
     appState: appState,
-    state: state
+    state: state,
+    lastUsedConnection: lastUsedConnection
   });
-
   return {
     state: state,
     nonce: nonce

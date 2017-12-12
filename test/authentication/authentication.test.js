@@ -233,18 +233,38 @@ describe('auth0.authentication', function() {
         _sendTelemetry: false
       });
       stub(storage, 'getItem', function(key) {
-        expect(key).to.be('auth0.ssodata.connection');
-        return 'the-connection';
+        expect(key).to.be('auth0.ssodata');
+        return JSON.stringify({
+          lastUsedConnection: 'lastUsedConnection',
+          lastUsedUsername: 'lastUsedUsername',
+          lastUsedSub: 'the-user-id'
+        });
       });
     });
     after(function() {
       storage.getItem.restore();
     });
+    it('fails if callback is not a function', function() {
+      var _this = this;
+      expect(function() {
+        _this.auth0.getSSOData(null, null);
+      }).to.throwError();
+    });
+    it('works if callback is the second param', function(done) {
+      this.auth0.getSSOData(null, function(err, result) {
+        done();
+      });
+
+      this.webAuthSpy.checkSession.lastCall.args[1](null, {
+        idTokenPayload: { sub: 'some-other-id' }
+      });
+    });
     it('uses correct scope and responseType', function() {
-      this.auth0.getSSOData();
+      this.auth0.getSSOData(function() {});
       expect(this.webAuthSpy.checkSession.lastCall.args[0]).to.be.eql({
         responseType: 'token id_token',
-        scope: 'openid profile email'
+        scope: 'openid profile email',
+        connection: 'lastUsedConnection'
       });
     });
     it('returns sso:false if checkSession fails', function(done) {
@@ -255,6 +275,17 @@ describe('auth0.authentication', function() {
       });
 
       this.webAuthSpy.checkSession.lastCall.args[1]({ some: 'error' });
+    });
+    it("returns sso:false if lastUsedSub is different from checkSesion's sub", function(done) {
+      this.auth0.getSSOData(function(err, result) {
+        expect(err).to.be.eql(null);
+        expect(result).to.be.eql({ sso: false });
+        done();
+      });
+
+      this.webAuthSpy.checkSession.lastCall.args[1](null, {
+        idTokenPayload: { sub: 'some-other-id' }
+      });
     });
     it('do not return error if error === login_required', function(done) {
       this.auth0.getSSOData(function(err, result) {
@@ -272,7 +303,7 @@ describe('auth0.authentication', function() {
       this.auth0.getSSOData(function(err, result) {
         expect(err).to.be.eql({
           error: 'consent_required',
-          error_description: 'Consent required. When using `getSSOData`, the user has to be authenticated with the following the scope: `openid profile email`.'
+          error_description: 'Consent required. When using `getSSOData`, the user has to be authenticated with the following scope: `openid profile email`.'
         });
         expect(result).to.be.eql({ sso: false });
         done();
@@ -283,13 +314,13 @@ describe('auth0.authentication', function() {
         error_description: 'foobar'
       });
     });
-    it('returns ssoData object with email as lastUsedUsername', function(done) {
+    it('returns ssoData object with lastUsedConnection and idtokenpayload.name', function(done) {
       this.auth0.getSSOData(function(err, result) {
         expect(err).to.be(null);
         expect(result).to.be.eql({
-          lastUsedConnection: { name: 'the-connection' },
+          lastUsedConnection: { name: 'lastUsedConnection' },
           lastUsedUserID: 'the-user-id',
-          lastUsedUsername: 'the@user.com',
+          lastUsedUsername: 'last-used-user-name',
           lastUsedClientID: '...',
           sessionClients: ['...'],
           sso: true
@@ -298,18 +329,18 @@ describe('auth0.authentication', function() {
       });
 
       this.webAuthSpy.checkSession.lastCall.args[1](null, {
-        idTokenPayload: { sub: 'the-user-id', email: 'the@user.com', name: 'Will not be used' }
+        idTokenPayload: { sub: 'the-user-id', name: 'last-used-user-name' }
       });
     });
-    it('returns ssoData object with name as lastUsedUsername when email is not available', function(
+    it('returns ssoData object with lastUsedConnection and idtokenpayload.email when there is no name', function(
       done
     ) {
       this.auth0.getSSOData(function(err, result) {
         expect(err).to.be(null);
         expect(result).to.be.eql({
-          lastUsedConnection: { name: 'the-connection' },
+          lastUsedConnection: { name: 'lastUsedConnection' },
           lastUsedUserID: 'the-user-id',
-          lastUsedUsername: 'The User',
+          lastUsedUsername: 'last-used-user-email',
           lastUsedClientID: '...',
           sessionClients: ['...'],
           sso: true
@@ -318,7 +349,7 @@ describe('auth0.authentication', function() {
       });
 
       this.webAuthSpy.checkSession.lastCall.args[1](null, {
-        idTokenPayload: { sub: 'the-user-id', name: 'The User' }
+        idTokenPayload: { sub: 'the-user-id', email: 'last-used-user-email' }
       });
     });
   });

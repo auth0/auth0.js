@@ -140,6 +140,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
   }
 
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
+  params = objectHelper.blacklist(params, ['username']);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 
   qString = qs.stringify(params);
@@ -350,14 +351,22 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
  * Uses {@link checkSession} and localStorage to return data from the last successful authentication request.
  *
  * @method getSSOData
+ * @param {Boolean} withActiveDirectories this parameter is not used anymore. It's here to be backward compatible
  * @param {Function} cb
  */
-Authentication.prototype.getSSOData = function(cb) {
+Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
+  if (typeof withActiveDirectories === 'function') {
+    cb = withActiveDirectories;
+  }
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
   var clientId = this.baseOptions.clientID;
+  var ssodataInformation = ssodata.get() || {};
+
   this.auth0.checkSession(
     {
       responseType: 'token id_token',
-      scope: 'openid profile email'
+      scope: 'openid profile email',
+      connection: ssodataInformation.lastUsedConnection
     },
     function(err, result) {
       if (err) {
@@ -366,17 +375,22 @@ Authentication.prototype.getSSOData = function(cb) {
         }
         if (err.error === 'consent_required') {
           err.error_description =
-            'Consent required. When using `getSSOData`, the user has to be authenticated with the following the scope: `openid profile email`.';
+            'Consent required. When using `getSSOData`, the user has to be authenticated with the following scope: `openid profile email`.';
         }
         return cb(err, { sso: false });
       }
-      var connectionName = ssodata.get();
+      if (
+        ssodataInformation.lastUsedSub &&
+        ssodataInformation.lastUsedSub !== result.idTokenPayload.sub
+      ) {
+        return cb(err, { sso: false });
+      }
       return cb(null, {
         lastUsedConnection: {
-          name: connectionName
+          name: ssodataInformation.lastUsedConnection
         },
         lastUsedUserID: result.idTokenPayload.sub,
-        lastUsedUsername: result.idTokenPayload.email || result.idTokenPayload.name,
+        lastUsedUsername: result.idTokenPayload.name || result.idTokenPayload.email,
         lastUsedClientID: clientId,
         sessionClients: [clientId],
         sso: true

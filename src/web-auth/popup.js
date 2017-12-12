@@ -1,18 +1,18 @@
 var urljoin = require('url-join');
-var WinChan = require('winchan');
 
 var urlHelper = require('../helper/url');
 var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 var PopupHandler = require('../helper/popup-handler');
 var objectHelper = require('../helper/object');
-var ssodata = require('../helper/ssodata');
+var windowHelper = require('../helper/window');
 var Warn = require('../helper/warn');
 var TransactionManager = require('./transaction-manager');
 var CrossOriginAuthentication = require('./cross-origin-authentication');
 
 function Popup(webAuth, options) {
   this.baseOptions = options;
+  this.baseOptions.popupOrigin = options.popupOrigin;
   this.client = webAuth.client;
   this.webAuth = webAuth;
 
@@ -84,10 +84,17 @@ Popup.prototype.getPopupHandler = function(options, preload) {
  */
 Popup.prototype.callback = function(options) {
   var _this = this;
-  WinChan.onOpen(function(popupOrigin, r, cb) {
-    _this.webAuth.parseHash(options || {}, function(err, data) {
-      return cb(err || data);
-    });
+  options = options || {};
+  var originUrl =
+    options.popupOrigin || this.baseOptions.popupOrigin || windowHelper.getWindow().origin;
+  _this.webAuth.parseHash(options || {}, function(err, data) {
+    // {a, d} is WinChan's message format.
+    // We have to keep the same format because we're opening the popup with WinChan.
+    var response = { a: 'response', d: data };
+    if (err) {
+      response = { a: 'error', d: err };
+    }
+    windowHelper.getWindow().opener.postMessage(JSON.stringify(response), originUrl);
   });
 };
 
@@ -140,9 +147,6 @@ Popup.prototype.authorize = function(options, cb) {
       responseType: { type: 'string', message: 'responseType option is required' }
     }
   );
-
-  var connection = params.realm || params.connection;
-  ssodata.set(connection);
 
   // the relay page should not be necesary as long it happens in the same domain
   // (a redirectUri shoul be provided). It is necesary when using OWP
