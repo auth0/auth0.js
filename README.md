@@ -14,6 +14,8 @@ Client Side Javascript toolkit for Auth0 API
 
 Need help migrating from v8? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide)
 
+If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html)
+
 ## Install
 
 From CDN
