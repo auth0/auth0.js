@@ -390,7 +390,7 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
           name: ssodataInformation.lastUsedConnection
         },
         lastUsedUserID: result.idTokenPayload.sub,
-        lastUsedUsername: result.idTokenPayload.name || result.idTokenPayload.email,
+        lastUsedUsername: result.idTokenPayload.email || result.idTokenPayload.name,
         lastUsedClientID: clientId,
         sessionClients: [clientId],
         sso: true

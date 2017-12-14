@@ -314,7 +314,9 @@ describe('auth0.authentication', function() {
         error_description: 'foobar'
       });
     });
-    it('returns ssoData object with lastUsedConnection and idtokenpayload.name', function(done) {
+    it('returns ssoData object with lastUsedConnection and idtokenpayload.name when there is no idtokenpayload.email', function(
+      done
+    ) {
       this.auth0.getSSOData(function(err, result) {
         expect(err).to.be(null);
         expect(result).to.be.eql({
@@ -332,7 +334,7 @@ describe('auth0.authentication', function() {
         idTokenPayload: { sub: 'the-user-id', name: 'last-used-user-name' }
       });
     });
-    it('returns ssoData object with lastUsedConnection and idtokenpayload.email when there is no name', function(
+    it('returns ssoData object with lastUsedConnection and idtokenpayload.email by default', function(
       done
     ) {
       this.auth0.getSSOData(function(err, result) {
@@ -349,7 +351,7 @@ describe('auth0.authentication', function() {
       });
 
       this.webAuthSpy.checkSession.lastCall.args[1](null, {
-        idTokenPayload: { sub: 'the-user-id', email: 'last-used-user-email' }
+        idTokenPayload: { sub: 'the-user-id', email: 'last-used-user-email', name: 'do not use me' }
       });
     });
   });
