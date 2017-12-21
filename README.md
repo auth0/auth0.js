@@ -10,7 +10,11 @@
 
 Client Side Javascript toolkit for Auth0 API
 
-> This is a BETA release. The recommended version is [https://auth0.com/docs/libraries/auth0js/v8](https://auth0.com/docs/libraries/auth0js/v8)
+> Auth0.js v9 uses our latest embedded login API. This version **is not supported in centralized login scenarios (i.e. Hosted Login Pages).** If you are using a Hosted Login Page, keep using Auth0.js v8.
+
+Need help migrating from v8? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide)
+
+If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html)
 
 ## Install
 
@@ -18,7 +22,7 @@ From CDN
 
 ```html
 <!-- Latest patch release -->
-<script src="http://cdn.auth0.com/js/auth0/9.0.0-beta.10/auth0.min.js"></script>
+<script src="http://cdn.auth0.com/js/auth0/9.0.0/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org)

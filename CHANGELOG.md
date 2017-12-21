@@ -1,52 +1,28 @@
 # Change Log
 
-## [v9.0.0-beta.10](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.10) (2017-12-14)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.9...v9.0.0-beta.10)
+## [v9.0.0](https://github.com/auth0/auth0.js/tree/v9.0.0) (2017-12-07)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.9...v8.10.1)
 # Change Log
 
-## [v9.0.0-beta.9](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.9) (2017-12-07)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.8...v9.0.0-beta.9)
-# Change Log
+**Breaking change**
+Auth0.js v9 uses our latest embedded login API. This version removes API calls to `usernamepassword/login` and `user/ssodata` and **is not supported in centralized login scenarios (i.e. Hosted Login Pages).** If you are using a Hosted Login Page, keep using Auth0.js v8.
 
-## [v9.0.0-beta.8](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.8) (2017-11-30)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.7...v9.0.0-beta.8)
-# Change Log
+The scenarios below use a mix of Cross Origin Authentication and `WebAuth.checkSession`. Read more about Cross Origin Authentication and how to enable Web Origins [here](https://auth0.com/docs/cross-origin-authentication).
 
-## [v9.0.0-beta.7](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.7) (2017-11-28)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.6...v9.0.0-beta.7)
-# Change Log
+We wrote a [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide) to make upgrading your app easy. If you need help, please reach out to our amazing support team at https://support.auth0.com.
 
-## [v9.0.0-beta.6](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.6) (2017-11-27)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.5...v9.0.0-beta.6)
-# Change Log
+**Breaking change**
+`WebAuth.client.getSSOData` now uses `WebAuth.checkSession` and a local cache to obtain the resulting data.
 
-## [v9.0.0-beta.5](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.5) (2017-11-03)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.4...v9.0.0-beta.5)
-# Change Log
+**Breaking change**
+`WebAuth.client.loginWithCredentials` now uses Cross Origin Authentication to handle authentication requests.
 
-- Don't return an error in `getSSOData` when the error is `login_required`. [\#544](https://github.com/auth0/auth0.js/pull/544)
+**Breaking change**
+`WebAuth.client.signupAndLogin` now uses Cross Origin Authentication to handle the authentication request after the signup.
 
-## [v9.0.0-beta.4](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.4) (2017-11-03)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.3...v9.0.0-beta.4)
-# Change Log
+**Breaking change**
+`WebAuth.popup.loginWithCredentials` now uses Cross Origin Authentication and `WebAuth.checkSession` to handle authentication requests without making a page redirect.
 
-- Adding `getSSOData` method. Fix state checking. Fix appState/appStatus usage. [\#539](https://github.com/auth0/auth0.js/pull/539).
-
-## [v9.0.0-beta.3](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.3) (2017-10-26)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.2...v9.0.0-beta.3)
-# Change Log
-
-- Changing `popup.loginWithCredentials` to work with Cross Origin Authentication and web_message flows. [\#528](https://github.com/auth0/auth0.js/pull/528)
-
-## [v9.0.0-beta.2](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.2) (2017-10-19)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.1...v9.0.0-beta.2)
-# Change Log
-- Better handling errors in `checkSession`. [\#524](https://github.com/auth0/auth0.js/pull/524)
-
-## [v9.0.0-beta.1](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.1) (2017-10-19)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.1...v9.0.0-beta.1)
-# Change Log
-- Removes a few legacy endpoints and deprecates `auth0.client.loginWithCredentials`, which is now calling the co/authenticate method instead of usernamepassword/login. [\#521](https://github.com/auth0/auth0.js/pull/521)
 
 ## [v8.10.1](https://github.com/auth0/auth0.js/tree/v8.10.1) (2017-09-19)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.0...v8.10.1)
