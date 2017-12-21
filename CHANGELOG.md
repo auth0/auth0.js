@@ -1,8 +1,7 @@
 # Change Log
 
-## [v9.0.0](https://github.com/auth0/auth0.js/tree/v9.0.0) (2017-12-07)
+## [v9.0.0](https://github.com/auth0/auth0.js/tree/v9.0.0) (2017-12-21)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.9...v8.10.1)
-# Change Log
 
 **Breaking change**
 Auth0.js v9 uses our latest embedded login API. This version removes API calls to `usernamepassword/login` and `user/ssodata` and **is not supported in centralized login scenarios (i.e. Hosted Login Pages).** If you are using a Hosted Login Page, keep using Auth0.js v8.
