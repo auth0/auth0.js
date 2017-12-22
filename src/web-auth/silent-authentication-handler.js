@@ -11,8 +11,7 @@ function SilentAuthenticationHandler(options) {
   this.postMessageOrigin =
     options.postMessageOrigin ||
     windowHelper.getWindow().origin ||
-    windowHelper.getWindow().location.protocol + '//' + windowHelper.getWindow().location.hostname
-      + (windowHelper.getWindow().location.port ? windowHelper.getWindow().location.port : '');
+    windowHelper.getWindow().location.origin;
 }
 
 SilentAuthenticationHandler.create = function(options) {
