@@ -157,7 +157,7 @@ Provides an API Client for the Auth0 Management API (only methods meant to be us
 ```js
 var auth0 = new auth0.Management({
   domain: "{YOUR_AUTH0_DOMAIN}",
-  token: "{YOUR_AUTH0_API_TOKEN}"
+  token: "{TOKEN_FROM_THE_USER}"
 });
 ```
 
