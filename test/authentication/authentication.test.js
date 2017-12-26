@@ -264,7 +264,8 @@ describe('auth0.authentication', function() {
       expect(this.webAuthSpy.checkSession.lastCall.args[0]).to.be.eql({
         responseType: 'token id_token',
         scope: 'openid profile email',
-        connection: 'lastUsedConnection'
+        connection: 'lastUsedConnection',
+        timeout: 5000
       });
     });
     it('returns sso:false if checkSession fails', function(done) {
