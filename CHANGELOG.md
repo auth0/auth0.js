@@ -1,5 +1,12 @@
 # Change Log
 
+## [v9.0.1](https://github.com/auth0/auth0.js/tree/v9.0.1) (2017-12-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0...v9.0.1)
+
+**Changed**
+- setting getSSOData timeout to 5s [\#602](https://github.com/auth0/auth0.js/pull/602) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
 ## [v9.0.0](https://github.com/auth0/auth0.js/tree/v9.0.0) (2017-12-21)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.9...v8.10.1)
 
