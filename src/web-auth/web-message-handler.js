@@ -1,5 +1,6 @@
 var IframeHandler = require('../helper/iframe-handler');
 var objectHelper = require('../helper/object');
+var windowHelper = require('../helper/window');
 
 function runWebMessageFlow(authorizeUrl, options, callback) {
   var handler = new IframeHandler({
@@ -11,8 +12,10 @@ function runWebMessageFlow(authorizeUrl, options, callback) {
     timeout: options.timeout,
     eventValidator: {
       isValid: function(eventData) {
-        return eventData.event.data.type === 'authorization_response' 
-          && options.state === eventData.event.data.response.state;
+        return (
+          eventData.event.data.type === 'authorization_response' &&
+          options.state === eventData.event.data.response.state
+        );
       }
     },
     timeoutCallback: function() {
@@ -33,6 +36,20 @@ WebMessageHandler.prototype.run = function(options, cb) {
   var _this = this;
   options.responseMode = 'web_message';
   options.prompt = 'none';
+
+  var currentOrigin = windowHelper.getOrigin();
+  var redirectUriOrigin = objectHelper.getOriginFromUrl(options.redirectUri);
+  if (currentOrigin !== redirectUriOrigin) {
+    return cb({
+      error: 'origin_mismatch',
+      error_description: "The redirectUri's origin (" +
+        redirectUriOrigin +
+        ") should match the window's origin (" +
+        currentOrigin +
+        ').'
+    });
+  }
+
   runWebMessageFlow(this.webAuth.client.buildAuthorizeUrl(options), options, function(
     err,
     eventData

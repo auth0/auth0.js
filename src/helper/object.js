@@ -117,6 +117,15 @@ function toCamelCase(object, exceptions) {
   }, {});
 }
 
+function getOriginFromUrl(url) {
+  if (!url) {
+    return undefined;
+  }
+  var anchor = document.createElement('a');
+  anchor.href = url;
+  return anchor.origin;
+}
+
 module.exports = {
   toSnakeCase: toSnakeCase,
   toCamelCase: toCamelCase,
@@ -124,5 +133,6 @@ module.exports = {
   merge: merge,
   pick: pick,
   getKeysNotIn: getKeysNotIn,
-  extend: extend
+  extend: extend,
+  getOriginFromUrl: getOriginFromUrl
 };

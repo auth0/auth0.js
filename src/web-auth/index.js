@@ -377,6 +377,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
     .merge(this.baseOptions, [
       'clientID',
       'responseType',
+      'redirectUri',
       'scope',
       'audience',
       '_csrf',
@@ -387,7 +388,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
     .with(options);
 
   if (params.responseType === 'code') {
-    return cb(new Error("responseType can't be `code`"));
+    return cb({ error: 'error', error_description: "responseType can't be `code`" });
   }
 
   if (!options.nonce) {
