@@ -93,7 +93,7 @@ auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
 ```
 
 - **checkSession(options, callback)**: Allows you to acquire a new token from Auth0 for a user who already has an SSO session established against Auth0 for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
-Everything happens inside an iframe, so it will not reload your application or redirect away from it. 
+Everything happens inside an iframe, so it will not reload your application or redirect away from it.
 
 ```js
 auth0.checkSession({
