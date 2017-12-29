@@ -1,5 +1,12 @@
 # Change Log
 
+## [v9.0.2](https://github.com/auth0/auth0.js/tree/v9.0.2) (2017-12-29)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.1...v9.0.2)
+
+**Fixed**
+- Blacklisting invalid params in authorize url [\#611](https://github.com/auth0/auth0.js/pull/611) ([luisrudge](https://github.com/luisrudge))
+# Change Log
+
 ## [v9.0.1](https://github.com/auth0/auth0.js/tree/v9.0.1) (2017-12-26)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0...v9.0.1)
 
