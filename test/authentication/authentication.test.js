@@ -65,7 +65,7 @@ describe('auth0.authentication', function() {
     });
 
     ['username', 'popupOptions', 'domain', 'tenant', 'timeout'].forEach(function(param) {
-      it.only('should remove parameter: ' + param, function() {
+      it('should remove parameter: ' + param, function() {
         var options = {};
         options[param] = 'foobar';
         var url = this.auth0.buildAuthorizeUrl(options);

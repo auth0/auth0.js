@@ -92,7 +92,7 @@ describe('auth0.WebAuth.popup', function() {
     it('should default scope to openid', function(done) {
       stub(PopupHandler.prototype, 'load', function(url) {
         expect(url).to.be(
-          'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&tenant=me&connection=the_connection&state=123&nonce=456&scope=openid'
+          'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&state=123&nonce=456&scope=openid'
         );
         storage.setItem.restore();
         TransactionManager.prototype.process.restore();
