@@ -4,6 +4,7 @@
 
 var assert = require('./assert');
 var objectAssign = require('./object-assign');
+var windowHelper = require('./window');
 
 function pick(object, keys) {
   return keys.reduce(function(prev, key) {
@@ -121,7 +122,8 @@ function getOriginFromUrl(url) {
   if (!url) {
     return undefined;
   }
-  var anchor = document.createElement('a');
+  var doc = windowHelper.getDocument();
+  var anchor = doc.createElement('a');
   anchor.href = url;
   return anchor.origin;
 }
