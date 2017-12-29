@@ -64,6 +64,17 @@ describe('auth0.authentication', function() {
       });
     });
 
+    ['username', 'popupOptions', 'domain', 'tenant', 'timeout'].forEach(function(param) {
+      it.only('should remove parameter: ' + param, function() {
+        var options = {};
+        options[param] = 'foobar';
+        var url = this.auth0.buildAuthorizeUrl(options);
+        expect(url).to.be(
+          'https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback'
+        );
+      });
+    });
+
     it('should return a url using the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl({ state: '1234' });
 
