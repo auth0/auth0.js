@@ -386,6 +386,10 @@ WebAuth.prototype.checkSession = function(options, cb) {
     ])
     .with(options);
 
+  if (params.responseType === 'code') {
+    return cb(new Error("responseType can't be `code`"));
+  }
+
   if (!options.nonce) {
     params = this.transactionManager.process(params);
   }
