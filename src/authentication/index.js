@@ -139,8 +139,14 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
     params.connection_scope = params.connection_scope.join(',');
   }
 
+  params = objectHelper.blacklist(params, [
+    'username',
+    'popupOptions',
+    'domain',
+    'tenant',
+    'timeout'
+  ]);
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
-  params = objectHelper.blacklist(params, ['username']);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 
   qString = qs.stringify(params);
@@ -366,7 +372,8 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
     {
       responseType: 'token id_token',
       scope: 'openid profile email',
-      connection: ssodataInformation.lastUsedConnection
+      connection: ssodataInformation.lastUsedConnection,
+      timeout: 5000
     },
     function(err, result) {
       if (err) {

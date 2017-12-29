@@ -64,6 +64,17 @@ describe('auth0.authentication', function() {
       });
     });
 
+    ['username', 'popupOptions', 'domain', 'tenant', 'timeout'].forEach(function(param) {
+      it('should remove parameter: ' + param, function() {
+        var options = {};
+        options[param] = 'foobar';
+        var url = this.auth0.buildAuthorizeUrl(options);
+        expect(url).to.be(
+          'https://me.auth0.com/authorize?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback'
+        );
+      });
+    });
+
     it('should return a url using the default settings', function() {
       var url = this.auth0.buildAuthorizeUrl({ state: '1234' });
 
@@ -264,7 +275,8 @@ describe('auth0.authentication', function() {
       expect(this.webAuthSpy.checkSession.lastCall.args[0]).to.be.eql({
         responseType: 'token id_token',
         scope: 'openid profile email',
-        connection: 'lastUsedConnection'
+        connection: 'lastUsedConnection',
+        timeout: 5000
       });
     });
     it('returns sso:false if checkSession fails', function(done) {
