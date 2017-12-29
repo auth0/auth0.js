@@ -108,6 +108,8 @@ The contents of `authResult` are identical to those returned by `parseHash()`.
 
 > **Important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `checkSession`.
 
+> **Important:** Because there is no redirect in this method, `responseType: 'code'` is not supported and will throw an error.
+
 Remember to add the URL where the authorization request originates from, to the Allowed Web Origins list of your Auth0 client in the [Dashboard](https://manage.auth0.com/) under your client's **Settings**.
 
 - **client.login(options, callback)**: Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
