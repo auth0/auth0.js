@@ -182,6 +182,13 @@ describe('handlers silent-authentication-handler', function() {
         validator.isValid({
           event: {
             type: 'load'
+          },
+          sourceObject: {
+            contentWindow: {
+              location: {
+                protocol: 'https:'
+              }
+            }
           }
         })
       ).to.be(true);
@@ -252,7 +259,38 @@ describe('handlers silent-authentication-handler', function() {
       });
       var validator = sah.getEventValidator();
 
-      expect(validator.isValid({ event: { type: 'load' } })).to.be(true);
+      expect(validator.isValid({
+        event: {
+          type: 'load'
+        },
+        sourceObject: {
+          contentWindow: {
+            location: {
+              protocol: 'https:'
+            }
+          }
+        }
+      })).to.be(true);
+    });
+
+    it('should negatively validate load event types for "about:" protocol', function() {
+      var sah = new SilentAuthenticationHandler({
+        postMessageDataType: false
+      });
+      var validator = sah.getEventValidator();
+
+      expect(validator.isValid({
+          event: {
+            type: 'load'
+          },
+          sourceObject: {
+            contentWindow: {
+              location: {
+                protocol: 'about:'
+              }
+            }
+          }
+      })).to.be(false);
     });
   });
 });
