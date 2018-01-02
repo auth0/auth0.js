@@ -10,7 +10,7 @@
 
 Client Side Javascript toolkit for Auth0 API
 
-> Auth0.js v9 uses our latest embedded login API. This version **is not supported in centralized login scenarios (i.e. Hosted Login Pages).** If you are using a Hosted Login Page, keep using Auth0.js v8.
+> Auth0.js v9 uses our latest embedded login API. This version **cannot be used inside Auth0-Hosted Login Pages** . If you are using a Hosted Login Page, keep using Auth0.js v8.
 
 Need help migrating from v8? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide)
 
