@@ -10,8 +10,9 @@ function SilentAuthenticationHandler(options) {
   // prefer origin from options, fallback to origin from browser, and some browsers (for example MS Edge) don't support origin; fallback to construct origin manually
   this.postMessageOrigin =
     options.postMessageOrigin ||
-    windowHelper.getWindow().origin ||
-    windowHelper.getWindow().location.origin;
+    windowHelper.getWindow().location.origin ||
+    windowHelper.getWindow().location.protocol + '//' + windowHelper.getWindow().location.hostname
+      + (windowHelper.getWindow().location.port ? ':' + windowHelper.getWindow().location.port : '');
 }
 
 SilentAuthenticationHandler.create = function(options) {
