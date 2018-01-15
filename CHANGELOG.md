@@ -1,4 +1,3 @@
-# Change Log
 
 ## [v8.12.2](https://github.com/auth0/auth0.js/tree/v8.12.2) (2018-01-15)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.12.1...v8.12.2)
@@ -6,14 +5,12 @@
 **Fixed**
 - Do not consider a load event valid if protocol is "about:" (v8) [\#620](https://github.com/auth0/auth0.js/pull/620) ([damien-gl](https://github.com/damien-gl))
 - Use window.location.origin instead of window.origin [\#598](https://github.com/auth0/auth0.js/pull/598) ([thoean](https://github.com/thoean))
-# Change Log
 
 ## [v8.12.1](https://github.com/auth0/auth0.js/tree/v8.12.1) (2017-12-12)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.12.0...v8.12.1)
 
 **Fixed**
 - Fix options.state in WebAuth.validateAuthenticationResponse (#561) [\#591](https://github.com/auth0/auth0.js/pull/591) ([damien-gl](https://github.com/damien-gl))
-# Change Log
 
 ## [v8.12.0](https://github.com/auth0/auth0.js/tree/v8.12.0) (2017-12-01)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.3...v8.12.0)
@@ -22,7 +19,6 @@
 - Security update for popup callback vulnerability [\#569](https://github.com/auth0/auth0.js/pull/569) ([luisrudge](https://github.com/luisrudge))
 
 See more [here](https://github.com/auth0/auth0.js/blob/v8/security-incidents.md).
-# Change Log
 
 ## [v8.11.3](https://github.com/auth0/auth0.js/tree/v8.11.3) (2017-11-16)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.2...v8.11.3)
@@ -30,19 +26,16 @@ See more [here](https://github.com/auth0/auth0.js/blob/v8/security-incidents.md)
 **Fixed**
 - Set the url after the iframe is appended to the dom [\#563](https://github.com/auth0/auth0.js/pull/563)
 
-# Change Log
 
 ## [v8.11.2](https://github.com/auth0/auth0.js/tree/v8.11.2) (2017-11-09)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.1...v8.11.2)
 - Fix transaction not being created with loginWithCredentials [\#560](https://github.com/auth0/auth0.js/pull/560)
 
-# Change Log
 
 ## [v8.11.1](https://github.com/auth0/auth0.js/tree/v8.11.1) (2017-11-08)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.11.0...v8.11.1)
 - Whitelisting realm param [\#556](https://github.com/auth0/auth0.js/pull/556)
 
-# Change Log
 
 ## [v8.11.0](https://github.com/auth0/auth0.js/tree/v8.11.0) (2017-11-07)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.1...v8.11.0)
@@ -61,14 +54,12 @@ See more [here](https://github.com/auth0/auth0.js/blob/v8/security-incidents.md)
 
 **Fixed**
 - Correctly checking nonce and state [\#548](https://github.com/auth0/auth0.js/pull/548) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.10.1](https://github.com/auth0/auth0.js/tree/v8.10.1) (2017-09-19)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.0...v8.10.1)
 
 **Changed**
 - Removing renewSession and keeping only checkSession [\#505](https://github.com/auth0/auth0.js/pull/505) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.10.0](https://github.com/auth0/auth0.js/tree/v8.10.0) (2017-09-18)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.3...v8.10.0)
@@ -79,28 +70,27 @@ See more [here](https://github.com/auth0/auth0.js/blob/v8/security-incidents.md)
 **Fixed**
 - Fixing tenant override in popup mode [\#501](https://github.com/auth0/auth0.js/pull/501) ([luisrudge](https://github.com/luisrudge))
 - Allow overriding the timeout as part of the renewAuth method [\#497](https://github.com/auth0/auth0.js/pull/497) ([dctoon](https://github.com/dctoon))
-# Change Log
+
 
 ## [v8.9.3](https://github.com/auth0/auth0.js/tree/v8.9.3) (2017-08-21)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.2...v8.9.3)
 
 **Fixed**
 - Using transaction manager on passwordlessStart [\#492](https://github.com/auth0/auth0.js/pull/492) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.9.2](https://github.com/auth0/auth0.js/tree/v8.9.2) (2017-08-17)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.1...v8.9.2)
 
 **Fixed**
 - Fix passwordlessVerify not sending nonce [\#489](https://github.com/auth0/auth0.js/pull/489) ([luisrudge](https://github.com/luisrudge))
-# Change Log
+
 
 ## [v8.9.1](https://github.com/auth0/auth0.js/tree/v8.9.1) (2017-08-11)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.0...v8.9.1)
 
 **Fixed**
 - Fixed credentialType url [\#487](https://github.com/auth0/auth0.js/pull/487) ([luisrudge](https://github.com/luisrudge))
-# Change Log
+
 
 ## [v8.9.0](https://github.com/auth0/auth0.js/tree/v8.9.0) (2017-08-10)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.8.0...v8.9.0)
@@ -114,7 +104,7 @@ See more [here](https://github.com/auth0/auth0.js/blob/v8/security-incidents.md)
 
 **Fixed**
 - Send empty verifier when can't access sessionStorage [\#470](https://github.com/auth0/auth0.js/pull/470) ([luisrudge](https://github.com/luisrudge))
-# Change Log
+
 
 ## [v8.8.0](https://github.com/auth0/auth0.js/tree/v8.8.0) (2017-06-20)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.7.0...v8.8.0)
@@ -142,7 +132,7 @@ See more [here](https://github.com/auth0/auth0.js/blob/v8/security-incidents.md)
 - Add login_ticket to params whitelist [\#442](https://github.com/auth0/auth0.js/pull/442) ([luisrudge](https://github.com/luisrudge))
 - Fix decoding base64 string with special characters [\#440](https://github.com/auth0/auth0.js/pull/440) ([luisrudge](https://github.com/luisrudge))
 - Fixed issues with overrides not being used [\#430](https://github.com/auth0/auth0.js/pull/430) ([sandrinodimattia](https://github.com/sandrinodimattia))
-# Change Log
+
 
 ## [v8.6.1](https://github.com/auth0/auth0.js/tree/v8.6.1) (2017-05-08)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.6.0...v8.6.1)
