@@ -75,7 +75,7 @@ npm_release()
   else
     if [ ! -z "$STABLE" ]; then
       verbose "Deploying $1 to npm"
-      npm publish --tag "$VERSION"
+      npm publish
     else
       verbose "Deploying $1 to npm with tag $NPM_TAG"
       npm publish --tag "$NPM_TAG"
