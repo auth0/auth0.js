@@ -53,7 +53,12 @@ SilentAuthenticationHandler.prototype.getEventValidator = function() {
             eventData.event.data.type && eventData.event.data.type === _this.postMessageDataType
           );
 
-        case 'load': // Fall through to default
+        case 'load':
+          if (eventData.sourceObject.contentWindow.location.protocol === 'about:') {
+            // Chrome is automatically loading the about:blank page, we ignore this.
+            return false;
+          }
+        // Fall through to default
         default:
           return true;
       }
