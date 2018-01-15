@@ -14,10 +14,14 @@ var iframeHandler = {};
 
 describe('handlers silent-authentication-handler', function() {
   context('with context', function() {
+    beforeEach(function() {
+      global.window = { location: { origin: 'unit-test-origin' } }
+    });
     afterEach(function() {
       if (IframeHandler.prototype.init.restore) {
         IframeHandler.prototype.init.restore();
       }
+      delete global.window;
     });
     it('should return correct value for usePostMessage=false', function(done) {
       stub(IframeHandler.prototype, 'init', function() {
@@ -291,6 +295,42 @@ describe('handlers silent-authentication-handler', function() {
             }
           }
       })).to.be(false);
+    });
+  });
+
+  context('constructor', function() {
+    it('sets postMessageOrigin from parameter', function() {
+      var expectedOrigin = 'unit-test-post-message-origin';
+      var param = { postMessageOrigin: expectedOrigin };
+
+      var sah = new SilentAuthenticationHandler(param);
+
+      expect(sah.postMessageOrigin).to.be(expectedOrigin);
+    });
+
+    it('sets postMessageOrigin from window', function() {
+      var expectedOrigin = 'unit-test-location-origin';
+      global.window = { location: { origin: expectedOrigin } };
+
+      var sah = new SilentAuthenticationHandler({});
+
+      expect(sah.postMessageOrigin).to.be(expectedOrigin);
+    });
+
+    it('sets postMessageOrigin from fallback (with port)', function() {
+      global.window = { location: { protocol: 'https:', hostname: 'unit-test', port: 1234 } };
+
+      var sah = new SilentAuthenticationHandler({});
+
+      expect(sah.postMessageOrigin).to.be('https://unit-test:1234');
+    });
+
+    it('sets postMessageOrigin from fallback (without port)', function() {
+      global.window = { location: { protocol: 'https:', hostname: 'unit-test' } };
+
+      var sah = new SilentAuthenticationHandler({});
+
+      expect(sah.postMessageOrigin).to.be('https://unit-test');
     });
   });
 });

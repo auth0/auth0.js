@@ -77,6 +77,7 @@ describe('auth0.WebAuth', function() {
           appState: null
         });
       };
+      global.window.location = {};
       storage.reload();
     });
 
@@ -752,6 +753,7 @@ describe('auth0.WebAuth', function() {
   context('renewAuth', function() {
     beforeEach(function() {
       global.window = {};
+      global.window.origin = 'unit-test-origin';
       global.window.removeEventListener = function() {};
     });
     afterEach(function() {
@@ -861,6 +863,7 @@ describe('auth0.WebAuth', function() {
     beforeEach(function() {
       global.window = {};
       global.window.document = {};
+      global.window.origin = 'unit-test-origin';
     });
 
     afterEach(function() {
@@ -925,6 +928,12 @@ describe('auth0.WebAuth', function() {
       });
     });
     describe('should return the access_token', function() {
+      beforeEach(function() {
+        global.window = { origin: 'unit-test-origin' };
+      });
+      afterEach(function() {
+        delete global.window;
+      });
       it('when login returns an object', function(done) {
         stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
           cb(null, { accessToken: '123' });
