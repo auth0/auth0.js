@@ -1,5 +1,13 @@
 # Change Log
 
+## [v8.12.2](https://github.com/auth0/auth0.js/tree/v8.12.2) (2018-01-15)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.12.1...v8.12.2)
+
+**Fixed**
+- Do not consider a load event valid if protocol is "about:" (v8) [\#620](https://github.com/auth0/auth0.js/pull/620) ([damien-gl](https://github.com/damien-gl))
+- Use window.location.origin instead of window.origin [\#598](https://github.com/auth0/auth0.js/pull/598) ([thoean](https://github.com/thoean))
+# Change Log
+
 ## [v8.12.1](https://github.com/auth0/auth0.js/tree/v8.12.1) (2017-12-12)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.12.0...v8.12.1)
 
