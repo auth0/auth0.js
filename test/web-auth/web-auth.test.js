@@ -1623,6 +1623,12 @@ describe('auth0.WebAuth', function() {
       stub(TransactionManager.prototype, 'process', function(params) {
         return Object.assign({}, params, { from: 'transaction-manager' });
       });
+      stub(windowHelper, 'getOrigin', function() {
+        return 'https://test-origin.com';
+      });
+      stub(objectHelper, 'getOriginFromUrl', function() {
+        return 'https://test-origin.com';
+      });
     });
     afterEach(function() {
       TransactionManager.prototype.process.restore();
@@ -1632,10 +1638,27 @@ describe('auth0.WebAuth', function() {
       if (WebAuth.prototype.validateAuthenticationResponse.restore) {
         WebAuth.prototype.validateAuthenticationResponse.restore();
       }
+      windowHelper.getOrigin.restore();
+      objectHelper.getOriginFromUrl.restore();
     });
     it('throws an error if responseType is code', function() {
       this.auth0.checkSession({ responseType: 'code' }, function(err) {
-        expect(err.message).to.be.eql("responseType can't be `code`");
+        expect(err).to.be.eql({
+          error: 'error',
+          error_description: "responseType can't be `code`"
+        });
+      });
+    });
+    it('throws an error if there is an origin mismatch between current window and redirectUrl', function() {
+      objectHelper.getOriginFromUrl.restore();
+      stub(objectHelper, 'getOriginFromUrl', function() {
+        return 'some-other-origin';
+      });
+      this.auth0.checkSession({}, function(err) {
+        expect(err).to.be.eql({
+          error: 'origin_mismatch',
+          error_description: "The redirectUri's origin (some-other-origin) should match the window's origin (https://test-origin.com)."
+        });
       });
     });
     it('inits IframeHandler with correct params', function(done) {
@@ -1714,6 +1737,7 @@ describe('auth0.WebAuth', function() {
         expect(options).to.be.eql({
           clientID: '...',
           responseType: 'token',
+          redirectUri: 'http://page.com/callback',
           from: 'transaction-manager',
           responseMode: 'web_message',
           prompt: 'none'
