@@ -1,4 +1,11 @@
 
+## [v9.0.3](https://github.com/auth0/auth0.js/tree/v9.0.3) (2018-01-15)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.2...v9.0.3)
+
+**Fixed**
+- Use window.location.origin instead of window.origin [\#627](https://github.com/auth0/auth0.js/pull/627) ([thoean](https://github.com/thoean))
+- Do not consider a load event valid if protocol is "about:" [\#619](https://github.com/auth0/auth0.js/pull/619) ([damien-gl](https://github.com/damien-gl))
+
 ## [v9.0.2](https://github.com/auth0/auth0.js/tree/v9.0.2) (2017-12-29)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.1...v9.0.2)
 
