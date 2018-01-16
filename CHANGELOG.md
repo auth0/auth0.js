@@ -1,4 +1,10 @@
 
+## [v9.1.0](https://github.com/auth0/auth0.js/tree/v9.1.0) (2018-01-16)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.3...v9.1.0)
+
+**Changed**
+- Validate current window origin and redirecturi origin to prevent mismatches [\#615](https://github.com/auth0/auth0.js/pull/615) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.0.3](https://github.com/auth0/auth0.js/tree/v9.0.3) (2018-01-15)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.2...v9.0.3)
 
