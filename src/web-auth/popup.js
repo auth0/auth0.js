@@ -148,8 +148,8 @@ Popup.prototype.authorize = function(options, cb) {
     }
   );
 
-  // the relay page should not be necesary as long it happens in the same domain
-  // (a redirectUri shoul be provided). It is necesary when using OWP
+  // the relay page should not be necessary as long it happens in the same domain
+  // (a redirectUri shoul be provided). It is necessary when using OWP
   relayUrl = urljoin(this.baseOptions.rootUrl, 'relay.html');
 
   // if a owp is enabled, it should use the owp flag
