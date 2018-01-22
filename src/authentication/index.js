@@ -15,6 +15,7 @@ var DBConnection = require('./db-connection');
 /**
  * Creates a new Auth0 Authentication API client
  * @constructor
+ * @param {Object} auth0 Instance of WebAuth
  * @param {Object} options
  * @param {String} options.domain your Auth0 domain
  * @param {String} options.clientID your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard
