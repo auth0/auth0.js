@@ -1,10 +1,18 @@
 var storage = require('./storage');
 
 module.exports = {
-  set: function(connection) {
-    storage.setItem('auth0.ssodata.connection', connection);
+  set: function(connection, sub) {
+    var ssodata = {
+      lastUsedConnection: connection,
+      lastUsedSub: sub
+    };
+    storage.setItem('auth0.ssodata', JSON.stringify(ssodata));
   },
   get: function() {
-    return storage.getItem('auth0.ssodata.connection');
+    var ssodata = storage.getItem('auth0.ssodata');
+    if (!ssodata) {
+      return;
+    }
+    return JSON.parse(ssodata);
   }
 };

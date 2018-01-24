@@ -1,39 +1,57 @@
-# Change Log
 
-## [v9.0.0-beta.5](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.5) (2017-11-03)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.4...v9.0.0-beta.5)
-# Change Log
+## [v9.1.0](https://github.com/auth0/auth0.js/tree/v9.1.0) (2018-01-16)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.3...v9.1.0)
 
-- Don't return an error in `getSSOData` when the error is `login_required`. [\#544](https://github.com/auth0/auth0.js/pull/544)
+**Changed**
+- Validate current window origin and redirecturi origin to prevent mismatches [\#615](https://github.com/auth0/auth0.js/pull/615) ([luisrudge](https://github.com/luisrudge))
 
-## [v9.0.0-beta.4](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.4) (2017-11-03)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.3...v9.0.0-beta.4)
-# Change Log
+## [v9.0.3](https://github.com/auth0/auth0.js/tree/v9.0.3) (2018-01-15)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.2...v9.0.3)
 
-- Adding `getSSOData` method. Fix state checking. Fix appState/appStatus usage. [\#539](https://github.com/auth0/auth0.js/pull/539).
+**Fixed**
+- Use window.location.origin instead of window.origin [\#627](https://github.com/auth0/auth0.js/pull/627) ([thoean](https://github.com/thoean))
+- Do not consider a load event valid if protocol is "about:" [\#619](https://github.com/auth0/auth0.js/pull/619) ([damien-gl](https://github.com/damien-gl))
 
-## [v9.0.0-beta.3](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.3) (2017-10-26)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.2...v9.0.0-beta.3)
-# Change Log
+## [v9.0.2](https://github.com/auth0/auth0.js/tree/v9.0.2) (2017-12-29)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.1...v9.0.2)
 
-- Changing `popup.loginWithCredentials` to work with Cross Origin Authentication and web_message flows. [\#528](https://github.com/auth0/auth0.js/pull/528)
+**Fixed**
+- Blacklisting invalid params in authorize url [\#611](https://github.com/auth0/auth0.js/pull/611) ([luisrudge](https://github.com/luisrudge))
 
-## [v9.0.0-beta.2](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.2) (2017-10-19)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.1...v9.0.0-beta.2)
-# Change Log
-- Better handling errors in `checkSession`. [\#524](https://github.com/auth0/auth0.js/pull/524)
+## [v9.0.1](https://github.com/auth0/auth0.js/tree/v9.0.1) (2017-12-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0...v9.0.1)
 
-## [v9.0.0-beta.1](https://github.com/auth0/auth0.js/tree/v9.0.0-beta.1) (2017-10-19)
-[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.1...v9.0.0-beta.1)
-# Change Log
-- Removes a few legacy endpoints and deprecates `auth0.client.loginWithCredentials`, which is now calling the co/authenticate method instead of usernamepassword/login. [\#521](https://github.com/auth0/auth0.js/pull/521)
+**Changed**
+- setting getSSOData timeout to 5s [\#602](https://github.com/auth0/auth0.js/pull/602) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.0.0](https://github.com/auth0/auth0.js/tree/v9.0.0) (2017-12-21)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.9...v8.10.1)
+
+**Breaking change**
+Auth0.js v9 uses our latest embedded login API. This version removes API calls to `usernamepassword/login` and `user/ssodata` and **is not supported in centralized login scenarios (i.e. Hosted Login Pages).** If you are using a Hosted Login Page, keep using Auth0.js v8.
+
+The scenarios below use a mix of Cross Origin Authentication and `WebAuth.checkSession`. Read more about Cross Origin Authentication and how to enable Web Origins [here](https://auth0.com/docs/cross-origin-authentication).
+
+We wrote a [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide) to make upgrading your app easy. If you need help, please reach out to our amazing support team at https://support.auth0.com.
+
+**Breaking change**
+`WebAuth.client.getSSOData` now uses `WebAuth.checkSession` and a local cache to obtain the resulting data.
+
+**Breaking change**
+`WebAuth.client.loginWithCredentials` now uses Cross Origin Authentication to handle authentication requests.
+
+**Breaking change**
+`WebAuth.client.signupAndLogin` now uses Cross Origin Authentication to handle the authentication request after the signup.
+
+**Breaking change**
+`WebAuth.popup.loginWithCredentials` now uses Cross Origin Authentication and `WebAuth.checkSession` to handle authentication requests without making a page redirect.
+
 
 ## [v8.10.1](https://github.com/auth0/auth0.js/tree/v8.10.1) (2017-09-19)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.10.0...v8.10.1)
 
 **Changed**
 - Removing renewSession and keeping only checkSession [\#505](https://github.com/auth0/auth0.js/pull/505) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.10.0](https://github.com/auth0/auth0.js/tree/v8.10.0) (2017-09-18)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.3...v8.10.0)
@@ -44,28 +62,24 @@
 **Fixed**
 - Fixing tenant override in popup mode [\#501](https://github.com/auth0/auth0.js/pull/501) ([luisrudge](https://github.com/luisrudge))
 - Allow overriding the timeout as part of the renewAuth method [\#497](https://github.com/auth0/auth0.js/pull/497) ([dctoon](https://github.com/dctoon))
-# Change Log
 
 ## [v8.9.3](https://github.com/auth0/auth0.js/tree/v8.9.3) (2017-08-21)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.2...v8.9.3)
 
 **Fixed**
 - Using transaction manager on passwordlessStart [\#492](https://github.com/auth0/auth0.js/pull/492) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.9.2](https://github.com/auth0/auth0.js/tree/v8.9.2) (2017-08-17)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.1...v8.9.2)
 
 **Fixed**
 - Fix passwordlessVerify not sending nonce [\#489](https://github.com/auth0/auth0.js/pull/489) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.9.1](https://github.com/auth0/auth0.js/tree/v8.9.1) (2017-08-11)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.0...v8.9.1)
 
 **Fixed**
 - Fixed credentialType url [\#487](https://github.com/auth0/auth0.js/pull/487) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.9.0](https://github.com/auth0/auth0.js/tree/v8.9.0) (2017-08-10)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.8.0...v8.9.0)
@@ -79,7 +93,6 @@
 
 **Fixed**
 - Send empty verifier when can't access sessionStorage [\#470](https://github.com/auth0/auth0.js/pull/470) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.8.0](https://github.com/auth0/auth0.js/tree/v8.8.0) (2017-06-20)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.7.0...v8.8.0)
@@ -107,7 +120,6 @@
 - Add login_ticket to params whitelist [\#442](https://github.com/auth0/auth0.js/pull/442) ([luisrudge](https://github.com/luisrudge))
 - Fix decoding base64 string with special characters [\#440](https://github.com/auth0/auth0.js/pull/440) ([luisrudge](https://github.com/luisrudge))
 - Fixed issues with overrides not being used [\#430](https://github.com/auth0/auth0.js/pull/430) ([sandrinodimattia](https://github.com/sandrinodimattia))
-# Change Log
 
 ## [v8.6.1](https://github.com/auth0/auth0.js/tree/v8.6.1) (2017-05-08)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.6.0...v8.6.1)

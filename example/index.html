@@ -210,7 +210,7 @@
       domain: 'brucke.auth0.com',
       redirectUri: 'https://localhost:3000/example',
       clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
-      responseType: 'token id_token',
+      responseType: 'token',
       plugins: [
         new CordovaAuth0Plugin()
       ]
@@ -257,8 +257,7 @@
       webAuth.redirect.loginWithCredentials({
         connection: 'acme',
         username: $('.login-username').val(),
-        password: $('.login-password').val(),
-        scope: 'openid'
+        password: $('.login-password').val()
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
@@ -293,8 +292,7 @@
       webAuth.popup.loginWithCredentials({
         connection: 'acme',
         username: $('.popup-login-username').val(),
-        password: $('.popup-login-password').val(),
-        scope: 'openid'
+        password: $('.popup-login-password').val()
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
@@ -303,8 +301,7 @@
       webAuth.client.login({
         realm: 'acme',
         username: $('.client-login-username').val(),
-        password: $('.client-login-password').val(),
-        scope: 'openid profile'
+        password: $('.client-login-password').val()
       }, function (err, data) {
         htmlConsole.dumpCallback.bind(htmlConsole)(err, data);
         this.webAuth.client.userInfo(data.accessToken, htmlConsole.dumpCallback.bind(htmlConsole));
@@ -362,7 +359,6 @@
       e.preventDefault();
       webAuth.renewAuth({
         usePostMessage: true,
-        scope: '',
         redirectURI: 'https://localhost:3000/example/callback.html'
       },
         htmlConsole.dumpCallback.bind(htmlConsole)

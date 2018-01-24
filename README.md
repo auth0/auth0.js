@@ -10,7 +10,11 @@
 
 Client Side Javascript toolkit for Auth0 API
 
-> This is a BETA release. The recommended version is [https://auth0.com/docs/libraries/auth0js/v8](https://auth0.com/docs/libraries/auth0js/v8)
+> Auth0.js v9 uses our latest embedded login API. This version **cannot be used inside Auth0-Hosted Login Pages**. If you are using a Hosted Login Page, keep using Auth0.js v8.
+
+Need help migrating from v8? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide)
+
+If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html)
 
 ## Install
 
@@ -18,7 +22,7 @@ From CDN
 
 ```html
 <!-- Latest patch release -->
-<script src="http://cdn.auth0.com/js/auth0/9.0.0-beta.5/auth0.min.js"></script>
+<script src="http://cdn.auth0.com/js/auth0/9.1.0/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org)
@@ -88,14 +92,13 @@ auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
 });
 ```
 
-- **checkSession(options, callback)**: Allows you to acquire a new token from Auth0 for a user who is already authenticated against the hosted login page for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
+- **checkSession(options, callback)**: Allows you to acquire a new token from Auth0 for a user who already has an SSO session established against Auth0 for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
 Everything happens inside an iframe, so it will not reload your application or redirect away from it.
 
 ```js
 auth0.checkSession({
   audience: 'https://mystore.com/api/v2',
-  scope: 'read:order write:order',
-  redirectUri: 'https://example.com/auth/silent-callback'
+  scope: 'read:order write:order'
   }, function (err, authResult) {
     // Authentication tokens or error
 });
@@ -104,6 +107,8 @@ auth0.checkSession({
 The contents of `authResult` are identical to those returned by `parseHash()`.
 
 > **Important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `checkSession`.
+
+> **Important:** Because there is no redirect in this method, `responseType: 'code'` is not supported and will throw an error.
 
 Remember to add the URL where the authorization request originates from, to the Allowed Web Origins list of your Auth0 client in the [Dashboard](https://manage.auth0.com/) under your client's **Settings**.
 

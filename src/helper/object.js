@@ -4,6 +4,7 @@
 
 var assert = require('./assert');
 var objectAssign = require('./object-assign');
+var windowHelper = require('./window');
 
 function pick(object, keys) {
   return keys.reduce(function(prev, key) {
@@ -117,6 +118,16 @@ function toCamelCase(object, exceptions) {
   }, {});
 }
 
+function getOriginFromUrl(url) {
+  if (!url) {
+    return undefined;
+  }
+  var doc = windowHelper.getDocument();
+  var anchor = doc.createElement('a');
+  anchor.href = url;
+  return anchor.origin;
+}
+
 module.exports = {
   toSnakeCase: toSnakeCase,
   toCamelCase: toCamelCase,
@@ -124,5 +135,6 @@ module.exports = {
   merge: merge,
   pick: pick,
   getKeysNotIn: getKeysNotIn,
-  extend: extend
+  extend: extend,
+  getOriginFromUrl: getOriginFromUrl
 };
