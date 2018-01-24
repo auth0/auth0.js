@@ -208,6 +208,7 @@ describe('auth0.WebAuth.popup', function() {
         foo: 'bar',
         realm: 'realm',
         responseType: 'id_token',
+        redirectUri: 'http://page.com/callback',
         popup: true
       };
       stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
@@ -514,7 +515,8 @@ describe('auth0.WebAuth.popup', function() {
         scope: 'openid',
         realm: 'the_connection',
         popup: true,
-        responseType: 'token'
+        responseType: 'token',
+        redirectUri: 'http://page.com/callback'
       };
       stub(TransactionManager.prototype, 'process', function(options) {
         delete options.popupHandler;
