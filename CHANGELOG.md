@@ -1,4 +1,10 @@
 
+## [v9.1.2](https://github.com/auth0/auth0.js/tree/v9.1.2) (2018-01-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.1.1...v9.1.2)
+
+**Fixed**
+- Fixing ie/edge `window.location.origin` issue [\#638](https://github.com/auth0/auth0.js/pull/638) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.1.1](https://github.com/auth0/auth0.js/tree/v9.1.1) (2018-01-24)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.1.0...v9.1.1)
 
