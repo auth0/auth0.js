@@ -125,7 +125,7 @@ function getOriginFromUrl(url) {
   var doc = windowHelper.getDocument();
   var anchor = doc.createElement('a');
   anchor.href = url;
-  return anchor.origin;
+  return anchor.protocol + '//' + anchor.hostname;
 }
 
 module.exports = {
