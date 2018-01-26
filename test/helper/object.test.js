@@ -524,7 +524,8 @@ describe('helpers', function() {
     });
     it('should use an anchor to parse the url and return the origin', function() {
       var anchor = {
-        origin: 'https://test.com'
+        protocol: 'https:',
+        hostname: 'test.com'
       };
       stub(windowHelper, 'getDocument', function() {
         return {
