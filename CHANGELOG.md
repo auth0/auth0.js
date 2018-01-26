@@ -1,4 +1,10 @@
 
+## [v9.1.1](https://github.com/auth0/auth0.js/tree/v9.1.1) (2018-01-24)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.1.0...v9.1.1)
+
+**Fixed**
+- Fix undefined origin in popup mode [\#635](https://github.com/auth0/auth0.js/pull/635) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.1.0](https://github.com/auth0/auth0.js/tree/v9.1.0) (2018-01-16)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.3...v9.1.0)
 
