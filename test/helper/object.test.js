@@ -540,5 +540,24 @@ describe('helpers', function() {
       expect(anchor.href).to.be(url);
       windowHelper.getDocument.restore();
     });
+    it('should use add the `port` when available', function() {
+      var anchor = {
+        protocol: 'https:',
+        hostname: 'localhost',
+        port: 3000
+      };
+      stub(windowHelper, 'getDocument', function() {
+        return {
+          createElement: function createElement(e) {
+            expect(e).to.be('a');
+            return anchor;
+          }
+        };
+      });
+      var url = 'https://localhost:3000/example';
+      expect(objectHelper.getOriginFromUrl(url)).to.be('https://localhost:3000');
+      expect(anchor.href).to.be(url);
+      windowHelper.getDocument.restore();
+    });
   });
 });
