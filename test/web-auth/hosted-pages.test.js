@@ -11,7 +11,7 @@ var RequestBuilder = require('../../src/helper/request-builder');
 
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
-describe('auth0.WebAuth._hostedPages', function() {
+describe('auth0.WebAuth._universalLogin', function() {
   beforeEach(function() {
     stub(TransactionManager.prototype, 'process', function(params) {
       return params;
@@ -55,7 +55,7 @@ describe('auth0.WebAuth._hostedPages', function() {
       var auth0 = new WebAuth(configuration);
 
       expect(function() {
-        auth0._hostedPages.login({
+        auth0._universalLogin.login({
           connection: 'tests',
           email: 'me@example.com',
           password: '1234',
@@ -120,7 +120,7 @@ describe('auth0.WebAuth._hostedPages', function() {
 
       var auth0 = new WebAuth(configuration);
 
-      auth0._hostedPages.login(
+      auth0._universalLogin.login(
         {
           connection: 'tests',
           username: 'me@example.com',
@@ -145,7 +145,7 @@ describe('auth0.WebAuth._hostedPages', function() {
         responseType: 'id_token'
       });
 
-      auth0._hostedPages.login({
+      auth0._universalLogin.login({
         connection: 'tests',
         username: 'me@example.com',
         password: '1234',
@@ -189,7 +189,7 @@ describe('auth0.WebAuth._hostedPages', function() {
 
       var auth0 = new WebAuth(configuration);
 
-      auth0._hostedPages.login(
+      auth0._universalLogin.login(
         {
           connection: 'tests',
           email: 'me@example.com',
@@ -300,7 +300,7 @@ describe('auth0.WebAuth._hostedPages', function() {
         throw new Error('Invalid URL');
       });
 
-      this.auth0._hostedPages.signupAndLogin(
+      this.auth0._universalLogin.signupAndLogin(
         {
           connection: 'the_connection',
           email: 'me@example.com',
@@ -358,7 +358,7 @@ describe('auth0.WebAuth._hostedPages', function() {
         });
       });
 
-      this.auth0._hostedPages.signupAndLogin(
+      this.auth0._universalLogin.signupAndLogin(
         {
           connection: 'the_connection',
           email: 'me@example.com',

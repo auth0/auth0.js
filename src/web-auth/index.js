@@ -108,7 +108,7 @@ function WebAuth(options) {
   this.popup = new Popup(this, this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
   this.webMessageHandler = new WebMessageHandler(this);
-  this._hostedPages = new HostedPages(this, this.baseOptions);
+  this._universalLogin = new HostedPages(this, this.baseOptions);
 }
 
 /**

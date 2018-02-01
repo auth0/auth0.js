@@ -270,7 +270,7 @@
 
     $('.universal-login').click(function (e) {
       e.preventDefault();
-      webAuth._hostedPages.login({
+      webAuth._universalLogin.login({
         connection: 'acme',
         username: $('.login-username').val(),
         password: $('.login-password').val()
