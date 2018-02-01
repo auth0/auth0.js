@@ -1338,7 +1338,7 @@ describe('auth0.WebAuth', function() {
         );
       });
     });
-    context.only('when inside of the universal login page', function() {
+    context('when inside of the universal login page', function() {
       beforeEach(function() {
         stub(windowHelper, 'getWindow', function() {
           return {
