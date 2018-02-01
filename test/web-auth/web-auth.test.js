@@ -12,6 +12,7 @@ var RequestMock = require('../mock/request-mock');
 var TransactionManager = require('../../src/web-auth/transaction-manager');
 var SilentAuthenticationHandler = require('../../src/web-auth/silent-authentication-handler');
 var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
+var HostedPages = require('../../src/web-auth/hosted-pages');
 var IframeHandler = require('../../src/helper/iframe-handler');
 
 var objectHelper = require('../../src/helper/object');
@@ -1568,7 +1569,80 @@ describe('auth0.WebAuth', function() {
       );
     });
   });
-  context('crossOriginAuthentication', function() {
+  context('login', function() {
+    context('when outside of the universal login page', function() {
+      before(function() {
+        this.auth0 = new WebAuth({
+          domain: 'me.auth0.com',
+          clientID: '...',
+          redirectUri: 'http://page.com/callback',
+          responseType: 'token',
+          _sendTelemetry: false
+        });
+      });
+      beforeEach(function() {
+        stub(windowHelper, 'getWindow', function() {
+          return {
+            location: {
+              host: 'other-domain.auth0.com'
+            }
+          };
+        });
+      });
+
+      afterEach(function() {
+        windowHelper.getWindow.restore();
+        CrossOriginAuthentication.prototype.login.restore();
+      });
+
+      it('should call CrossOriginAuthentication.login', function(done) {
+        var expectedOptions = { foo: 'bar' };
+        stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
+          expect(options).to.be.eql(expectedOptions);
+          expect(cb()).to.be('cb');
+          done();
+        });
+        this.auth0.login(expectedOptions, function() {
+          return 'cb';
+        });
+      });
+    });
+    context('when inside of the universal login page', function() {
+      before(function() {
+        this.auth0 = new WebAuth({
+          domain: 'me.auth0.com',
+          clientID: '...',
+          redirectUri: 'http://page.com/callback',
+          responseType: 'token',
+          _sendTelemetry: false
+        });
+      });
+      beforeEach(function() {
+        stub(windowHelper, 'getWindow', function() {
+          return {
+            location: {
+              host: 'me.auth0.com'
+            }
+          };
+        });
+      });
+      afterEach(function() {
+        windowHelper.getWindow.restore();
+      });
+      it('calls _hostedPages.login mapping the connection parameter', function(done) {
+        var expectedOptions = { connection: 'bar' };
+        stub(HostedPages.prototype, 'login', function(options, cb) {
+          expect(options).to.be.eql(expectedOptions);
+          expect(cb()).to.be('cb');
+          done();
+        });
+        this.auth0.login({ realm: 'bar' }, function() {
+          return 'cb';
+        });
+      });
+    });
+  });
+  context('cross origin callbacks', function() {
     before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
@@ -1580,24 +1654,7 @@ describe('auth0.WebAuth', function() {
     });
 
     afterEach(function() {
-      if (CrossOriginAuthentication.prototype.login.restore) {
-        CrossOriginAuthentication.prototype.login.restore();
-      }
-      if (CrossOriginAuthentication.prototype.callback.restore) {
-        CrossOriginAuthentication.prototype.callback.restore();
-      }
-    });
-
-    it('should call login', function(done) {
-      var expectedOptions = { foo: 'bar' };
-      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
-        expect(options).to.be.eql(expectedOptions);
-        expect(cb()).to.be('cb');
-        done();
-      });
-      this.auth0.login(expectedOptions, function() {
-        return 'cb';
-      });
+      CrossOriginAuthentication.prototype.callback.restore();
     });
     it('should call callback with deprecated method `crossOriginAuthenticationCallback`', function(
       done
