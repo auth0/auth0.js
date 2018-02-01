@@ -1,4 +1,10 @@
 
+## [v9.2.0](https://github.com/auth0/auth0.js/tree/v9.2.0) (2018-02-01)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.1.3...v9.2.0)
+
+**Added**
+- Normalized login and passwordlessLogin usage to make it work in embedded and hosted scenarios [\#646](https://github.com/auth0/auth0.js/pull/646) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.1.3](https://github.com/auth0/auth0.js/tree/v9.1.3) (2018-01-29)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.1.2...v9.1.3)
 
