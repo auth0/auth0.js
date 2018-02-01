@@ -14,6 +14,7 @@ var Popup = require('./popup');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
 var CrossOriginAuthentication = require('./cross-origin-authentication');
 var WebMessageHandler = require('./web-message-handler');
+var HostedPages = require('./hosted-pages');
 
 /**
  * Handles all the browser's AuthN/AuthZ flows
@@ -107,6 +108,7 @@ function WebAuth(options) {
   this.popup = new Popup(this, this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
   this.webMessageHandler = new WebMessageHandler(this);
+  this._hostedPages = new HostedPages(this, this.baseOptions);
 }
 
 /**

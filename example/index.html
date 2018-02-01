@@ -124,6 +124,13 @@
       </div>
 
       <div>
+        <h2>Login with database connection (from universal login):</h2>
+        <input class="login-username" value="johnfoo@gmail.com" />
+        <input class="login-password" value="1234" />
+        <input type="button" class="universal-login" value="login" />
+      </div>
+
+      <div>
         <h2>Login with passwordless connection:</h2>
         <div>
           <input class="passwordless-login-username" value="" />
@@ -255,6 +262,15 @@
     $('.login-db').click(function (e) {
       e.preventDefault();
       webAuth.redirect.loginWithCredentials({
+        connection: 'acme',
+        username: $('.login-username').val(),
+        password: $('.login-password').val()
+      }, htmlConsole.dumpCallback.bind(htmlConsole));
+    });
+
+    $('.universal-login').click(function (e) {
+      e.preventDefault();
+      webAuth._hostedPages.login({
         connection: 'acme',
         username: $('.login-username').val(),
         password: $('.login-password').val()
