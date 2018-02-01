@@ -117,7 +117,7 @@
     <div class="col-xs-6">
 
       <div>
-        <h2>Login with database connection:</h2>
+        <h2>Login with username and password:</h2>
         <input class="login-username" value="johnfoo@gmail.com" />
         <input class="login-password" value="1234" />
         <input type="button" class="login-db" value="login" />
@@ -169,13 +169,6 @@
       <div>
         <h2>Renew authentication:</h2>
         <input type="button" class="renew-auth" value="Renew" />
-      </div>
-
-      <div>
-        <h2>Login with Cross Origin Authentication flow:</h2>
-        <input class="cross-origin-auth-username" value="johnfoo@gmail.com" />
-        <input class="cross-origin-auth-password" value="1234" />
-        <input type="button" class="cross-origin-auth" value="Login" />
       </div>
       <div>
         <h2>Check if you have an active session:</h2>
@@ -254,8 +247,8 @@
 
     $('.login-db').click(function (e) {
       e.preventDefault();
-      webAuth.redirect.loginWithCredentials({
-        connection: 'acme',
+      webAuth.login({
+        realm: 'acme',
         username: $('.login-username').val(),
         password: $('.login-password').val()
       }, htmlConsole.dumpCallback.bind(htmlConsole));
@@ -363,15 +356,6 @@
       },
         htmlConsole.dumpCallback.bind(htmlConsole)
       );
-    });
-    $('.cross-origin-auth').click(function (e) {
-      e.preventDefault();
-      webAuth.login({
-        username: $('.cross-origin-auth-username').val(),
-        password: $('.cross-origin-auth-password').val(),
-        redirectURI: 'https://localhost:3000/example/',
-        realm: 'acme'
-      }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
     $('.web-message-check-session').click(function (e) {
       e.preventDefault();

@@ -14,6 +14,7 @@ var Popup = require('./popup');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
 var CrossOriginAuthentication = require('./cross-origin-authentication');
 var WebMessageHandler = require('./web-message-handler');
+var HostedPages = require('./hosted-pages');
 
 /**
  * Handles all the browser's AuthN/AuthZ flows
@@ -107,6 +108,7 @@ function WebAuth(options) {
   this.popup = new Popup(this, this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
   this.webMessageHandler = new WebMessageHandler(this);
+  this._universalLogin = new HostedPages(this, this.baseOptions);
 }
 
 /**
@@ -560,7 +562,14 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.login = function(options, cb) {
-  this.crossOriginAuthentication.login(options, cb);
+  var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
+  if (isHostedLoginPage) {
+    options.connection = options.realm;
+    delete options.realm;
+    this._universalLogin.login(options, cb);
+  } else {
+    this.crossOriginAuthentication.login(options, cb);
+  }
 };
 
 /**
@@ -576,16 +585,21 @@ WebAuth.prototype.login = function(options, cb) {
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.passwordlessLogin = function(options, cb) {
-  var loginOptions = objectHelper.extend(
-    {
-      credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
-      realm: options.connection,
-      username: options.email || options.phoneNumber,
-      otp: options.verificationCode
-    },
-    objectHelper.blacklist(options, ['connection', 'email', 'phoneNumber', 'verificationCode'])
-  );
-  this.crossOriginAuthentication.login(loginOptions, cb);
+  var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
+  if (isHostedLoginPage) {
+    this.passwordlessVerify(options, cb);
+  } else {
+    var crossOriginOptions = objectHelper.extend(
+      {
+        credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+        realm: options.connection,
+        username: options.email || options.phoneNumber,
+        otp: options.verificationCode
+      },
+      objectHelper.blacklist(options, ['connection', 'email', 'phoneNumber', 'verificationCode'])
+    );
+    this.crossOriginAuthentication.login(crossOriginOptions, cb);
+  }
 };
 
 /**
