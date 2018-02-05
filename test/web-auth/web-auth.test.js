@@ -1786,7 +1786,7 @@ describe('auth0.WebAuth', function() {
         });
       });
     });
-    it('does not throw an error if redirectUri is empty', function() {
+    it('does not throw an origin_mismatch error if redirectUri is empty', function() {
       objectHelper.getOriginFromUrl.restore();
       stub(objectHelper, 'getOriginFromUrl', function() {
         return undefined;
