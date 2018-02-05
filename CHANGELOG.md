@@ -1,4 +1,10 @@
 
+## [v9.2.1](https://github.com/auth0/auth0.js/tree/v9.2.1) (2018-02-05)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.0...v9.2.1)
+
+**Fixed**
+- Remove origin check from checkSession when redirectUri is empty [\#653](https://github.com/auth0/auth0.js/pull/653) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.2.0](https://github.com/auth0/auth0.js/tree/v9.2.0) (2018-02-01)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.1.3...v9.2.0)
 
