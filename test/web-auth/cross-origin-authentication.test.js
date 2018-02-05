@@ -19,7 +19,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
   context('login', function() {
     before(function() {
       this.webAuthSpy = {
-        authorize: spy()
+        authorize: spy(),
+        baseOptions: {}
       };
       this.co = new CrossOriginAuthentication(this.webAuthSpy, {
         rootUrl: 'https://me.auth0.com',
@@ -313,7 +314,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
   context('callback', function() {
     before(function() {
       this.co = new CrossOriginAuthentication(
-        {},
+        { baseOptions: {} },
         {
           rootUrl: 'https://me.auth0.com',
           clientID: '...',
