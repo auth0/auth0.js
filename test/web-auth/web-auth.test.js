@@ -6,6 +6,7 @@ var request = require('superagent');
 var storage = require('../../src/helper/storage');
 var windowHelper = require('../../src/helper/window');
 var ssodata = require('../../src/helper/ssodata');
+var Warn = require('../../src/helper/warn');
 
 var RequestMock = require('../mock/request-mock');
 
@@ -1768,6 +1769,12 @@ describe('auth0.WebAuth', function() {
       if (WebAuth.prototype.validateAuthenticationResponse.restore) {
         WebAuth.prototype.validateAuthenticationResponse.restore();
       }
+      if (windowHelper.getWindow.restore) {
+        windowHelper.getWindow.restore();
+      }
+      if (Warn.prototype.warning.restore) {
+        Warn.prototype.warning.restore();
+      }
       windowHelper.getOrigin.restore();
       objectHelper.getOriginFromUrl.restore();
     });
@@ -1779,7 +1786,18 @@ describe('auth0.WebAuth', function() {
         });
       });
     });
-    it('throws an error if there is an origin mismatch between current window and redirectUrl', function() {
+    it('does not throw an origin_mismatch error if redirectUri is empty', function() {
+      objectHelper.getOriginFromUrl.restore();
+      stub(objectHelper, 'getOriginFromUrl', function() {
+        return undefined;
+      });
+      stub(IframeHandler.prototype, 'init', function() {});
+
+      this.auth0.checkSession({}, function(err) {
+        expect(err).to.be.eql(undefined);
+      });
+    });
+    it('throws an error if there is an origin mismatch between current window and redirectUri', function() {
       objectHelper.getOriginFromUrl.restore();
       stub(objectHelper, 'getOriginFromUrl', function() {
         return 'some-other-origin';
@@ -1858,6 +1876,31 @@ describe('auth0.WebAuth', function() {
           error: 'the-error',
           error_description: 'error description'
         });
+        done();
+      });
+    });
+    it('callback writes to console when consent_required + hostname===localhost', function(done) {
+      var errorResponse = {
+        error: 'consent_required'
+      };
+      stub(IframeHandler.prototype, 'init', function() {
+        this.callback({ event: { data: { response: errorResponse } } });
+      });
+      stub(windowHelper, 'getWindow', function() {
+        return {
+          location: {
+            hostname: 'localhost'
+          }
+        };
+      });
+      var warnings = [];
+      stub(Warn.prototype, 'warning', function(e) {
+        warnings.push(e);
+      });
+      this.auth0.checkSession({}, function() {
+        expect(warnings[1]).to.be(
+          "Consent Required. Consent can't be skipped on localhost. Read more here: https://auth0.com/docs/api-auth/user-consent#skipping-consent-for-first-party-clients"
+        );
         done();
       });
     });
