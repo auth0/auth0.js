@@ -22,7 +22,7 @@ From CDN
 
 ```html
 <!-- Latest patch release -->
-<script src="http://cdn.auth0.com/js/auth0/9.2.1/auth0.min.js"></script>
+<script src="https://cdn.auth0.com/js/auth0/9.2.1/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org)
@@ -146,7 +146,7 @@ var auth0 = new auth0.Authentication({
 - **buildAuthorizeUrl(options)**: Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#database-ad-ldap-passive-
 - **buildLogoutUrl(options)**: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#logout
 - **loginWithDefaultDirectory(options, cb)**: Makes a call to the `oauth/token` endpoint with `password` grant type. https://auth0.com/docs/api-auth/grant/password
-- **login(options, cb)**: Makes a call to the `oauth/token` endpoint with `http://auth0.com/oauth/grant-type/password-realm` grant type.
+- **login(options, cb)**: Makes a call to the `oauth/token` endpoint with `https://auth0.com/oauth/grant-type/password-realm` grant type.
 - **oauthToken(options, cb)**: Makes a call to the `oauth/token` endpoint.
 - **userInfo(token, cb)**: Makes a call to the `/userinfo` endpoint and returns the user profile.
 
@@ -203,11 +203,11 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 
 [npm-image]: https://img.shields.io/npm/v/auth0-js.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/auth0-js
-[circleci-image]: http://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&style=flat-square
+[circleci-image]: https://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&style=flat-square
 [circleci-url]: https://circleci.com/gh/auth0/auth0.js
 [codecov-image]: https://img.shields.io/codecov/c/github/auth0/auth0.js/master.svg?style=flat-square
 [codecov-url]: https://codecov.io/github/auth0/auth0.js?branch=master
-[license-image]: http://img.shields.io/npm/l/auth0-js.svg?style=flat-square
+[license-image]: https://img.shields.io/npm/l/auth0-js.svg?style=flat-square
 [license-url]: #license
-[downloads-image]: http://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
+[downloads-image]: https://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/auth0-js
