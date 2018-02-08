@@ -1,4 +1,10 @@
 
+## [v9.2.2](https://github.com/auth0/auth0.js/tree/v9.2.2) (2018-02-08)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.1...v9.2.2)
+
+**Fixed**
+- Making Authentication constructor accept one or two params [\#657](https://github.com/auth0/auth0.js/pull/657) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.2.1](https://github.com/auth0/auth0.js/tree/v9.2.1) (2018-02-05)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.0...v9.2.1)
 
