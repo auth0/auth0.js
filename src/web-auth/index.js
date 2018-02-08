@@ -103,7 +103,7 @@ function WebAuth(options) {
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 
-  this.client = new Authentication(this, this.baseOptions);
+  this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this, this.baseOptions);
   this.popup = new Popup(this, this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);

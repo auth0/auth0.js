@@ -10,16 +10,13 @@ var Authentication = require('../../src/authentication');
 describe('auth0.authentication', function() {
   context('passwordless start options', function() {
     before(function() {
-      this.auth0 = new Authentication(
-        {},
-        {
-          domain: 'me.auth0.com',
-          clientID: '...',
-          redirectUri: 'http://page.com/callback',
-          responseType: 'code',
-          _sendTelemetry: false
-        }
-      );
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
     });
 
     it('should check that options is passed', function() {
@@ -74,16 +71,13 @@ describe('auth0.authentication', function() {
 
   context('passwordless verify options', function() {
     before(function() {
-      this.auth0 = new Authentication(
-        {},
-        {
-          domain: 'me.auth0.com',
-          clientID: '...',
-          redirectUri: 'http://page.com/callback',
-          responseType: 'code',
-          _sendTelemetry: false
-        }
-      );
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
     });
 
     it('should check that options is passed', function() {
@@ -172,16 +166,13 @@ describe('auth0.authentication', function() {
 
   context('passwordless start', function() {
     before(function() {
-      this.auth0 = new Authentication(
-        {},
-        {
-          domain: 'me.auth0.com',
-          clientID: '...',
-          redirectUri: 'http://page.com/callback',
-          responseType: 'code',
-          _sendTelemetry: false
-        }
-      );
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
     });
 
     afterEach(function() {
@@ -271,16 +262,13 @@ describe('auth0.authentication', function() {
 
   context('passwordless verify', function() {
     before(function() {
-      this.auth0 = new Authentication(
-        {},
-        {
-          domain: 'me.auth0.com',
-          clientID: '...',
-          redirectUri: 'http://page.com/callback',
-          responseType: 'code',
-          _sendTelemetry: false
-        }
-      );
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
     });
 
     afterEach(function() {

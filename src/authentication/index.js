@@ -26,6 +26,15 @@ var DBConnection = require('./db-connection');
  * @see {@link https://auth0.com/docs/api/authentication}
  */
 function Authentication(auth0, options) {
+  // If we have two arguments, the first one is a WebAuth instance, so we assign that
+  // if not, it's an options object and then we should use that as options instead
+  // this is here because we don't want to break people coming from v8
+  if (arguments.length === 2) {
+    this.auth0 = auth0;
+  } else {
+    options = auth0;
+  }
+
   /* eslint-disable */
   assert.check(
     options,
@@ -58,7 +67,6 @@ function Authentication(auth0, options) {
   /* eslint-enable */
 
   this.baseOptions = options;
-  this.auth0 = auth0;
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
     ? this.baseOptions._sendTelemetry
     : true;
@@ -361,6 +369,12 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
  * @param {Function} cb
  */
 Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
+  /* istanbul ignore if  */
+  if (!this.auth0) {
+    // we can't import this in the constructor because it'd be a ciclic dependency
+    var WebAuth = require('../web-auth/index'); // eslint-disable-line
+    this.auth0 = new WebAuth(this.baseOptions);
+  }
   if (typeof withActiveDirectories === 'function') {
     cb = withActiveDirectories;
   }
