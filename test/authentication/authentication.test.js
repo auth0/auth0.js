@@ -259,8 +259,9 @@ describe('auth0.authentication', function() {
       });
 
       expect(url).to.be(
-        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated=&auth0Client=' +
-          encodeURIComponent(telemetryInfo)
+        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&auth0Client=' +
+          encodeURIComponent(telemetryInfo) +
+          '&federated'
       );
     });
   });
