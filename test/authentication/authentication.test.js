@@ -173,7 +173,7 @@ describe('auth0.authentication', function() {
     });
   });
 
-  context.only('buildLogoutUrl', function() {
+  context('buildLogoutUrl', function() {
     before(function() {
       this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
