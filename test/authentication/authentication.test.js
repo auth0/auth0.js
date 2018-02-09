@@ -173,7 +173,7 @@ describe('auth0.authentication', function() {
     });
   });
 
-  context('buildLogoutUrl', function() {
+  context.only('buildLogoutUrl', function() {
     before(function() {
       this.auth0 = new Authentication(this.webAuthSpy, {
         domain: 'me.auth0.com',
@@ -214,7 +214,29 @@ describe('auth0.authentication', function() {
       });
 
       expect(url).to.be(
-        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated='
+        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated'
+      );
+    });
+    it('should not add value for federated', function() {
+      var url = this.auth0.buildLogoutUrl({
+        clientID: '123',
+        returnTo: 'http://page.com',
+        federated: true
+      });
+
+      expect(url).to.be(
+        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated'
+      );
+    });
+    it('should not included federated param if the value is false', function() {
+      var url = this.auth0.buildLogoutUrl({
+        clientID: '123',
+        returnTo: 'http://page.com',
+        federated: false
+      });
+
+      expect(url).to.be(
+        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com'
       );
     });
   });
