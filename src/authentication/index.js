@@ -311,8 +311,6 @@ Authentication.prototype.oauthToken = function(options, cb) {
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
   body = parametersWhitelist.oauthTokenParams(this.warn, body);
 
-  body.grant_type = body.grant_type;
-
   return this.request.post(url).send(body).end(responseHandler(cb));
 };
 
