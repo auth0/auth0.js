@@ -195,7 +195,15 @@ Authentication.prototype.buildLogoutUrl = function(options) {
 
   params = objectHelper.toSnakeCase(params, ['auth0Client', 'returnTo']);
 
-  qString = qs.stringify(params);
+  qString = qs.stringify(objectHelper.blacklist(params, ['federated']));
+  if (
+    options &&
+    (options.federated !== undefined &&
+      options.federated !== false &&
+      options.federated !== 'false')
+  ) {
+    qString += '&federated';
+  }
 
   return urljoin(this.baseOptions.rootUrl, 'v2', 'logout', '?' + qString);
 };

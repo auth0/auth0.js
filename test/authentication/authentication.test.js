@@ -214,7 +214,29 @@ describe('auth0.authentication', function() {
       });
 
       expect(url).to.be(
-        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated='
+        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated'
+      );
+    });
+    it('should not add value for federated', function() {
+      var url = this.auth0.buildLogoutUrl({
+        clientID: '123',
+        returnTo: 'http://page.com',
+        federated: true
+      });
+
+      expect(url).to.be(
+        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated'
+      );
+    });
+    it('should not included federated param if the value is false', function() {
+      var url = this.auth0.buildLogoutUrl({
+        clientID: '123',
+        returnTo: 'http://page.com',
+        federated: false
+      });
+
+      expect(url).to.be(
+        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com'
       );
     });
   });
@@ -237,8 +259,9 @@ describe('auth0.authentication', function() {
       });
 
       expect(url).to.be(
-        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&federated=&auth0Client=' +
-          encodeURIComponent(telemetryInfo)
+        'https://me.auth0.com/v2/logout?client_id=123&returnTo=http%3A%2F%2Fpage.com&auth0Client=' +
+          encodeURIComponent(telemetryInfo) +
+          '&federated'
       );
     });
   });
