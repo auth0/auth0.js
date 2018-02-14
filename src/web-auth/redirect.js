@@ -4,7 +4,6 @@ var Warn = require('../helper/warn');
 function Redirect(auth0, options) {
   this.webAuth = auth0;
   this.baseOptions = options;
-  this.client = auth0.client;
   this.crossOriginAuthentication = new CrossOriginAuthentication(auth0, this.baseOptions);
 
   this.warn = new Warn({
@@ -44,7 +43,7 @@ Redirect.prototype.loginWithCredentials = function(options, cb) {
  */
 Redirect.prototype.signupAndLogin = function(options, cb) {
   var _this = this;
-  return this.client.dbConnection.signup(options, function(err) {
+  return this.webAuth.client.dbConnection.signup(options, function(err) {
     if (err) {
       return cb(err);
     }
