@@ -198,9 +198,9 @@ Authentication.prototype.buildLogoutUrl = function(options) {
   qString = qs.stringify(objectHelper.blacklist(params, ['federated']));
   if (
     options &&
-    (options.federated !== undefined &&
-      options.federated !== false &&
-      options.federated !== 'false')
+    options.federated !== undefined &&
+    options.federated !== false &&
+    options.federated !== 'false'
   ) {
     qString += '&federated';
   }
