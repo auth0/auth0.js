@@ -1,4 +1,13 @@
 
+## [v9.2.3](https://github.com/auth0/auth0.js/tree/v9.2.3) (2018-02-14)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.2...v9.2.3)
+
+**Changed**
+- Use webAuth.login when calling signupAndLogin to support Universal Login Page [\#664](https://github.com/auth0/auth0.js/pull/664) ([luisrudge](https://github.com/luisrudge))
+
+**Fixed**
+- Fix federated param [\#661](https://github.com/auth0/auth0.js/pull/661) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.2.2](https://github.com/auth0/auth0.js/tree/v9.2.2) (2018-02-08)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.1...v9.2.2)
 
