@@ -267,7 +267,11 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
               anotherOption: 'foobar'
             },
             function(err) {
-              expect(err).to.be.eql({ error: 'any_error', error_description: 'any error' });
+              expect(err).to.be.eql({
+                original: { error: 'any_error', error_description: 'any error' },
+                code: 'any_error',
+                description: 'any error'
+              });
               expect(_this.webAuthSpy.authorize.called).to.be.eql(false);
               done();
             }
@@ -300,8 +304,12 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
             },
             function(err) {
               expect(err).to.be.eql({
-                error: 'request_error',
-                error_description: '{"some":"error"}'
+                original: {
+                  error: 'request_error',
+                  error_description: '{"some":"error"}'
+                },
+                code: 'request_error',
+                description: '{"some":"error"}'
               });
               expect(_this.webAuthSpy.authorize.called).to.be.eql(false);
               done();
