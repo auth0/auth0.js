@@ -4,6 +4,7 @@ var windowHelper = require('../helper/window');
 var objectHelper = require('../helper/object');
 var RequestBuilder = require('../helper/request-builder');
 var WebMessageHandler = require('./web-message-handler');
+var responseHandler = require('../helper/response-handler');
 
 function CrossOriginAuthentication(webAuth, options) {
   this.webAuth = webAuth;
@@ -70,7 +71,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
         error: 'request_error',
         error_description: JSON.stringify(err)
       };
-      return cb(errorObject);
+      return responseHandler(cb)(errorObject);
     }
     var popupMode = options.popup === true;
     options = objectHelper.blacklist(options, ['password', 'credentialType', 'otp', 'popup']);
