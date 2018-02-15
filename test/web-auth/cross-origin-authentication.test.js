@@ -252,7 +252,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
                   response: {
                     body: {
                       error: 'any_error',
-                      error_description: 'any error'
+                      error_description: 'a super big error message description'
                     }
                   }
                 });
@@ -268,9 +268,9 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
             },
             function(err) {
               expect(err).to.be.eql({
-                original: { error: 'any_error', error_description: 'any error' },
+                original: { error: 'any_error', error_description: 'a super big error message description' },
                 code: 'any_error',
-                description: 'any error'
+                description: 'a super big error message description'
               });
               expect(_this.webAuthSpy.authorize.called).to.be.eql(false);
               done();
