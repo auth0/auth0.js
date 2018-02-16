@@ -155,5 +155,6 @@ module.exports = {
   pick: pick,
   getKeysNotIn: getKeysNotIn,
   extend: extend,
-  getOriginFromUrl: getOriginFromUrl
+  getOriginFromUrl: getOriginFromUrl,
+  getLocationFromUrl: getLocationFromUrl
 };

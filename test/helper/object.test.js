@@ -531,4 +531,43 @@ describe('helpers', function() {
       expect(objectHelper.getOriginFromUrl(url)).to.be('https://localhost:3000');
     });
   });
+  describe.only('getLocationFromUrl', function() {
+    const mapping = {
+      'https://localhost:3000/foo?id=1': {
+        href: 'https://localhost:3000/foo?id=1',
+        protocol: 'https:',
+        host: 'localhost:3000',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/foo',
+        search: '?id=1',
+        hash: ''
+      },
+      'https://auth0.com/foo': {
+        href: 'https://auth0.com/foo',
+        protocol: 'https:',
+        host: 'auth0.com',
+        hostname: 'auth0.com',
+        port: undefined,
+        pathname: '/foo',
+        search: '',
+        hash: ''
+      },
+      'https://auth0.com#access_token=foo': {
+        href: 'https://auth0.com#access_token=foo',
+        protocol: 'https:',
+        host: 'auth0.com',
+        hostname: 'auth0.com',
+        port: undefined,
+        pathname: '',
+        search: '',
+        hash: '#access_token=foo'
+      }
+    };
+    for (const url in mapping) {
+      it('should map urls correctly: ' + url, function() {
+        expect(objectHelper.getLocationFromUrl(url)).to.be.eql(mapping[url]);
+      });
+    }
+  });
 });
