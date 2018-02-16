@@ -2,6 +2,7 @@ var expect = require('expect.js');
 var stub = require('sinon').stub;
 var spy = require('sinon').spy;
 var URL = require('url');
+var WinChan = require('winchan');
 
 var RequestMock = require('../mock/request-mock');
 var request = require('superagent');
@@ -600,83 +601,92 @@ describe('auth0.WebAuth.popup', function() {
   });
 
   context('callback', function() {
-    var windowOpenerPostMessageSpy;
-    beforeEach(function() {
-      windowOpenerPostMessageSpy = spy();
-      stub(windowHandler, 'getWindow', function() {
-        return {
-          origin: 'https://window.origin.com',
-          opener: {
-            postMessage: windowOpenerPostMessageSpy
-          }
-        };
-      });
-    });
     afterEach(function() {
-      this.auth0.parseHash.restore();
-      windowHandler.getWindow.restore();
+      WinChan.onOpen.restore();
+      if (this.auth0.parseHash.restore) {
+        this.auth0.parseHash.restore();
+      }
+      if (windowHandler.getOrigin.restore) {
+        windowHandler.getOrigin.restore();
+      }
     });
-    context('when parseHash is successfull', function() {
-      beforeEach(function() {
-        stub(this.auth0, 'parseHash', function(options, cb) {
-          cb(null, { accessToken: 'accessToken' });
+    it('sends parseHash result to the callback when there is no error', function(done) {
+      stub(this.auth0, 'parseHash', function(options, cb) {
+        cb(null, { accessToken: 'accessToken' });
+      });
+      stub(WinChan, 'onOpen', function(onOpenCallback) {
+        onOpenCallback('https://baseoptions.popupOrigin.com', null, function(result) {
+          expect(result).to.be.eql({ accessToken: 'accessToken' });
+          done();
         });
       });
-      it('should call window.opener.postMessage with correct result ', function() {
-        this.auth0.popup.callback();
-        expect(windowOpenerPostMessageSpy.calledOnce).to.be(true);
-        expect(windowOpenerPostMessageSpy.firstCall.args[0]).to.be.eql(
-          JSON.stringify({
-            a: 'response',
-            d: { accessToken: 'accessToken' }
-          })
-        );
-      });
-      it('should use options.popupOrigin in postMessage', function() {
-        this.auth0.popup.callback({ popupOrigin: 'https://options.popupOrigin.com' });
-        expect(windowOpenerPostMessageSpy.calledOnce).to.be(true);
-        expect(windowOpenerPostMessageSpy.firstCall.args[1]).to.be(
-          'https://options.popupOrigin.com'
-        );
-      });
-      it('should use baseoptions.popupOrigin in postMessage when options.popupOrigin is not available', function() {
-        this.auth0.popup.callback();
-        expect(windowOpenerPostMessageSpy.calledOnce).to.be(true);
-        expect(windowOpenerPostMessageSpy.firstCall.args[1]).to.be(
-          'https://baseoptions.popupOrigin.com'
-        );
-      });
-      it('should use window.origin in postMessage when options.popupOrigin and baseoptions.popupOrigin are not available', function() {
-        auth0 = new WebAuth({
-          domain: 'me.auth0.com',
-          clientID: '...',
-          redirectUri: 'http://page.com/callback',
-          responseType: 'id_token',
-          _sendTelemetry: false
-        });
-        stub(auth0, 'parseHash', function(options, cb) {
-          cb(null, { accessToken: 'accessToken' });
-        });
 
-        auth0.popup.callback();
-
-        expect(windowOpenerPostMessageSpy.calledOnce).to.be(true);
-        expect(windowOpenerPostMessageSpy.firstCall.args[1]).to.be('https://window.origin.com');
-      });
+      this.auth0.popup.callback();
     });
-    context('when parseHash returns an error', function() {
-      beforeEach(function() {
-        stub(this.auth0, 'parseHash', function(options, cb) {
-          cb({ error: 'some_error' });
+    it('sends parseHash result to the callback when there is an error', function(done) {
+      stub(this.auth0, 'parseHash', function(options, cb) {
+        cb({ error: 'any_error', error_description: 'a big error message' });
+      });
+      stub(WinChan, 'onOpen', function(onOpenCallback) {
+        onOpenCallback('https://baseoptions.popupOrigin.com', null, function(result) {
+          expect(result).to.be.eql({
+            error: 'any_error',
+            error_description: 'a big error message'
+          });
+          done();
         });
       });
-      it('should call window.opener.postMessage with correct result ', function() {
-        this.auth0.popup.callback();
-        expect(windowOpenerPostMessageSpy.calledOnce).to.be(true);
-        expect(windowOpenerPostMessageSpy.firstCall.args[0]).to.be.eql(
-          JSON.stringify({ a: 'error', d: { error: 'some_error' } })
-        );
+
+      this.auth0.popup.callback();
+    });
+    it('validates origin with baseOptions.popupOrigin', function(done) {
+      stub(WinChan, 'onOpen', function(onOpenCallback) {
+        onOpenCallback('https://notBaseOptions.popupOrigin.com', null, function(result) {
+          expect(result).to.be.eql({
+            error: 'origin_mismatch',
+            error_description: "The popup's origin (https://notBaseOptions.popupOrigin.com) should match the `popupOrigin` parameter (https://baseoptions.popupOrigin.com)."
+          });
+          done();
+        });
       });
+
+      this.auth0.popup.callback();
+    });
+    it('validates origin with options.popupOrigin', function(done) {
+      stub(WinChan, 'onOpen', function(onOpenCallback) {
+        onOpenCallback('https://notOptions.popupOrigin.com', null, function(result) {
+          expect(result).to.be.eql({
+            error: 'origin_mismatch',
+            error_description: "The popup's origin (https://notOptions.popupOrigin.com) should match the `popupOrigin` parameter (https://options.popupOrigin.com)."
+          });
+          done();
+        });
+      });
+
+      this.auth0.popup.callback({ popupOrigin: 'https://options.popupOrigin.com' });
+    });
+    it('validates origin with windowHelper.getOrigin()', function(done) {
+      var auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'id_token',
+        _sendTelemetry: false
+      });
+      stub(windowHandler, 'getOrigin', function() {
+        return 'https://window.popupOrigin.com';
+      });
+      stub(WinChan, 'onOpen', function(onOpenCallback) {
+        onOpenCallback('https://notWindow.popupOrigin.com', null, function(result) {
+          expect(result).to.be.eql({
+            error: 'origin_mismatch',
+            error_description: "The popup's origin (https://notWindow.popupOrigin.com) should match the `popupOrigin` parameter (https://window.popupOrigin.com)."
+          });
+          done();
+        });
+      });
+
+      auth0.popup.callback();
     });
   });
 });

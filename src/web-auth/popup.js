@@ -1,4 +1,5 @@
 var urljoin = require('url-join');
+var WinChan = require('winchan');
 
 var urlHelper = require('../helper/url');
 var assert = require('../helper/assert');
@@ -85,16 +86,22 @@ Popup.prototype.getPopupHandler = function(options, preload) {
 Popup.prototype.callback = function(options) {
   var _this = this;
   options = options || {};
-  var originUrl =
-    options.popupOrigin || this.baseOptions.popupOrigin || windowHelper.getWindow().origin;
-  _this.webAuth.parseHash(options || {}, function(err, data) {
-    // {a, d} is WinChan's message format.
-    // We have to keep the same format because we're opening the popup with WinChan.
-    var response = { a: 'response', d: data };
-    if (err) {
-      response = { a: 'error', d: err };
+  var originUrl = options.popupOrigin || this.baseOptions.popupOrigin || windowHelper.getOrigin();
+
+  WinChan.onOpen(function(popupOrigin, r, cb) {
+    if (popupOrigin !== originUrl) {
+      return cb({
+        error: 'origin_mismatch',
+        error_description: "The popup's origin (" +
+          popupOrigin +
+          ') should match the `popupOrigin` parameter (' +
+          originUrl +
+          ').'
+      });
     }
-    windowHelper.getWindow().opener.postMessage(JSON.stringify(response), originUrl);
+    _this.webAuth.parseHash(options || {}, function(err, data) {
+      return cb(err || data);
+    });
   });
 };
 

@@ -4,7 +4,6 @@
 
 var assert = require('./assert');
 var objectAssign = require('./object-assign');
-var windowHelper = require('./window');
 
 function pick(object, keys) {
   return keys.reduce(function(prev, key) {
@@ -118,16 +117,32 @@ function toCamelCase(object, exceptions) {
   }, {});
 }
 
+function getLocationFromUrl(href) {
+  var match = href.match(
+    /^(https?:)\/\/(([^:/?#]*)(?::([0-9]+))?)([/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/
+  );
+  return (
+    match && {
+      href: href,
+      protocol: match[1],
+      host: match[2],
+      hostname: match[3],
+      port: match[4],
+      pathname: match[5],
+      search: match[6],
+      hash: match[7]
+    }
+  );
+}
+
 function getOriginFromUrl(url) {
   if (!url) {
     return undefined;
   }
-  var doc = windowHelper.getDocument();
-  var anchor = doc.createElement('a');
-  anchor.href = url;
-  var origin = anchor.protocol + '//' + anchor.hostname;
-  if (anchor.port) {
-    origin += ':' + anchor.port;
+  var parsed = getLocationFromUrl(url);
+  var origin = parsed.protocol + '//' + parsed.hostname;
+  if (parsed.port) {
+    origin += ':' + parsed.port;
   }
   return origin;
 }
