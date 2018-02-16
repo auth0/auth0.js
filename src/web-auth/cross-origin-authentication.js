@@ -81,7 +81,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
     var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
     theWindow.sessionStorage[key] = data.body.co_verifier;
     if (popupMode) {
-      _this.webMessageHandler.run(authorizeOptions, cb);
+      _this.webMessageHandler.run(authorizeOptions, responseHandler(cb));
     } else {
       _this.webAuth.authorize(authorizeOptions);
     }
