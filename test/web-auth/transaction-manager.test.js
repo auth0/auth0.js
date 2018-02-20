@@ -133,4 +133,26 @@ context('TransactionManager', function() {
       });
     });
   });
+  context('getStoredTransaction', function() {
+    beforeEach(function() {
+      stub(storage, 'removeItem');
+      stub(storage, 'getItem', function(state) {
+        expect(state).to.be('com.auth0.auth.state');
+        return { from: 'storage' };
+      });
+    });
+    afterEach(function() {
+      storage.removeItem.restore();
+      storage.getItem.restore();
+    });
+    it('returns transaction data from storage', function() {
+      var state = this.tm.getStoredTransaction('state');
+      expect(state).to.be.eql({ from: 'storage' });
+    });
+    it('removes data from storage', function() {
+      var state = this.tm.getStoredTransaction('state');
+      expect(storage.removeItem.calledOnce).to.be(true);
+      expect(storage.removeItem.lastCall.args[0]).to.be('com.auth0.auth.state');
+    });
+  });
 });
