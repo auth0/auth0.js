@@ -601,14 +601,24 @@ describe('auth0.WebAuth.popup', function() {
   });
 
   context('callback', function() {
+    beforeEach(function() {
+      stub(windowHandler, 'getWindow', function() {
+        return {
+          opener: {}
+        };
+      });
+    });
     afterEach(function() {
-      WinChan.onOpen.restore();
+      if (WinChan.onOpen.restore) {
+        WinChan.onOpen.restore();
+      }
       if (this.auth0.parseHash.restore) {
         this.auth0.parseHash.restore();
       }
       if (windowHandler.getOrigin.restore) {
         windowHandler.getOrigin.restore();
       }
+      windowHandler.getWindow.restore();
     });
     it('sends parseHash result to the callback when there is no error', function(done) {
       stub(this.auth0, 'parseHash', function(options, cb) {
@@ -687,6 +697,34 @@ describe('auth0.WebAuth.popup', function() {
       });
 
       auth0.popup.callback();
+    });
+    it('handles window.opener being undefined', function(done) {
+      windowHandler.getWindow.restore();
+      var theWindow = {
+        opener: undefined,
+        parent: {
+          postMessage: function(msg, origin) {
+            expect(msg).to.be.eql({ from: 'winchan' });
+            expect(origin).to.be('https://window.popupOrigin.com');
+            done();
+          }
+        }
+      };
+      stub(windowHandler, 'getWindow', function() {
+        return theWindow;
+      });
+      stub(windowHandler, 'getOrigin', function() {
+        return 'https://window.popupOrigin.com';
+      });
+      var auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'id_token',
+        _sendTelemetry: false
+      });
+      auth0.popup.callback();
+      theWindow.doPost({ from: 'winchan' });
     });
   });
 });
