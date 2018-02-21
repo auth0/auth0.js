@@ -90,9 +90,12 @@ Popup.prototype.callback = function(options) {
   var originUrl = options.popupOrigin || this.baseOptions.popupOrigin || windowHelper.getOrigin();
 
   /*
-    in IE 11, window.opener will be undefined. The callback page will still call `popup.callback()`
-    which will run this method in the relay page. WinChan expects the relay page to have a global
-    `doPost` function, which will be called with the response.
+    in IE 11, there's a bug that makes window.opener return undefined undefined.
+    The callback page will still call `popup.callback()` which will run this method
+    in the relay page. WinChan expects the relay page to have a global `doPost` function,
+    which will be called with the response.
+
+    IE11 Bug: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/110920/
    */
   if (!theWindow.opener) {
     theWindow.doPost = function(msg) {
