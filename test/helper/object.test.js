@@ -531,7 +531,7 @@ describe('helpers', function() {
       expect(objectHelper.getOriginFromUrl(url)).to.be('https://localhost:3000');
     });
   });
-  describe.only('getLocationFromUrl', function() {
+  describe('getLocationFromUrl', function() {
     const mapping = {
       'https://localhost:3000/foo?id=1': {
         href: 'https://localhost:3000/foo?id=1',
