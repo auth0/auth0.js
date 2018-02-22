@@ -150,14 +150,14 @@ var auth0 = new auth0.Authentication({
 
 ## auth0.Management
 
-Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token).
+Provides an API Client for the Auth0 Management API (only for a few methods which are meant to be used from the client with the user ID token).
 
 ### Initialize
 
 ```js
 var auth0 = new auth0.Management({
   domain: "{YOUR_AUTH0_DOMAIN}",
-  token: "{YOUR_AUTH0_API_TOKEN}"
+  token: "{USER_ID_TOKEN}"
 });
 ```
 
