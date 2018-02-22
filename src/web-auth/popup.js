@@ -1,4 +1,5 @@
 var urljoin = require('url-join');
+var WinChan = require('winchan');
 
 var urlHelper = require('../helper/url');
 var assert = require('../helper/assert');
@@ -84,17 +85,41 @@ Popup.prototype.getPopupHandler = function(options, preload) {
  */
 Popup.prototype.callback = function(options) {
   var _this = this;
+  var theWindow = windowHelper.getWindow();
   options = options || {};
-  var originUrl =
-    options.popupOrigin || this.baseOptions.popupOrigin || windowHelper.getWindow().origin;
-  _this.webAuth.parseHash(options || {}, function(err, data) {
-    // {a, d} is WinChan's message format.
-    // We have to keep the same format because we're opening the popup with WinChan.
-    var response = { a: 'response', d: data };
-    if (err) {
-      response = { a: 'error', d: err };
+  var originUrl = options.popupOrigin || this.baseOptions.popupOrigin || windowHelper.getOrigin();
+
+  /*
+    in IE 11, there's a bug that makes window.opener return undefined.
+    The callback page will still call `popup.callback()` which will run this method
+    in the relay page. WinChan expects the relay page to have a global `doPost` function,
+    which will be called with the response.
+
+    IE11 Bug: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/110920/
+   */
+  if (!theWindow.opener) {
+    theWindow.doPost = function(msg) {
+      if (theWindow.parent) {
+        theWindow.parent.postMessage(msg, originUrl);
+      }
+    };
+    return;
+  }
+
+  WinChan.onOpen(function(popupOrigin, r, cb) {
+    if (popupOrigin !== originUrl) {
+      return cb({
+        error: 'origin_mismatch',
+        error_description: "The popup's origin (" +
+          popupOrigin +
+          ') should match the `popupOrigin` parameter (' +
+          originUrl +
+          ').'
+      });
     }
-    windowHelper.getWindow().opener.postMessage(JSON.stringify(response), originUrl);
+    _this.webAuth.parseHash(options || {}, function(err, data) {
+      return cb(err || data);
+    });
   });
 };
 

@@ -28,7 +28,7 @@ describe('helpers window', function() {
       expect(windowHelper.getOrigin()).to.be('origin');
     });
     it('should build current origin when location.origin is not available', function() {
-      global.window = { location: { protocol: 'http:', hostname: 'hostname', port: 30 } };
+      global.window = { location: { href: 'http://hostname:30/foobar' } };
       expect(windowHelper.getOrigin()).to.be('http://hostname:30');
     });
   });
