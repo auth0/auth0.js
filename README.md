@@ -128,12 +128,12 @@ The contents of `authResult` are identical to those returned by `parseHash()`.
 
 ## auth0.Authentication
 
-Provides an API client for the Auth0 Authentication API.
+Provides an API client for the Auth0 Authentication API. It requires an instance of [WebAuth](https://github.com/auth0/auth0.js#auth0webauth) as the first argument, but only if you're using `getSSOData`. If you don't call `getSSOData`, you can use only the options object.
 
 ### Initialize
 
 ```js
-var auth0 = new auth0.Authentication({
+var auth0 = new auth0.Authentication(webAuth, {
   domain: "{YOUR_AUTH0_DOMAIN}",
   clientID: "{YOUR_AUTH0_CLIENT_ID}"
 });
