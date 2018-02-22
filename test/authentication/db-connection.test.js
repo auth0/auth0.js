@@ -11,15 +11,12 @@ var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 describe('auth0.authentication', function() {
   context('dbConnection signup options', function() {
     before(function() {
-      this.auth0 = new Authentication(
-        {},
-        {
-          domain: 'me.auth0.com',
-          clientID: '...',
-          redirectUri: 'http://page.com/callback',
-          responseType: 'code'
-        }
-      );
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code'
+      });
     });
 
     it('should check that options is passed', function() {
@@ -176,16 +173,13 @@ describe('auth0.authentication', function() {
 
   context('change password options', function() {
     before(function() {
-      this.auth0 = new Authentication(
-        {},
-        {
-          domain: 'me.auth0.com',
-          clientID: '...',
-          redirectUri: 'http://page.com/callback',
-          responseType: 'code',
-          _sendTelemetry: false
-        }
-      );
+      this.auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
     });
 
     it('should check that options is passed', function() {

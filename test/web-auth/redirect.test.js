@@ -164,7 +164,13 @@ describe('auth0.WebAuth.redirect', function() {
           }
         });
       });
-      stub(this.auth0.redirect, 'loginWithCredentials', function(options, cb) {
+      stub(this.auth0, 'login', function(options, cb) {
+        expect(options).to.be.eql({
+          email: 'me@example.com',
+          password: '123456',
+          scope: 'openid',
+          realm: 'the_connection'
+        });
         done();
       });
 

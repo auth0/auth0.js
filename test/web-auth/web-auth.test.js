@@ -6,25 +6,32 @@ var request = require('superagent');
 var storage = require('../../src/helper/storage');
 var windowHelper = require('../../src/helper/window');
 var ssodata = require('../../src/helper/ssodata');
+var Warn = require('../../src/helper/warn');
 
 var RequestMock = require('../mock/request-mock');
 
 var TransactionManager = require('../../src/web-auth/transaction-manager');
 var SilentAuthenticationHandler = require('../../src/web-auth/silent-authentication-handler');
 var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
+var HostedPages = require('../../src/web-auth/hosted-pages');
 var IframeHandler = require('../../src/helper/iframe-handler');
 
 var objectHelper = require('../../src/helper/object');
 var WebAuth = require('../../src/web-auth');
 
 describe('auth0.WebAuth', function() {
-  before(function() {
+  beforeEach(function() {
     stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
       return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
     });
+    stub(TransactionManager.prototype, 'getStoredTransaction', function(state) {
+      expect(state).to.be('foo');
+      return { state: 'foo' };
+    });
   });
-  after(function() {
+  afterEach(function() {
     TransactionManager.prototype.generateTransaction.restore();
+    TransactionManager.prototype.getStoredTransaction.restore();
   });
   context('init', function() {
     after(function() {
@@ -58,12 +65,6 @@ describe('auth0.WebAuth', function() {
     });
   });
   context('nonce validation', function() {
-    after(function() {
-      SilentAuthenticationHandler.prototype.login.restore();
-
-      delete global.window;
-    });
-
     before(function() {
       global.window = {};
       global.window.localStorage = {};
@@ -77,14 +78,20 @@ describe('auth0.WebAuth', function() {
           appState: null
         });
       };
+      global.window.location = {};
       storage.reload();
+    });
+    after(function() {
+      SilentAuthenticationHandler.prototype.login.restore();
+
+      delete global.window;
     });
 
     it('should fail if the nonce is not valid', function(done) {
       stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
         cb(
           null,
-          '#id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
+          '#state=foo&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
         );
       });
 
@@ -95,6 +102,7 @@ describe('auth0.WebAuth', function() {
         responseType: 'id_token',
         scope: 'openid name read:blog',
         audience: 'urn:site:demo:blog',
+        state: 'foo',
         _sendTelemetry: false
       });
 
@@ -258,15 +266,13 @@ describe('auth0.WebAuth', function() {
         });
       };
       global.window.location.hash =
-        '#access_token=asldkfjahsdlkfjhasd&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas';
+        '#state=foo&access_token=asldkfjahsdlkfjhasd&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas';
     });
 
     beforeEach(function() {
-      spy(TransactionManager.prototype, 'getStoredTransaction');
       spy(ssodata, 'set');
     });
     afterEach(function() {
-      TransactionManager.prototype.getStoredTransaction.restore();
       ssodata.set.restore();
     });
 
@@ -280,7 +286,7 @@ describe('auth0.WebAuth', function() {
 
       var data = webAuth.parseHash(
         {
-          hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          hash: '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
         },
         function(err, data) {
           expect(data).to.eql({
@@ -289,7 +295,7 @@ describe('auth0.WebAuth', function() {
             idTokenPayload: null,
             appState: null,
             refreshToken: 'kajshdgfkasdjhgfas',
-            state: null,
+            state: 'foo',
             expiresIn: null,
             tokenType: 'Bearer',
             scope: null
@@ -314,13 +320,14 @@ describe('auth0.WebAuth', function() {
         stub(TransactionManager.prototype, 'getStoredTransaction', function() {
           return {
             nonce: 'asfd',
-            appState: 'the-app-state'
+            appState: 'the-app-state',
+            state: 'foo'
           };
         });
 
         var data = webAuth.parseHash(
           {
-            hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+            hash: '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
           },
           function(err, data) {
             expect(data).to.eql({
@@ -329,7 +336,7 @@ describe('auth0.WebAuth', function() {
               idTokenPayload: null,
               appState: 'the-app-state',
               refreshToken: 'kajshdgfkasdjhgfas',
-              state: null,
+              state: 'foo',
               expiresIn: null,
               tokenType: 'Bearer',
               scope: null
@@ -353,7 +360,8 @@ describe('auth0.WebAuth', function() {
           TransactionManager.prototype.getStoredTransaction.restore();
           stub(TransactionManager.prototype, 'getStoredTransaction', function() {
             return {
-              lastUsedConnection: 'lastUsedConnection'
+              lastUsedConnection: 'lastUsedConnection',
+              state: 'foo'
             };
           });
         });
@@ -362,7 +370,7 @@ describe('auth0.WebAuth', function() {
         ) {
           var data = this.webAuth.parseHash(
             {
-              hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+              hash: '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
             },
             function() {
               expect(ssodata.set.calledOnce).to.be.ok();
@@ -376,7 +384,7 @@ describe('auth0.WebAuth', function() {
         it('sets ssodata with a connection and a sub when there is a payload', function(done) {
           var data = this.webAuth.parseHash(
             {
-              hash: '#access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJpc3MiOiJodHRwczovL2JydWNrZS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTlmYmUxMTkzNzAzOWIyNjNhOGIyOWEyIiwiYXVkIjoiazV1M28yZmlBQThYd2VYRUVYNjA0S0N3Q2p6anRNVTYiLCJpYXQiOjE1MTE1NTE3ODMsImV4cCI6MTUxMTU4Nzc4MywiYXRfaGFzaCI6IkxGTDMxMlRXWDFGc1VNay00R2gxYWciLCJub25jZSI6IndFT2U3LUxDOG5sMUF1SHA3bnVjRl81TE1WUFZrTUJZIn0.fUJhEIPded3aO4iDrbniwGnAEZHX66Mjl7yCgIxSSCXlgrHlOATvbMi7XGQXNfPjGCivySoalMCS3MikvMGBFPFguChyJZ3myswT6US33hZSTycUYODvWSz8j7PeEpJrHdF4nAO4NvbC4JjogG92Xg2zx0KCZtoLK9datZiWEWHVUEVEXZCwceyowxQ4J5dqDzzLm9_V9qBsUYJtINqMM6jhHazk7OQUFZlE35R3l-Lps2oofqxZf11X7g0bgxo5ykSSr_KDvj9Hx0flk_u-eTTD2XVGMWe1TreJm1KMMuD01PicU1JGsJRA0hqE6Fd943OAEAIM6feMximK22rrHg',
+              hash: '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJpc3MiOiJodHRwczovL2JydWNrZS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTlmYmUxMTkzNzAzOWIyNjNhOGIyOWEyIiwiYXVkIjoiazV1M28yZmlBQThYd2VYRUVYNjA0S0N3Q2p6anRNVTYiLCJpYXQiOjE1MTE1NTE3ODMsImV4cCI6MTUxMTU4Nzc4MywiYXRfaGFzaCI6IkxGTDMxMlRXWDFGc1VNay00R2gxYWciLCJub25jZSI6IndFT2U3LUxDOG5sMUF1SHA3bnVjRl81TE1WUFZrTUJZIn0.fUJhEIPded3aO4iDrbniwGnAEZHX66Mjl7yCgIxSSCXlgrHlOATvbMi7XGQXNfPjGCivySoalMCS3MikvMGBFPFguChyJZ3myswT6US33hZSTycUYODvWSz8j7PeEpJrHdF4nAO4NvbC4JjogG92Xg2zx0KCZtoLK9datZiWEWHVUEVEXZCwceyowxQ4J5dqDzzLm9_V9qBsUYJtINqMM6jhHazk7OQUFZlE35R3l-Lps2oofqxZf11X7g0bgxo5ykSSr_KDvj9Hx0flk_u-eTTD2XVGMWe1TreJm1KMMuD01PicU1JGsJRA0hqE6Fd943OAEAIM6feMximK22rrHg',
               nonce: 'wEOe7-LC8nl1AuHp7nucF_5LMVPVkMBY'
             },
             function() {
@@ -407,7 +415,7 @@ describe('auth0.WebAuth', function() {
         var data = webAuth.parseHash(
           {
             nonce: 'asfd',
-            hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas&scope=foo'
+            hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas&scope=foo'
           },
           function(err, data) {
             expect(err).to.be(null);
@@ -424,7 +432,7 @@ describe('auth0.WebAuth', function() {
               },
               appState: null,
               refreshToken: 'kajshdgfkasdjhgfas',
-              state: null,
+              state: 'foo',
               expiresIn: null,
               tokenType: 'Bearer',
               scope: 'foo'
@@ -461,7 +469,7 @@ describe('auth0.WebAuth', function() {
             },
             appState: null,
             refreshToken: 'kajshdgfkasdjhgfas',
-            state: null,
+            state: 'foo',
             expiresIn: null,
             tokenType: 'Bearer',
             scope: null
@@ -521,6 +529,32 @@ describe('auth0.WebAuth', function() {
             done();
           }
         );
+      });
+
+      it('should fail when there is no state available in the hash', function(done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3p',
+          responseType: 'token'
+        });
+        TransactionManager.prototype.getStoredTransaction.restore();
+        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+          return null;
+        });
+
+        var data = webAuth.parseHash(
+          {
+            hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function(err, data) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: '`state` does not match.'
+            });
+            done();
+          }
+        ); // eslint-disable-line
       });
 
       it('should fail with an invalid state (null transaction)', function(done) {
@@ -587,7 +621,7 @@ describe('auth0.WebAuth', function() {
 
         var data = webAuth.parseHash(
           {
-            hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+            hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
           },
           function(err, data) {
             expect(err).to.eql({
@@ -609,7 +643,7 @@ describe('auth0.WebAuth', function() {
 
         var data = webAuth.parseHash(
           {
-            hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+            hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
           },
           function(err, data) {
             expect(err).to.eql({
@@ -678,7 +712,7 @@ describe('auth0.WebAuth', function() {
 
         var data = webAuth.parseHash(
           {
-            hash: '#token_type=Bearer&id_token=0as98da09s8d_not_a_token'
+            hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
           },
           function(err, data) {
             expect(err).to.be.eql(expectedError);
@@ -709,7 +743,7 @@ describe('auth0.WebAuth', function() {
 
         var data = this.webAuth.parseHash(
           {
-            hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+            hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
           },
           function(err, data) {
             expect(err).to.be(null);
@@ -719,7 +753,7 @@ describe('auth0.WebAuth', function() {
               idTokenPayload: { from: 'userinfo' },
               appState: null,
               refreshToken: 'kajshdgfkasdjhgfas',
-              state: null,
+              state: 'foo',
               expiresIn: null,
               tokenType: 'Bearer',
               scope: null
@@ -735,7 +769,7 @@ describe('auth0.WebAuth', function() {
 
         var data = this.webAuth.parseHash(
           {
-            hash: '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+            hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
           },
           function(err, data) {
             expect(err).to.be.eql({
@@ -752,6 +786,7 @@ describe('auth0.WebAuth', function() {
   context('renewAuth', function() {
     beforeEach(function() {
       global.window = {};
+      global.window.origin = 'unit-test-origin';
       global.window.removeEventListener = function() {};
     });
     afterEach(function() {
@@ -861,27 +896,26 @@ describe('auth0.WebAuth', function() {
     beforeEach(function() {
       global.window = {};
       global.window.document = {};
+      global.window.origin = 'unit-test-origin';
     });
 
     afterEach(function() {
       delete global.window;
       SilentAuthenticationHandler.prototype.login.restore();
-
-      if (TransactionManager.prototype.getStoredTransaction.restore) {
-        TransactionManager.prototype.getStoredTransaction.restore();
-      }
     });
 
     it('should validate the token', function(done) {
       stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
         cb(
           null,
-          '#id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
+          '#state=foo&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
         );
       });
+      TransactionManager.prototype.getStoredTransaction.restore();
       stub(TransactionManager.prototype, 'getStoredTransaction', function() {
         return {
-          nonce: 'asfd'
+          nonce: 'asfd',
+          state: 'foo'
         };
       });
 
@@ -915,7 +949,7 @@ describe('auth0.WebAuth', function() {
           },
           appState: null,
           refreshToken: null,
-          state: null,
+          state: 'foo',
           expiresIn: null,
           tokenType: null,
           scope: null
@@ -925,6 +959,12 @@ describe('auth0.WebAuth', function() {
       });
     });
     describe('should return the access_token', function() {
+      beforeEach(function() {
+        global.window = { origin: 'unit-test-origin' };
+      });
+      afterEach(function() {
+        delete global.window;
+      });
       it('when login returns an object', function(done) {
         stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
           cb(null, { accessToken: '123' });
@@ -952,7 +992,7 @@ describe('auth0.WebAuth', function() {
       });
       it('when login returns a string', function(done) {
         stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
-          cb(null, '#access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1');
+          cb(null, '#state=foo&access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1');
         });
 
         var webAuth = new WebAuth({
@@ -975,7 +1015,7 @@ describe('auth0.WebAuth', function() {
             idTokenPayload: null,
             appState: null,
             refreshToken: null,
-            state: null,
+            state: 'foo',
             expiresIn: null,
             tokenType: null,
             scope: null
@@ -989,7 +1029,7 @@ describe('auth0.WebAuth', function() {
       stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
         cb(
           null,
-          '#id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
+          '#state=foo&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
         );
       });
 
@@ -1250,7 +1290,7 @@ describe('auth0.WebAuth', function() {
   });
 
   context('passwordlessLogin', function() {
-    before(function() {
+    beforeEach(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -1259,62 +1299,135 @@ describe('auth0.WebAuth', function() {
         _sendTelemetry: false
       });
     });
-
-    afterEach(function() {
-      if (CrossOriginAuthentication.prototype.login.restore) {
-        CrossOriginAuthentication.prototype.login.restore();
-      }
-      if (CrossOriginAuthentication.prototype.callback.restore) {
-        CrossOriginAuthentication.prototype.callback.restore();
-      }
-    });
-    it('should call `crossOriginAuthentication.login` with phoneNumber', function(done) {
-      var expectedOptions = {
-        credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
-        realm: 'sms',
-        username: '+55165134',
-        otp: '123456'
-      };
-      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
-        expect(options).to.be.eql(expectedOptions);
-        expect(cb()).to.be('cb');
-        done();
+    context('when outside of the universal login page', function() {
+      beforeEach(function() {
+        stub(windowHelper, 'getWindow', function() {
+          return {
+            location: {
+              host: 'other-domain.auth0.com'
+            }
+          };
+        });
       });
 
-      this.auth0.passwordlessLogin(
-        {
+      afterEach(function() {
+        windowHelper.getWindow.restore();
+        if (CrossOriginAuthentication.prototype.login.restore) {
+          CrossOriginAuthentication.prototype.login.restore();
+        }
+        if (CrossOriginAuthentication.prototype.callback.restore) {
+          CrossOriginAuthentication.prototype.callback.restore();
+        }
+      });
+      it('should call `crossOriginAuthentication.login` with phoneNumber', function(done) {
+        var expectedOptions = {
+          credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+          realm: 'sms',
+          username: '+55165134',
+          otp: '123456'
+        };
+        stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
+          expect(options).to.be.eql(expectedOptions);
+          expect(cb()).to.be('cb');
+          done();
+        });
+
+        this.auth0.passwordlessLogin(
+          {
+            connection: 'sms',
+            phoneNumber: '+55165134',
+            verificationCode: '123456'
+          },
+          function(err, data) {
+            return 'cb';
+          }
+        );
+      });
+      it('should call `crossOriginAuthentication.login` with email', function(done) {
+        var expectedOptions = {
+          credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+          realm: 'email',
+          username: 'the@email.com',
+          otp: '123456'
+        };
+        stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
+          expect(options).to.be.eql(expectedOptions);
+          expect(cb()).to.be('cb');
+          done();
+        });
+
+        this.auth0.passwordlessLogin(
+          {
+            connection: 'email',
+            email: 'the@email.com',
+            verificationCode: '123456'
+          },
+          function(err, data) {
+            return 'cb';
+          }
+        );
+      });
+    });
+    context('when inside of the universal login page', function() {
+      beforeEach(function() {
+        stub(windowHelper, 'getWindow', function() {
+          return {
+            location: {
+              host: 'me.auth0.com'
+            }
+          };
+        });
+      });
+
+      afterEach(function() {
+        windowHelper.getWindow.restore();
+      });
+      it('should call `webauth.passwordlessVerify` with phoneNumber', function(done) {
+        var expectedOptions = {
           connection: 'sms',
           phoneNumber: '+55165134',
           verificationCode: '123456'
-        },
-        function(err, data) {
-          return 'cb';
-        }
-      );
-    });
-    it('should call `crossOriginAuthentication.login` with email', function(done) {
-      var expectedOptions = {
-        credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
-        realm: 'email',
-        username: 'the@email.com',
-        otp: '123456'
-      };
-      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
-        expect(options).to.be.eql(expectedOptions);
-        expect(cb()).to.be('cb');
-        done();
-      });
+        };
+        stub(this.auth0, 'passwordlessVerify', function(options, cb) {
+          expect(options).to.be.eql(expectedOptions);
+          expect(cb()).to.be('cb');
+          done();
+        });
 
-      this.auth0.passwordlessLogin(
-        {
+        this.auth0.passwordlessLogin(
+          {
+            connection: 'sms',
+            phoneNumber: '+55165134',
+            verificationCode: '123456'
+          },
+          function(err, data) {
+            return 'cb';
+          }
+        );
+      });
+      it('should call `webauth.passwordlessVerify` with email', function(done) {
+        var expectedOptions = {
           connection: 'email',
           email: 'the@email.com',
           verificationCode: '123456'
-        },
-        function(err, data) {
-          return 'cb';
-        }
-      );
+        };
+        stub(this.auth0, 'passwordlessVerify', function(options, cb) {
+          expect(options).to.be.eql(expectedOptions);
+          expect(cb()).to.be('cb');
+          done();
+        });
+
+        this.auth0.passwordlessLogin(
+          {
+            connection: 'email',
+            email: 'the@email.com',
+            verificationCode: '123456'
+          },
+          function(err, data) {
+            return 'cb';
+          }
+        );
+      });
     });
   });
 
@@ -1559,7 +1672,80 @@ describe('auth0.WebAuth', function() {
       );
     });
   });
-  context('crossOriginAuthentication', function() {
+  context('login', function() {
+    context('when outside of the universal login page', function() {
+      before(function() {
+        this.auth0 = new WebAuth({
+          domain: 'me.auth0.com',
+          clientID: '...',
+          redirectUri: 'http://page.com/callback',
+          responseType: 'token',
+          _sendTelemetry: false
+        });
+      });
+      beforeEach(function() {
+        stub(windowHelper, 'getWindow', function() {
+          return {
+            location: {
+              host: 'other-domain.auth0.com'
+            }
+          };
+        });
+      });
+
+      afterEach(function() {
+        windowHelper.getWindow.restore();
+        CrossOriginAuthentication.prototype.login.restore();
+      });
+
+      it('should call CrossOriginAuthentication.login', function(done) {
+        var expectedOptions = { foo: 'bar' };
+        stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
+          expect(options).to.be.eql(expectedOptions);
+          expect(cb()).to.be('cb');
+          done();
+        });
+        this.auth0.login(expectedOptions, function() {
+          return 'cb';
+        });
+      });
+    });
+    context('when inside of the universal login page', function() {
+      before(function() {
+        this.auth0 = new WebAuth({
+          domain: 'me.auth0.com',
+          clientID: '...',
+          redirectUri: 'http://page.com/callback',
+          responseType: 'token',
+          _sendTelemetry: false
+        });
+      });
+      beforeEach(function() {
+        stub(windowHelper, 'getWindow', function() {
+          return {
+            location: {
+              host: 'me.auth0.com'
+            }
+          };
+        });
+      });
+      afterEach(function() {
+        windowHelper.getWindow.restore();
+      });
+      it('calls _hostedPages.login mapping the connection parameter', function(done) {
+        var expectedOptions = { connection: 'bar' };
+        stub(HostedPages.prototype, 'login', function(options, cb) {
+          expect(options).to.be.eql(expectedOptions);
+          expect(cb()).to.be('cb');
+          done();
+        });
+        this.auth0.login({ realm: 'bar' }, function() {
+          return 'cb';
+        });
+      });
+    });
+  });
+  context('cross origin callbacks', function() {
     before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
@@ -1571,24 +1757,7 @@ describe('auth0.WebAuth', function() {
     });
 
     afterEach(function() {
-      if (CrossOriginAuthentication.prototype.login.restore) {
-        CrossOriginAuthentication.prototype.login.restore();
-      }
-      if (CrossOriginAuthentication.prototype.callback.restore) {
-        CrossOriginAuthentication.prototype.callback.restore();
-      }
-    });
-
-    it('should call login', function(done) {
-      var expectedOptions = { foo: 'bar' };
-      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
-        expect(options).to.be.eql(expectedOptions);
-        expect(cb()).to.be('cb');
-        done();
-      });
-      this.auth0.login(expectedOptions, function() {
-        return 'cb';
-      });
+      CrossOriginAuthentication.prototype.callback.restore();
     });
     it('should call callback with deprecated method `crossOriginAuthenticationCallback`', function(
       done
@@ -1614,6 +1783,12 @@ describe('auth0.WebAuth', function() {
       stub(TransactionManager.prototype, 'process', function(params) {
         return Object.assign({}, params, { from: 'transaction-manager' });
       });
+      stub(windowHelper, 'getOrigin', function() {
+        return 'https://test-origin.com';
+      });
+      stub(objectHelper, 'getOriginFromUrl', function() {
+        return 'https://test-origin.com';
+      });
     });
     afterEach(function() {
       TransactionManager.prototype.process.restore();
@@ -1623,10 +1798,44 @@ describe('auth0.WebAuth', function() {
       if (WebAuth.prototype.validateAuthenticationResponse.restore) {
         WebAuth.prototype.validateAuthenticationResponse.restore();
       }
+      if (windowHelper.getWindow.restore) {
+        windowHelper.getWindow.restore();
+      }
+      if (Warn.prototype.warning.restore) {
+        Warn.prototype.warning.restore();
+      }
+      windowHelper.getOrigin.restore();
+      objectHelper.getOriginFromUrl.restore();
     });
     it('throws an error if responseType is code', function() {
       this.auth0.checkSession({ responseType: 'code' }, function(err) {
-        expect(err.message).to.be.eql("responseType can't be `code`");
+        expect(err).to.be.eql({
+          error: 'error',
+          error_description: "responseType can't be `code`"
+        });
+      });
+    });
+    it('does not throw an origin_mismatch error if redirectUri is empty', function() {
+      objectHelper.getOriginFromUrl.restore();
+      stub(objectHelper, 'getOriginFromUrl', function() {
+        return undefined;
+      });
+      stub(IframeHandler.prototype, 'init', function() {});
+
+      this.auth0.checkSession({}, function(err) {
+        expect(err).to.be.eql(undefined);
+      });
+    });
+    it('throws an error if there is an origin mismatch between current window and redirectUri', function() {
+      objectHelper.getOriginFromUrl.restore();
+      stub(objectHelper, 'getOriginFromUrl', function() {
+        return 'some-other-origin';
+      });
+      this.auth0.checkSession({}, function(err) {
+        expect(err).to.be.eql({
+          error: 'origin_mismatch',
+          error_description: "The redirectUri's origin (some-other-origin) should match the window's origin (https://test-origin.com)."
+        });
       });
     });
     it('inits IframeHandler with correct params', function(done) {
@@ -1699,12 +1908,38 @@ describe('auth0.WebAuth', function() {
         done();
       });
     });
+    it('callback writes to console when consent_required + hostname===localhost', function(done) {
+      var errorResponse = {
+        error: 'consent_required'
+      };
+      stub(IframeHandler.prototype, 'init', function() {
+        this.callback({ event: { data: { response: errorResponse } } });
+      });
+      stub(windowHelper, 'getWindow', function() {
+        return {
+          location: {
+            hostname: 'localhost'
+          }
+        };
+      });
+      var warnings = [];
+      stub(Warn.prototype, 'warning', function(e) {
+        warnings.push(e);
+      });
+      this.auth0.checkSession({}, function() {
+        expect(warnings[1]).to.be(
+          "Consent Required. Consent can't be skipped on localhost. Read more here: https://auth0.com/docs/api-auth/user-consent#skipping-consent-for-first-party-clients"
+        );
+        done();
+      });
+    });
     it('callback handles success response', function(done) {
       var response = { access_token: 'foobar' };
       stub(WebAuth.prototype, 'validateAuthenticationResponse', function(options, parsedHash, cb) {
         expect(options).to.be.eql({
           clientID: '...',
           responseType: 'token',
+          redirectUri: 'http://page.com/callback',
           from: 'transaction-manager',
           responseMode: 'web_message',
           prompt: 'none'

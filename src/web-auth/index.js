@@ -14,6 +14,7 @@ var Popup = require('./popup');
 var SilentAuthenticationHandler = require('./silent-authentication-handler');
 var CrossOriginAuthentication = require('./cross-origin-authentication');
 var WebMessageHandler = require('./web-message-handler');
+var HostedPages = require('./hosted-pages');
 
 /**
  * Handles all the browser's AuthN/AuthZ flows
@@ -102,11 +103,12 @@ function WebAuth(options) {
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 
-  this.client = new Authentication(this, this.baseOptions);
+  this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this, this.baseOptions);
   this.popup = new Popup(this, this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
   this.webMessageHandler = new WebMessageHandler(this);
+  this._universalLogin = new HostedPages(this, this.baseOptions);
 }
 
 /**
@@ -181,7 +183,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
   var transaction = this.transactionManager.getStoredTransaction(state);
   var transactionState = options.state || (transaction && transaction.state) || null;
   var transactionStateMatchesState = transactionState === state;
-  if (state && !transactionStateMatchesState) {
+  if (!state || !transactionStateMatchesState) {
     return cb({
       error: 'invalid_token',
       errorDescription: '`state` does not match.'
@@ -301,6 +303,7 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
  * @param {String} [options.postMessageOrigin] origin of redirectUri to expect postMessage response from.  Defaults to the origin of the receiving window. Only used if usePostMessage is truthy.
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
  * @param {Boolean} [options.usePostMessage] use postMessage to comunicate between the silent callback and the SPA. When false the SDK will attempt to parse the url hash should ignore the url hash and no extra behaviour is needed
+ * @param {authorizeCallback} cb
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
 WebAuth.prototype.renewAuth = function(options, cb) {
@@ -377,6 +380,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
     .merge(this.baseOptions, [
       'clientID',
       'responseType',
+      'redirectUri',
       'scope',
       'audience',
       '_csrf',
@@ -387,7 +391,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
     .with(options);
 
   if (params.responseType === 'code') {
-    return cb(new Error("responseType can't be `code`"));
+    return cb({ error: 'error', error_description: "responseType can't be `code`" });
   }
 
   if (!options.nonce) {
@@ -559,7 +563,14 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.login = function(options, cb) {
-  this.crossOriginAuthentication.login(options, cb);
+  var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
+  if (isHostedLoginPage) {
+    options.connection = options.realm;
+    delete options.realm;
+    this._universalLogin.login(options, cb);
+  } else {
+    this.crossOriginAuthentication.login(options, cb);
+  }
 };
 
 /**
@@ -575,16 +586,21 @@ WebAuth.prototype.login = function(options, cb) {
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.passwordlessLogin = function(options, cb) {
-  var loginOptions = objectHelper.extend(
-    {
-      credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
-      realm: options.connection,
-      username: options.email || options.phoneNumber,
-      otp: options.verificationCode
-    },
-    objectHelper.blacklist(options, ['connection', 'email', 'phoneNumber', 'verificationCode'])
-  );
-  this.crossOriginAuthentication.login(loginOptions, cb);
+  var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
+  if (isHostedLoginPage) {
+    this.passwordlessVerify(options, cb);
+  } else {
+    var crossOriginOptions = objectHelper.extend(
+      {
+        credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+        realm: options.connection,
+        username: options.email || options.phoneNumber,
+        otp: options.verificationCode
+      },
+      objectHelper.blacklist(options, ['connection', 'email', 'phoneNumber', 'verificationCode'])
+    );
+    this.crossOriginAuthentication.login(crossOriginOptions, cb);
+  }
 };
 
 /**

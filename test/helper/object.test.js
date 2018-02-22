@@ -3,6 +3,7 @@ var stub = require('sinon').stub;
 
 var objectAssign = require('../../src/helper/object-assign');
 var objectHelper = require('../../src/helper/object');
+var windowHelper = require('../../src/helper/window');
 
 describe('helpers', function() {
   describe('getKeysNotIn', function() {
@@ -513,6 +514,50 @@ describe('helpers', function() {
         attr_name_22: 'attribute_2',
         attrName3: 'attribute_3'
       });
+    });
+  });
+  describe('getOriginFromUrl', function() {
+    it('should return undefined if there is no url', function() {
+      expect(objectHelper.getOriginFromUrl()).to.be(undefined);
+      expect(objectHelper.getOriginFromUrl('')).to.be(undefined);
+      expect(objectHelper.getOriginFromUrl(null)).to.be(undefined);
+    });
+    it('should use an anchor to parse the url and return the origin', function() {
+      var anchor = {
+        protocol: 'https:',
+        hostname: 'test.com'
+      };
+      stub(windowHelper, 'getDocument', function() {
+        return {
+          createElement: function createElement(e) {
+            expect(e).to.be('a');
+            return anchor;
+          }
+        };
+      });
+      var url = 'https://test.com/example';
+      expect(objectHelper.getOriginFromUrl(url)).to.be('https://test.com');
+      expect(anchor.href).to.be(url);
+      windowHelper.getDocument.restore();
+    });
+    it('should use add the `port` when available', function() {
+      var anchor = {
+        protocol: 'https:',
+        hostname: 'localhost',
+        port: 3000
+      };
+      stub(windowHelper, 'getDocument', function() {
+        return {
+          createElement: function createElement(e) {
+            expect(e).to.be('a');
+            return anchor;
+          }
+        };
+      });
+      var url = 'https://localhost:3000/example';
+      expect(objectHelper.getOriginFromUrl(url)).to.be('https://localhost:3000');
+      expect(anchor.href).to.be(url);
+      windowHelper.getDocument.restore();
     });
   });
 });

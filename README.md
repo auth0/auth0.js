@@ -10,8 +10,6 @@
 
 Client Side Javascript toolkit for Auth0 API
 
-> Auth0.js v9 uses our latest embedded login API. This version **is not supported in centralized login scenarios (i.e. Hosted Login Pages).** If you are using a Hosted Login Page, keep using Auth0.js v8.
-
 Need help migrating from v8? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide)
 
 If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html)
@@ -22,7 +20,7 @@ From CDN
 
 ```html
 <!-- Latest patch release -->
-<script src="http://cdn.auth0.com/js/auth0/9.0.1/auth0.min.js"></script>
+<script src="https://cdn.auth0.com/js/auth0/9.2.3/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org)
@@ -54,7 +52,7 @@ Parameters:
 - **audience {OPTIONAL, string}**: The default audience, used if requesting access to an API.
 - **responseType {OPTIONAL, string}**: Response type for all authentication requests. Defaults to `'token'`. It can be any space separated list of the values `code`, `token`, `id_token`. **If you don't provide a global `responseType`, you will have to provide a `responseType` for each method that you use**
 - **responseMode {OPTIONAL, string}**: The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`.
-- **_disableDeprecationWarnings {OPTIONAL, boolean}**: Disables the deprecation warnings, defaults to `false`.
+- **_disableDeprecationWarnings {OPTIONAL, boolean}**: Indicates if deprecation warnings should be output to the browser console, defaults to `false`.
 
 ### API
 
@@ -146,7 +144,7 @@ var auth0 = new auth0.Authentication({
 - **buildAuthorizeUrl(options)**: Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#database-ad-ldap-passive-
 - **buildLogoutUrl(options)**: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#logout
 - **loginWithDefaultDirectory(options, cb)**: Makes a call to the `oauth/token` endpoint with `password` grant type. https://auth0.com/docs/api-auth/grant/password
-- **login(options, cb)**: Makes a call to the `oauth/token` endpoint with `http://auth0.com/oauth/grant-type/password-realm` grant type.
+- **login(options, cb)**: Makes a call to the `oauth/token` endpoint with `https://auth0.com/oauth/grant-type/password-realm` grant type.
 - **oauthToken(options, cb)**: Makes a call to the `oauth/token` endpoint.
 - **userInfo(token, cb)**: Makes a call to the `/userinfo` endpoint and returns the user profile.
 
@@ -203,11 +201,11 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 
 [npm-image]: https://img.shields.io/npm/v/auth0-js.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/auth0-js
-[circleci-image]: http://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&style=flat-square
+[circleci-image]: https://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&style=flat-square
 [circleci-url]: https://circleci.com/gh/auth0/auth0.js
 [codecov-image]: https://img.shields.io/codecov/c/github/auth0/auth0.js/master.svg?style=flat-square
 [codecov-url]: https://codecov.io/github/auth0/auth0.js?branch=master
-[license-image]: http://img.shields.io/npm/l/auth0-js.svg?style=flat-square
+[license-image]: https://img.shields.io/npm/l/auth0-js.svg?style=flat-square
 [license-url]: #license
-[downloads-image]: http://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
+[downloads-image]: https://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/auth0-js

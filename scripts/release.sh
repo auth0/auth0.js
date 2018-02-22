@@ -83,7 +83,6 @@ echo "Updating package.json"
 jq ".version=$QUOTED_NEW_VERSION" package.json > package.json.new
 
 echo "Generating tmp changelog"
-echo "# Change Log" > $TMP_CHANGELOG_FILE
 echo "" >> $TMP_CHANGELOG_FILE
 echo "## [$NEW_V_VERSION](https://github.com/auth0/$REPO_NAME/tree/$NEW_V_VERSION) ($CURR_DATE)" >> $TMP_CHANGELOG_FILE
 echo "[Full Changelog](https://github.com/auth0/$REPO_NAME/compare/$ORIG_V_VERSION...$NEW_V_VERSION)" >> $TMP_CHANGELOG_FILE

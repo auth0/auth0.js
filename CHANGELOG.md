@@ -1,11 +1,73 @@
-# Change Log
+
+## [v9.2.3](https://github.com/auth0/auth0.js/tree/v9.2.3) (2018-02-14)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.2...v9.2.3)
+
+**Changed**
+- Use webAuth.login when calling signupAndLogin to support Universal Login Page [\#664](https://github.com/auth0/auth0.js/pull/664) ([luisrudge](https://github.com/luisrudge))
+
+**Fixed**
+- Fix federated param [\#661](https://github.com/auth0/auth0.js/pull/661) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.2.2](https://github.com/auth0/auth0.js/tree/v9.2.2) (2018-02-08)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.1...v9.2.2)
+
+**Fixed**
+- Making Authentication constructor accept one or two params [\#657](https://github.com/auth0/auth0.js/pull/657) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.2.1](https://github.com/auth0/auth0.js/tree/v9.2.1) (2018-02-05)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.0...v9.2.1)
+
+**Fixed**
+- Remove origin check from checkSession when redirectUri is empty [\#653](https://github.com/auth0/auth0.js/pull/653) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.2.0](https://github.com/auth0/auth0.js/tree/v9.2.0) (2018-02-01)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.1.3...v9.2.0)
+
+**Added**
+- Normalized login and passwordlessLogin usage to make it work in embedded and hosted scenarios [\#646](https://github.com/auth0/auth0.js/pull/646) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.1.3](https://github.com/auth0/auth0.js/tree/v9.1.3) (2018-01-29)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.1.2...v9.1.3)
+
+**Fixed**
+- Use origin.port when available [\#641](https://github.com/auth0/auth0.js/pull/641) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.1.2](https://github.com/auth0/auth0.js/tree/v9.1.2) (2018-01-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.1.1...v9.1.2)
+
+**Fixed**
+- Fixing ie/edge `window.location.origin` issue [\#638](https://github.com/auth0/auth0.js/pull/638) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.1.1](https://github.com/auth0/auth0.js/tree/v9.1.1) (2018-01-24)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.1.0...v9.1.1)
+
+**Fixed**
+- Fix undefined origin in popup mode [\#635](https://github.com/auth0/auth0.js/pull/635) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.1.0](https://github.com/auth0/auth0.js/tree/v9.1.0) (2018-01-16)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.3...v9.1.0)
+
+**Changed**
+- Validate current window origin and redirecturi origin to prevent mismatches [\#615](https://github.com/auth0/auth0.js/pull/615) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.0.3](https://github.com/auth0/auth0.js/tree/v9.0.3) (2018-01-15)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.2...v9.0.3)
+
+**Fixed**
+- Use window.location.origin instead of window.origin [\#627](https://github.com/auth0/auth0.js/pull/627) ([thoean](https://github.com/thoean))
+- Do not consider a load event valid if protocol is "about:" [\#619](https://github.com/auth0/auth0.js/pull/619) ([damien-gl](https://github.com/damien-gl))
+
+## [v9.0.2](https://github.com/auth0/auth0.js/tree/v9.0.2) (2017-12-29)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.1...v9.0.2)
+
+**Fixed**
+- Blacklisting invalid params in authorize url [\#611](https://github.com/auth0/auth0.js/pull/611) ([luisrudge](https://github.com/luisrudge))
 
 ## [v9.0.1](https://github.com/auth0/auth0.js/tree/v9.0.1) (2017-12-26)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0...v9.0.1)
 
 **Changed**
 - setting getSSOData timeout to 5s [\#602](https://github.com/auth0/auth0.js/pull/602) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v9.0.0](https://github.com/auth0/auth0.js/tree/v9.0.0) (2017-12-21)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.0.0-beta.9...v8.10.1)
@@ -35,7 +97,6 @@ We wrote a [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migrati
 
 **Changed**
 - Removing renewSession and keeping only checkSession [\#505](https://github.com/auth0/auth0.js/pull/505) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.10.0](https://github.com/auth0/auth0.js/tree/v8.10.0) (2017-09-18)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.3...v8.10.0)
@@ -46,28 +107,24 @@ We wrote a [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migrati
 **Fixed**
 - Fixing tenant override in popup mode [\#501](https://github.com/auth0/auth0.js/pull/501) ([luisrudge](https://github.com/luisrudge))
 - Allow overriding the timeout as part of the renewAuth method [\#497](https://github.com/auth0/auth0.js/pull/497) ([dctoon](https://github.com/dctoon))
-# Change Log
 
 ## [v8.9.3](https://github.com/auth0/auth0.js/tree/v8.9.3) (2017-08-21)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.2...v8.9.3)
 
 **Fixed**
 - Using transaction manager on passwordlessStart [\#492](https://github.com/auth0/auth0.js/pull/492) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.9.2](https://github.com/auth0/auth0.js/tree/v8.9.2) (2017-08-17)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.1...v8.9.2)
 
 **Fixed**
 - Fix passwordlessVerify not sending nonce [\#489](https://github.com/auth0/auth0.js/pull/489) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.9.1](https://github.com/auth0/auth0.js/tree/v8.9.1) (2017-08-11)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.9.0...v8.9.1)
 
 **Fixed**
 - Fixed credentialType url [\#487](https://github.com/auth0/auth0.js/pull/487) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.9.0](https://github.com/auth0/auth0.js/tree/v8.9.0) (2017-08-10)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.8.0...v8.9.0)
@@ -81,7 +138,6 @@ We wrote a [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migrati
 
 **Fixed**
 - Send empty verifier when can't access sessionStorage [\#470](https://github.com/auth0/auth0.js/pull/470) ([luisrudge](https://github.com/luisrudge))
-# Change Log
 
 ## [v8.8.0](https://github.com/auth0/auth0.js/tree/v8.8.0) (2017-06-20)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.7.0...v8.8.0)
@@ -109,7 +165,6 @@ We wrote a [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migrati
 - Add login_ticket to params whitelist [\#442](https://github.com/auth0/auth0.js/pull/442) ([luisrudge](https://github.com/luisrudge))
 - Fix decoding base64 string with special characters [\#440](https://github.com/auth0/auth0.js/pull/440) ([luisrudge](https://github.com/luisrudge))
 - Fixed issues with overrides not being used [\#430](https://github.com/auth0/auth0.js/pull/430) ([sandrinodimattia](https://github.com/sandrinodimattia))
-# Change Log
 
 ## [v8.6.1](https://github.com/auth0/auth0.js/tree/v8.6.1) (2017-05-08)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.6.0...v8.6.1)

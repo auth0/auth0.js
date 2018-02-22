@@ -22,4 +22,14 @@ describe('helpers window', function() {
     var _window = windowHelper.getWindow();
     expect(_window).to.eql({ document: { body: {} }, location: '' });
   });
+  describe('getOrigin', function() {
+    it('should use window.location.origin when available', function() {
+      global.window = { location: { origin: 'origin' } };
+      expect(windowHelper.getOrigin()).to.be('origin');
+    });
+    it('should build current origin when location.origin is not available', function() {
+      global.window = { location: { protocol: 'http:', hostname: 'hostname', port: 30 } };
+      expect(windowHelper.getOrigin()).to.be('http://hostname:30');
+    });
+  });
 });
