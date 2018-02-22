@@ -5,7 +5,11 @@ var Warn = require('../warn');
 
 function StorageHandler() {
   this.warn = new Warn({});
-  this.storage = windowHandler.getWindow().localStorage || new CookieStorage();
+  try {
+    this.storage = windowHandler.getWindow().localStorage || new CookieStorage();
+  } catch (e) {
+    this.storage = new CookieStorage();
+  }
 }
 
 StorageHandler.prototype.failover = function() {
