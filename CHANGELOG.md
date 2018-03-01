@@ -1,4 +1,10 @@
 
+## [v8.12.3](https://github.com/auth0/auth0.js/tree/v8.12.3) (2018-02-28)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v8.12.2...v8.12.3)
+
+**Fixed**
+- Throw error when hash.state is empty [\#681](https://github.com/auth0/auth0.js/pull/681) ([luisrudge](https://github.com/luisrudge))
+
 ## [v8.12.2](https://github.com/auth0/auth0.js/tree/v8.12.2) (2018-01-15)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v8.12.1...v8.12.2)
 
