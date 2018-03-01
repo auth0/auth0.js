@@ -74,7 +74,7 @@ npm_release()
     verbose "There is already a version $NPM_EXISTS in npm. Skipping npm publish…"
   else
     verbose "Deploying $1 to npm"
-    npm publish
+    npm publish --tag legacy
     success "$NPM_NAME uploaded to npm registry"
   fi
 }
