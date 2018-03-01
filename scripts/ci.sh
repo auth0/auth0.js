@@ -73,13 +73,8 @@ npm_release()
   if [ ! -z "$NPM_EXISTS" ] && [ "$NPM_EXISTS" == "$1" ]; then
     verbose "There is already a version $NPM_EXISTS in npm. Skipping npm publish…"
   else
-    if [ ! -z "$STABLE" ]; then
-      verbose "Deploying $1 to npm"
-      npm publish --tag "$VERSION"
-    else
-      verbose "Deploying $1 to npm with tag $NPM_TAG"
-      npm publish --tag "$NPM_TAG"
-    fi
+    verbose "Deploying $1 to npm"
+    npm publish --tag "$VERSION"
     success "$NPM_NAME uploaded to npm registry"
   fi
 }
