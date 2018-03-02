@@ -166,7 +166,9 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
               error_description: 'a huge error string'
             },
             code: 'any error',
-            description: 'a huge error string'
+            description: 'a huge error string',
+            error: 'any error',
+            error_description: 'a huge error string'
           });
           done();
         }
@@ -320,7 +322,9 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
                   error_description: 'a super big error message description'
                 },
                 code: 'any_error',
-                description: 'a super big error message description'
+                description: 'a super big error message description',
+                error: 'any_error',
+                error_description: 'a super big error message description'
               });
               expect(_this.webAuthSpy.authorize.called).to.be.eql(false);
               done();
@@ -359,7 +363,9 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
                   error_description: '{"some":"error"}'
                 },
                 code: 'request_error',
-                description: '{"some":"error"}'
+                description: '{"some":"error"}',
+                error: 'request_error',
+                error_description: '{"some":"error"}'
               });
               expect(_this.webAuthSpy.authorize.called).to.be.eql(false);
               done();
