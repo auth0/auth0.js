@@ -11,6 +11,29 @@
 - Fixed error handling for auth in popup mode [\#668](https://github.com/auth0/auth0.js/pull/668) ([luisrudge](https://github.com/luisrudge))
 - Fix inconsistent cross origin error handling [\#667](https://github.com/auth0/auth0.js/pull/667) ([luisrudge](https://github.com/luisrudge))
 
+### Important Notice
+In [\#667](https://github.com/auth0/auth0.js/pull/667) and [\#668](https://github.com/auth0/auth0.js/pull/668), the errors returned from `webAuth.login()` were standardized to use `code` and `description`, the properties used by the rest of this library, instead of `error` and `error_description`, the properties returned from the server. Please see the Migration Guide below for a simple example of what changed"
+
+#### Migration Guide
+
+##### Old Code
+```js
+webAuth.login({username: 'foobar', password: 'p4ssw0rd'}, function(err) {
+  if (err.error === 'access_denied') {
+    //do something
+  }
+});
+```
+
+##### New Code
+```js
+webAuth.login({username: 'foobar', password: 'p4ssw0rd'}, function(err) {
+  if (err.code === 'access_denied') {
+    //do something
+  }
+});
+```
+
 ## [v9.2.3](https://github.com/auth0/auth0.js/tree/v9.2.3) (2018-02-14)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.2...v9.2.3)
 
