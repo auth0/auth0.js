@@ -71,7 +71,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
         error: 'request_error',
         error_description: JSON.stringify(err)
       };
-      return responseHandler(cb)(errorObject);
+      return responseHandler(cb, { forceLegacyError: true })(errorObject);
     }
     var popupMode = options.popup === true;
     options = objectHelper.blacklist(options, ['password', 'credentialType', 'otp', 'popup']);
@@ -81,7 +81,10 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
     var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
     theWindow.sessionStorage[key] = data.body.co_verifier;
     if (popupMode) {
-      _this.webMessageHandler.run(authorizeOptions, responseHandler(cb));
+      _this.webMessageHandler.run(
+        authorizeOptions,
+        responseHandler(cb, { forceLegacyError: true })
+      );
     } else {
       _this.webAuth.authorize(authorizeOptions);
     }
