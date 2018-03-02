@@ -1,4 +1,10 @@
 
+## [v9.3.2](https://github.com/auth0/auth0.js/tree/v9.3.2) (2018-03-02)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.3.1...v9.3.2)
+
+**Fixed**
+- Adding legacy error handling for co/auth endpoint [\#685](https://github.com/auth0/auth0.js/pull/685) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.3.1](https://github.com/auth0/auth0.js/tree/v9.3.1) (2018-02-28)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.3.0...v9.3.1)
 
