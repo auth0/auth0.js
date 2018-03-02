@@ -182,8 +182,11 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
   var state = parsedHash.state;
   var transaction = this.transactionManager.getStoredTransaction(state);
   var transactionState = options.state || (transaction && transaction.state) || null;
+
   var transactionStateMatchesState = transactionState === state;
-  if (!options.__disableStateCheck && (!state || !transactionStateMatchesState)) {
+  var shouldBypassStateChecking = !state && !transactionState && options.__enableImpersonation;
+
+  if (!shouldBypassStateChecking && !transactionStateMatchesState) {
     return cb({
       error: 'invalid_token',
       errorDescription: '`state` does not match.'
