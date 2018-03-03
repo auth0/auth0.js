@@ -43,9 +43,12 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
   var _this = this;
   var theWindow = windowHelper.getWindow();
   var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate');
+  options.username = options.username || options.email;
+  delete options.email;
+
   var authenticateBody = {
     client_id: options.clientID || this.baseOptions.clientID,
-    username: options.username || options.email
+    username: options.username
   };
   if (options.password) {
     authenticateBody.password = options.password;
