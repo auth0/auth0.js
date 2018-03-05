@@ -39,9 +39,13 @@ WebMessageHandler.prototype.run = function(options, cb) {
   options.responseMode = 'web_message';
   options.prompt = 'none';
 
-  var currentOrigin = windowHelper.getOrigin();
+  var currentOrigin = (options.origin = windowHelper.getOrigin());
   var redirectUriOrigin = objectHelper.getOriginFromUrl(options.redirectUri);
-  if (redirectUriOrigin && currentOrigin !== redirectUriOrigin) {
+  if (
+    redirectUriOrigin &&
+    currentOrigin !== redirectUriOrigin &&
+    ['file://', 'null'].indexOf(currentOrigin) === -1
+  ) {
     return cb({
       error: 'origin_mismatch',
       error_description: "The redirectUri's origin (" +
