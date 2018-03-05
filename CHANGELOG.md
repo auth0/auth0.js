@@ -17,6 +17,9 @@
 - Fixed error handling for auth in popup mode [\#668](https://github.com/auth0/auth0.js/pull/668) ([luisrudge](https://github.com/luisrudge))
 - Fix inconsistent cross origin error handling [\#667](https://github.com/auth0/auth0.js/pull/667) ([luisrudge](https://github.com/luisrudge))
 
+** SECURITY FIX **
+- As part of this release, we fixed a security vulnerability. Please read more about it [here](https://github.com/auth0/auth0.js/blob/master/security-incidents.md#security-vulnerability-details-for-auth0js--93) and [here](https://auth0.com/docs/security/bulletins/cve-2018-7307).
+
 ## [v9.2.3](https://github.com/auth0/auth0.js/tree/v9.2.3) (2018-02-14)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.2...v9.2.3)
 
