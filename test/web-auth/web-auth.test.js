@@ -250,7 +250,7 @@ describe('auth0.WebAuth', function() {
     });
   });
 
-  context.only('parseHash', function() {
+  context('parseHash', function() {
     before(function() {
       global.window = {};
       global.window.location = {};
