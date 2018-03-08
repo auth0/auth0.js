@@ -31,9 +31,21 @@ describe('helpers storage handler', function() {
     windowHandler.getWindow.restore();
   });
 
-  it('should use cookie storage is localstorage is not available', function() {
+  it('should use cookie storage when localstorage is not available', function() {
+    stub(windowHandler, 'getWindow', function(message) {});
+
+    var handler = new StorageHandler();
+    expect(handler.storage).to.be.a(CookieStorage);
+
+    windowHandler.getWindow.restore();
+  });
+  it('should use cookie storage when localstorage throws an error', function() {
     stub(windowHandler, 'getWindow', function(message) {
-      return {};
+      return {
+        get localStorage() {
+          throw new Error('asdasd');
+        }
+      };
     });
 
     var handler = new StorageHandler();
