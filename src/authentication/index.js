@@ -393,7 +393,8 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
       responseType: 'token id_token',
       scope: 'openid profile email',
       connection: ssodataInformation.lastUsedConnection,
-      timeout: 5000
+      timeout: 5000,
+      audience: urljoin(this.baseOptions.rootUrl, 'userinfo')
     },
     function(err, result) {
       if (err) {

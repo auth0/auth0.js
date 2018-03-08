@@ -308,7 +308,8 @@ describe('auth0.authentication', function() {
         responseType: 'token id_token',
         scope: 'openid profile email',
         connection: 'lastUsedConnection',
-        timeout: 5000
+        timeout: 5000,
+        audience: 'https://me.auth0.com/userinfo'
       });
     });
     it('returns sso:false if checkSession fails', function(done) {
