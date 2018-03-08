@@ -523,41 +523,51 @@ describe('helpers', function() {
       expect(objectHelper.getOriginFromUrl(null)).to.be(undefined);
     });
     it('should use an anchor to parse the url and return the origin', function() {
-      var anchor = {
-        protocol: 'https:',
-        hostname: 'test.com'
-      };
-      stub(windowHelper, 'getDocument', function() {
-        return {
-          createElement: function createElement(e) {
-            expect(e).to.be('a');
-            return anchor;
-          }
-        };
-      });
       var url = 'https://test.com/example';
       expect(objectHelper.getOriginFromUrl(url)).to.be('https://test.com');
-      expect(anchor.href).to.be(url);
-      windowHelper.getDocument.restore();
     });
     it('should use add the `port` when available', function() {
-      var anchor = {
-        protocol: 'https:',
-        hostname: 'localhost',
-        port: 3000
-      };
-      stub(windowHelper, 'getDocument', function() {
-        return {
-          createElement: function createElement(e) {
-            expect(e).to.be('a');
-            return anchor;
-          }
-        };
-      });
       var url = 'https://localhost:3000/example';
       expect(objectHelper.getOriginFromUrl(url)).to.be('https://localhost:3000');
-      expect(anchor.href).to.be(url);
-      windowHelper.getDocument.restore();
     });
+  });
+  describe('getLocationFromUrl', function() {
+    const mapping = {
+      'https://localhost:3000/foo?id=1': {
+        href: 'https://localhost:3000/foo?id=1',
+        protocol: 'https:',
+        host: 'localhost:3000',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/foo',
+        search: '?id=1',
+        hash: ''
+      },
+      'https://auth0.com/foo': {
+        href: 'https://auth0.com/foo',
+        protocol: 'https:',
+        host: 'auth0.com',
+        hostname: 'auth0.com',
+        port: undefined,
+        pathname: '/foo',
+        search: '',
+        hash: ''
+      },
+      'https://auth0.com#access_token=foo': {
+        href: 'https://auth0.com#access_token=foo',
+        protocol: 'https:',
+        host: 'auth0.com',
+        hostname: 'auth0.com',
+        port: undefined,
+        pathname: '',
+        search: '',
+        hash: '#access_token=foo'
+      }
+    };
+    for (const url in mapping) {
+      it('should map urls correctly: ' + url, function() {
+        expect(objectHelper.getLocationFromUrl(url)).to.be.eql(mapping[url]);
+      });
+    }
   });
 });

@@ -49,20 +49,17 @@
 
     <section class="readme">
         <article><p><img src="https://cdn.auth0.com/resources/oss-source-large-2x.png" alt=""></p>
-<h1>auth0.js</h1><p><a href="https://circleci.com/gh/auth0/auth0.js"><img src="http://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&amp;style=flat-square" alt="Build Status"></a>
+<h1>auth0.js</h1><p><a href="https://circleci.com/gh/auth0/auth0.js"><img src="https://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&amp;style=flat-square" alt="Build Status"></a>
 <a href="https://npmjs.org/package/auth0-js"><img src="https://img.shields.io/npm/v/auth0-js.svg?style=flat-square" alt="NPM version"></a>
 <a href="https://codecov.io/github/auth0/auth0.js?branch=master"><img src="https://img.shields.io/codecov/c/github/auth0/auth0.js/master.svg?style=flat-square" alt="Coverage"></a>
-<a href="#license"><img src="http://img.shields.io/npm/l/auth0-js.svg?style=flat-square" alt="License"></a>
-<a href="https://npmjs.org/package/auth0-js"><img src="http://img.shields.io/npm/dm/auth0-js.svg?style=flat-square" alt="Downloads"></a></p>
+<a href="#license"><img src="https://img.shields.io/npm/l/auth0-js.svg?style=flat-square" alt="License"></a>
+<a href="https://npmjs.org/package/auth0-js"><img src="https://img.shields.io/npm/dm/auth0-js.svg?style=flat-square" alt="Downloads"></a></p>
 <p>Client Side Javascript toolkit for Auth0 API</p>
-<blockquote>
-<p>Auth0.js v9 uses our latest embedded login API. This version <strong>is not supported in centralized login scenarios (i.e. Hosted Login Pages).</strong> If you are using a Hosted Login Page, keep using Auth0.js v8.</p>
-</blockquote>
 <p>Need help migrating from v8? Please check our <a href="https://auth0.com/docs/libraries/auth0js/v9/migration-guide">Migration Guide</a></p>
 <p>If you want to read the full API documentation of auth0.js, see <a href="https://auth0.github.io/auth0.js/index.html">here</a></p>
 <h2>Install</h2><p>From CDN</p>
 <pre class="prettyprint source lang-html"><code>&lt;!-- Latest patch release -->
-&lt;script src=&quot;http://cdn.auth0.com/js/auth0/9.0.0/auth0.min.js&quot;>&lt;/script></code></pre><p>From <a href="https://npmjs.org">npm</a></p>
+&lt;script src=&quot;https://cdn.auth0.com/js/auth0/9.2.3/auth0.min.js&quot;>&lt;/script></code></pre><p>From <a href="https://npmjs.org">npm</a></p>
 <pre class="prettyprint source lang-sh"><code>npm install auth0-js</code></pre><p>After installing the <code>auth0-js</code> module, you'll need bundle it up along with all of its dependencies.</p>
 <h2>auth0.WebAuth</h2><p>Provides support for all the authentication flows</p>
 <h3>Initialize</h3><pre class="prettyprint source lang-js"><code>var auth0 = new auth0.WebAuth({
@@ -77,7 +74,7 @@
 <li><strong>audience {OPTIONAL, string}</strong>: The default audience, used if requesting access to an API.</li>
 <li><strong>responseType {OPTIONAL, string}</strong>: Response type for all authentication requests. Defaults to <code>'token'</code>. It can be any space separated list of the values <code>code</code>, <code>token</code>, <code>id_token</code>. <strong>If you don't provide a global <code>responseType</code>, you will have to provide a <code>responseType</code> for each method that you use</strong></li>
 <li><strong>responseMode {OPTIONAL, string}</strong>: The default responseMode used, defaults to <code>'fragment'</code>. The <code>parseHash</code> method can be used to parse authentication responses using fragment response mode. Supported values are <code>query</code>, <code>fragment</code> and <code>form_post</code>. The <code>query</code> value is only supported when <code>responseType</code> is <code>code</code>.</li>
-<li><strong>_disableDeprecationWarnings {OPTIONAL, boolean}</strong>: Disables the deprecation warnings, defaults to <code>false</code>.</li>
+<li><strong>_disableDeprecationWarnings {OPTIONAL, boolean}</strong>: Indicates if deprecation warnings should be output to the browser console, defaults to <code>false</code>.</li>
 </ul>
 <h3>API</h3><ul>
 <li><strong>authorize(options)</strong>: Redirects to the <code>/authorize</code> endpoint to start an authentication/authorization transaction.
@@ -120,6 +117,7 @@ Everything happens inside an iframe, so it will not reload your application or r
 });</code></pre><p>The contents of <code>authResult</code> are identical to those returned by <code>parseHash()</code>.</p>
 <blockquote>
 <p><strong>Important:</strong> If you're not using the hosted login page to do social logins, you have to use your own <a href="https://manage.auth0.com/#/connections/social">social connection keys</a>. If you use Auth0's dev keys, you'll always get <code>login_required</code> as an error when calling <code>checkSession</code>.</p>
+<p><strong>Important:</strong> Because there is no redirect in this method, <code>responseType: 'code'</code> is not supported and will throw an error.</p>
 </blockquote>
 <p>Remember to add the URL where the authorization request originates from, to the Allowed Web Origins list of your Auth0 client in the <a href="https://manage.auth0.com/">Dashboard</a> under your client's <strong>Settings</strong>.</p>
 <ul>
@@ -142,14 +140,14 @@ Everything happens inside an iframe, so it will not reload your application or r
 <li><strong>buildAuthorizeUrl(options)</strong>: Builds and returns the <code>/authorize</code> url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#database-ad-ldap-passive-</li>
 <li><strong>buildLogoutUrl(options)</strong>: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#logout</li>
 <li><strong>loginWithDefaultDirectory(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint with <code>password</code> grant type. https://auth0.com/docs/api-auth/grant/password</li>
-<li><strong>login(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint with <code>http://auth0.com/oauth/grant-type/password-realm</code> grant type.</li>
+<li><strong>login(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint with <code>https://auth0.com/oauth/grant-type/password-realm</code> grant type.</li>
 <li><strong>oauthToken(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint.</li>
 <li><strong>userInfo(token, cb)</strong>: Makes a call to the <code>/userinfo</code> endpoint and returns the user profile.</li>
 </ul>
-<h2>auth0.Management</h2><p>Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token).</p>
+<h2>auth0.Management</h2><p>Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an access_token with the <code>https://YOUR_DOMAIN.auth0.com/api/v2/</code> audience to make this work. For more information, read <a href="https://auth0.com/docs/libraries/lock/v11/migration-legacy-flows#user-profile-with-management-api">here</a>.</p>
 <h3>Initialize</h3><pre class="prettyprint source lang-js"><code>var auth0 = new auth0.Management({
   domain: &quot;{YOUR_AUTH0_DOMAIN}&quot;,
-  token: &quot;{YOUR_AUTH0_API_TOKEN}&quot;
+  token: &quot;{ACCESS_TOKEN_FROM_THE_USER}&quot;
 });</code></pre><h3>API</h3><ul>
 <li><strong>getUser(userId, cb)</strong>: Returns the user profile. https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id</li>
 <li><strong>patchUserMetadata(userId, userMetadata, cb)</strong>: Updates the user metdata. It will patch the user metdata with the attributes sent. https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id</li>
@@ -178,7 +176,7 @@ Everything happens inside an iframe, so it will not reload your application or r
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.0</a> on Tue Dec 26 2017 16:09:39 GMT-0200 (-02) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.0</a> on Thu Feb 22 2018 17:45:54 GMT-0300 (-03) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

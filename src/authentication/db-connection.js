@@ -72,7 +72,7 @@ DBConnection.prototype.signup = function(options, cb) {
  *
  * @method changePassword
  * @param {Object} options
- * @param {String} options.email address where the user will recieve the change password email. It should match the user's email in Auth0
+ * @param {String} options.email address where the user will receive the change password email. It should match the user's email in Auth0
  * @param {String} options.connection name of the connection where the user was created
  * @param {changePasswordCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#change-password}

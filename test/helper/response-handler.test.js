@@ -151,13 +151,13 @@ describe('helpers responseHandler', function() {
 
   it('should return the data 2', function(done) {
     var assert_data = {
-      text: 'The reponse message',
+      text: 'The response message',
       type: 'text/html'
     };
 
     responseHandler(function(err, data) {
       expect(err).to.be(null);
-      expect(data).to.eql('The reponse message');
+      expect(data).to.eql('The response message');
       done();
     })(null, assert_data);
   });

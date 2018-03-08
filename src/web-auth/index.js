@@ -183,7 +183,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
   var transaction = this.transactionManager.getStoredTransaction(state);
   var transactionState = options.state || (transaction && transaction.state) || null;
   var transactionStateMatchesState = transactionState === state;
-  if (state && !transactionStateMatchesState) {
+  if (!state || !transactionStateMatchesState) {
     return cb({
       error: 'invalid_token',
       errorDescription: '`state` does not match.'
@@ -303,6 +303,7 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
  * @param {String} [options.postMessageOrigin] origin of redirectUri to expect postMessage response from.  Defaults to the origin of the receiving window. Only used if usePostMessage is truthy.
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
  * @param {Boolean} [options.usePostMessage] use postMessage to comunicate between the silent callback and the SPA. When false the SDK will attempt to parse the url hash should ignore the url hash and no extra behaviour is needed
+ * @param {authorizeCallback} cb
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
 WebAuth.prototype.renewAuth = function(options, cb) {
@@ -409,7 +410,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
  *
  * @method changePassword
  * @param {Object} options
- * @param {String} options.email address where the user will recieve the change password email. It should match the user's email in Auth0
+ * @param {String} options.email address where the user will receive the change password email. It should match the user's email in Auth0
  * @param {String} options.connection name of the connection where the user was created
  * @param {changePasswordCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#change-password}
