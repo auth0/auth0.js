@@ -17,7 +17,7 @@ MockLocalStorage.prototype.setItem = function() {
   throw new Error('fail');
 };
 
-describe.ly('helpers storage handler', function() {
+describe('helpers storage handler', function() {
   it('should use localStorage by default', function() {
     stub(windowHandler, 'getWindow', function(message) {
       return {
