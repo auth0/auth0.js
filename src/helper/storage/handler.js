@@ -11,6 +11,7 @@ function StorageHandler() {
     // when localStorage is disabled.
     this.storage = windowHandler.getWindow().localStorage;
   } catch (e) {
+    this.warn.warning(e);
     this.warn.warning("Can't use localStorage. Using CookieStorage instead.");
   }
 }
