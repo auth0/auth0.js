@@ -1,4 +1,15 @@
 
+## [v9.3.3](https://github.com/auth0/auth0.js/tree/v9.3.3) (2018-03-09)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.3.2...v9.3.3)
+
+**Added**
+- Add __enableImpersonation flag to enable impersonation again [\#689](https://github.com/auth0/auth0.js/pull/689) ([luisrudge](https://github.com/luisrudge))
+
+**Fixed**
+- Use CookieStorage when accessing localStorage throws an error [\#698](https://github.com/auth0/auth0.js/pull/698) ([luisrudge](https://github.com/luisrudge))
+- Remove `email` param in cross auth login [\#692](https://github.com/auth0/auth0.js/pull/692) ([luisrudge](https://github.com/luisrudge))
+- Add audience:/userinfo to getSSOData checkSession call [\#688](https://github.com/auth0/auth0.js/pull/688) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.3.2](https://github.com/auth0/auth0.js/tree/v9.3.2) (2018-03-02)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.3.1...v9.3.2)
 
