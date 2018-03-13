@@ -365,22 +365,6 @@ describe('auth0.WebAuth', function() {
             };
           });
         });
-        it('sets ssodata with a connection and without a sub when there is no payload', function(
-          done
-        ) {
-          var data = this.webAuth.parseHash(
-            {
-              hash: '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-            },
-            function() {
-              expect(ssodata.set.calledOnce).to.be.ok();
-              expect(ssodata.set.firstCall.args).to.be.eql(['lastUsedConnection', undefined]);
-              expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
-
-              done();
-            }
-          ); // eslint-disable-line
-        });
         it('sets ssodata with a connection and a sub when there is a payload', function(done) {
           var data = this.webAuth.parseHash(
             {
@@ -787,7 +771,7 @@ describe('auth0.WebAuth', function() {
           domain: 'mdocs_2.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-          responseType: 'token'
+          responseType: 'id_token'
         });
 
         var data = webAuth.parseHash(
@@ -800,6 +784,123 @@ describe('auth0.WebAuth', function() {
             done();
           }
         );
+      });
+      describe('should throw invalid_token error', function() {
+        afterEach(function() {
+          if (WebAuth.prototype.validateAuthenticationResponse.restore) {
+            WebAuth.prototype.validateAuthenticationResponse.restore();
+          }
+        });
+        it('does not validate when there is no responseType set', function(done) {
+          stub(WebAuth.prototype, 'validateAuthenticationResponse', function() {
+            done();
+          });
+          var webAuth = new WebAuth({
+            domain: 'mdocs_2.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+          });
+
+          webAuth.parseHash({
+            hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
+          });
+        });
+        it('when baseoptions.response_type includes token but parsedHash has no access_token', function(
+          done
+        ) {
+          var expectedError = {
+            error: 'invalid_hash',
+            errorDescription: 'response_type contains `token`, but the parsed hash does not contain an `access_token` property'
+          };
+          var webAuth = new WebAuth({
+            domain: 'mdocs_2.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+            responseType: 'code token'
+          });
+
+          var data = webAuth.parseHash(
+            {
+              hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
+            },
+            function(err, data) {
+              expect(err).to.be.eql(expectedError);
+              done();
+            }
+          );
+        });
+        it('when baseoptions.response_type includes id_token but parsedHash has no id_token', function(
+          done
+        ) {
+          var expectedError = {
+            error: 'invalid_hash',
+            errorDescription: 'response_type contains `id_token`, but the parsed hash does not contain an `id_token` property'
+          };
+          var webAuth = new WebAuth({
+            domain: 'mdocs_2.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+            responseType: 'code id_token'
+          });
+
+          var data = webAuth.parseHash(
+            {
+              hash: '#state=foo&token_type=Bearer&access_token=0as98da09s8d_not_a_token'
+            },
+            function(err, data) {
+              expect(err).to.be.eql(expectedError);
+              done();
+            }
+          );
+        });
+        it('when options.response_type includes token but parsedHash has no access_token', function(
+          done
+        ) {
+          var expectedError = {
+            error: 'invalid_hash',
+            errorDescription: 'response_type contains `token`, but the parsed hash does not contain an `access_token` property'
+          };
+          var webAuth = new WebAuth({
+            domain: 'mdocs_2.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+          });
+
+          var data = webAuth.parseHash(
+            {
+              hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token',
+              responseType: 'code token'
+            },
+            function(err, data) {
+              expect(err).to.be.eql(expectedError);
+              done();
+            }
+          );
+        });
+        it('when options.response_type includes id_token but parsedHash has no id_token', function(
+          done
+        ) {
+          var expectedError = {
+            error: 'invalid_hash',
+            errorDescription: 'response_type contains `id_token`, but the parsed hash does not contain an `id_token` property'
+          };
+          var webAuth = new WebAuth({
+            domain: 'mdocs_2.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+          });
+
+          var data = webAuth.parseHash(
+            {
+              hash: '#state=foo&token_type=Bearer&access_token=0as98da09s8d_not_a_token',
+              responseType: 'code id_token'
+            },
+            function(err, data) {
+              expect(err).to.be.eql(expectedError);
+              done();
+            }
+          );
+        });
       });
     });
     context('with HS256 id_token', function() {

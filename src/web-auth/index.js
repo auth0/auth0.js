@@ -160,6 +160,31 @@ WebAuth.prototype.parseHash = function(options, cb) {
   ) {
     return cb(null, null);
   }
+  var responseType = (this.baseOptions.responseType || options.responseType || '').split(' ');
+  if (
+    responseType.length > 0 &&
+    responseType.indexOf('token') !== -1 &&
+    !parsedQs.hasOwnProperty('access_token')
+  ) {
+    return cb(
+      error.buildResponse(
+        'invalid_hash',
+        'response_type contains `token`, but the parsed hash does not contain an `access_token` property'
+      )
+    );
+  }
+  if (
+    responseType.length > 0 &&
+    responseType.indexOf('id_token') !== -1 &&
+    !parsedQs.hasOwnProperty('id_token')
+  ) {
+    return cb(
+      error.buildResponse(
+        'invalid_hash',
+        'response_type contains `id_token`, but the parsed hash does not contain an `id_token` property'
+      )
+    );
+  }
   return this.validateAuthenticationResponse(options, parsedQs, cb);
 };
 
