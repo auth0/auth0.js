@@ -1887,13 +1887,21 @@ describe('auth0.WebAuth', function() {
       windowHelper.getOrigin.restore();
       objectHelper.getOriginFromUrl.restore();
     });
-    it('throws an error if responseType is code', function() {
-      this.auth0.checkSession({ responseType: 'code' }, function(err) {
-        expect(err).to.be.eql({
-          error: 'error',
-          error_description: "responseType can't be `code`"
-        });
+    it('uses responseType=id_token when responseType is set to code', function(done) {
+      TransactionManager.prototype.process.restore();
+      stub(TransactionManager.prototype, 'process', function(params) {
+        return Object.assign({}, params, { nonce: 'nonce' });
       });
+      stub(IframeHandler.prototype, 'init', function() {
+        expect(this.url).to.contain('response_type=token');
+        done();
+      });
+      this.auth0.checkSession(
+        {
+          responseType: 'code'
+        },
+        function(err, data) {}
+      );
     });
     it('does not throw an origin_mismatch error if redirectUri is empty', function() {
       objectHelper.getOriginFromUrl.restore();

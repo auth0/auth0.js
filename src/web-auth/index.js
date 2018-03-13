@@ -394,7 +394,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
     .with(options);
 
   if (params.responseType === 'code') {
-    return cb({ error: 'error', error_description: "responseType can't be `code`" });
+    params.responseType = 'token';
   }
 
   if (!options.nonce) {
