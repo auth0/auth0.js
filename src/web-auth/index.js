@@ -161,10 +161,10 @@ WebAuth.prototype.parseHash = function(options, cb) {
   ) {
     return cb(null, null);
   }
-  var responseType = (this.baseOptions.responseType || options.responseType || '').split(' ');
+  var responseTypes = (this.baseOptions.responseType || options.responseType || '').split(' ');
   if (
-    responseType.length > 0 &&
-    responseType.indexOf('token') !== -1 &&
+    responseTypes.length > 0 &&
+    responseTypes.indexOf('token') !== -1 &&
     !parsedQs.hasOwnProperty('access_token')
   ) {
     return cb(
@@ -175,8 +175,8 @@ WebAuth.prototype.parseHash = function(options, cb) {
     );
   }
   if (
-    responseType.length > 0 &&
-    responseType.indexOf('id_token') !== -1 &&
+    responseTypes.length > 0 &&
+    responseTypes.indexOf('id_token') !== -1 &&
     !parsedQs.hasOwnProperty('id_token')
   ) {
     return cb(
