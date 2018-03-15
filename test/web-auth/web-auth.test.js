@@ -807,7 +807,7 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
-      describe('should throw invalid_token error', function() {
+      describe('should throw invalid_hash error', function() {
         afterEach(function() {
           if (WebAuth.prototype.validateAuthenticationResponse.restore) {
             WebAuth.prototype.validateAuthenticationResponse.restore();
