@@ -205,12 +205,14 @@ WebAuth.prototype.parseHash = function(options, cb) {
  */
 WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash, cb) {
   var _this = this;
+  options.__enableIdPInitiatedLogin =
+    options.__enableIdPInitiatedLogin || options.__enableImpersonation;
   var state = parsedHash.state;
   var transaction = this.transactionManager.getStoredTransaction(state);
   var transactionState = options.state || (transaction && transaction.state) || null;
 
   var transactionStateMatchesState = transactionState === state;
-  var shouldBypassStateChecking = !state && !transactionState && options.__enableImpersonation;
+  var shouldBypassStateChecking = !state && !transactionState && options.__enableIdPInitiatedLogin;
 
   if (!shouldBypassStateChecking && !transactionStateMatchesState) {
     return cb({
