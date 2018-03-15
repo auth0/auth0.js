@@ -365,6 +365,28 @@ describe('auth0.WebAuth', function() {
             };
           });
         });
+        it('sets ssodata with a connection and without a sub when there is no payload', function(
+          done
+        ) {
+          var webAuth = new WebAuth({
+            domain: 'brucke.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+            responseType: 'token',
+            __disableExpirationCheck: true
+          });
+          var data = webAuth.parseHash(
+            {
+              hash: '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+            },
+            function() {
+              expect(ssodata.set.calledOnce).to.be.ok();
+              expect(ssodata.set.firstCall.args).to.be.eql(['lastUsedConnection', undefined]);
+              expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+              done();
+            }
+          ); // eslint-disable-line
+        });
         it('sets ssodata with a connection and a sub when there is a payload', function(done) {
           var data = this.webAuth.parseHash(
             {
