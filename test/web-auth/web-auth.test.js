@@ -531,6 +531,54 @@ describe('auth0.WebAuth', function() {
         );
       });
 
+      it('should bypass state checking when options.__enableIdPInitiatedLogin is set to true and there is no state in the hash and in the transaction', function(
+        done
+      ) {
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token',
+          __disableExpirationCheck: true
+        });
+        TransactionManager.prototype.getStoredTransaction.restore();
+        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+          return null;
+        });
+
+        var data = webAuth.parseHash(
+          {
+            nonce: 'asfd',
+            hash: '#access_token=asldkfjahsdlkfjhasd&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas',
+            __enableIdPInitiatedLogin: true
+          },
+          function(err, data) {
+            expect(err).to.be(null);
+            expect(data).to.eql({
+              accessToken: 'asldkfjahsdlkfjhasd',
+              idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
+              idTokenPayload: {
+                iss: 'https://wptest.auth0.com/',
+                sub: 'auth0|55d48c57d5b0ad0223c408d7',
+                aud: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+                exp: 1482969031,
+                iat: 1482933031,
+                nonce: 'asfd'
+              },
+              appState: null,
+              refreshToken: 'kajshdgfkasdjhgfas',
+              state: null,
+              expiresIn: null,
+              tokenType: 'Bearer',
+              scope: null
+            });
+
+            expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+
+            done();
+          }
+        );
+      });
       it('should bypass state checking when options.__enableImpersonation is set to true and there is no state in the hash and in the transaction', function(
         done
       ) {
@@ -660,6 +708,36 @@ describe('auth0.WebAuth', function() {
         ); // eslint-disable-line
       });
 
+      it('should fail with an invalid state (available transaction with __enableIdPInitiatedLogin:true)', function(
+        done
+      ) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3p',
+          responseType: 'token'
+        });
+        TransactionManager.prototype.getStoredTransaction.restore();
+        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+          return {
+            state: 'not-123'
+          };
+        });
+
+        var data = webAuth.parseHash(
+          {
+            hash: '#state=123&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas',
+            __enableIdPInitiatedLogin: true
+          },
+          function(err, data) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: '`state` does not match.'
+            });
+            done();
+          }
+        ); // eslint-disable-line
+      });
       it('should fail with an invalid state (available transaction with __enableImpersonation:true)', function(
         done
       ) {
