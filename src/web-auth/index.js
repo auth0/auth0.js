@@ -123,6 +123,7 @@ function WebAuth(options) {
  * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
  * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
+ * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `token`, `id_token`. For this specific method, we'll only use this value to check if the hash contains the tokens requested in the responseType.
  * @param {authorizeCallback} cb
  */
 WebAuth.prototype.parseHash = function(options, cb) {
@@ -160,6 +161,31 @@ WebAuth.prototype.parseHash = function(options, cb) {
   ) {
     return cb(null, null);
   }
+  var responseTypes = (this.baseOptions.responseType || options.responseType || '').split(' ');
+  if (
+    responseTypes.length > 0 &&
+    responseTypes.indexOf('token') !== -1 &&
+    !parsedQs.hasOwnProperty('access_token')
+  ) {
+    return cb(
+      error.buildResponse(
+        'invalid_hash',
+        'response_type contains `token`, but the parsed hash does not contain an `access_token` property'
+      )
+    );
+  }
+  if (
+    responseTypes.length > 0 &&
+    responseTypes.indexOf('id_token') !== -1 &&
+    !parsedQs.hasOwnProperty('id_token')
+  ) {
+    return cb(
+      error.buildResponse(
+        'invalid_hash',
+        'response_type contains `id_token`, but the parsed hash does not contain an `id_token` property'
+      )
+    );
+  }
   return this.validateAuthenticationResponse(options, parsedQs, cb);
 };
 
@@ -179,12 +205,14 @@ WebAuth.prototype.parseHash = function(options, cb) {
  */
 WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash, cb) {
   var _this = this;
+  options.__enableIdPInitiatedLogin =
+    options.__enableIdPInitiatedLogin || options.__enableImpersonation;
   var state = parsedHash.state;
   var transaction = this.transactionManager.getStoredTransaction(state);
   var transactionState = options.state || (transaction && transaction.state) || null;
 
   var transactionStateMatchesState = transactionState === state;
-  var shouldBypassStateChecking = !state && !transactionState && options.__enableImpersonation;
+  var shouldBypassStateChecking = !state && !transactionState && options.__enableIdPInitiatedLogin;
 
   if (!shouldBypassStateChecking && !transactionStateMatchesState) {
     return cb({

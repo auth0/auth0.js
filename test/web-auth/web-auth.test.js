@@ -368,7 +368,14 @@ describe('auth0.WebAuth', function() {
         it('sets ssodata with a connection and without a sub when there is no payload', function(
           done
         ) {
-          var data = this.webAuth.parseHash(
+          var webAuth = new WebAuth({
+            domain: 'brucke.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+            responseType: 'token',
+            __disableExpirationCheck: true
+          });
+          var data = webAuth.parseHash(
             {
               hash: '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
             },
@@ -376,7 +383,6 @@ describe('auth0.WebAuth', function() {
               expect(ssodata.set.calledOnce).to.be.ok();
               expect(ssodata.set.firstCall.args).to.be.eql(['lastUsedConnection', undefined]);
               expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
-
               done();
             }
           ); // eslint-disable-line
@@ -531,6 +537,54 @@ describe('auth0.WebAuth', function() {
         );
       });
 
+      it('should bypass state checking when options.__enableIdPInitiatedLogin is set to true and there is no state in the hash and in the transaction', function(
+        done
+      ) {
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token',
+          __disableExpirationCheck: true
+        });
+        TransactionManager.prototype.getStoredTransaction.restore();
+        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+          return null;
+        });
+
+        var data = webAuth.parseHash(
+          {
+            nonce: 'asfd',
+            hash: '#access_token=asldkfjahsdlkfjhasd&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas',
+            __enableIdPInitiatedLogin: true
+          },
+          function(err, data) {
+            expect(err).to.be(null);
+            expect(data).to.eql({
+              accessToken: 'asldkfjahsdlkfjhasd',
+              idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA',
+              idTokenPayload: {
+                iss: 'https://wptest.auth0.com/',
+                sub: 'auth0|55d48c57d5b0ad0223c408d7',
+                aud: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+                exp: 1482969031,
+                iat: 1482933031,
+                nonce: 'asfd'
+              },
+              appState: null,
+              refreshToken: 'kajshdgfkasdjhgfas',
+              state: null,
+              expiresIn: null,
+              tokenType: 'Bearer',
+              scope: null
+            });
+
+            expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+
+            done();
+          }
+        );
+      });
       it('should bypass state checking when options.__enableImpersonation is set to true and there is no state in the hash and in the transaction', function(
         done
       ) {
@@ -660,6 +714,36 @@ describe('auth0.WebAuth', function() {
         ); // eslint-disable-line
       });
 
+      it('should fail with an invalid state (available transaction with __enableIdPInitiatedLogin:true)', function(
+        done
+      ) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3p',
+          responseType: 'token'
+        });
+        TransactionManager.prototype.getStoredTransaction.restore();
+        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+          return {
+            state: 'not-123'
+          };
+        });
+
+        var data = webAuth.parseHash(
+          {
+            hash: '#state=123&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas',
+            __enableIdPInitiatedLogin: true
+          },
+          function(err, data) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: '`state` does not match.'
+            });
+            done();
+          }
+        ); // eslint-disable-line
+      });
       it('should fail with an invalid state (available transaction with __enableImpersonation:true)', function(
         done
       ) {
@@ -787,7 +871,7 @@ describe('auth0.WebAuth', function() {
           domain: 'mdocs_2.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-          responseType: 'token'
+          responseType: 'id_token'
         });
 
         var data = webAuth.parseHash(
@@ -800,6 +884,123 @@ describe('auth0.WebAuth', function() {
             done();
           }
         );
+      });
+      describe('should throw invalid_hash error', function() {
+        afterEach(function() {
+          if (WebAuth.prototype.validateAuthenticationResponse.restore) {
+            WebAuth.prototype.validateAuthenticationResponse.restore();
+          }
+        });
+        it('does not validate when there is no responseType set', function(done) {
+          stub(WebAuth.prototype, 'validateAuthenticationResponse', function() {
+            done();
+          });
+          var webAuth = new WebAuth({
+            domain: 'mdocs_2.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+          });
+
+          webAuth.parseHash({
+            hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
+          });
+        });
+        it('when baseoptions.response_type includes token but parsedHash has no access_token', function(
+          done
+        ) {
+          var expectedError = {
+            error: 'invalid_hash',
+            errorDescription: 'response_type contains `token`, but the parsed hash does not contain an `access_token` property'
+          };
+          var webAuth = new WebAuth({
+            domain: 'mdocs_2.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+            responseType: 'code token'
+          });
+
+          var data = webAuth.parseHash(
+            {
+              hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
+            },
+            function(err, data) {
+              expect(err).to.be.eql(expectedError);
+              done();
+            }
+          );
+        });
+        it('when baseoptions.response_type includes id_token but parsedHash has no id_token', function(
+          done
+        ) {
+          var expectedError = {
+            error: 'invalid_hash',
+            errorDescription: 'response_type contains `id_token`, but the parsed hash does not contain an `id_token` property'
+          };
+          var webAuth = new WebAuth({
+            domain: 'mdocs_2.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+            responseType: 'code id_token'
+          });
+
+          var data = webAuth.parseHash(
+            {
+              hash: '#state=foo&token_type=Bearer&access_token=0as98da09s8d_not_a_token'
+            },
+            function(err, data) {
+              expect(err).to.be.eql(expectedError);
+              done();
+            }
+          );
+        });
+        it('when options.response_type includes token but parsedHash has no access_token', function(
+          done
+        ) {
+          var expectedError = {
+            error: 'invalid_hash',
+            errorDescription: 'response_type contains `token`, but the parsed hash does not contain an `access_token` property'
+          };
+          var webAuth = new WebAuth({
+            domain: 'mdocs_2.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+          });
+
+          var data = webAuth.parseHash(
+            {
+              hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token',
+              responseType: 'code token'
+            },
+            function(err, data) {
+              expect(err).to.be.eql(expectedError);
+              done();
+            }
+          );
+        });
+        it('when options.response_type includes id_token but parsedHash has no id_token', function(
+          done
+        ) {
+          var expectedError = {
+            error: 'invalid_hash',
+            errorDescription: 'response_type contains `id_token`, but the parsed hash does not contain an `id_token` property'
+          };
+          var webAuth = new WebAuth({
+            domain: 'mdocs_2.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup'
+          });
+
+          var data = webAuth.parseHash(
+            {
+              hash: '#state=foo&token_type=Bearer&access_token=0as98da09s8d_not_a_token',
+              responseType: 'code id_token'
+            },
+            function(err, data) {
+              expect(err).to.be.eql(expectedError);
+              done();
+            }
+          );
+        });
       });
     });
     context('with HS256 id_token', function() {
