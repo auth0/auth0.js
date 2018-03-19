@@ -57,7 +57,7 @@ Parameters:
 ### API
 
 - **authorize(options)**: Redirects to the `/authorize` endpoint to start an authentication/authorization transaction.
-Auth0 will call back to your application with the results at the specified `redirectUri`.
+Auth0 will call back to your application with the results at the specified `redirectUri`. **The default scope for this method is `openid profile email`**
 
 ```js
 auth0.authorize({
