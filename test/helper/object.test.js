@@ -562,6 +562,26 @@ describe('helpers', function() {
         pathname: '',
         search: '',
         hash: '#access_token=foo'
+      },
+      'file:///data/user/0/com.acme.app/cache/app.html': {
+        href: 'file:///data/user/0/com.acme.app/cache/app.html',
+        protocol: 'file:',
+        host: '',
+        hostname: '',
+        port: undefined,
+        pathname: '/data/user/0/com.acme.app/cache/app.html',
+        search: '',
+        hash: ''
+      },
+      'acme-corp://': {
+        href: 'acme-corp://',
+        protocol: 'acme-corp:',
+        host: '',
+        hostname: '',
+        port: undefined,
+        pathname: '',
+        search: '',
+        hash: ''
       }
     };
     for (const url in mapping) {
