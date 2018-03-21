@@ -1956,9 +1956,9 @@ husky@^0.13.3:
     is-ci "^1.0.9"
     normalize-path "^1.0.0"
 
-idtoken-verifier@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/idtoken-verifier/-/idtoken-verifier-1.1.2.tgz#bd5125aaccc221c1e0c57c9393dc68c0f7134b69"
+idtoken-verifier@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/idtoken-verifier/-/idtoken-verifier-1.2.0.tgz#4654f1f07ab7a803fc9b1b8b36057e2a87ad8b09"
   dependencies:
     base64-js "^1.2.0"
     crypto-js "^3.1.9-1"
