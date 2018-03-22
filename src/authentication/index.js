@@ -238,7 +238,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {tokenCallback} cb function called with the result of the request
- * @see   {@link https://auth0.com/docs/api-auth/grant/password}
+ * @see Requires [`password` grant]{@link https://auth0.com/docs/api-auth/grant/password}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  */
 Authentication.prototype.loginWithDefaultDirectory = function(options, cb) {
   assert.check(
@@ -268,7 +268,7 @@ Authentication.prototype.loginWithDefaultDirectory = function(options, cb) {
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {Object} options.realm the HRD domain or the connection name where the user belongs to. e.g. `Username-Password-Authentication`
  * @param {tokenCallback} cb function called with the result of the request
- * @see   {@link https://auth0.com/docs/api-auth/grant/password}
+ * @see Requires [`http://auth0.com/oauth/grant-type/password-realm` grant]{@link https://auth0.com/docs/api-auth/grant/password#realm-support}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  */
 Authentication.prototype.login = function(options, cb) {
   assert.check(
@@ -474,6 +474,7 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
  * @param {String} [options.apiType] the api to be called
  * @param {delegationCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#delegation}
+ * @see Requires [http://auth0.com/oauth/grant-type/password-realm]{@link https://auth0.com/docs/api-auth/grant/password#realm-support}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  */
 Authentication.prototype.delegation = function(options, cb) {
   var url;
