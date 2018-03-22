@@ -1,4 +1,10 @@
 
+## [v9.4.0](https://github.com/auth0/auth0.js/tree/v9.4.0) (2018-03-22)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.3.4...v9.4.0)
+
+**Added**
+- Adding access_token validation for RS256 id_token's [\#709](https://github.com/auth0/auth0.js/pull/709) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.3.4](https://github.com/auth0/auth0.js/tree/v9.3.4) (2018-03-21)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.3.3...v9.3.4)
 
