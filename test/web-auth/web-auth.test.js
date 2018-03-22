@@ -362,6 +362,60 @@ describe('auth0.WebAuth', function() {
         }
       ); // eslint-disable-line
     });
+    it('should return the id_token payload when there is no payload.at_hash', function(done) {
+      var webAuth = new WebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'BWDP9XS89CJq1w6Nzq7iFOHsTh6ChS2b',
+        responseType: 'id_token',
+        __disableExpirationCheck: true
+      });
+
+      var data = webAuth.parseHash(
+        {
+          hash: '#state=foo&token_type=Bearer&access_token=AiU65szv2vyh2xpom8Dqbkdwok4RRZkx&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJlbWFpbCI6ImpvaG5mb29AZ21haWwuY29tIiwidXNlcm5hbWUiOiJqb2huZm9vIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJ1c2VyX2lkIjoiYXV0aDB8NWEyMDU0ZmY0NTE1NzcxMWJlODE4MmY0IiwiY2xpZW50SUQiOiJCV0RQOVhTODlDSnExdzZOenE3aUZPSHNUaDZDaFMyYiIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci8zOGZhMDAyNDIzYmQ4Yzk0MWM2ZWQwNTg4YjYwZmZlZD9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRmpvLnBuZyIsIm5pY2tuYW1lIjoiam9obmZvbyIsImlkZW50aXRpZXMiOlt7InVzZXJfaWQiOiI1YTIwNTRmZjQ1MTU3NzExYmU4MTgyZjQiLCJwcm92aWRlciI6ImF1dGgwIiwiY29ubmVjdGlvbiI6ImFjbWUiLCJpc1NvY2lhbCI6ZmFsc2V9XSwidXBkYXRlZF9hdCI6IjIwMTgtMDMtMjJUMjM6MTI6MDIuNTc1WiIsImNyZWF0ZWRfYXQiOiIyMDE3LTExLTMwVDE4OjU5OjExLjM2OFoiLCJuYW1lIjoiam9obmZvb0BnbWFpbC5jb20iLCJpc3MiOiJodHRwczovL2JydWNrZS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWEyMDU0ZmY0NTE1NzcxMWJlODE4MmY0IiwiYXVkIjoiQldEUDlYUzg5Q0pxMXc2TnpxN2lGT0hzVGg2Q2hTMmIiLCJpYXQiOjE1MjE3NjAzMjIsImV4cCI6MTUyMTc5NjMyMn0.b1afXXSurcVvg71-9w0ABhxLfP5FCdSEPPDYqD8pj2yJXxdVbyK3kdd-caldW330FKwpJlibIbcT4Mz1EpkM_M4P7OyNb1_dJbEgXFoIyqshI4YyIOC0Hn95GPE4uBZMR4GH6O32Scw3KQl9M_pQOZrQySLvU-XNs0Ko99soZbivoc-HTLEXiHDEk9mmnQOBcz44XayMieLP5WQ3c-dDShpFw-Y-8QaaQr1WI1ailh_UdJeJq6SUdn4ItTPUWf7uhmDcWQPJyWh6MyHWBoL4iWh4ZEliVG8Js8J00higeoqP7rsrymb_Hvz5f801mzpro72zfar_tVMp144mH8A65g'
+        },
+        function(err, data) {
+          expect(err).to.be(null);
+          expect(data).to.be.eql({
+            accessToken: 'AiU65szv2vyh2xpom8Dqbkdwok4RRZkx',
+            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJlbWFpbCI6ImpvaG5mb29AZ21haWwuY29tIiwidXNlcm5hbWUiOiJqb2huZm9vIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJ1c2VyX2lkIjoiYXV0aDB8NWEyMDU0ZmY0NTE1NzcxMWJlODE4MmY0IiwiY2xpZW50SUQiOiJCV0RQOVhTODlDSnExdzZOenE3aUZPSHNUaDZDaFMyYiIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci8zOGZhMDAyNDIzYmQ4Yzk0MWM2ZWQwNTg4YjYwZmZlZD9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRmpvLnBuZyIsIm5pY2tuYW1lIjoiam9obmZvbyIsImlkZW50aXRpZXMiOlt7InVzZXJfaWQiOiI1YTIwNTRmZjQ1MTU3NzExYmU4MTgyZjQiLCJwcm92aWRlciI6ImF1dGgwIiwiY29ubmVjdGlvbiI6ImFjbWUiLCJpc1NvY2lhbCI6ZmFsc2V9XSwidXBkYXRlZF9hdCI6IjIwMTgtMDMtMjJUMjM6MTI6MDIuNTc1WiIsImNyZWF0ZWRfYXQiOiIyMDE3LTExLTMwVDE4OjU5OjExLjM2OFoiLCJuYW1lIjoiam9obmZvb0BnbWFpbC5jb20iLCJpc3MiOiJodHRwczovL2JydWNrZS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWEyMDU0ZmY0NTE1NzcxMWJlODE4MmY0IiwiYXVkIjoiQldEUDlYUzg5Q0pxMXc2TnpxN2lGT0hzVGg2Q2hTMmIiLCJpYXQiOjE1MjE3NjAzMjIsImV4cCI6MTUyMTc5NjMyMn0.b1afXXSurcVvg71-9w0ABhxLfP5FCdSEPPDYqD8pj2yJXxdVbyK3kdd-caldW330FKwpJlibIbcT4Mz1EpkM_M4P7OyNb1_dJbEgXFoIyqshI4YyIOC0Hn95GPE4uBZMR4GH6O32Scw3KQl9M_pQOZrQySLvU-XNs0Ko99soZbivoc-HTLEXiHDEk9mmnQOBcz44XayMieLP5WQ3c-dDShpFw-Y-8QaaQr1WI1ailh_UdJeJq6SUdn4ItTPUWf7uhmDcWQPJyWh6MyHWBoL4iWh4ZEliVG8Js8J00higeoqP7rsrymb_Hvz5f801mzpro72zfar_tVMp144mH8A65g',
+            idTokenPayload: {
+              email: 'johnfoo@gmail.com',
+              username: 'johnfoo',
+              email_verified: false,
+              user_id: 'auth0|5a2054ff45157711be8182f4',
+              clientID: 'BWDP9XS89CJq1w6Nzq7iFOHsTh6ChS2b',
+              picture: 'https://s.gravatar.com/avatar/38fa002423bd8c941c6ed0588b60ffed?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fjo.png',
+              nickname: 'johnfoo',
+              identities: [
+                {
+                  user_id: '5a2054ff45157711be8182f4',
+                  provider: 'auth0',
+                  connection: 'acme',
+                  isSocial: false
+                }
+              ],
+              updated_at: '2018-03-22T23:12:02.575Z',
+              created_at: '2017-11-30T18:59:11.368Z',
+              name: 'johnfoo@gmail.com',
+              iss: 'https://brucke.auth0.com/',
+              sub: 'auth0|5a2054ff45157711be8182f4',
+              aud: 'BWDP9XS89CJq1w6Nzq7iFOHsTh6ChS2b',
+              iat: 1521760322,
+              exp: 1521796322
+            },
+            appState: null,
+            refreshToken: null,
+            state: 'foo',
+            expiresIn: null,
+            tokenType: 'Bearer',
+            scope: null
+          });
+          done();
+        }
+      ); // eslint-disable-line
+    });
     it('should return the id_token payload when there is a valid access_token', function(done) {
       var webAuth = new WebAuth({
         domain: 'brucke.auth0.com',
