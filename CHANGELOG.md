@@ -1,4 +1,10 @@
 
+## [v9.3.4](https://github.com/auth0/auth0.js/tree/v9.3.4) (2018-03-21)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.3.3...v9.3.4)
+
+**Added**
+- Add flag __enableIdPInitiatedLogin to enable idp initiated logins [\#708](https://github.com/auth0/auth0.js/pull/708) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.3.3](https://github.com/auth0/auth0.js/tree/v9.3.3) (2018-03-09)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.3.2...v9.3.3)
 

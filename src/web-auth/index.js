@@ -599,8 +599,9 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
  * Some browsers might not be able to successfully authenticate if 3rd party cookies are disabled in your browser. [See here for more information.]{@link https://auth0.com/docs/cross-origin-authentication}.
  * After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
- *
+ * 
  * @method login
+ * @see Requires [`Implicit` grant]{@link https://auth0.com/docs/api-auth/grant/implicit}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
  * @param {String} [options.username] Username (mutually exclusive with email)
  * @param {String} [options.email] Email (mutually exclusive with username)
