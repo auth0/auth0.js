@@ -57,12 +57,14 @@ describe('auth0.WebAuth', function() {
         _timesToRetryFailedRequests: 2,
         overrides: {
           __tenant: 'tenant1',
-          __token_issuer: 'issuer1'
+          __token_issuer: 'issuer1',
+          __jwks_uri: 'jwks_uri'
         }
       });
 
       expect(webAuth.baseOptions.tenant).to.be('tenant1');
       expect(webAuth.baseOptions.token_issuer).to.be('issuer1');
+      expect(webAuth.baseOptions.jwksURI).to.be('jwks_uri');
     });
   });
   context('nonce validation', function() {
@@ -2359,6 +2361,29 @@ describe('auth0.WebAuth', function() {
       this.auth0.checkSession({}, function(err, data) {
         expect(err).to.be(null);
         expect(data).to.be.eql({ accessToken: 'foobar' });
+        done();
+      });
+    });
+  });
+
+  context('validateToken', function() {
+    it('should use correct jwksURI override', function(done) {
+      var webAuth = new WebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token',
+        __disableExpirationCheck: true,
+        overrides: {
+          __jwks_uri: 'jwks_uri'
+        }
+      });
+      stub(IdTokenVerifier.prototype, 'verify', function(token, nonce, cb) {
+        expect(this.jwksURI).to.be('jwks_uri');
+        cb();
+      });
+      webAuth.validateToken('token', 'nonce', function() {
+        IdTokenVerifier.prototype.verify.restore();
         done();
       });
     });
