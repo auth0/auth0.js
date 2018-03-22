@@ -246,7 +246,22 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
     payload
   ) {
     if (!validationError) {
-      return callback(null, payload);
+      if (!parsedHash.access_token) {
+        return callback(null, payload);
+      }
+      // here we're absolutely sure that the id_token's alg is RS256
+      // and that the id_token is valid, so we can check the access_token
+      return new IdTokenVerifier().validateAccessToken(
+        parsedHash.access_token,
+        'RS256',
+        payload.at_hash,
+        function(err) {
+          if (err) {
+            return callback(error.invalidToken(err.message));
+          }
+          return callback(null, payload);
+        }
+      );
     }
     if (validationError.error !== 'invalid_token') {
       return callback(validationError);
@@ -307,7 +322,7 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
 
   verifier.verify(token, nonce, function(err, payload) {
     if (err) {
-      return cb(error.invalidJwt(err.message));
+      return cb(error.invalidToken(err.message));
     }
 
     cb(null, payload);

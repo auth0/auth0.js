@@ -1,3 +1,4 @@
+var IdTokenVerifier = require('idtoken-verifier');
 var expect = require('expect.js');
 var stub = require('sinon').stub;
 
@@ -100,6 +101,9 @@ describe('auth0.plugins.cordova', function() {
 
   context('PopupHandler', function() {
     beforeEach(function() {
+      stub(IdTokenVerifier.prototype, 'validateAccessToken', function(at, alg, atHash, cb) {
+        cb(null);
+      });
       var _this = this;
       this.events = {};
       var webAuth = new WebAuth({
@@ -132,6 +136,7 @@ describe('auth0.plugins.cordova', function() {
     });
 
     afterEach(function() {
+      IdTokenVerifier.prototype.validateAccessToken.restore();
       delete global.window;
       this.events = null;
       this.popupHandler = null;
