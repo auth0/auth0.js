@@ -362,6 +362,51 @@ describe('auth0.WebAuth', function() {
         }
       ); // eslint-disable-line
     });
+    it('should return the id_token payload when there is an access_token', function(done) {
+      var webAuth = new WebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token',
+        __disableExpirationCheck: true
+      });
+
+      var data = webAuth.parseHash(
+        {
+          hash: '#state=foo&token_type=Bearer&access_token=L11oiFDHj3zmZid1AnsEuggXcMfjqe0X&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJuaWNrbmFtZSI6ImpvaG5mb28iLCJuYW1lIjoiam9obmZvb0BnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvMzhmYTAwMjQyM2JkOGM5NDFjNmVkMDU4OGI2MGZmZWQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZqby5wbmciLCJ1cGRhdGVkX2F0IjoiMjAxOC0wMy0yMVQyMDowNDo0Mi40OTNaIiwiZW1haWwiOiJqb2huZm9vQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9icnVja2UuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVhMjA1NGZmNDUxNTc3MTFiZTgxODJmNCIsImF1ZCI6Ims1dTNvMmZpQUE4WHdlWEVFWDYwNEtDd0Nqemp0TVU2IiwiaWF0IjoxNTIxNjYyNjgyLCJleHAiOjE1MjE2OTg2ODIsImF0X2hhc2giOiJKS2NaM3hTQ2NGVEE5NkxuQ3lJX0FRIiwibm9uY2UiOiJLdlhoc1VIc2VJSEl5emF1X2JVflJHQ2t1RUFDTE5HaiJ9.UbiWFikCkoX-m22mFnXJhKMY8M9BGMDJqZZ5J-iUAQwOmD-33-zX-AjSbD6zL6sOJoKJratJLtLa90tE3sDeokI9c8GE_JonfeF95knVPAx99tD5eCIJabV8HN_K1rfcgI_ed9v8RKQD9_dRkwUMHgXyceWeijnA9k8jG-pe1iXAtnn386G5s6fj-do8SUvC2MFWNmD5VhkW-CyEg_Chui8BoOSM9d7liMZRQkgKA2aGl5t2qqvOu0ZNJwaWoeQ5T0R-h2Yk6Om_alFKyLdZXsZY2LRYQdbk4nEgxY59241HPZGHYOTJN5uLlbcxKyouTyM7Gt4dE76wyRh9kBr47A',
+          nonce: 'KvXhsUHseIHIyzau_bU~RGCkuEACLNGj'
+        },
+        function(err, data) {
+          expect(err).to.be(null);
+          expect(data).to.be.eql({
+            accessToken: 'L11oiFDHj3zmZid1AnsEuggXcMfjqe0X',
+            idToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJuaWNrbmFtZSI6ImpvaG5mb28iLCJuYW1lIjoiam9obmZvb0BnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvMzhmYTAwMjQyM2JkOGM5NDFjNmVkMDU4OGI2MGZmZWQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZqby5wbmciLCJ1cGRhdGVkX2F0IjoiMjAxOC0wMy0yMVQyMDowNDo0Mi40OTNaIiwiZW1haWwiOiJqb2huZm9vQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9icnVja2UuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVhMjA1NGZmNDUxNTc3MTFiZTgxODJmNCIsImF1ZCI6Ims1dTNvMmZpQUE4WHdlWEVFWDYwNEtDd0Nqemp0TVU2IiwiaWF0IjoxNTIxNjYyNjgyLCJleHAiOjE1MjE2OTg2ODIsImF0X2hhc2giOiJKS2NaM3hTQ2NGVEE5NkxuQ3lJX0FRIiwibm9uY2UiOiJLdlhoc1VIc2VJSEl5emF1X2JVflJHQ2t1RUFDTE5HaiJ9.UbiWFikCkoX-m22mFnXJhKMY8M9BGMDJqZZ5J-iUAQwOmD-33-zX-AjSbD6zL6sOJoKJratJLtLa90tE3sDeokI9c8GE_JonfeF95knVPAx99tD5eCIJabV8HN_K1rfcgI_ed9v8RKQD9_dRkwUMHgXyceWeijnA9k8jG-pe1iXAtnn386G5s6fj-do8SUvC2MFWNmD5VhkW-CyEg_Chui8BoOSM9d7liMZRQkgKA2aGl5t2qqvOu0ZNJwaWoeQ5T0R-h2Yk6Om_alFKyLdZXsZY2LRYQdbk4nEgxY59241HPZGHYOTJN5uLlbcxKyouTyM7Gt4dE76wyRh9kBr47A',
+            idTokenPayload: {
+              nickname: 'johnfoo',
+              name: 'johnfoo@gmail.com',
+              picture: 'https://s.gravatar.com/avatar/38fa002423bd8c941c6ed0588b60ffed?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fjo.png',
+              updated_at: '2018-03-21T20:04:42.493Z',
+              email: 'johnfoo@gmail.com',
+              email_verified: false,
+              iss: 'https://brucke.auth0.com/',
+              sub: 'auth0|5a2054ff45157711be8182f4',
+              aud: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+              iat: 1521662682,
+              exp: 1521698682,
+              at_hash: 'JKcZ3xSCcFTA96LnCyI_AQ',
+              nonce: 'KvXhsUHseIHIyzau_bU~RGCkuEACLNGj'
+            },
+            appState: null,
+            refreshToken: null,
+            state: 'foo',
+            expiresIn: null,
+            tokenType: 'Bearer',
+            scope: null
+          });
+          done();
+        }
+      ); // eslint-disable-line
+    });
     it('should validate an access_token when available', function(done) {
       var webAuth = new WebAuth({
         domain: 'brucke.auth0.com',
