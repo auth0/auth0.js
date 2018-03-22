@@ -362,7 +362,7 @@ describe('auth0.WebAuth', function() {
         }
       ); // eslint-disable-line
     });
-    it('should return the id_token payload when there is an access_token', function(done) {
+    it('should return the id_token payload when there is a valid access_token', function(done) {
       var webAuth = new WebAuth({
         domain: 'brucke.auth0.com',
         redirectUri: 'http://example.com/callback',
