@@ -2421,7 +2421,24 @@ describe('auth0.WebAuth', function() {
   });
 
   context('validateToken', function() {
-    it('should use correct jwksURI override', function(done) {
+    it('should use undefined jwksURI, allowing it to be overwritten later', function(done) {
+      var webAuth = new WebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token',
+        __disableExpirationCheck: true
+      });
+      stub(IdTokenVerifier.prototype, 'verify', function(token, nonce, cb) {
+        expect(this.jwksURI).to.be(undefined);
+        cb();
+      });
+      webAuth.validateToken('token', 'nonce', function() {
+        IdTokenVerifier.prototype.verify.restore();
+        done();
+      });
+    });
+    it('should use correct jwksURI when overriden', function(done) {
       var webAuth = new WebAuth({
         domain: 'brucke.auth0.com',
         redirectUri: 'http://example.com/callback',
