@@ -106,5 +106,7 @@ mv package.json.new package.json
 mv $TMP_CHANGELOG_FILE CHANGELOG.md
 rm README.md.old
 
+node scripts/jsdocs.js
+
 git commit -am "Release $NEW_V_VERSION"
 git push origin HEAD
