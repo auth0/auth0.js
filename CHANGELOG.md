@@ -1,4 +1,10 @@
 
+## [v9.4.1](https://github.com/auth0/auth0.js/tree/v9.4.1) (2018-03-22)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.4.0...v9.4.1)
+
+**Fixed**
+- Don't validate access_token when there is no payload.at_hash claim [\#718](https://github.com/auth0/auth0.js/pull/718) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.4.0](https://github.com/auth0/auth0.js/tree/v9.4.0) (2018-03-22)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.3.4...v9.4.0)
 
