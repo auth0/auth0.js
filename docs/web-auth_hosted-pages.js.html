@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>authentication/db-connection.js - Documentation</title>
+    <title>web-auth/hosted-pages.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">authentication/db-connection.js</h1>
+    <h1 class="page-title">web-auth/hosted-pages.js</h1>
     
 
     
@@ -39,109 +39,104 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>var urljoin = require('url-join');
-
+            <pre class="prettyprint source linenums"><code>var UsernamePassword = require('./username-password');
 var objectHelper = require('../helper/object');
+var windowHelper = require('../helper/window');
+var Warn = require('../helper/warn');
 var assert = require('../helper/assert');
-var responseHandler = require('../helper/response-handler');
 
-function DBConnection(request, options) {
+function HostedPages(client, options) {
   this.baseOptions = options;
-  this.request = request;
+  this.client = client;
+
+  this.warn = new Warn({
+    disableWarnings: !!options._disableDeprecationWarnings
+  });
 }
 
 /**
- * @callback signUpCallback
- * @param {Error} [err] error returned by Auth0 with the reason why the signup failed
- * @param {Object} [result] result of the signup request
- * @param {Object} result.email user's email
- * @param {Object} result.emailVerified if the user's email was verified
+ * @callback credentialsCallback
+ * @param {Error} [err] error returned by Auth0 with the reason of the Auth failure
+ * @param {Object} [result] result of the AuthN request
+ * @param {String} result.accessToken token that can be used with {@link userinfo}
+ * @param {String} [result.idToken] token that identifies the user
+ * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all clients can request them or the resource server might not allow them.
  */
 
 /**
- * Creates a new user in a Auth0 Database connection
+ * Performs authentication with username/email and password with a database connection
  *
- * @method signup
+ * This method is not compatible with API Auth so if you need to fetch API tokens with audience
+ * you should use {@link authorize} or {@link login}.
+ *
+ * @method loginWithCredentials
+ * @param {Object} options
+ * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
+ * @param {String} [options.responseType] type of the response used. It can be any of the values `code` and `token`
+ * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`
+ * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
+ * @param {credentialsCallback} cb
+ */
+HostedPages.prototype.login = function(options, cb) {
+  if (windowHelper.getWindow().location.host !== this.baseOptions.domain) {
+    throw new Error('This method is meant to be used only inside the Universal Login Page.');
+  }
+  var usernamePassword;
+
+  var params = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'redirectUri',
+      'tenant',
+      'responseType',
+      'responseMode',
+      'scope',
+      'audience',
+      '_csrf',
+      'state',
+      '_intstate',
+      'nonce'
+    ])
+    .with(options);
+
+  assert.check(
+    params,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      responseType: { type: 'string', message: 'responseType option is required' }
+    }
+  );
+
+  usernamePassword = new UsernamePassword(this.baseOptions);
+  return usernamePassword.login(params, function(err, data) {
+    if (err) {
+      return cb(err);
+    }
+    return usernamePassword.callback(data);
+  });
+};
+
+/**
+ * Signs up a new user and automatically logs the user in after the signup.
+ *
+ * @method signupAndLogin
  * @param {Object} options
  * @param {String} options.email user email address
  * @param {String} options.password user password
  * @param {String} options.connection name of the connection where the user will be created
- * @param {Object} [options.userMetadata] additional signup attributes used for creating the user. Will be stored in `user_metadata`
- * @param {signUpCallback} cb
- * @see   {@link https://auth0.com/docs/api/authentication#signup}
+ * @param {credentialsCallback} cb
  */
-DBConnection.prototype.signup = function(options, cb) {
-  var url;
-  var body;
-  var metadata;
-
-  assert.check(
-    options,
-    { type: 'object', message: 'options parameter is not valid' },
-    {
-      connection: { type: 'string', message: 'connection option is required' },
-      email: { type: 'string', message: 'email option is required' },
-      password: { type: 'string', message: 'password option is required' }
+HostedPages.prototype.signupAndLogin = function(options, cb) {
+  var _this = this;
+  return _this.client.client.dbConnection.signup(options, function(err) {
+    if (err) {
+      return cb(err);
     }
-  );
-  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
-  url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'signup');
-
-  body = objectHelper.merge(this.baseOptions, ['clientID']).with(options);
-
-  metadata = body.user_metadata || body.userMetadata;
-
-  body = objectHelper.blacklist(body, ['scope', 'userMetadata', 'user_metadata']);
-
-  body = objectHelper.toSnakeCase(body, ['auth0Client']);
-
-  if (metadata) {
-    body.user_metadata = metadata;
-  }
-
-  return this.request.post(url).send(body).end(responseHandler(cb));
+    return _this.login(options, cb);
+  });
 };
 
-/**
- * @callback changePasswordCallback
- * @param {Error} [err] error returned by Auth0 with the reason why the request failed
- */
-
-/**
- * Request an email with instruction to change a user's password
- *
- * @method changePassword
- * @param {Object} options
- * @param {String} options.email address where the user will receive the change password email. It should match the user's email in Auth0
- * @param {String} options.connection name of the connection where the user was created
- * @param {changePasswordCallback} cb
- * @see   {@link https://auth0.com/docs/api/authentication#change-password}
- */
-DBConnection.prototype.changePassword = function(options, cb) {
-  var url;
-  var body;
-
-  assert.check(
-    options,
-    { type: 'object', message: 'options parameter is not valid' },
-    {
-      connection: { type: 'string', message: 'connection option is required' },
-      email: { type: 'string', message: 'email option is required' }
-    }
-  );
-  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
-  url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'change_password');
-
-  body = objectHelper.merge(this.baseOptions, ['clientID']).with(options, ['email', 'connection']);
-
-  body = objectHelper.toSnakeCase(body, ['auth0Client']);
-
-  return this.request.post(url).send(body).end(responseHandler(cb));
-};
-
-module.exports = DBConnection;
+module.exports = HostedPages;
 </code></pre>
         </article>
     </section>

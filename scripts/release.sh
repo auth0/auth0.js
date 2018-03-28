@@ -82,6 +82,10 @@ esac
 echo "Updating package.json"
 jq ".version=$QUOTED_NEW_VERSION" package.json > package.json.new
 
+git checkout master
+git pull
+git checkout -b prepare-$NEW_V_VERSION
+
 echo "Generating tmp changelog"
 echo "" >> $TMP_CHANGELOG_FILE
 echo "## [$NEW_V_VERSION](https://github.com/auth0/$REPO_NAME/tree/$NEW_V_VERSION) ($CURR_DATE)" >> $TMP_CHANGELOG_FILE
