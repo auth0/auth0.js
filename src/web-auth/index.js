@@ -75,8 +75,13 @@ function WebAuth(options) {
       options.overrides,
       { type: 'object', message: 'overrides option is not valid' },
       {
-        __tenant: { type: 'string', message: '__tenant option is required' },
-        __token_issuer: { type: 'string', message: '__token_issuer option is required' }
+        __tenant: { optional: true, type: 'string', message: '__tenant option is required' },
+        __token_issuer: {
+          optional: true,
+          type: 'string',
+          message: '__token_issuer option is required'
+        },
+        __jwks_uri: { optional: true, type: 'string', message: '__jwks_uri is required' }
       }
     );
   }
@@ -100,6 +105,8 @@ function WebAuth(options) {
   this.baseOptions.token_issuer =
     (this.baseOptions.overrides && this.baseOptions.overrides.__token_issuer) ||
     'https://' + this.baseOptions.domain + '/';
+
+  this.baseOptions.jwksURI = this.baseOptions.overrides && this.baseOptions.overrides.__jwks_uri;
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 
@@ -319,6 +326,7 @@ function buildParseHashResponse(qsParams, appState, token) {
 WebAuth.prototype.validateToken = function(token, nonce, cb) {
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
+    jwksURI: this.baseOptions.jwksURI,
     audience: this.baseOptions.clientID,
     leeway: this.baseOptions.leeway || 0,
     __disableExpirationCheck: this.baseOptions.__disableExpirationCheck

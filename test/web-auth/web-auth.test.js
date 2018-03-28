@@ -1,3 +1,4 @@
+var proxyquire = require('proxyquire');
 var expect = require('expect.js');
 var stub = require('sinon').stub;
 var spy = require('sinon').spy;
@@ -57,12 +58,14 @@ describe('auth0.WebAuth', function() {
         _timesToRetryFailedRequests: 2,
         overrides: {
           __tenant: 'tenant1',
-          __token_issuer: 'issuer1'
+          __token_issuer: 'issuer1',
+          __jwks_uri: 'jwks_uri'
         }
       });
 
       expect(webAuth.baseOptions.tenant).to.be('tenant1');
       expect(webAuth.baseOptions.token_issuer).to.be('issuer1');
+      expect(webAuth.baseOptions.jwksURI).to.be('jwks_uri');
     });
   });
   context('nonce validation', function() {
@@ -2415,6 +2418,47 @@ describe('auth0.WebAuth', function() {
         expect(data).to.be.eql({ accessToken: 'foobar' });
         done();
       });
+    });
+  });
+
+  context('validateToken', function() {
+    it('should use undefined jwksURI, allowing it to be overwritten later', function(done) {
+      var idTokenVerifierMock = function(opts) {
+        expect(opts.jwksURI).to.be(undefined);
+        done();
+      };
+      var ProxiedWebAuth = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token',
+        __disableExpirationCheck: true
+      });
+
+      webAuth.validateToken('token', 'nonce', function() {});
+    });
+    it('should use correct jwksURI when overriden', function(done) {
+      var idTokenVerifierMock = function(opts) {
+        expect(opts.jwksURI).to.be('jwks_uri');
+        done();
+      };
+      var ProxiedWebAuth = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token',
+        __disableExpirationCheck: true,
+        overrides: {
+          __jwks_uri: 'jwks_uri'
+        }
+      });
+      webAuth.validateToken('token', 'nonce', function() {});
     });
   });
 });
