@@ -1,3 +1,4 @@
+var proxyquire = require('proxyquire');
 var expect = require('expect.js');
 var stub = require('sinon').stub;
 var spy = require('sinon').spy;
@@ -2422,24 +2423,32 @@ describe('auth0.WebAuth', function() {
 
   context('validateToken', function() {
     it('should use undefined jwksURI, allowing it to be overwritten later', function(done) {
-      var webAuth = new WebAuth({
+      var idTokenVerifierMock = function(opts) {
+        expect(opts.jwksURI).to.be(undefined);
+        done();
+      };
+      var ProxiedWebAuth = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+      var webAuth = new ProxiedWebAuth({
         domain: 'brucke.auth0.com',
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
         responseType: 'token id_token',
         __disableExpirationCheck: true
       });
-      stub(IdTokenVerifier.prototype, 'verify', function(token, nonce, cb) {
-        expect(this.jwksURI).to.be(undefined);
-        cb();
-      });
-      webAuth.validateToken('token', 'nonce', function() {
-        IdTokenVerifier.prototype.verify.restore();
-        done();
-      });
+
+      webAuth.validateToken('token', 'nonce', function() {});
     });
     it('should use correct jwksURI when overriden', function(done) {
-      var webAuth = new WebAuth({
+      var idTokenVerifierMock = function(opts) {
+        expect(opts.jwksURI).to.be('jwks_uri');
+        done();
+      };
+      var ProxiedWebAuth = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+      var webAuth = new ProxiedWebAuth({
         domain: 'brucke.auth0.com',
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
@@ -2449,14 +2458,7 @@ describe('auth0.WebAuth', function() {
           __jwks_uri: 'jwks_uri'
         }
       });
-      stub(IdTokenVerifier.prototype, 'verify', function(token, nonce, cb) {
-        expect(this.jwksURI).to.be('jwks_uri');
-        cb();
-      });
-      webAuth.validateToken('token', 'nonce', function() {
-        IdTokenVerifier.prototype.verify.restore();
-        done();
-      });
+      webAuth.validateToken('token', 'nonce', function() {});
     });
   });
 });
