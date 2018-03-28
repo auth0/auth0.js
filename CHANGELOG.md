@@ -1,4 +1,10 @@
 
+## [v9.4.2](https://github.com/auth0/auth0.js/tree/v9.4.2) (2018-03-28)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.4.1...v9.4.2)
+
+**Added**
+- Add jwksURI override option [\#717](https://github.com/auth0/auth0.js/pull/717) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.4.1](https://github.com/auth0/auth0.js/tree/v9.4.1) (2018-03-22)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.4.0...v9.4.1)
 
