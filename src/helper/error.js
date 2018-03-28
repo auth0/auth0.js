@@ -5,11 +5,11 @@ function buildResponse(error, description) {
   };
 }
 
-function invalidJwt(description) {
+function invalidToken(description) {
   return buildResponse('invalid_token', description);
 }
 
 module.exports = {
   buildResponse: buildResponse,
-  invalidJwt: invalidJwt
+  invalidToken: invalidToken
 };

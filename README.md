@@ -10,7 +10,9 @@
 
 Client Side Javascript toolkit for Auth0 API
 
-> This is a BETA release. The recommended version is [https://auth0.com/docs/libraries/auth0js/v8](https://auth0.com/docs/libraries/auth0js/v8)
+Need help migrating from v8? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide)
+
+If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html)
 
 ## Install
 
@@ -18,7 +20,7 @@ From CDN
 
 ```html
 <!-- Latest patch release -->
-<script src="http://cdn.auth0.com/js/auth0/9.0.0-beta.10/auth0.min.js"></script>
+<script src="https://cdn.auth0.com/js/auth0/9.4.2/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org)
@@ -48,14 +50,14 @@ Parameters:
 - **redirectUri {OPTIONAL, string}**: The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be whitelisted in the "Allowed Callback URLs" in your Auth0 client's settings.
 - **scope {OPTIONAL, string}**: The default scope used for all authorization requests.
 - **audience {OPTIONAL, string}**: The default audience, used if requesting access to an API.
-- **responseType {OPTIONAL, string}**: Response type for all authentication requests. Defaults to `'token'`. It can be any space separated list of the values `code`, `token`, `id_token`. **If you don't provide a global `responseType`, you will have to provide a `responseType` for each method that you use**
+- **responseType {OPTIONAL, string}**: Response type for all authentication requests. It can be any space separated list of the values `code`, `token`, `id_token`. **If you don't provide a global `responseType`, you will have to provide a `responseType` for each method that you use**
 - **responseMode {OPTIONAL, string}**: The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`.
-- **_disableDeprecationWarnings {OPTIONAL, boolean}**: Disables the deprecation warnings, defaults to `false`.
+- **_disableDeprecationWarnings {OPTIONAL, boolean}**: Indicates if deprecation warnings should be output to the browser console, defaults to `false`.
 
 ### API
 
 - **authorize(options)**: Redirects to the `/authorize` endpoint to start an authentication/authorization transaction.
-Auth0 will call back to your application with the results at the specified `redirectUri`.
+Auth0 will call back to your application with the results at the specified `redirectUri`. **The default scope for this method is `openid profile email`**
 
 ```js
 auth0.authorize({
@@ -104,6 +106,8 @@ The contents of `authResult` are identical to those returned by `parseHash()`.
 
 > **Important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `checkSession`.
 
+> **Important:** Because there is no redirect in this method, `responseType: 'code'` is not supported and will throw an error.
+
 Remember to add the URL where the authorization request originates from, to the Allowed Web Origins list of your Auth0 client in the [Dashboard](https://manage.auth0.com/) under your client's **Settings**.
 
 - **client.login(options, callback)**: Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
@@ -140,20 +144,20 @@ var auth0 = new auth0.Authentication({
 - **buildAuthorizeUrl(options)**: Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#database-ad-ldap-passive-
 - **buildLogoutUrl(options)**: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#logout
 - **loginWithDefaultDirectory(options, cb)**: Makes a call to the `oauth/token` endpoint with `password` grant type. https://auth0.com/docs/api-auth/grant/password
-- **login(options, cb)**: Makes a call to the `oauth/token` endpoint with `http://auth0.com/oauth/grant-type/password-realm` grant type.
+- **login(options, cb)**: Makes a call to the `oauth/token` endpoint with `https://auth0.com/oauth/grant-type/password-realm` grant type.
 - **oauthToken(options, cb)**: Makes a call to the `oauth/token` endpoint.
 - **userInfo(token, cb)**: Makes a call to the `/userinfo` endpoint and returns the user profile.
 
 ## auth0.Management
 
-Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token).
+Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an access_token with the `https://YOUR_DOMAIN.auth0.com/api/v2/` audience to make this work. For more information, read [the user management section of the Auth0.js documentation](https://auth0.com/docs/libraries/auth0js/v9#user-management).
 
 ### Initialize
 
 ```js
 var auth0 = new auth0.Management({
   domain: "{YOUR_AUTH0_DOMAIN}",
-  token: "{YOUR_AUTH0_API_TOKEN}"
+  token: "{ACCESS_TOKEN_FROM_THE_USER}"
 });
 ```
 
@@ -197,11 +201,11 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 
 [npm-image]: https://img.shields.io/npm/v/auth0-js.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/auth0-js
-[circleci-image]: http://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&style=flat-square
+[circleci-image]: https://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&style=flat-square
 [circleci-url]: https://circleci.com/gh/auth0/auth0.js
 [codecov-image]: https://img.shields.io/codecov/c/github/auth0/auth0.js/master.svg?style=flat-square
 [codecov-url]: https://codecov.io/github/auth0/auth0.js?branch=master
-[license-image]: http://img.shields.io/npm/l/auth0-js.svg?style=flat-square
+[license-image]: https://img.shields.io/npm/l/auth0-js.svg?style=flat-square
 [license-url]: #license
-[downloads-image]: http://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
+[downloads-image]: https://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/auth0-js

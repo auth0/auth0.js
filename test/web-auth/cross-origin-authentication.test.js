@@ -19,7 +19,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
   context('login', function() {
     before(function() {
       this.webAuthSpy = {
-        authorize: spy()
+        authorize: spy(),
+        baseOptions: {}
       };
       this.co = new CrossOriginAuthentication(this.webAuthSpy, {
         rootUrl: 'https://me.auth0.com',
@@ -43,7 +44,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         storage.setItem.restore();
       }
     });
-    it('should call /co/authenticate and redirect to /authorize with login_ticket', function() {
+    it('should call /co/authenticate and redirect to /authorize with login_ticket using `username`', function() {
       stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
@@ -69,6 +70,41 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       });
       this.co.login({
         username: 'me@example.com',
+        password: '123456',
+        anotherOption: 'foobar'
+      });
+      expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({
+        username: 'me@example.com',
+        loginTicket: 'a_login_ticket',
+        anotherOption: 'foobar'
+      });
+    });
+    it('should call /co/authenticate and redirect to /authorize with login_ticket using `email`', function() {
+      stub(request, 'post', function(url) {
+        expect(url).to.be('https://me.auth0.com/co/authenticate');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            credential_type: 'password',
+            username: 'me@example.com',
+            password: '123456'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                login_ticket: 'a_login_ticket',
+                co_verifier: 'co_verifier',
+                co_id: 'co_id'
+              }
+            });
+          }
+        });
+      });
+      this.co.login({
+        email: 'me@example.com',
         password: '123456',
         anotherOption: 'foobar'
       });
@@ -120,6 +156,55 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           popup: true
         },
         function() {
+          done();
+        }
+      );
+    });
+    it('should map error correctly when popup:true', function(done) {
+      stub(request, 'post', function(url) {
+        expect(url).to.be('https://me.auth0.com/co/authenticate');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            credential_type: 'password',
+            username: 'me@example.com',
+            password: '123456'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                login_ticket: 'a_login_ticket',
+                co_verifier: 'co_verifier',
+                co_id: 'co_id'
+              }
+            });
+          }
+        });
+      });
+      stub(WebMessageHandler.prototype, 'run', function(options, callback) {
+        callback({ error: 'any error', error_description: 'a huge error string' });
+      });
+      this.co.login(
+        {
+          username: 'me@example.com',
+          password: '123456',
+          anotherOption: 'foobar',
+          popup: true
+        },
+        function(err) {
+          expect(err).to.be.eql({
+            original: {
+              error: 'any error',
+              error_description: 'a huge error string'
+            },
+            code: 'any error',
+            description: 'a huge error string',
+            error: 'any error',
+            error_description: 'a huge error string'
+          });
           done();
         }
       );
@@ -251,7 +336,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
                   response: {
                     body: {
                       error: 'any_error',
-                      error_description: 'any error'
+                      error_description: 'a super big error message description'
                     }
                   }
                 });
@@ -266,7 +351,16 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
               anotherOption: 'foobar'
             },
             function(err) {
-              expect(err).to.be.eql({ error: 'any_error', error_description: 'any error' });
+              expect(err).to.be.eql({
+                original: {
+                  error: 'any_error',
+                  error_description: 'a super big error message description'
+                },
+                code: 'any_error',
+                description: 'a super big error message description',
+                error: 'any_error',
+                error_description: 'a super big error message description'
+              });
               expect(_this.webAuthSpy.authorize.called).to.be.eql(false);
               done();
             }
@@ -299,6 +393,12 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
             },
             function(err) {
               expect(err).to.be.eql({
+                original: {
+                  error: 'request_error',
+                  error_description: '{"some":"error"}'
+                },
+                code: 'request_error',
+                description: '{"some":"error"}',
                 error: 'request_error',
                 error_description: '{"some":"error"}'
               });
@@ -313,7 +413,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
   context('callback', function() {
     before(function() {
       this.co = new CrossOriginAuthentication(
-        {},
+        { baseOptions: {} },
         {
           rootUrl: 'https://me.auth0.com',
           clientID: '...',

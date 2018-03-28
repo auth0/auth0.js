@@ -82,8 +82,11 @@ esac
 echo "Updating package.json"
 jq ".version=$QUOTED_NEW_VERSION" package.json > package.json.new
 
+git checkout master
+git pull
+git checkout -b prepare-$NEW_V_VERSION
+
 echo "Generating tmp changelog"
-echo "# Change Log" > $TMP_CHANGELOG_FILE
 echo "" >> $TMP_CHANGELOG_FILE
 echo "## [$NEW_V_VERSION](https://github.com/auth0/$REPO_NAME/tree/$NEW_V_VERSION) ($CURR_DATE)" >> $TMP_CHANGELOG_FILE
 echo "[Full Changelog](https://github.com/auth0/$REPO_NAME/compare/$ORIG_V_VERSION...$NEW_V_VERSION)" >> $TMP_CHANGELOG_FILE
@@ -106,6 +109,8 @@ echo "module.exports = { raw: $SINGLE_QUOTED_NEW_VERSION };" > src/version.js
 mv package.json.new package.json
 mv $TMP_CHANGELOG_FILE CHANGELOG.md
 rm README.md.old
+
+node scripts/jsdocs.js
 
 git commit -am "Release $NEW_V_VERSION"
 git push origin HEAD

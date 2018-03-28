@@ -42,7 +42,6 @@ function wrapCallback(cb, options) {
       if (err.err) {
         err = err.err;
       }
-
       errObj.code = err.error || err.code || err.error_code || err.status || null;
       errObj.description =
         err.errorDescription ||
@@ -52,6 +51,10 @@ function wrapCallback(cb, options) {
         err.details ||
         err.err ||
         null;
+      if (options.forceLegacyError) {
+        errObj.error = errObj.code;
+        errObj.error_description = errObj.description;
+      }
 
       if (err.name) {
         errObj.name = err.name;

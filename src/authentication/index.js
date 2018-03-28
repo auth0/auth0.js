@@ -26,6 +26,15 @@ var DBConnection = require('./db-connection');
  * @see {@link https://auth0.com/docs/api/authentication}
  */
 function Authentication(auth0, options) {
+  // If we have two arguments, the first one is a WebAuth instance, so we assign that
+  // if not, it's an options object and then we should use that as options instead
+  // this is here because we don't want to break people coming from v8
+  if (arguments.length === 2) {
+    this.auth0 = auth0;
+  } else {
+    options = auth0;
+  }
+
   /* eslint-disable */
   assert.check(
     options,
@@ -58,7 +67,6 @@ function Authentication(auth0, options) {
   /* eslint-enable */
 
   this.baseOptions = options;
-  this.auth0 = auth0;
   this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
     ? this.baseOptions._sendTelemetry
     : true;
@@ -139,8 +147,14 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
     params.connection_scope = params.connection_scope.join(',');
   }
 
+  params = objectHelper.blacklist(params, [
+    'username',
+    'popupOptions',
+    'domain',
+    'tenant',
+    'timeout'
+  ]);
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
-  params = objectHelper.blacklist(params, ['username']);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 
   qString = qs.stringify(params);
@@ -181,7 +195,15 @@ Authentication.prototype.buildLogoutUrl = function(options) {
 
   params = objectHelper.toSnakeCase(params, ['auth0Client', 'returnTo']);
 
-  qString = qs.stringify(params);
+  qString = qs.stringify(objectHelper.blacklist(params, ['federated']));
+  if (
+    options &&
+    options.federated !== undefined &&
+    options.federated !== false &&
+    options.federated !== 'false'
+  ) {
+    qString += '&federated';
+  }
 
   return urljoin(this.baseOptions.rootUrl, 'v2', 'logout', '?' + qString);
 };
@@ -216,7 +238,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {tokenCallback} cb function called with the result of the request
- * @see   {@link https://auth0.com/docs/api-auth/grant/password}
+ * @see Requires [`password` grant]{@link https://auth0.com/docs/api-auth/grant/password}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  */
 Authentication.prototype.loginWithDefaultDirectory = function(options, cb) {
   assert.check(
@@ -246,7 +268,7 @@ Authentication.prototype.loginWithDefaultDirectory = function(options, cb) {
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {Object} options.realm the HRD domain or the connection name where the user belongs to. e.g. `Username-Password-Authentication`
  * @param {tokenCallback} cb function called with the result of the request
- * @see   {@link https://auth0.com/docs/api-auth/grant/password}
+ * @see Requires [`http://auth0.com/oauth/grant-type/password-realm` grant]{@link https://auth0.com/docs/api-auth/grant/password#realm-support}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  */
 Authentication.prototype.login = function(options, cb) {
   assert.check(
@@ -296,8 +318,6 @@ Authentication.prototype.oauthToken = function(options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
   body = parametersWhitelist.oauthTokenParams(this.warn, body);
-
-  body.grant_type = body.grant_type;
 
   return this.request.post(url).send(body).end(responseHandler(cb));
 };
@@ -355,6 +375,12 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
  * @param {Function} cb
  */
 Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
+  /* istanbul ignore if  */
+  if (!this.auth0) {
+    // we can't import this in the constructor because it'd be a ciclic dependency
+    var WebAuth = require('../web-auth/index'); // eslint-disable-line
+    this.auth0 = new WebAuth(this.baseOptions);
+  }
   if (typeof withActiveDirectories === 'function') {
     cb = withActiveDirectories;
   }
@@ -366,7 +392,8 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
     {
       responseType: 'token id_token',
       scope: 'openid profile email',
-      connection: ssodataInformation.lastUsedConnection
+      connection: ssodataInformation.lastUsedConnection,
+      timeout: 5000
     },
     function(err, result) {
       if (err) {
@@ -447,6 +474,7 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
  * @param {String} [options.apiType] the api to be called
  * @param {delegationCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#delegation}
+ * @see Requires [http://auth0.com/oauth/grant-type/password-realm]{@link https://auth0.com/docs/api-auth/grant/password#realm-support}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  */
 Authentication.prototype.delegation = function(options, cb) {
   var url;

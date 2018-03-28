@@ -3,6 +3,7 @@ var stub = require('sinon').stub;
 
 var objectAssign = require('../../src/helper/object-assign');
 var objectHelper = require('../../src/helper/object');
+var windowHelper = require('../../src/helper/window');
 
 describe('helpers', function() {
   describe('getKeysNotIn', function() {
@@ -514,5 +515,59 @@ describe('helpers', function() {
         attrName3: 'attribute_3'
       });
     });
+  });
+  describe('getOriginFromUrl', function() {
+    it('should return undefined if there is no url', function() {
+      expect(objectHelper.getOriginFromUrl()).to.be(undefined);
+      expect(objectHelper.getOriginFromUrl('')).to.be(undefined);
+      expect(objectHelper.getOriginFromUrl(null)).to.be(undefined);
+    });
+    it('should use an anchor to parse the url and return the origin', function() {
+      var url = 'https://test.com/example';
+      expect(objectHelper.getOriginFromUrl(url)).to.be('https://test.com');
+    });
+    it('should use add the `port` when available', function() {
+      var url = 'https://localhost:3000/example';
+      expect(objectHelper.getOriginFromUrl(url)).to.be('https://localhost:3000');
+    });
+  });
+  describe('getLocationFromUrl', function() {
+    const mapping = {
+      'https://localhost:3000/foo?id=1': {
+        href: 'https://localhost:3000/foo?id=1',
+        protocol: 'https:',
+        host: 'localhost:3000',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/foo',
+        search: '?id=1',
+        hash: ''
+      },
+      'https://auth0.com/foo': {
+        href: 'https://auth0.com/foo',
+        protocol: 'https:',
+        host: 'auth0.com',
+        hostname: 'auth0.com',
+        port: undefined,
+        pathname: '/foo',
+        search: '',
+        hash: ''
+      },
+      'https://auth0.com#access_token=foo': {
+        href: 'https://auth0.com#access_token=foo',
+        protocol: 'https:',
+        host: 'auth0.com',
+        hostname: 'auth0.com',
+        port: undefined,
+        pathname: '',
+        search: '',
+        hash: '#access_token=foo'
+      }
+    };
+    for (const url in mapping) {
+      it('should map urls correctly: ' + url, function() {
+        expect(objectHelper.getLocationFromUrl(url)).to.be.eql(mapping[url]);
+      });
+    }
   });
 });

@@ -117,6 +117,36 @@ function toCamelCase(object, exceptions) {
   }, {});
 }
 
+function getLocationFromUrl(href) {
+  var match = href.match(
+    /^(https?:)\/\/(([^:/?#]*)(?::([0-9]+))?)([/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/
+  );
+  return (
+    match && {
+      href: href,
+      protocol: match[1],
+      host: match[2],
+      hostname: match[3],
+      port: match[4],
+      pathname: match[5],
+      search: match[6],
+      hash: match[7]
+    }
+  );
+}
+
+function getOriginFromUrl(url) {
+  if (!url) {
+    return undefined;
+  }
+  var parsed = getLocationFromUrl(url);
+  var origin = parsed.protocol + '//' + parsed.hostname;
+  if (parsed.port) {
+    origin += ':' + parsed.port;
+  }
+  return origin;
+}
+
 module.exports = {
   toSnakeCase: toSnakeCase,
   toCamelCase: toCamelCase,
@@ -124,5 +154,7 @@ module.exports = {
   merge: merge,
   pick: pick,
   getKeysNotIn: getKeysNotIn,
-  extend: extend
+  extend: extend,
+  getOriginFromUrl: getOriginFromUrl,
+  getLocationFromUrl: getLocationFromUrl
 };

@@ -5,7 +5,15 @@ var Warn = require('../warn');
 
 function StorageHandler() {
   this.warn = new Warn({});
-  this.storage = windowHandler.getWindow().localStorage || new CookieStorage();
+  this.storage = new CookieStorage();
+  try {
+    // some browsers throw an error when trying to access localStorage
+    // when localStorage is disabled.
+    this.storage = windowHandler.getWindow().localStorage;
+  } catch (e) {
+    this.warn.warning(e);
+    this.warn.warning("Can't use localStorage. Using CookieStorage instead.");
+  }
 }
 
 StorageHandler.prototype.failover = function() {
