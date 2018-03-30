@@ -81,7 +81,9 @@ function WebAuth(options) {
           type: 'string',
           message: '__token_issuer option is required'
         },
-        __jwks_uri: { optional: true, type: 'string', message: '__jwks_uri is required' }
+        __jwks_uri: { optional: true, type: 'string', message: '__jwks_uri is required' },
+        __userinfo_uri: { optional: true, type: 'string', message: '__userinfo_uri is required' },
+        __authorize_uri: { optional: true, type: 'string', message: '__authorize_uri is required' }
       }
     );
   }
@@ -107,6 +109,8 @@ function WebAuth(options) {
     'https://' + this.baseOptions.domain + '/';
 
   this.baseOptions.jwksURI = this.baseOptions.overrides && this.baseOptions.overrides.__jwks_uri;
+  this.baseOptions.userInfoURI = this.baseOptions.overrides && this.baseOptions.overrides.__userinfo_uri;
+  this.baseOptions.authorizeURI = this.baseOptions.overrides && this.baseOptions.overrides.__authorize_uri;
 
   this.transactionManager = new TransactionManager(this.baseOptions.transaction);
 

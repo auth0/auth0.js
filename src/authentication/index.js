@@ -159,7 +159,9 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
 
   qString = qs.stringify(params);
 
-  return urljoin(this.baseOptions.rootUrl, 'authorize', '?' + qString);
+  var authorizeUrl = this.baseOptions.authorizeURI ? urljoin(this.baseOptions.authorizeURI, '?' + qString) : urljoin(this.baseOptions.rootUrl, 'authorize', '?' + qString);
+
+  return authorizeUrl;
 };
 
 /**
@@ -446,7 +448,8 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
   assert.check(accessToken, { type: 'string', message: 'accessToken parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
-  url = urljoin(this.baseOptions.rootUrl, 'userinfo');
+  var userInfoUrl = this.baseOptions.userInfoURI ? this.baseOptions.userInfoURI : urljoin(this.baseOptions.rootUrl, 'userinfo');
+  url = userInfoUrl;
 
   return this.request
     .get(url)
