@@ -277,6 +277,14 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
     if (validationError.error !== 'invalid_token') {
       return callback(validationError);
     }
+    if (!parsedHash.access_token) {
+      var noAccessTokenError = {
+        error: 'invalid_token',
+        description: 'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this.',
+        error_uri: 'https://auth0.com/docs/'
+      };
+      return callback(noAccessTokenError);
+    }
     // if it's an invalid_token error, decode the token
     var decodedToken = new IdTokenVerifier().decode(parsedHash.id_token);
     // if the alg is not HS256, return the raw error
