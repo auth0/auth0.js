@@ -19,7 +19,7 @@ function HostedPages(client, options) {
  * @param {Object} [result] result of the AuthN request
  * @param {String} result.accessToken token that can be used with {@link userinfo}
  * @param {String} [result.idToken] token that identifies the user
- * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all clients can request them or the resource server might not allow them.
+ * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all applications can request them or the resource server might not allow them.
  */
 
 /**
@@ -32,7 +32,7 @@ function HostedPages(client, options) {
  * @param {Object} options
  * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
  * @param {String} [options.responseType] type of the response used. It can be any of the values `code` and `token`
- * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`
+ * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the application. Supported values are `query` and `fragment`
  * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
  * @param {credentialsCallback} cb
  */

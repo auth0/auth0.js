@@ -17,10 +17,10 @@ var DBConnection = require('./db-connection');
  * @constructor
  * @param {Object} options
  * @param {String} options.domain your Auth0 domain
- * @param {String} options.clientID your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard
+ * @param {String} options.clientID your Auth0 application identifier obtained when creating the application in the Auth0 Dashboard
  * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
  * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
- * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
+ * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the application. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @see {@link https://auth0.com/docs/api/authentication}
@@ -89,10 +89,10 @@ function Authentication(auth0, options) {
  * @method buildAuthorizeUrl
  * @param {Object} options
  * @param {String} [options.domain] your Auth0 domain
- * @param {String} [options.clientID] your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard
+ * @param {String} [options.clientID] your Auth0 application identifier obtained when creating the application in the Auth0 Dashboard
  * @param {String} options.redirectUri url that the Auth0 will redirect after Auth with the Authorization Response
  * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
- * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
+ * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the application. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
@@ -171,7 +171,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
  * - If the client_id parameter is NOT included, the returnTo URL must be listed in the Allowed Logout URLs set at the account level (see Setting Allowed Logout URLs at the Account Level).
  * @method buildLogoutUrl
  * @param {Object} options
- * @param {String} [options.clientID] identifier of your client
+ * @param {String} [options.clientID] identifier of your application
  * @param {String} [options.returnTo] URL to be redirected after the logout
  * @param {Boolean} [options.federated] tells Auth0 if it should logout the user also from the IdP.
  * @see {@link https://auth0.com/docs/api/authentication#logout}
@@ -465,11 +465,11 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
  *
  * @method delegation
  * @param {Object} options
- * @param {String} [options.clientID] client identifier
+ * @param {String} [options.clientID] application identifier
  * @param {String} options.grantType  grant type used for delegation. The only valid value is `urn:ietf:params:oauth:grant-type:jwt-bearer`
  * @param {String} [options.idToken] valid token of the user issued after Auth. If no `refresh_token` is provided this parameter is required
  * @param {String} [options.refreshToken] valid refresh token of the user issued after Auth. If no `id_token` is provided this parameter is required
- * @param {String} [options.target] the target client id of the delegation
+ * @param {String} [options.target] the target application id of the delegation
  * @param {String} [options.scope] either `openid` or `openid profile email`
  * @param {String} [options.apiType] the api to be called
  * @param {delegationCallback} cb
