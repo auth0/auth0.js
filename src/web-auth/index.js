@@ -216,7 +216,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
     options.__enableIdPInitiatedLogin || options.__enableImpersonation;
   var state = parsedHash.state;
   var transaction = this.transactionManager.getStoredTransaction(state);
-  var transactionState = options.state || (transaction && transaction.state) || null;
+  var transactionState = options.state || (transaction && transaction.state) || undefined;
 
   var transactionStateMatchesState = transactionState === state;
   var shouldBypassStateChecking = !state && !transactionState && options.__enableIdPInitiatedLogin;
