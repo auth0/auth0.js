@@ -2176,7 +2176,13 @@ describe('auth0.WebAuth', function() {
       });
 
       it('should call CrossOriginAuthentication.login', function(done) {
-        var expectedOptions = { foo: 'bar' };
+        var expectedOptions = {
+          clientID: '...',
+          responseType: 'token',
+          redirectUri: 'http://page.com/callback',
+          foo: 'bar',
+          state: 'randomState'
+        };
         stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
           expect(cb()).to.be('cb');
@@ -2210,7 +2216,13 @@ describe('auth0.WebAuth', function() {
         windowHelper.getWindow.restore();
       });
       it('calls _hostedPages.login mapping the connection parameter', function(done) {
-        var expectedOptions = { connection: 'bar' };
+        var expectedOptions = {
+          clientID: '...',
+          responseType: 'token',
+          redirectUri: 'http://page.com/callback',
+          state: 'randomState',
+          connection: 'bar'
+        };
         stub(HostedPages.prototype, 'login', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
           expect(cb()).to.be('cb');

@@ -622,13 +622,28 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.login = function(options, cb) {
+  var params = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'responseType',
+      'redirectUri',
+      'scope',
+      'audience',
+      '_csrf',
+      'state',
+      '_intstate',
+      'nonce'
+    ])
+    .with(options);
+  params = this.transactionManager.process(params);
+
   var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
   if (isHostedLoginPage) {
-    options.connection = options.realm;
-    delete options.realm;
-    this._universalLogin.login(options, cb);
+    params.connection = params.realm;
+    delete params.realm;
+    this._universalLogin.login(params, cb);
   } else {
-    this.crossOriginAuthentication.login(options, cb);
+    this.crossOriginAuthentication.login(params, cb);
   }
 };
 
