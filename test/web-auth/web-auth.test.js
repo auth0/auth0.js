@@ -1223,7 +1223,7 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
-      it('should throw validationError when /userinfo call has an error', function(done) {
+      it('should throw original userinfo error when /userinfo call has an error', function(done) {
         stub(this.webAuth.client, 'userInfo', function(accessToken, cb) {
           cb({ any: 'error' });
         });
@@ -1233,10 +1233,7 @@ describe('auth0.WebAuth', function() {
             hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
           },
           function(err, data) {
-            expect(err).to.be.eql({
-              error: 'invalid_token',
-              errorDescription: 'Algorithm HS256 is not supported. (Expected algs: [RS256])'
-            });
+            expect(err).to.be.eql({ any: 'error' });
             done();
           }
         );
