@@ -645,18 +645,33 @@ WebAuth.prototype.login = function(options, cb) {
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.passwordlessLogin = function(options, cb) {
+  var params = objectHelper
+    .merge(this.baseOptions, [
+      'clientID',
+      'responseType',
+      'redirectUri',
+      'scope',
+      'audience',
+      '_csrf',
+      'state',
+      '_intstate',
+      'nonce'
+    ])
+    .with(options);
+  params = this.transactionManager.process(params);
+
   var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
   if (isHostedLoginPage) {
-    this.passwordlessVerify(options, cb);
+    this.passwordlessVerify(params, cb);
   } else {
     var crossOriginOptions = objectHelper.extend(
       {
         credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
-        realm: options.connection,
-        username: options.email || options.phoneNumber,
-        otp: options.verificationCode
+        realm: params.connection,
+        username: params.email || params.phoneNumber,
+        otp: params.verificationCode
       },
-      objectHelper.blacklist(options, ['connection', 'email', 'phoneNumber', 'verificationCode'])
+      objectHelper.blacklist(params, ['connection', 'email', 'phoneNumber', 'verificationCode'])
     );
     this.crossOriginAuthentication.login(crossOriginOptions, cb);
   }
