@@ -59,13 +59,17 @@ describe('auth0.WebAuth', function() {
         overrides: {
           __tenant: 'tenant1',
           __token_issuer: 'issuer1',
-          __jwks_uri: 'jwks_uri'
+          __jwks_uri: 'jwks_uri',
+          __userinfo_uri: 'userinfo_uri',
+          __authorize_uri: 'authorize_uri'
         }
       });
 
       expect(webAuth.baseOptions.tenant).to.be('tenant1');
       expect(webAuth.baseOptions.token_issuer).to.be('issuer1');
       expect(webAuth.baseOptions.jwksURI).to.be('jwks_uri');
+      expect(webAuth.baseOptions.userInfoURI).to.be('userinfo_uri');
+      expect(webAuth.baseOptions.authorizeURI).to.be('authorize_uri');
     });
   });
   context('nonce validation', function() {
