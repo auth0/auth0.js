@@ -402,7 +402,7 @@ describe('auth0.WebAuth._universalLogin', function() {
       request.get.restore();
     });
 
-    it('should call /user/ssodata with all the options', function(done) {
+    it('should call /user/ssodata with no options', function(done) {
       stub(request, 'get', function(url) {
         expect(url).to.be('https://me.auth0.com/user/ssodata/');
         return new RequestMock({
