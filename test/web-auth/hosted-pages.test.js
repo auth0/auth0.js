@@ -402,7 +402,7 @@ describe('auth0.WebAuth._universalLogin', function() {
       request.get.restore();
     });
 
-    it('should call ssodata with all the options', function(done) {
+    it('should call /user/ssodata with all the options', function(done) {
       stub(request, 'get', function(url) {
         expect(url).to.be('https://me.auth0.com/user/ssodata/');
         return new RequestMock({
@@ -425,7 +425,7 @@ describe('auth0.WebAuth._universalLogin', function() {
         done();
       });
     });
-    it('should call ssodata with all the ad options', function(done) {
+    it('should call /user/ssodata with all the AD options', function(done) {
       stub(request, 'get', function(url) {
         expect(url).to.be('https://me.auth0.com/user/ssodata?ldaps=1&client_id=...');
         return new RequestMock({
