@@ -123,7 +123,10 @@ function WebAuth(options) {
  *
  * Only validates id_tokens signed by Auth0 using the RS256 algorithm using the public key exposed
  * by the `/.well-known/jwks.json` endpoint of your account.
- * Tokens signed with other algorithms, e.g. HS256 will not be accepted.
+ * Tokens signed with the HS256 algorithm cannot be properly validated.
+ * Instead, a call to {@link userInfo} will be made with the parsed `access_token`.
+ * If the {@link userInfo} call fails, the {@link userInfo} error will be passed to the callback.
+ * Tokens signed with other algorithms will not be accepted.
  *
  * @method parseHash
  * @param {Object} options
@@ -201,7 +204,10 @@ WebAuth.prototype.parseHash = function(options, cb) {
  *
  * Only validates id_tokens signed by Auth0 using the RS256 algorithm using the public key exposed
  * by the `/.well-known/jwks.json` endpoint of your account.
- * Tokens signed with other algorithms, e.g. HS256 will not be accepted.
+ * Tokens signed with the HS256 algorithm cannot be properly validated.
+ * Instead, a call to {@link userInfo} will be made with the parsed `access_token`.
+ * If the {@link userInfo} call fails, the {@link userInfo} error will be passed to the callback.
+ * Tokens signed with other algorithms will not be accepted.
  *
  * @method validateAuthenticationResponse
  * @param {Object} options
@@ -295,7 +301,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
     return _this.client.userInfo(parsedHash.access_token, function(errUserInfo, profile) {
       // if the /userinfo request fails, use the validationError instead
       if (errUserInfo) {
-        return callback(validationError);
+        return callback(errUserInfo);
       }
       return callback(null, profile);
     });

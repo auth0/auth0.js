@@ -1,4 +1,9 @@
+var urljoin = require('url-join');
+var qs = require('qs');
+
 var UsernamePassword = require('./username-password');
+var RequestBuilder = require('../helper/request-builder');
+var responseHandler = require('../helper/response-handler');
 var objectHelper = require('../helper/object');
 var windowHelper = require('../helper/window');
 var Warn = require('../helper/warn');
@@ -7,6 +12,7 @@ var assert = require('../helper/assert');
 function HostedPages(client, options) {
   this.baseOptions = options;
   this.client = client;
+  this.request = new RequestBuilder(this.baseOptions);
 
   this.warn = new Warn({
     disableWarnings: !!options._disableDeprecationWarnings
@@ -93,6 +99,35 @@ HostedPages.prototype.signupAndLogin = function(options, cb) {
     }
     return _this.login(options, cb);
   });
+};
+
+HostedPages.prototype.getSSOData = function(withActiveDirectories, cb) {
+  var url;
+  var params = '';
+
+  if (typeof withActiveDirectories === 'function') {
+    cb = withActiveDirectories;
+    withActiveDirectories = false;
+  }
+
+  assert.check(withActiveDirectories, {
+    type: 'boolean',
+    message: 'withActiveDirectories parameter is not valid'
+  });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  if (withActiveDirectories) {
+    params =
+      '?' +
+      qs.stringify({
+        ldaps: 1,
+        client_id: this.baseOptions.clientID
+      });
+  }
+
+  url = urljoin(this.baseOptions.rootUrl, 'user', 'ssodata', params);
+
+  return this.request.get(url, { noHeaders: true }).withCredentials().end(responseHandler(cb));
 };
 
 module.exports = HostedPages;
