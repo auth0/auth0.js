@@ -283,6 +283,12 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
     if (validationError.error !== 'invalid_token') {
       return callback(validationError);
     }
+    // if it's an invalid_token error, decode the token
+    var decodedToken = new IdTokenVerifier().decode(parsedHash.id_token);
+    // if the alg is not HS256, return the raw error
+    if (decodedToken.header.alg !== 'HS256') {
+      return callback(validationError);
+    }
     if (!parsedHash.access_token) {
       var noAccessTokenError = {
         error: 'invalid_token',
@@ -290,12 +296,6 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
         error_uri: 'https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
       };
       return callback(noAccessTokenError);
-    }
-    // if it's an invalid_token error, decode the token
-    var decodedToken = new IdTokenVerifier().decode(parsedHash.id_token);
-    // if the alg is not HS256, return the raw error
-    if (decodedToken.header.alg !== 'HS256') {
-      return callback(validationError);
     }
     // if the alg is HS256, use the /userinfo endpoint to build the payload
     return _this.client.userInfo(parsedHash.access_token, function(errUserInfo, profile) {

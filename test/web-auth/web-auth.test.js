@@ -1511,7 +1511,7 @@ describe('auth0.WebAuth', function() {
       });
     });
 
-    it('should validate the token and fail', function(done) {
+    it('should validate the token and fail with invalid audience error', function(done) {
       stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
         cb(
           null,
