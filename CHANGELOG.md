@@ -380,7 +380,7 @@ var auth0 = new auth0.WebAuth({
 });
 ```
 
-> Since auth0.js is intended to be used in javascript clients running in the browser most of the times an instance of `WebAuth` is needed.
+> Since auth0.js is intended to be used in javascript applications running in the browser most of the times an instance of `WebAuth` is needed.
 
 And if you ever need to perform an `xhr` request to Auth0 Authentication API, `WebAuth` exposes an instance of `AuthenticationAPI`
 

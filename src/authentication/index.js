@@ -14,7 +14,7 @@ var PasswordlessAuthentication = require('./passwordless-authentication');
 var DBConnection = require('./db-connection');
 
 /**
- * Creates a new Auth0 Authentication API client
+ * Creates a new Auth0 Authentication API application
  * @constructor
  * @param {Object} options
  * @param {String} options.domain your Auth0 domain
@@ -168,7 +168,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
  *
  * If you want to navigate the user to a specific URL after the logout, set that URL at the returnTo parameter. The URL should be included in any the appropriate Allowed Logout URLs list:
  *
- * - If the client_id parameter is included, the returnTo URL must be listed in the Allowed Logout URLs set at the client level (see Setting Allowed Logout URLs at the App Level).
+ * - If the client_id parameter is included, the returnTo URL must be listed in the Allowed Logout URLs set at the application level (see Setting Allowed Logout URLs at the App Level).
  * - If the client_id parameter is NOT included, the returnTo URL must be listed in the Allowed Logout URLs set at the account level (see Setting Allowed Logout URLs at the Account Level).
  * @method buildLogoutUrl
  * @param {Object} options
@@ -216,7 +216,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
  * @param {String} [result.accessToken] token that allows access to the specified resource server (identified by the audience parameter or by default Auth0's /userinfo endpoint)
  * @param {Number} [result.expiresIn] number of seconds until the access token expires
  * @param {String} [result.idToken] token that identifies the user
- * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all clients can request them or the resource server might not allow them.
+ * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all applications can request them or the resource server might not allow them.
  */
 
 /**
@@ -226,7 +226,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
  * @param {String} result.accessToken token that allows access to the specified resource server (identified by the audience parameter or by default Auth0's /userinfo endpoint)
  * @param {Number} result.expiresIn number of seconds until the access token expires
  * @param {String} [result.idToken] token that identifies the user
- * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all clients can request them or the resource server might not allow them.
+ * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all applications can request them or the resource server might not allow them.
  */
 
 /**
