@@ -1,10 +1,11 @@
 var urljoin = require('url-join');
+var qs = require('qs');
 
 var RequestBuilder = require('../helper/request-builder');
-var qs = require('qs');
 var objectHelper = require('../helper/object');
 var assert = require('../helper/assert');
 var ssodata = require('../helper/ssodata');
+var windowHelper = require('../helper/window');
 var responseHandler = require('../helper/response-handler');
 var parametersWhitelist = require('../helper/parameters-whitelist');
 var Warn = require('../helper/warn');
@@ -380,6 +381,10 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
     // we can't import this in the constructor because it'd be a ciclic dependency
     var WebAuth = require('../web-auth/index'); // eslint-disable-line
     this.auth0 = new WebAuth(this.baseOptions);
+  }
+  var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
+  if (isHostedLoginPage) {
+    return this.auth0._universalLogin.getSSOData(withActiveDirectories, cb);
   }
   if (typeof withActiveDirectories === 'function') {
     cb = withActiveDirectories;
