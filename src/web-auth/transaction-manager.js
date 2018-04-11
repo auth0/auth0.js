@@ -44,12 +44,16 @@ TransactionManager.prototype.generateTransaction = function(
   state = state || random.randomString(this.keyLength);
   nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
 
-  storage.setItem(this.namespace + state, {
-    nonce: nonce,
-    appState: appState,
-    state: state,
-    lastUsedConnection: lastUsedConnection
-  });
+  storage.setItem(
+    this.namespace + state,
+    {
+      nonce: nonce,
+      appState: appState,
+      state: state,
+      lastUsedConnection: lastUsedConnection
+    },
+    { expires: 1 / 48 }
+  ); // 30 minutes
   return {
     state: state,
     nonce: nonce
