@@ -114,5 +114,6 @@ describe('helpers storage handler', function() {
     handler.failover();
 
     expect(handler.storage).to.be.a(DummyStorage);
+    expect(handler.storage.getItem()).to.be(null);
   });
 });
