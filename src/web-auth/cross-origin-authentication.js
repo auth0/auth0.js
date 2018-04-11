@@ -5,6 +5,7 @@ var objectHelper = require('../helper/object');
 var RequestBuilder = require('../helper/request-builder');
 var WebMessageHandler = require('./web-message-handler');
 var responseHandler = require('../helper/response-handler');
+var storage = require('../helper/storage');
 
 function CrossOriginAuthentication(webAuth, options) {
   this.webAuth = webAuth;
@@ -41,7 +42,6 @@ function createKey(origin, coId) {
  */
 CrossOriginAuthentication.prototype.login = function(options, cb) {
   var _this = this;
-  var theWindow = windowHelper.getWindow();
   var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate');
   options.username = options.username || options.email;
   delete options.email;
@@ -82,7 +82,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       .merge(options)
       .with({ loginTicket: data.body.login_ticket });
     var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
-    theWindow.sessionStorage[key] = data.body.co_verifier;
+    storage.setItem(key, data.body.co_verifier, { expires: 1 / 96 }); // 15 minutes
     if (popupMode) {
       _this.webMessageHandler.run(
         authorizeOptions,
@@ -96,9 +96,9 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
 
 function tryGetVerifier(theWindow, key) {
   try {
-    var verifier = theWindow.sessionStorage[key];
-    theWindow.sessionStorage.removeItem(key);
-    return verifier;
+    var verifier = storage.getItem(key);
+    storage.removeItem(key);
+    return verifier || '';
   } catch (e) {
     return '';
   }
