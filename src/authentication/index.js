@@ -18,7 +18,7 @@ var DBConnection = require('./db-connection');
  * @constructor
  * @param {Object} options
  * @param {String} options.domain your Auth0 domain
- * @param {String} options.clientID your Auth0 application identifier obtained when creating the application in the Auth0 Dashboard
+ * @param {String} options.clientID your Auth0 Application identifier obtained when creating the application in the Auth0 Dashboard
  * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
  * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the application. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
@@ -90,7 +90,7 @@ function Authentication(auth0, options) {
  * @method buildAuthorizeUrl
  * @param {Object} options
  * @param {String} [options.domain] your Auth0 domain
- * @param {String} [options.clientID] your Auth0 application identifier obtained when creating the application in the Auth0 Dashboard
+ * @param {String} [options.clientID] your Auth0 Application identifier obtained when creating the application in the Auth0 Dashboard
  * @param {String} options.redirectUri url that the Auth0 will redirect after Auth with the Authorization Response
  * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the application. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}

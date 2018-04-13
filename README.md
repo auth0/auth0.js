@@ -47,7 +47,7 @@ var auth0 = new auth0.WebAuth({
 Parameters:
 - **domain {REQUIRED, string}**: Your Auth0 account domain such as `'example.auth0.com'` or `'example.eu.auth0.com'`.
 - **clientID {REQUIRED, string}**: Your Auth0 Application's Client ID.
-- **redirectUri {OPTIONAL, string}**: The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be whitelisted in the "Allowed Callback URLs" in your Auth0 application's settings.
+- **redirectUri {OPTIONAL, string}**: The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be whitelisted in the "Allowed Callback URLs" in your Auth0 Application's settings.
 - **scope {OPTIONAL, string}**: The default scope used for all authorization requests.
 - **audience {OPTIONAL, string}**: The default audience, used if requesting access to an API.
 - **responseType {OPTIONAL, string}**: Response type for all authentication requests. It can be any space separated list of the values `code`, `token`, `id_token`. **If you don't provide a global `responseType`, you will have to provide a `responseType` for each method that you use**
@@ -108,7 +108,7 @@ The contents of `authResult` are identical to those returned by `parseHash()`.
 
 > **Important:** Because there is no redirect in this method, `responseType: 'code'` is not supported and will throw an error.
 
-Remember to add the URL where the authorization request originates from, to the Allowed Web Origins list of your Auth0 application in the [Dashboard](https://manage.auth0.com/) under your application's **Settings**.
+Remember to add the URL where the authorization request originates from, to the Allowed Web Origins list of your Auth0 Application in the [Dashboard](https://manage.auth0.com/) under your application's **Settings**.
 
 - **client.login(options, callback)**: Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
 
