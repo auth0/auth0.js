@@ -376,7 +376,7 @@ To get started you can just create a `WebAuth` instance like this
 ```js
 var auth0 = new auth0.WebAuth({
   domain: "{YOUR_AUTH0_DOMAIN}",
-  clientID: "{YOUR_AUTH0_APPLICATION_ID}"
+  clientID: "{YOUR_AUTH0_CLIENT_ID}"
 });
 ```
 
