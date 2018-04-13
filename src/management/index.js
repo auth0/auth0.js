@@ -5,7 +5,7 @@ var assert = require('../helper/assert');
 var responseHandler = require('../helper/response-handler');
 
 /**
- * Auth0 Management API Client (methods allowed to be called from the browser only)
+ * Auth0 Management API Application (methods allowed to be called from the browser only)
  * @constructor
  * @param {Object} options
  * @param {Object} options.domain your Auth0 acount domain
