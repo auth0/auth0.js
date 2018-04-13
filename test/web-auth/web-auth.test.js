@@ -1754,7 +1754,8 @@ describe('auth0.WebAuth', function() {
         clientID: '...',
         redirectUri: 'http://page.com/callback',
         responseType: 'code',
-        _sendTelemetry: false
+        _sendTelemetry: false,
+        nonce: 'the-nonce'
       });
     });
     context('when outside of the universal login page', function() {
@@ -1786,7 +1787,8 @@ describe('auth0.WebAuth', function() {
           clientID: '...',
           responseType: 'code',
           redirectUri: 'http://page.com/callback',
-          state: 'randomState'
+          state: 'randomState',
+          nonce: 'the-nonce'
         };
         stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
@@ -1814,7 +1816,8 @@ describe('auth0.WebAuth', function() {
           clientID: '...',
           responseType: 'code',
           redirectUri: 'http://page.com/callback',
-          state: 'randomState'
+          state: 'randomState',
+          nonce: 'the-nonce'
         };
         stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
@@ -1856,7 +1859,8 @@ describe('auth0.WebAuth', function() {
           connection: 'sms',
           phoneNumber: '+55165134',
           verificationCode: '123456',
-          state: 'randomState'
+          state: 'randomState',
+          nonce: 'the-nonce'
         };
         stub(this.auth0, 'passwordlessVerify', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
@@ -1883,7 +1887,8 @@ describe('auth0.WebAuth', function() {
           connection: 'email',
           email: 'the@email.com',
           verificationCode: '123456',
-          state: 'randomState'
+          state: 'randomState',
+          nonce: 'the-nonce'
         };
         stub(this.auth0, 'passwordlessVerify', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
