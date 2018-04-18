@@ -271,7 +271,7 @@ We wrote a [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migrati
 **Added**
 - Integration tests [\#346](https://github.com/auth0/auth0.js/pull/346) ([glena](https://github.com/glena))
 - Whitelist nonce, state, _csrf and _instate from constructor [\#345](https://github.com/auth0/auth0.js/pull/345) ([glena](https://github.com/glena))
-- Added flag to disable id_token verification for legacy clients [\#341](https://github.com/auth0/auth0.js/pull/341) ([glena](https://github.com/glena))
+- Added flag to disable id_token verification for legacy Auth0 Applications [\#341](https://github.com/auth0/auth0.js/pull/341) ([glena](https://github.com/glena))
 - Popup no owp [\#337](https://github.com/auth0/auth0.js/pull/337) ([glena](https://github.com/glena))
 
 **Changed**
@@ -376,7 +376,7 @@ To get started you can just create a `WebAuth` instance like this
 ```js
 var auth0 = new auth0.WebAuth({
   domain: "{YOUR_AUTH0_DOMAIN}",
-  clientID: "{YOUR_AUTH0_CLIENT_ID}"
+  clientID: "{YOUR_AUTH0_APPLICATION_CLIENT_ID}"
 });
 ```
 

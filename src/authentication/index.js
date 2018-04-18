@@ -18,7 +18,7 @@ var DBConnection = require('./db-connection');
  * @constructor
  * @param {Object} options
  * @param {String} options.domain your Auth0 domain
- * @param {String} options.clientID your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard
+ * @param {String} options.clientID your Auth0 Application's Client identifier obtained when creating the client in the Auth0 Dashboard
  * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
  * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
@@ -90,7 +90,7 @@ function Authentication(auth0, options) {
  * @method buildAuthorizeUrl
  * @param {Object} options
  * @param {String} [options.domain] your Auth0 domain
- * @param {String} [options.clientID] your Auth0 client identifier obtained when creating the client in the Auth0 Dashboard
+ * @param {String} [options.clientID] your Auth0 Application's Client identifier obtained when creating the client in the Auth0 Dashboard
  * @param {String} options.redirectUri url that the Auth0 will redirect after Auth with the Authorization Response
  * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
@@ -168,11 +168,11 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
  *
  * If you want to navigate the user to a specific URL after the logout, set that URL at the returnTo parameter. The URL should be included in any the appropriate Allowed Logout URLs list:
  *
- * - If the client_id parameter is included, the returnTo URL must be listed in the Allowed Logout URLs set at the client level (see Setting Allowed Logout URLs at the App Level).
+ * - If the client_id parameter is included, the returnTo URL must be listed in the Allowed Logout URLs set at the Auth0 Application level (see Setting Allowed Logout URLs at the App Level).
  * - If the client_id parameter is NOT included, the returnTo URL must be listed in the Allowed Logout URLs set at the account level (see Setting Allowed Logout URLs at the Account Level).
  * @method buildLogoutUrl
  * @param {Object} options
- * @param {String} [options.clientID] identifier of your client
+ * @param {String} [options.clientID] your Auth0 Application's Client identifier obtained when creating the client in the Auth0 Dashboard
  * @param {String} [options.returnTo] URL to be redirected after the logout
  * @param {Boolean} [options.federated] tells Auth0 if it should logout the user also from the IdP.
  * @see {@link https://auth0.com/docs/api/authentication#logout}
@@ -216,7 +216,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
  * @param {String} [result.accessToken] token that allows access to the specified resource server (identified by the audience parameter or by default Auth0's /userinfo endpoint)
  * @param {Number} [result.expiresIn] number of seconds until the access token expires
  * @param {String} [result.idToken] token that identifies the user
- * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all clients can request them or the resource server might not allow them.
+ * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all Auth0 Applications can request them or the resource server might not allow them.
  */
 
 /**
@@ -226,7 +226,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
  * @param {String} result.accessToken token that allows access to the specified resource server (identified by the audience parameter or by default Auth0's /userinfo endpoint)
  * @param {Number} result.expiresIn number of seconds until the access token expires
  * @param {String} [result.idToken] token that identifies the user
- * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all clients can request them or the resource server might not allow them.
+ * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all Auth0 Applications can request them or the resource server might not allow them.
  */
 
 /**
@@ -470,11 +470,11 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
  *
  * @method delegation
  * @param {Object} options
- * @param {String} [options.clientID] client identifier
+  * @param {String} [options.clientID] your Auth0 Application's Client identifier obtained when creating the client in the Auth0 Dashboard
  * @param {String} options.grantType  grant type used for delegation. The only valid value is `urn:ietf:params:oauth:grant-type:jwt-bearer`
  * @param {String} [options.idToken] valid token of the user issued after Auth. If no `refresh_token` is provided this parameter is required
  * @param {String} [options.refreshToken] valid refresh token of the user issued after Auth. If no `id_token` is provided this parameter is required
- * @param {String} [options.target] the target client id of the delegation
+ * @param {String} [options.target] the target Auth0 Application ClientID of the delegation
  * @param {String} [options.scope] either `openid` or `openid profile email`
  * @param {String} [options.apiType] the api to be called
  * @param {delegationCallback} cb

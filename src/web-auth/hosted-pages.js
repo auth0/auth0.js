@@ -25,7 +25,7 @@ function HostedPages(client, options) {
  * @param {Object} [result] result of the AuthN request
  * @param {String} result.accessToken token that can be used with {@link userinfo}
  * @param {String} [result.idToken] token that identifies the user
- * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all clients can request them or the resource server might not allow them.
+ * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all Auth0 Applications can request them or the resource server might not allow them.
  */
 
 /**
