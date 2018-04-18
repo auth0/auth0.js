@@ -474,7 +474,7 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
  * @param {String} options.grantType  grant type used for delegation. The only valid value is `urn:ietf:params:oauth:grant-type:jwt-bearer`
  * @param {String} [options.idToken] valid token of the user issued after Auth. If no `refresh_token` is provided this parameter is required
  * @param {String} [options.refreshToken] valid refresh token of the user issued after Auth. If no `id_token` is provided this parameter is required
- * @param {String} [options.target] the ClientID of the delegation
+ * @param {String} [options.target] the target ClientID of the delegation
  * @param {String} [options.scope] either `openid` or `openid profile email`
  * @param {String} [options.apiType] the api to be called
  * @param {delegationCallback} cb
