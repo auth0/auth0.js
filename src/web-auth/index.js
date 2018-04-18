@@ -289,6 +289,13 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
     if (decodedToken.header.alg !== 'HS256') {
       return callback(validationError);
     }
+    if (!parsedHash.access_token) {
+      var noAccessTokenError = {
+        error: 'invalid_token',
+        description: 'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this. Read more: https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
+      };
+      return callback(noAccessTokenError);
+    }
     // if the alg is HS256, use the /userinfo endpoint to build the payload
     return _this.client.userInfo(parsedHash.access_token, function(errUserInfo, profile) {
       // if the /userinfo request fails, use the validationError instead
