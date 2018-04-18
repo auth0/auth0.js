@@ -1753,7 +1753,7 @@ describe('auth0.WebAuth', function() {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',
-        responseType: 'code',
+        responseType: 'id_token',
         _sendTelemetry: false
       });
     });
@@ -1782,7 +1782,12 @@ describe('auth0.WebAuth', function() {
           credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
           realm: 'sms',
           username: '+55165134',
-          otp: '123456'
+          otp: '123456',
+          clientID: '...',
+          responseType: 'id_token',
+          redirectUri: 'http://page.com/callback',
+          state: 'randomState',
+          nonce: 'randomNonce'
         };
         stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
@@ -1806,7 +1811,12 @@ describe('auth0.WebAuth', function() {
           credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
           realm: 'email',
           username: 'the@email.com',
-          otp: '123456'
+          otp: '123456',
+          clientID: '...',
+          responseType: 'id_token',
+          redirectUri: 'http://page.com/callback',
+          state: 'randomState',
+          nonce: 'randomNonce'
         };
         stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
@@ -1842,9 +1852,14 @@ describe('auth0.WebAuth', function() {
       });
       it('should call `webauth.passwordlessVerify` with phoneNumber', function(done) {
         var expectedOptions = {
+          clientID: '...',
+          responseType: 'id_token',
+          redirectUri: 'http://page.com/callback',
           connection: 'sms',
           phoneNumber: '+55165134',
-          verificationCode: '123456'
+          verificationCode: '123456',
+          state: 'randomState',
+          nonce: 'randomNonce'
         };
         stub(this.auth0, 'passwordlessVerify', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
@@ -1865,9 +1880,14 @@ describe('auth0.WebAuth', function() {
       });
       it('should call `webauth.passwordlessVerify` with email', function(done) {
         var expectedOptions = {
+          clientID: '...',
+          responseType: 'id_token',
+          redirectUri: 'http://page.com/callback',
           connection: 'email',
           email: 'the@email.com',
-          verificationCode: '123456'
+          verificationCode: '123456',
+          state: 'randomState',
+          nonce: 'randomNonce'
         };
         stub(this.auth0, 'passwordlessVerify', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
@@ -2157,7 +2177,13 @@ describe('auth0.WebAuth', function() {
       });
 
       it('should call CrossOriginAuthentication.login', function(done) {
-        var expectedOptions = { foo: 'bar' };
+        var expectedOptions = {
+          clientID: '...',
+          responseType: 'token',
+          redirectUri: 'http://page.com/callback',
+          foo: 'bar',
+          state: 'randomState'
+        };
         stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
           expect(cb()).to.be('cb');
@@ -2191,7 +2217,13 @@ describe('auth0.WebAuth', function() {
         windowHelper.getWindow.restore();
       });
       it('calls _hostedPages.login mapping the connection parameter', function(done) {
-        var expectedOptions = { connection: 'bar' };
+        var expectedOptions = {
+          clientID: '...',
+          responseType: 'token',
+          redirectUri: 'http://page.com/callback',
+          state: 'randomState',
+          connection: 'bar'
+        };
         stub(HostedPages.prototype, 'login', function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
           expect(cb()).to.be('cb');
