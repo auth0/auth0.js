@@ -60,7 +60,7 @@ describe('helpers storage', function() {
       var nothing = storage.getItem('data');
       expect(nothing).to.be(undefined);
     });
-    it('should call getItem and return undefined when value is null', function() {
+    it('should call getItem and return null when value is null', function() {
       stub(StorageHandler.prototype, 'getItem', function(key) {
         expect(key).to.be('data');
         return null;
