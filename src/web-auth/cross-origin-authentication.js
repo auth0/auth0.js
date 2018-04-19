@@ -6,6 +6,7 @@ var RequestBuilder = require('../helper/request-builder');
 var WebMessageHandler = require('./web-message-handler');
 var responseHandler = require('../helper/response-handler');
 var storage = require('../helper/storage');
+var times = require('../helper/times');
 
 function CrossOriginAuthentication(webAuth, options) {
   this.webAuth = webAuth;
@@ -82,7 +83,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       .merge(options)
       .with({ loginTicket: data.body.login_ticket });
     var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
-    storage.setItem(key, data.body.co_verifier, { expires: 1 / 96 }); // 15 minutes
+    storage.setItem(key, data.body.co_verifier, { expires: times.MINUTES_15 });
     if (popupMode) {
       _this.webMessageHandler.run(
         authorizeOptions,

@@ -5,7 +5,7 @@ var request = require('superagent');
 
 var storage = require('../../src/helper/storage');
 var IframeHandler = require('../../src/helper/iframe-handler');
-
+var times = require('../../src/helper/times');
 var RequestMock = require('../mock/request-mock');
 
 var TransactionManager = require('../../src/web-auth/transaction-manager');
@@ -315,7 +315,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       expect(storage.setItem.firstCall.args).to.be.eql([
         'co/verifier/https%3A%2F%2Fme.auth0.com/co_id',
         'co_verifier',
-        { expires: 1 / 96 }
+        { expires: times.MINUTES_15 }
       ]);
     });
     context(

@@ -1,5 +1,6 @@
 var random = require('../helper/random');
 var storage = require('../helper/storage');
+var times = require('../helper/times');
 
 var DEFAULT_NAMESPACE = 'com.auth0.auth.';
 
@@ -52,8 +53,8 @@ TransactionManager.prototype.generateTransaction = function(
       state: state,
       lastUsedConnection: lastUsedConnection
     },
-    { expires: 1 / 48 }
-  ); // 30 minutes
+    times.MINUTES_30
+  );
   return {
     state: state,
     nonce: nonce
