@@ -1,106 +1,84 @@
 var expect = require('expect.js');
 var stub = require('sinon').stub;
+var spy = require('sinon').spy;
 
 var windowHandler = require('../../src/helper/window');
+var StorageHandler = require('../../src/helper/storage/handler');
 var storage = require('../../src/helper/storage');
 
 describe('helpers storage', function() {
-  beforeEach(function() {
-    storage.reload();
-  });
-
-  describe('with localstorage', function() {
-    before(function() {
-      var data = {};
-      stub(windowHandler, 'getWindow', function() {
-        return {
-          localStorage: {
-            getItem: function(key) {
-              return data[key] ? data[key] : null;
-            },
-            removeItem: function(key) {
-              if (data[key]) {
-                delete data[key];
-              }
-            },
-            setItem: function(key, value) {
-              data[key] = value;
-            }
-          }
-        };
-      });
+  describe('setItem', function() {
+    beforeEach(function() {
+      spy(StorageHandler.prototype, 'setItem');
     });
-
-    after(function() {
-      windowHandler.getWindow.restore();
+    afterEach(function() {
+      StorageHandler.prototype.setItem.restore();
     });
-
-    it('should store stuff', function() {
-      expect(storage.getItem('data')).to.be(null);
-      storage.setItem('data', 'text');
-      expect(storage.getItem('data')).to.eql('text');
-      storage.removeItem('data');
-      expect(storage.getItem('data')).to.be(null);
+    it('should call setItem when value is a string', function() {
+      storage.setItem('data', 'text', { options: true });
+      console.log(StorageHandler.prototype.setItem.toString());
+      expect(StorageHandler.prototype.setItem.firstCall.args).to.be.eql([
+        'data',
+        '"text"',
+        { options: true }
+      ]);
+    });
+    it('should call setItem with a JSON string when value is an object', function() {
+      storage.setItem('data', { myProp: true }, { options: true });
+      expect(StorageHandler.prototype.setItem.firstCall.args).to.be.eql([
+        'data',
+        JSON.stringify({ myProp: true }),
+        { options: true }
+      ]);
     });
   });
-
-  describe('without localstorage and with cookies', function() {
-    before(function() {
-      var document = {
-        cookie: ''
-      };
-      stub(windowHandler, 'getWindow', function() {
-        return {
-          localStorage: {
-            getItem: function(key) {
-              throw new Error('localStorage not available');
-            }
-          }
-        };
-      });
-      stub(windowHandler, 'getDocument', function() {
-        return document;
-      });
+  describe('getItem', function() {
+    afterEach(function() {
+      StorageHandler.prototype.getItem.restore();
     });
-
-    after(function() {
-      windowHandler.getDocument.restore();
-      windowHandler.getWindow.restore();
+    it('should call getItem and return string when value is a string', function() {
+      stub(StorageHandler.prototype, 'getItem', function(key) {
+        expect(key).to.be('data');
+        return 'the-value';
+      });
+      var theValue = storage.getItem('data');
+      expect(theValue).to.be('the-value');
     });
-
-    it('should store stuff', function() {
-      expect(storage.getItem('data')).to.be(null);
-      storage.setItem('data', 'text');
-      expect(storage.getItem('data')).to.eql('text');
-      storage.removeItem('data');
-      // Cookies mock does not delete the cookie since it works as a variable not an actual method.
-      // When it depetes the cookie it stays as an empty string. The browser should delete it
-      // for real and return null instead
-      expect(storage.getItem('data')).to.be('');
+    it('should call getItem and return an object when value is a JSON string', function() {
+      stub(StorageHandler.prototype, 'getItem', function(key) {
+        expect(key).to.be('data');
+        return JSON.stringify({ theObject: true });
+      });
+      var theObject = storage.getItem('data');
+      expect(theObject).to.be.eql({ theObject: true });
+    });
+    it('should call getItem and return undefined when value is undefined', function() {
+      stub(StorageHandler.prototype, 'getItem', function(key) {
+        expect(key).to.be('data');
+        return undefined;
+      });
+      var nothing = storage.getItem('data');
+      expect(nothing).to.be(undefined);
+    });
+    it('should call getItem and return null when value is null', function() {
+      stub(StorageHandler.prototype, 'getItem', function(key) {
+        expect(key).to.be('data');
+        return null;
+      });
+      var noValue = storage.getItem('data');
+      expect(noValue).to.be(null);
     });
   });
-
-  describe('with dummy storage', function() {
-    before(function() {
-      stub(windowHandler, 'getWindow', function() {
-        return {};
-      });
-      stub(windowHandler, 'getDocument', function() {
-        return {};
-      });
+  describe('removeItem', () => {
+    beforeEach(function() {
+      spy(StorageHandler.prototype, 'removeItem');
     });
-
-    after(function() {
-      windowHandler.getDocument.restore();
-      windowHandler.getWindow.restore();
+    afterEach(function() {
+      StorageHandler.prototype.removeItem.restore();
     });
-
-    it('should ignore the data', function() {
-      expect(storage.getItem('data')).to.be(null);
-      storage.setItem('data', 'text');
-      expect(storage.getItem('data')).to.be(null);
+    it('should call removeItem', function() {
       storage.removeItem('data');
-      expect(storage.getItem('data')).to.be(null);
+      expect(StorageHandler.prototype.removeItem.firstCall.args).to.be.eql(['data']);
     });
   });
 });

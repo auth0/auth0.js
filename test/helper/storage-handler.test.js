@@ -1,5 +1,6 @@
 var expect = require('expect.js');
 var stub = require('sinon').stub;
+var spy = require('sinon').spy;
 
 var windowHandler = require('../../src/helper/window');
 var StorageHandler = require('../../src/helper/storage/handler');
@@ -18,133 +19,131 @@ MockLocalStorage.prototype.setItem = function() {
 };
 
 describe('helpers storage handler', function() {
+  beforeEach(function() {
+    stub(windowHandler, 'getWindow', function(message) {
+      return {
+        localStorage: new MockLocalStorage()
+      };
+    });
+  });
+  afterEach(function() {
+    windowHandler.getWindow.restore();
+  });
   it('should use localStorage by default', function() {
-    stub(windowHandler, 'getWindow', function(message) {
-      return {
-        localStorage: new MockLocalStorage()
-      };
-    });
-
     var handler = new StorageHandler();
     expect(handler.storage).to.be.a(MockLocalStorage);
-
-    windowHandler.getWindow.restore();
   });
+  describe('when using localStorage', function() {
+    let setItemSpy;
+    let getItemStub;
+    let removeItemSpy;
+    beforeEach(function() {
+      windowHandler.getWindow.restore();
 
-  it('should use cookie storage when localstorage is not available', function() {
-    stub(windowHandler, 'getWindow', function(message) {});
+      setItemSpy = spy();
+      getItemStub = stub().returns('test');
+      removeItemSpy = spy();
 
-    var handler = new StorageHandler();
-    expect(handler.storage).to.be.a(CookieStorage);
-
-    windowHandler.getWindow.restore();
+      stub(windowHandler, 'getWindow', function() {
+        return {
+          localStorage: {
+            setItem: setItemSpy,
+            getItem: getItemStub,
+            removeItem: removeItemSpy
+          }
+        };
+      });
+    });
+    it('calls getItem correctly', function() {
+      var key = 'foo';
+      var handler = new StorageHandler();
+      expect(handler.getItem(key)).to.be('test');
+      expect(getItemStub.firstCall.args).to.be.eql([key]);
+    });
+    it('calls setItem correctly', function() {
+      var key = 'foo';
+      var value = 'bar';
+      var handler = new StorageHandler();
+      handler.setItem(key, value, {});
+      expect(setItemSpy.firstCall.args).to.be.eql([key, value, {}]);
+    });
+    it('calls removeItem correctly', function() {
+      var key = 'foo';
+      var handler = new StorageHandler();
+      handler.removeItem(key);
+      expect(removeItemSpy.firstCall.args).to.be.eql([key]);
+    });
   });
-  it('should use cookie storage when localstorage throws an error', function() {
-    stub(windowHandler, 'getWindow', function(message) {
-      return {
-        get localStorage() {
-          throw new Error('asdasd');
-        }
-      };
+  describe('should use cookie storage', function() {
+    it('when localstorage is not available', function() {
+      windowHandler.getWindow.restore();
+      stub(windowHandler, 'getWindow', function(message) {});
+
+      var handler = new StorageHandler();
+      expect(handler.storage).to.be.a(CookieStorage);
+    });
+    it('when localstorage throws an error', function() {
+      windowHandler.getWindow.restore();
+      stub(windowHandler, 'getWindow', function(message) {
+        return {
+          get localStorage() {
+            throw new Error('asdasd');
+          }
+        };
+      });
+
+      var handler = new StorageHandler();
+      expect(handler.storage).to.be.a(CookieStorage);
     });
 
-    var handler = new StorageHandler();
-    expect(handler.storage).to.be.a(CookieStorage);
+    it('when localstorage fails with getItem', function() {
+      spy(CookieStorage.prototype, 'getItem');
 
-    windowHandler.getWindow.restore();
-  });
+      var handler = new StorageHandler();
 
-  it('should use cookie storage is localstorage fails with getItem', function() {
-    stub(windowHandler, 'getWindow', function(message) {
-      return {
-        localStorage: new MockLocalStorage()
-      };
-    });
-    stub(windowHandler, 'getDocument', function(message) {
-      return {
-        cookie: ''
-      };
+      expect(handler.storage).to.be.a(MockLocalStorage);
+      handler.getItem('pepe');
+
+      expect(handler.storage).to.be.a(CookieStorage);
+      expect(CookieStorage.prototype.getItem.firstCall.args).to.be.eql(['pepe']);
+
+      CookieStorage.prototype.getItem.restore();
     });
 
-    var handler = new StorageHandler();
+    it('when localstorage fails with setItem', function() {
+      spy(CookieStorage.prototype, 'setItem');
 
-    expect(handler.storage).to.be.a(MockLocalStorage);
-    handler.getItem('pepe');
+      var handler = new StorageHandler();
 
-    expect(handler.storage).to.be.a(CookieStorage);
+      expect(handler.storage).to.be.a(MockLocalStorage);
+      handler.setItem('some', 'value', { options: true });
 
-    windowHandler.getWindow.restore();
-    windowHandler.getDocument.restore();
-  });
+      expect(handler.storage).to.be.a(CookieStorage);
+      expect(CookieStorage.prototype.setItem.firstCall.args).to.be.eql([
+        'some',
+        'value',
+        { options: true }
+      ]);
 
-  it('should use cookie storage is localstorage fails with setItem', function() {
-    var document = {
-      cookie: ''
-    };
-    stub(windowHandler, 'getWindow', function(message) {
-      return {
-        localStorage: new MockLocalStorage()
-      };
-    });
-    stub(windowHandler, 'getDocument', function(message) {
-      return document;
-    });
-    stub(Date.prototype, 'getTime', function(message) {
-      return 0;
+      CookieStorage.prototype.setItem.restore();
     });
 
-    var handler = new StorageHandler();
+    it('when localstorage fails with removeItem', function() {
+      spy(CookieStorage.prototype, 'removeItem');
 
-    expect(handler.storage).to.be.a(MockLocalStorage);
-    handler.setItem('some', 'value');
+      var handler = new StorageHandler();
 
-    expect(handler.storage).to.be.a(CookieStorage);
-    expect(document.cookie).to.be('some=dmFsdWU=; expires=Fri, 02 Jan 1970 00:00:00 GMT; path=/');
+      expect(handler.storage).to.be.a(MockLocalStorage);
+      handler.removeItem('some');
 
-    windowHandler.getWindow.restore();
-    windowHandler.getDocument.restore();
-    Date.prototype.getTime.restore();
-  });
+      expect(handler.storage).to.be.a(CookieStorage);
+      expect(CookieStorage.prototype.removeItem.firstCall.args).to.be.eql(['some']);
 
-  it('should use cookie storage is localstorage fails with removeItem', function() {
-    var document = {
-      cookie: ''
-    };
-    stub(windowHandler, 'getWindow', function(message) {
-      return {
-        localStorage: new MockLocalStorage()
-      };
+      CookieStorage.prototype.removeItem.restore();
     });
-    stub(windowHandler, 'getDocument', function(message) {
-      return document;
-    });
-    stub(Date.prototype, 'getTime', function(message) {
-      return 0;
-    });
-
-    var handler = new StorageHandler();
-
-    expect(handler.storage).to.be.a(MockLocalStorage);
-    handler.removeItem('some');
-
-    expect(handler.storage).to.be.a(CookieStorage);
-    expect(document.cookie).to.be('some=; expires=Wed, 31 Dec 1969 00:00:00 GMT; path=/');
-
-    windowHandler.getWindow.restore();
-    windowHandler.getDocument.restore();
-    Date.prototype.getTime.restore();
   });
 
   it('should failover to dummy', function() {
-    var document = {
-      cookie: ''
-    };
-    stub(windowHandler, 'getWindow', function(message) {
-      return {
-        localStorage: new MockLocalStorage()
-      };
-    });
-
     var handler = new StorageHandler();
 
     expect(handler.storage).to.be.a(MockLocalStorage);
@@ -157,7 +156,6 @@ describe('helpers storage handler', function() {
     handler.failover();
 
     expect(handler.storage).to.be.a(DummyStorage);
-
-    windowHandler.getWindow.restore();
+    expect(handler.storage.getItem()).to.be(null);
   });
 });

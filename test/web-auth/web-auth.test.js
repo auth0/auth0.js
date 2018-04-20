@@ -5,7 +5,6 @@ var spy = require('sinon').spy;
 var request = require('superagent');
 var IdTokenVerifier = require('idtoken-verifier');
 
-var storage = require('../../src/helper/storage');
 var windowHelper = require('../../src/helper/window');
 var ssodata = require('../../src/helper/ssodata');
 var Warn = require('../../src/helper/warn');
@@ -21,7 +20,16 @@ var IframeHandler = require('../../src/helper/iframe-handler');
 var objectHelper = require('../../src/helper/object');
 var WebAuth = require('../../src/web-auth');
 
+function restoreAndStubStoredTransaction(expectedState, expectedTransaction) {
+  TransactionManager.prototype.getStoredTransaction.restore();
+  stub(TransactionManager.prototype, 'getStoredTransaction', function(state) {
+    expect(state).to.be(expectedState);
+    return expectedTransaction;
+  });
+}
+
 describe('auth0.WebAuth', function() {
+  this.timeout(5000);
   beforeEach(function() {
     stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
       return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
@@ -35,6 +43,7 @@ describe('auth0.WebAuth', function() {
     TransactionManager.prototype.generateTransaction.restore();
     TransactionManager.prototype.getStoredTransaction.restore();
   });
+
   context('init', function() {
     after(function() {
       delete global.window;
@@ -42,8 +51,6 @@ describe('auth0.WebAuth', function() {
 
     before(function() {
       global.window = {};
-      global.window.localStorage = {};
-      storage.reload();
     });
 
     it('should properly set the overrides', function() {
@@ -68,26 +75,19 @@ describe('auth0.WebAuth', function() {
       expect(webAuth.baseOptions.jwksURI).to.be('jwks_uri');
     });
   });
-  context('nonce validation', function() {
-    before(function() {
-      global.window = {};
-      global.window.localStorage = {};
-      global.window.localStorage.removeItem = function(key) {
-        expect(key).to.be('com.auth0.auth.456');
-      };
-      global.window.localStorage.getItem = function(key) {
-        expect(key).to.be('com.auth0.auth.456');
-        return JSON.stringify({
-          nonce: 'thenonce',
-          appState: null
-        });
-      };
-      global.window.location = {};
-      storage.reload();
-    });
-    after(function() {
-      SilentAuthenticationHandler.prototype.login.restore();
 
+  context('nonce validation', function() {
+    beforeEach(function() {
+      global.window = {
+        location: {}
+      };
+      restoreAndStubStoredTransaction('foo', {
+        nonce: 'thenonce',
+        state: 'foo',
+        appState: null
+      });
+    });
+    afterEach(function() {
       delete global.window;
     });
 
@@ -120,6 +120,7 @@ describe('auth0.WebAuth', function() {
           errorDescription: 'Nonce does not match.'
         });
         expect(data).to.be(undefined);
+        SilentAuthenticationHandler.prototype.login.restore();
         done();
       });
     });
@@ -256,24 +257,19 @@ describe('auth0.WebAuth', function() {
 
   context('parseHash', function() {
     before(function() {
-      global.window = {};
-      global.window.location = {};
-      global.window.localStorage = {};
-      global.window.localStorage.removeItem = function(key) {
-        expect(key).to.be('com.auth0.auth.theState');
+      global.window = {
+        location: {
+          hash: '#state=foo&access_token=asldkfjahsdlkfjhasd&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+        }
       };
-      global.window.localStorage.getItem = function(key) {
-        expect(key).to.be('com.auth0.auth.theState');
-        return JSON.stringify({
-          nonce: 'asfd',
-          appState: null
-        });
-      };
-      global.window.location.hash =
-        '#state=foo&access_token=asldkfjahsdlkfjhasd&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas';
     });
 
     beforeEach(function() {
+      restoreAndStubStoredTransaction('foo', {
+        nonce: 'asfd',
+        state: 'foo',
+        appState: null
+      });
       spy(ssodata, 'set');
       stub(IdTokenVerifier.prototype, 'validateAccessToken', function(at, alg, atHash, cb) {
         cb(null);
@@ -366,6 +362,11 @@ describe('auth0.WebAuth', function() {
       ); // eslint-disable-line
     });
     it('should return the id_token payload when there is no payload.at_hash', function(done) {
+      restoreAndStubStoredTransaction('foo', {
+        state: 'foo',
+        appState: null
+      });
+
       var webAuth = new WebAuth({
         domain: 'brucke.auth0.com',
         redirectUri: 'http://example.com/callback',
@@ -1270,9 +1271,10 @@ describe('auth0.WebAuth', function() {
 
   context('renewAuth', function() {
     beforeEach(function() {
-      global.window = {};
-      global.window.origin = 'unit-test-origin';
-      global.window.removeEventListener = function() {};
+      global.window = {
+        origin: 'unit-test-origin',
+        removeEventListener: function() {}
+      };
     });
     afterEach(function() {
       delete global.window;
@@ -1337,9 +1339,6 @@ describe('auth0.WebAuth', function() {
     });
     afterEach(function() {
       delete global.window;
-      if (storage.removeItem.restore) {
-        storage.removeItem.restore();
-      }
     });
     it('should default scope to openid profile email', function(done) {
       var webAuth = new WebAuth({
@@ -1379,9 +1378,10 @@ describe('auth0.WebAuth', function() {
 
   context('renewAuth', function() {
     beforeEach(function() {
-      global.window = {};
-      global.window.document = {};
-      global.window.origin = 'unit-test-origin';
+      global.window = {
+        document: {},
+        origin: 'unit-test-origin'
+      };
     });
 
     afterEach(function() {
@@ -2177,6 +2177,7 @@ describe('auth0.WebAuth', function() {
       );
     });
   });
+
   context('login', function() {
     context('when outside of the universal login page', function() {
       before(function() {
@@ -2262,6 +2263,7 @@ describe('auth0.WebAuth', function() {
       });
     });
   });
+
   context('cross origin callbacks', function() {
     before(function() {
       this.auth0 = new WebAuth({

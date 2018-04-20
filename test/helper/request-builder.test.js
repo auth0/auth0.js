@@ -5,10 +5,29 @@ var request = require('superagent');
 
 var RequestMock = require('../mock/request-mock');
 var RequestBuilder = require('../../src/helper/request-builder');
+var base64url = require('../../src/helper/base64_url');
+var version = require('../../src/version').raw;
 
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
 describe('helpers requestBuilder', function() {
+  describe('getTelemetryData', function() {
+    it('should encode telemetry', function() {
+      var rb = new RequestBuilder({ _telemetryInfo: { foo: 'bar' } });
+      var telemetry = rb.getTelemetryData();
+      expect(telemetry).to.be('eyJmb28iOiJiYXIifQ==');
+      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({ foo: 'bar' });
+    });
+    it('should use default telemetry', function() {
+      var rb = new RequestBuilder({ _telemetryInfo: null });
+      var telemetry = rb.getTelemetryData();
+      expect(telemetry).to.be('eyJuYW1lIjoiYXV0aDAuanMiLCJ2ZXJzaW9uIjoiOS40LjIifQ==');
+      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({
+        name: 'auth0.js',
+        version: version
+      });
+    });
+  });
   describe('with noHeaders:false', function() {
     before(function() {
       stub(request, 'get', function(url) {

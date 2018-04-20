@@ -9,7 +9,10 @@ function StorageHandler() {
   try {
     // some browsers throw an error when trying to access localStorage
     // when localStorage is disabled.
-    this.storage = windowHandler.getWindow().localStorage;
+    var localStorage = windowHandler.getWindow().localStorage;
+    if (localStorage) {
+      this.storage = localStorage;
+    }
   } catch (e) {
     this.warn.warning(e);
     this.warn.warning("Can't use localStorage. Using CookieStorage instead.");
@@ -49,13 +52,13 @@ StorageHandler.prototype.removeItem = function(key) {
   }
 };
 
-StorageHandler.prototype.setItem = function(key, value) {
+StorageHandler.prototype.setItem = function(key, value, options) {
   try {
-    return this.storage.setItem(key, value);
+    return this.storage.setItem(key, value, options);
   } catch (e) {
     this.warn.warning(e);
     this.failover();
-    return this.setItem(key, value);
+    return this.setItem(key, value, options);
   }
 };
 
