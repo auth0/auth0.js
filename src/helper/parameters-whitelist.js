@@ -1,3 +1,8 @@
+// For future reference:,
+// The only parameters that should be whitelisted are parameters
+// defined by the specification, or existing parameters that we
+// need for compatibility
+
 var objectHelper = require('./object');
 
 var tokenParams = [
