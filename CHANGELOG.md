@@ -1,4 +1,16 @@
 
+## [v9.5.0](https://github.com/auth0/auth0.js/tree/v9.5.0) (2018-04-24)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.4.2...v9.5.0)
+
+**Added**
+- Add transaction manager to passwordlessLogin and login [\#731](https://github.com/auth0/auth0.js/pull/731) ([luisrudge](https://github.com/luisrudge))
+- Add error message when there is no access_token and id_token is HS256 [\#727](https://github.com/auth0/auth0.js/pull/727) ([luisrudge](https://github.com/luisrudge))
+
+**Fixed**
+- Fix storing values when DOM storage is not available [\#737](https://github.com/auth0/auth0.js/pull/737) ([luisrudge](https://github.com/luisrudge))
+- getSSOData should call /ssodata from the ULP [\#733](https://github.com/auth0/auth0.js/pull/733) ([luisrudge](https://github.com/luisrudge))
+- Return /userinfo error inside the token validation callback [\#724](https://github.com/auth0/auth0.js/pull/724) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.4.2](https://github.com/auth0/auth0.js/tree/v9.4.2) (2018-03-28)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.4.1...v9.4.2)
 
