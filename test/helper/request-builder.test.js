@@ -21,7 +21,6 @@ describe('helpers requestBuilder', function() {
     it('should use default telemetry', function() {
       var rb = new RequestBuilder({ _telemetryInfo: null });
       var telemetry = rb.getTelemetryData();
-      expect(telemetry).to.be('eyJuYW1lIjoiYXV0aDAuanMiLCJ2ZXJzaW9uIjoiOS40LjIifQ==');
       expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({
         name: 'auth0.js',
         version: version
