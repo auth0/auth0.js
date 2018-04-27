@@ -1,9 +1,15 @@
 var StorageHandler = require('./storage/handler');
-var storage = new StorageHandler();
+var storage;
+var getStorage = function() {
+  if (!storage) {
+    storage = new StorageHandler();
+  }
+  return storage;
+};
 
 module.exports = {
   getItem: function(key) {
-    var value = storage.getItem(key);
+    var value = getStorage().getItem(key);
     try {
       return JSON.parse(value);
     } catch (_) {
@@ -11,10 +17,10 @@ module.exports = {
     }
   },
   removeItem: function(key) {
-    return storage.removeItem(key);
+    return getStorage().removeItem(key);
   },
   setItem: function(key, value, options) {
     var json = JSON.stringify(value);
-    return storage.setItem(key, json, options);
+    return getStorage().setItem(key, json, options);
   }
 };
