@@ -1,4 +1,10 @@
 
+## [v9.5.1](https://github.com/auth0/auth0.js/tree/v9.5.1) (2018-04-28)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.5.0...v9.5.1)
+
+**Fixed**
+- Prevent using window object on initialize [\#746](https://github.com/auth0/auth0.js/pull/746) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.5.0](https://github.com/auth0/auth0.js/tree/v9.5.0) (2018-04-24)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.4.2...v9.5.0)
 
