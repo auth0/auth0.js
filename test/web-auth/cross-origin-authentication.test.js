@@ -29,6 +29,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         redirectUri: 'https://page.com/callback'
       });
       global.window = {};
+      global.modifiedWindow = {};
     });
     beforeEach(function() {
       spy(storage, 'setItem');
@@ -437,6 +438,15 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           hash: '#origin=origin'
         }
       };
+      global.modifiedWindow = {
+        addEventListener: spy(),
+        parent: {
+          postMessage: spy()
+        },
+        location: {
+          hash: '#/login/crossOriginFallback#origin=origin'
+        }
+      };
     });
     beforeEach(function() {
       spy(storage, 'removeItem');
@@ -450,15 +460,37 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       expect(theCall.args[0]).to.be.eql({ type: 'ready' });
       expect(theCall.args[1]).to.be('origin');
     });
+    it('should call parent.postMessage on load for modified global window', function() {
+      this.co.callback();
+      var theCall = global.modifiedWindow.parent.postMessage.getCall(0);
+      expect(theCall.args[0]).to.be.eql({ type: 'ready' });
+      expect(theCall.args[1]).to.be('origin');
+    });
     it('should add a listener to the message event', function() {
       this.co.callback();
       var theCall = global.window.addEventListener.getCall(0);
+      expect(theCall.args[0]).to.be('message');
+    });
+    it('should add a listener to the message event for modified global window', function() {
+      this.co.callback();
+      var theCall = global.modifiedWindow.addEventListener.getCall(0);
       expect(theCall.args[0]).to.be('message');
     });
     context('when a message is received', function() {
       it('should ignore if the message.data.type !== co_verifier_request', function() {
         this.co.callback();
         var theCall = global.window.addEventListener.getCall(0);
+        var evt = {
+          data: {
+            type: 'foobar'
+          }
+        };
+        theCall.args[1](evt);
+        expect(storage.removeItem.called).to.be(false);
+      });
+      it('should ignore if the message.data.type !== co_verifier_request', function() {
+        this.co.callback();
+        var theCall = global.modifiedWindow.addEventListener.getCall(0);
         var evt = {
           data: {
             type: 'foobar'
@@ -489,6 +521,29 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       it('should send the verifier response', function() {
         this.co.callback();
         var onMessageHandler = global.window.addEventListener.getCall(0).args[1];
+        var evt = {
+          origin: 'https://me.auth0.com',
+          data: {
+            type: 'co_verifier_request',
+            request: {
+              id: 'co_id'
+            }
+          },
+          source: {
+            postMessage: spy()
+          }
+        };
+        onMessageHandler(evt);
+        var theCall = evt.source.postMessage.getCall(0);
+        expect(theCall.args[0]).to.be.eql({
+          type: 'co_verifier_response',
+          response: { verifier: 'co_verifier' }
+        });
+        expect(theCall.args[1]).to.be('https://me.auth0.com');
+      });
+      it('should send the verifier response for modified window', function() {
+        this.co.callback();
+        var onMessageHandler = global.modifiedWindow.addEventListener.getCall(0).args[1];
         var evt = {
           origin: 'https://me.auth0.com',
           data: {
