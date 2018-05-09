@@ -135,22 +135,34 @@ context('TransactionManager', function() {
   });
   context('getStoredTransaction', function() {
     beforeEach(function() {
-      stub(storage, 'removeItem');
       stub(storage, 'getItem', function(state) {
         expect(state).to.be('com.auth0.auth.state');
         return { from: 'storage' };
       });
+      spy(TransactionManager.prototype, 'clearTransaction');
     });
     afterEach(function() {
-      storage.removeItem.restore();
       storage.getItem.restore();
+      TransactionManager.prototype.clearTransaction.restore();
     });
     it('returns transaction data from storage', function() {
       var state = this.tm.getStoredTransaction('state');
       expect(state).to.be.eql({ from: 'storage' });
     });
     it('removes data from storage', function() {
-      var state = this.tm.getStoredTransaction('state');
+      this.tm.getStoredTransaction('state');
+      expect(TransactionManager.prototype.clearTransaction.firstCall.args[0]).to.be('state');
+    });
+  });
+  context('clearTransaction', function() {
+    beforeEach(function() {
+      stub(storage, 'removeItem');
+    });
+    afterEach(function() {
+      storage.removeItem.restore();
+    });
+    it('removes data from storage', function() {
+      this.tm.clearTransaction('state');
       expect(storage.removeItem.calledOnce).to.be(true);
       expect(storage.removeItem.lastCall.args[0]).to.be('com.auth0.auth.state');
     });

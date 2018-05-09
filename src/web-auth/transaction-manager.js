@@ -65,8 +65,12 @@ TransactionManager.prototype.getStoredTransaction = function(state) {
   var transactionData;
 
   transactionData = storage.getItem(this.namespace + state);
-  storage.removeItem(this.namespace + state);
+  this.clearTransaction(state);
   return transactionData;
+};
+
+TransactionManager.prototype.clearTransaction = function(state) {
+  storage.removeItem(this.namespace + state);
 };
 
 module.exports = TransactionManager;
