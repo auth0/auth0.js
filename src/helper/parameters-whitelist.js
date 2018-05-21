@@ -61,7 +61,12 @@ var authorizeParams = [
   'request',
   'request_uri',
   'code_challenge',
-  'code_challenge_method'
+  'code_challenge_method',
+  
+  // ADDITIONAL_PARAMETERS:
+  // https://auth0.com/docs/api/authentication?javascript#social
+  'access_type',
+  'display'
 ];
 
 function oauthAuthorizeParams(warn, params) {
