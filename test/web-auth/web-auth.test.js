@@ -2302,6 +2302,7 @@ describe('auth0.WebAuth', function() {
       stub(TransactionManager.prototype, 'process', function(params) {
         return Object.assign({}, params, { from: 'transaction-manager' });
       });
+      spy(TransactionManager.prototype, 'clearTransaction');
       stub(windowHelper, 'getOrigin', function() {
         return 'https://test-origin.com';
       });
@@ -2311,6 +2312,7 @@ describe('auth0.WebAuth', function() {
     });
     afterEach(function() {
       TransactionManager.prototype.process.restore();
+      TransactionManager.prototype.clearTransaction.restore();
       if (IframeHandler.prototype.init.restore) {
         IframeHandler.prototype.init.restore();
       }
@@ -2402,7 +2404,7 @@ describe('auth0.WebAuth', function() {
       stub(IframeHandler.prototype, 'init', function() {
         this.timeoutCallback();
       });
-      this.auth0.checkSession({}, function(err, data) {
+      this.auth0.checkSession({ state: 'foobar' }, function(err, data) {
         expect(err).to.be.eql({
           error: 'timeout',
           error_description: 'Timeout during executing web_message communication'
@@ -2424,6 +2426,31 @@ describe('auth0.WebAuth', function() {
           error: 'the-error',
           error_description: 'error description'
         });
+        done();
+      });
+    });
+    it('callback clears transaction on error response', function(done) {
+      var errorResponse = {
+        error: 'the-error',
+        error_description: 'error description',
+        state: 'foobar'
+      };
+      stub(IframeHandler.prototype, 'init', function() {
+        this.callback({ event: { data: { response: errorResponse } } });
+      });
+      this.auth0.checkSession({}, function(err, data) {
+        expect(TransactionManager.prototype.clearTransaction.firstCall.args[0]).to.be(
+          errorResponse.state
+        );
+        done();
+      });
+    });
+    it('callback clears transaction on timeout', function(done) {
+      stub(IframeHandler.prototype, 'init', function() {
+        this.timeoutCallback();
+      });
+      this.auth0.checkSession({ state: 'foobar' }, function(err, data) {
+        expect(TransactionManager.prototype.clearTransaction.firstCall.args[0]).to.be('foobar');
         done();
       });
     });

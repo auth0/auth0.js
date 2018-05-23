@@ -22,7 +22,8 @@ function runWebMessageFlow(authorizeUrl, options, callback) {
     timeoutCallback: function() {
       callback({
         error: 'timeout',
-        error_description: 'Timeout during executing web_message communication'
+        error_description: 'Timeout during executing web_message communication',
+        state: options.state
       });
     }
   });
@@ -58,10 +59,13 @@ WebMessageHandler.prototype.run = function(options, cb) {
   ) {
     var error = err;
     if (!err && eventData.event.data.response.error) {
-      error = objectHelper.pick(eventData.event.data.response, ['error', 'error_description']);
+      error = eventData.event.data.response;
+    }
+    if (!error) {
+      var parsedHash = eventData.event.data.response;
+      return _this.webAuth.validateAuthenticationResponse(options, parsedHash, cb);
     }
     if (
-      error &&
       error.error === 'consent_required' &&
       windowHelper.getWindow().location.hostname === 'localhost'
     ) {
@@ -69,11 +73,8 @@ WebMessageHandler.prototype.run = function(options, cb) {
         "Consent Required. Consent can't be skipped on localhost. Read more here: https://auth0.com/docs/api-auth/user-consent#skipping-consent-for-first-party-clients"
       );
     }
-    if (error) {
-      return cb(error);
-    }
-    var parsedHash = eventData.event.data.response;
-    _this.webAuth.validateAuthenticationResponse(options, parsedHash, cb);
+    _this.webAuth.transactionManager.clearTransaction(error.state);
+    return cb(objectHelper.pick(error, ['error', 'error_description']));
   });
 };
 
