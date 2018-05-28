@@ -1,4 +1,13 @@
 
+## [v9.6.0](https://github.com/auth0/auth0.js/tree/v9.6.0) (2018-05-28)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.5.1...v9.6.0)
+
+**Changed**
+- Added `access_type` and `display` to the parameters-whitelist [\#760](https://github.com/auth0/auth0.js/pull/760) ([lordnox](https://github.com/lordnox))
+
+**Fixed**
+- Clear local state when checkSession call fails [\#758](https://github.com/auth0/auth0.js/pull/758) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.5.1](https://github.com/auth0/auth0.js/tree/v9.5.1) (2018-04-28)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.5.0...v9.5.1)
 
