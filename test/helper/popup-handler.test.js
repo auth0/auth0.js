@@ -2,7 +2,6 @@ var expect = require('expect.js');
 var stub = require('sinon').stub;
 var WinChan = require('winchan');
 
-var qs = require('qs');
 var PopupHandler = require('../../src/helper/popup-handler');
 
 describe('helpers popupHandler', function() {
@@ -172,8 +171,6 @@ describe('helpers popupHandler', function() {
       };
 
       var handler = new PopupHandler();
-
-      var popup = handler.preload({});
       var popup = handler.preload({});
 
       popup.kill();
