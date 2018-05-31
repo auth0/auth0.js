@@ -154,7 +154,7 @@ describe('helpers popupHandler', function() {
       popup.kill();
     });
 
-    it('should open the window once', function(done) {
+    it('should open the window once and return the same instance', function(done) {
       var counter = 0;
       global.window.open = function(url, name, windowFeatures) {
         counter++;
@@ -172,6 +172,9 @@ describe('helpers popupHandler', function() {
 
       var handler = new PopupHandler();
       var popup = handler.preload({});
+      var popup2 = handler.preload({});
+
+      expect(popup).to.be(popup2);
 
       popup.kill();
     });
