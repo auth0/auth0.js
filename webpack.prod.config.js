@@ -57,6 +57,9 @@ module.exports = {
     modules: true,
     reasons: true
   },
+  node: {
+    global: false
+  },
   plugins: [
     new CustomVarLibraryNamePlugin({
       name: nameOverrides

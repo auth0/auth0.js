@@ -1,5 +1,4 @@
 var fs = require('fs');
-var webpack = require('webpack');
 var CustomVarLibraryNamePlugin = require('webpack-custom-var-library-name-plugin');
 
 var path = require('path');
@@ -56,6 +55,9 @@ module.exports = {
   },
   stylus: {
     preferPathResolver: 'webpack'
+  },
+  node: {
+    global: false
   },
   plugins: [
     new CustomVarLibraryNamePlugin({
