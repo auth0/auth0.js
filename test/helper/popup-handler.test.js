@@ -2,7 +2,6 @@ var expect = require('expect.js');
 var stub = require('sinon').stub;
 var WinChan = require('winchan');
 
-var qs = require('qs');
 var PopupHandler = require('../../src/helper/popup-handler');
 
 describe('helpers popupHandler', function() {
@@ -155,7 +154,7 @@ describe('helpers popupHandler', function() {
       popup.kill();
     });
 
-    it('should open the window once', function(done) {
+    it('should open the window once and return the same instance', function(done) {
       var counter = 0;
       global.window.open = function(url, name, windowFeatures) {
         counter++;
@@ -172,9 +171,10 @@ describe('helpers popupHandler', function() {
       };
 
       var handler = new PopupHandler();
+      var popup = handler.preload({});
+      var popup2 = handler.preload({});
 
-      var popup = handler.preload({});
-      var popup = handler.preload({});
+      expect(popup).to.be(popup2);
 
       popup.kill();
     });
