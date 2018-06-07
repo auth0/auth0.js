@@ -1,4 +1,10 @@
 
+## [v9.6.1](https://github.com/auth0/auth0.js/tree/v9.6.1) (2018-06-07)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.6.0...v9.6.1)
+
+**Fixed**
+- Remove global from window helpers [\#764](https://github.com/auth0/auth0.js/pull/764) ([fetis](https://github.com/fetis))
+
 ## [v9.6.0](https://github.com/auth0/auth0.js/tree/v9.6.0) (2018-05-28)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.5.1...v9.6.0)
 
