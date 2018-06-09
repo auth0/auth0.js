@@ -1,4 +1,4 @@
-var objectHelper = require('./object');
+import objectHelper from './object';
 
 function redirect(url) {
   getWindow().location = url;
@@ -23,7 +23,7 @@ function getOrigin() {
   return origin;
 }
 
-module.exports = {
+export default {
   redirect: redirect,
   getDocument: getDocument,
   getWindow: getWindow,

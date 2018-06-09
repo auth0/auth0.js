@@ -1,4 +1,4 @@
-var StorageHandler = require('./storage/handler');
+import StorageHandler from './storage/handler';
 var storage;
 var getStorage = function() {
   if (!storage) {
@@ -7,7 +7,7 @@ var getStorage = function() {
   return storage;
 };
 
-module.exports = {
+export default {
   getItem: function(key) {
     var value = getStorage().getItem(key);
     try {

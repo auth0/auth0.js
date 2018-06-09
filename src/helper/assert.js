@@ -59,7 +59,7 @@ function supportsIsArray() {
   return Array.isArray != null;
 }
 
-module.exports = {
+export default {
   check: check,
   attribute: attribute,
   variable: variable,

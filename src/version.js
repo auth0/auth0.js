@@ -1,1 +1,3 @@
-module.exports = { raw: '9.6.1' };
+export default {
+  raw: '9.6.1'
+};

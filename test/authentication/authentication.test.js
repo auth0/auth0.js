@@ -1,17 +1,16 @@
-var expect = require('expect.js');
+import expect from 'expect.js';
 
-var stub = require('sinon').stub;
-var spy = require('sinon').spy;
+import { stub, spy } from 'sinon';
 
-var RequestMock = require('../mock/request-mock');
+import RequestMock from '../mock/request-mock';
 
-var request = require('superagent');
+import request from 'superagent';
 
-var RequestBuilder = require('../../src/helper/request-builder');
-var windowHelper = require('../../src/helper/window');
-var storage = require('../../src/helper/storage');
-var Authentication = require('../../src/authentication');
-var WebAuth = require('../../src/web-auth');
+import RequestBuilder from '../../src/helper/request-builder';
+import windowHelper from '../../src/helper/window';
+import storage from '../../src/helper/storage';
+import Authentication from '../../src/authentication';
+import WebAuth from '../../src/web-auth';
 
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
@@ -360,7 +359,8 @@ describe('auth0.authentication', function() {
         this.auth0.getSSOData(function(err, result) {
           expect(err).to.be.eql({
             error: 'consent_required',
-            error_description: 'Consent required. When using `getSSOData`, the user has to be authenticated with the following scope: `openid profile email`.'
+            error_description:
+              'Consent required. When using `getSSOData`, the user has to be authenticated with the following scope: `openid profile email`.'
           });
           expect(result).to.be.eql({ sso: false });
           done();
@@ -371,9 +371,7 @@ describe('auth0.authentication', function() {
           error_description: 'foobar'
         });
       });
-      it('returns ssoData object with lastUsedConnection and idTokenPayload.name when there is no idTokenPayload.email', function(
-        done
-      ) {
+      it('returns ssoData object with lastUsedConnection and idTokenPayload.name when there is no idTokenPayload.email', function(done) {
         this.auth0.getSSOData(function(err, result) {
           expect(err).to.be(null);
           expect(result).to.be.eql({
@@ -391,9 +389,7 @@ describe('auth0.authentication', function() {
           idTokenPayload: { sub: 'the-user-id', name: 'last-used-user-name' }
         });
       });
-      it('returns ssoData object with lastUsedConnection and idTokenPayload.email by default', function(
-        done
-      ) {
+      it('returns ssoData object with lastUsedConnection and idTokenPayload.email by default', function(done) {
         this.auth0.getSSOData(function(err, result) {
           expect(err).to.be(null);
           expect(result).to.be.eql({

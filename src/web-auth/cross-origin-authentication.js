@@ -1,12 +1,12 @@
-var urljoin = require('url-join');
+import urljoin from 'url-join';
 
-var windowHelper = require('../helper/window');
-var objectHelper = require('../helper/object');
-var RequestBuilder = require('../helper/request-builder');
-var WebMessageHandler = require('./web-message-handler');
-var responseHandler = require('../helper/response-handler');
-var storage = require('../helper/storage');
-var times = require('../helper/times');
+import windowHelper from '../helper/window';
+import objectHelper from '../helper/object';
+import RequestBuilder from '../helper/request-builder';
+import WebMessageHandler from './web-message-handler';
+import responseHandler from '../helper/response-handler';
+import storage from '../helper/storage';
+import * as times from '../helper/times';
 
 function CrossOriginAuthentication(webAuth, options) {
   this.webAuth = webAuth;
@@ -20,7 +20,10 @@ function getFragment(name) {
   var value = '&' + theWindow.location.hash.substring(1);
   var parts = value.split('&' + name + '=');
   if (parts.length === 2) {
-    return parts.pop().split('&').shift();
+    return parts
+      .pop()
+      .split('&')
+      .shift();
   }
 }
 
@@ -69,30 +72,34 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
   } else {
     authenticateBody.credential_type = 'password';
   }
-  this.request.post(url).withCredentials().send(authenticateBody).end(function(err, data) {
-    if (err) {
-      var errorObject = (err.response && err.response.body) || {
-        error: 'request_error',
-        error_description: JSON.stringify(err)
-      };
-      return responseHandler(cb, { forceLegacyError: true })(errorObject);
-    }
-    var popupMode = options.popup === true;
-    options = objectHelper.blacklist(options, ['password', 'credentialType', 'otp', 'popup']);
-    var authorizeOptions = objectHelper
-      .merge(options)
-      .with({ loginTicket: data.body.login_ticket });
-    var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
-    storage.setItem(key, data.body.co_verifier, { expires: times.MINUTES_15 });
-    if (popupMode) {
-      _this.webMessageHandler.run(
-        authorizeOptions,
-        responseHandler(cb, { forceLegacyError: true })
-      );
-    } else {
-      _this.webAuth.authorize(authorizeOptions);
-    }
-  });
+  this.request
+    .post(url)
+    .withCredentials()
+    .send(authenticateBody)
+    .end(function(err, data) {
+      if (err) {
+        var errorObject = (err.response && err.response.body) || {
+          error: 'request_error',
+          error_description: JSON.stringify(err)
+        };
+        return responseHandler(cb, { forceLegacyError: true })(errorObject);
+      }
+      var popupMode = options.popup === true;
+      options = objectHelper.blacklist(options, ['password', 'credentialType', 'otp', 'popup']);
+      var authorizeOptions = objectHelper
+        .merge(options)
+        .with({ loginTicket: data.body.login_ticket });
+      var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
+      storage.setItem(key, data.body.co_verifier, { expires: times.MINUTES_15 });
+      if (popupMode) {
+        _this.webMessageHandler.run(
+          authorizeOptions,
+          responseHandler(cb, { forceLegacyError: true })
+        );
+      } else {
+        _this.webAuth.authorize(authorizeOptions);
+      }
+    });
 };
 
 function tryGetVerifier(theWindow, key) {
@@ -135,4 +142,4 @@ CrossOriginAuthentication.prototype.callback = function() {
   theWindow.parent.postMessage({ type: 'ready' }, targetOrigin);
 };
 
-module.exports = CrossOriginAuthentication;
+export default CrossOriginAuthentication;

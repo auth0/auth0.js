@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
-var request = require('superagent');
-var base64Url = require('./base64_url');
-var version = require('../version');
+import request from 'superagent';
+import base64Url from './base64_url';
+import version from '../version';
 
 // ------------------------------------------------ RequestWrapper
 
@@ -113,4 +113,4 @@ RequestBuilder.prototype.patch = function(url, options) {
   return new RequestObj(this.setCommonConfiguration(request.patch(url), options));
 };
 
-module.exports = RequestBuilder;
+export default RequestBuilder;

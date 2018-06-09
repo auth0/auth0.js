@@ -1,6 +1,6 @@
-var expect = require('expect.js');
+import expect from 'expect.js';
 
-var responseHandler = require('../../src/helper/response-handler');
+import responseHandler from '../../src/helper/response-handler';
 
 describe('helpers responseHandler', function() {
   it('should return default error', function(done) {

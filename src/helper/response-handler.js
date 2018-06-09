@@ -1,5 +1,5 @@
-var error = require('./error');
-var objectHelper = require('./object');
+import error from './error';
+import objectHelper from './object';
 
 function wrapCallback(cb, options) {
   options = options || {};
@@ -79,4 +79,4 @@ function wrapCallback(cb, options) {
   };
 }
 
-module.exports = wrapCallback;
+export default wrapCallback;

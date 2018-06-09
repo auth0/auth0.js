@@ -1,6 +1,6 @@
-var random = require('../helper/random');
-var storage = require('../helper/storage');
-var times = require('../helper/times');
+import random from '../helper/random';
+import storage from '../helper/storage';
+import * as times from '../helper/times';
 
 var DEFAULT_NAMESPACE = 'com.auth0.auth.';
 
@@ -73,4 +73,4 @@ TransactionManager.prototype.clearTransaction = function(state) {
   storage.removeItem(this.namespace + state);
 };
 
-module.exports = TransactionManager;
+export default TransactionManager;

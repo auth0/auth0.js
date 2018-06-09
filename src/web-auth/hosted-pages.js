@@ -1,13 +1,13 @@
-var urljoin = require('url-join');
-var qs = require('qs');
+import urljoin from 'url-join';
+import qs from 'qs';
 
-var UsernamePassword = require('./username-password');
-var RequestBuilder = require('../helper/request-builder');
-var responseHandler = require('../helper/response-handler');
-var objectHelper = require('../helper/object');
-var windowHelper = require('../helper/window');
-var Warn = require('../helper/warn');
-var assert = require('../helper/assert');
+import UsernamePassword from './username-password';
+import RequestBuilder from '../helper/request-builder';
+import responseHandler from '../helper/response-handler';
+import objectHelper from '../helper/object';
+import windowHelper from '../helper/window';
+import Warn from '../helper/warn';
+import assert from '../helper/assert';
 
 function HostedPages(client, options) {
   this.baseOptions = options;
@@ -127,7 +127,10 @@ HostedPages.prototype.getSSOData = function(withActiveDirectories, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'user', 'ssodata', params);
 
-  return this.request.get(url, { noHeaders: true }).withCredentials().end(responseHandler(cb));
+  return this.request
+    .get(url, { noHeaders: true })
+    .withCredentials()
+    .end(responseHandler(cb));
 };
 
-module.exports = HostedPages;
+export default HostedPages;

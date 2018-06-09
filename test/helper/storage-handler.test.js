@@ -1,11 +1,10 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
-var spy = require('sinon').spy;
+import expect from 'expect.js';
+import { stub, spy } from 'sinon';
 
-var windowHandler = require('../../src/helper/window');
-var StorageHandler = require('../../src/helper/storage/handler');
-var CookieStorage = require('../../src/helper/storage/cookie');
-var DummyStorage = require('../../src/helper/storage/dummy');
+import windowHandler from '../../src/helper/window';
+import StorageHandler from '../../src/helper/storage/handler';
+import CookieStorage from '../../src/helper/storage/cookie';
+import DummyStorage from '../../src/helper/storage/dummy';
 
 function MockLocalStorage() {}
 MockLocalStorage.prototype.getItem = function() {
