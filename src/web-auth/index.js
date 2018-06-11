@@ -664,7 +664,7 @@ WebAuth.prototype.login = function(options, cb) {
  * Logs in the user by verifying the verification code (OTP) using the cross origin authentication (/co/authenticate) flow. You can use either `phoneNumber` or `email` to identify the user.
  * This only works when 3rd party cookies are enabled in the browser. After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
  *
- * @method login
+ * @method passwordlessLogin
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
  * @param {String} [options.phoneNumber] Phone Number (mutually exclusive with email)
  * @param {String} [options.email] Email (mutually exclusive with username)
