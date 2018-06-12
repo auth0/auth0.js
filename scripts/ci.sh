@@ -54,9 +54,10 @@ bower_release()
     verbose "Deploying $VERSION to git"
 
     LAST_COMMIT=$(git log -1 --pretty=%B)
-    grep -v -e '^build$' -e '^build/$' .gitignore > /tmp/.gitignore
+    # removing dist from gitignore so it gets pushed to the tag
+    grep -v -e '^dist$' -e '^dist/$' .gitignore > /tmp/.gitignore
     mv /tmp/.gitignore .gitignore
-    git add --force build/*
+    git add --force dist/*
     git commit -am "$TAG_NAME"
     git tag "$TAG_NAME" -m "$LAST_COMMIT"
     git push origin $TAG_NAME
@@ -91,8 +92,8 @@ yarn run lint
 yarn run ci:test
 
 # Clean
-rm -f build/*.js
-rm -f build/*.map
+rm -rf dist
+rm -rf build
 
 # Build
 yarn run build

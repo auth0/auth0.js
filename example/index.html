@@ -4,7 +4,6 @@
 <head>
   <title>Auth0.js Demo Examples</title>
   <link rel="stylesheet" type="text/css" href="//cdn.auth0.com/styleguide/1/index.css">
-  <script src="/webpack-dev-server.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script src="/auth0.js"></script>
   <script src="/cordova-auth0-plugin.js"></script>
@@ -199,9 +198,11 @@
       selector: '#console'
     });
 
+    var REDIRECT_URL = window.location.origin;
+
     var webAuth = new auth0.WebAuth({
       domain: 'brucke.auth0.com',
-      redirectUri: 'https://localhost:3000/example/',
+      redirectUri: REDIRECT_URL,
       clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
       responseType: 'token id_token',
       plugins: [
@@ -211,7 +212,7 @@
 
     var webAuthPasswordless = new auth0.WebAuth({
       domain: 'brucke.auth0.com',
-      redirectUri: 'https://localhost:3000/example/',
+      redirectUri: REDIRECT_URL,
       clientID: 'VZUvmnj3pd9yNgq8BjX4YA8Km14jQ0PN',
       responseType: 'token'
     });
@@ -329,7 +330,7 @@
     $('.popup-login-hosted').click(function (e) {
       e.preventDefault();
       webAuth.popup.authorize({
-        redirectURI: 'https://localhost:3000/example/callback_popup.html'
+        redirectURI: REDIRECT_URL + '/callback_popup.html'
       }, htmlConsole.dumpCallback.bind(htmlConsole));
     });
 
@@ -345,14 +346,14 @@
 
     $('.logout').click(function (e) {
       e.preventDefault();
-      webAuth.logout({ returnTo: 'https://localhost:3000/example' });
+      webAuth.logout({ returnTo: REDIRECT_URL });
     });
 
     $('.renew-auth').click(function (e) {
       e.preventDefault();
       webAuth.renewAuth({
         usePostMessage: true,
-        redirectURI: 'https://localhost:3000/example/callback.html'
+        redirectURI: REDIRECT_URL + '/callback.html'
       },
         htmlConsole.dumpCallback.bind(htmlConsole)
       );
