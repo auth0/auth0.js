@@ -1,9 +1,7 @@
 {
   "//": "experimental bower support",
   "name": "auth0.js",
-  "main": "build/auth0.js",
-  "dependencies": { },
-  "ignore": [
-    "test"
-  ]
+  "main": "dist/auth0.js",
+  "dependencies": {},
+  "ignore": ["test"]
 }

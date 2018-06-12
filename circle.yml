@@ -20,4 +20,4 @@ test:
     - yarn run ci:coverage
 general:
   artifacts:
-    - build
+    - dist

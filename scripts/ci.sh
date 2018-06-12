@@ -92,8 +92,8 @@ yarn run lint
 yarn run ci:test
 
 # Clean
-rm -f dist/*.js
-rm -f dist/*.map
+rm -rf dist
+rm -rf build
 
 # Build
 yarn run build

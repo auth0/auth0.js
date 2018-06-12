@@ -12,6 +12,8 @@ const pkg = require('./package.json');
 
 const isProduction = argv.prod === true;
 
+const OUTPUT_PATH = 'dist';
+
 const getPlugins = isProduction => {
   return [
     resolve({
@@ -57,7 +59,7 @@ export default [
     input: 'plugins/cordova/index.js',
     output: {
       name: 'CordovaAuth0Plugin',
-      file: 'dist/cordova-auth0-plugin.min.js',
+      file: `${OUTPUT_PATH}/cordova-auth0-plugin.min.js`,
       format: 'umd',
       sourcemap: true,
       exports: 'default'
@@ -69,7 +71,7 @@ export default [
     input: 'src/index.js',
     output: {
       name: 'auth0',
-      file: 'dist/auth0.js',
+      file: `${OUTPUT_PATH}/auth0.js`,
       format: 'umd',
       sourcemap: isProduction ? false : 'inline',
       exports: 'named'
@@ -89,7 +91,7 @@ export default [
     input: 'plugins/cordova/index.js',
     output: {
       name: 'CordovaAuth0Plugin',
-      file: 'dist/cordova-auth0-plugin.js',
+      file: `${OUTPUT_PATH}/cordova-auth0-plugin.js`,
       format: 'umd',
       sourcemap: isProduction ? false : 'inline',
       exports: 'default'

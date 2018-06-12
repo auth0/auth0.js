@@ -9,6 +9,7 @@
   "files": [
     "src",
     "plugins",
+    "build",
     "dist"
   ],
   "keywords": [
@@ -24,7 +25,7 @@
   },
   "scripts": {
     "start": "rollup -c --watch",
-    "build": "rm -rf dist && rollup -c --prod",
+    "build": "rm -rf dist && rm -rf build && rollup -c --prod && cp -rf dist build",
     "test": "mocha test/**/*.test.js test/setup.js",
     "test:integration": "mocha-parallel-tests --max-parallel 2 integration/**/*.test.js",
     "test:watch": "mocha --watch -R min test/**/*.test.js  test/setup.js",
