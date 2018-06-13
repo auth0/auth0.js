@@ -191,7 +191,7 @@ For auth0 related questions/support please use the [Support Center](https://supp
 
 ## Author
 
-[Auth0](auth0.com)
+[Auth0](https://auth0.com)
 
 ## License
 
