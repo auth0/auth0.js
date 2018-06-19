@@ -128,7 +128,6 @@ Popup.prototype.callback = function(options) {
  *
  * @method authorize
  * @param {Object} options
- * @param {String} [options.domain] your Auth0 domain
  * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} options.redirectUri url that the Auth0 will redirect after Auth with the Authorization Response
  * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
