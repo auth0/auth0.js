@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "codecov": "^1.0.1",
-    "component-cdn-uploader": "auth0/component-cdn-uploader#v1.3.0",
+    "component-cdn-uploader": "auth0/component-cdn-uploader#v2.1.0",
     "eslint": "3.12.2",
     "eslint-config-auth0-base": "6.0.0",
     "eslint-config-prettier": "^2.1.0",
@@ -87,12 +87,16 @@
     "sinon": "^1.17.6",
     "yargs": "^11.0.0"
   },
-  "cdn-component": {
+  "ccu": {
     "name": "auth0",
     "cdn": "https://cdn.auth0.com",
     "mainBundleFile": "auth0.min.js",
     "bucket": "assets.us.auth0.com",
-    "localPath": "dist"
+    "localPath": "dist",
+    "digest": {
+      "hashes": ["sha384"],
+      "extensions": [".js"]
+    }
   },
   "lint-staged": {
     "{src,test, plugins,integration}/**/*.js": [
