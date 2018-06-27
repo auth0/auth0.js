@@ -94,8 +94,12 @@
     "bucket": "assets.us.auth0.com",
     "localPath": "dist",
     "digest": {
-      "hashes": ["sha384"],
-      "extensions": [".js"]
+      "hashes": [
+        "sha384"
+      ],
+      "extensions": [
+        ".js"
+      ]
     }
   },
   "lint-staged": {

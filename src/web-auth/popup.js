@@ -110,7 +110,8 @@ Popup.prototype.callback = function(options) {
     if (popupOrigin !== originUrl) {
       return cb({
         error: 'origin_mismatch',
-        error_description: "The popup's origin (" +
+        error_description:
+          "The popup's origin (" +
           popupOrigin +
           ') should match the `popupOrigin` parameter (' +
           originUrl +
@@ -279,22 +280,12 @@ Popup.prototype.passwordlessVerify = function(options, cb) {
 Popup.prototype.signupAndLogin = function(options, cb) {
   var _this = this;
 
-  // Preload popup to avoid the browser to block it since the login happens later
-  var popupHandler = this.getPopupHandler(options, true);
-  options.popupHandler = popupHandler;
-
-  return this.client.dbConnection.signup(
-    objectHelper.blacklist(options, ['popupHandler']),
-    function(err) {
-      if (err) {
-        if (popupHandler._current_popup) {
-          popupHandler._current_popup.kill();
-        }
-        return cb(err);
-      }
-      _this.loginWithCredentials(options, cb);
+  return this.client.dbConnection.signup(options, function(err) {
+    if (err) {
+      return cb(err);
     }
-  );
+    _this.loginWithCredentials(options, cb);
+  });
 };
 
 module.exports = Popup;
