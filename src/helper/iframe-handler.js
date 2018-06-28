@@ -77,7 +77,6 @@ IframeHandler.prototype.timeoutHandler = function() {
 
 IframeHandler.prototype.destroy = function() {
   var _this = this;
-  var _window = windowHelper.getWindow();
 
   clearTimeout(this.timeoutHandle);
 
@@ -87,7 +86,11 @@ IframeHandler.prototype.destroy = function() {
       _this.proxyEventListener,
       false
     );
-    _window.document.body.removeChild(_this.iframe);
+
+  if (_this.iframe.parentNode) {
+    _this.iframe.parentNode.removeChild(_this.iframe);
+  }
+
   }, 0);
 };
 
