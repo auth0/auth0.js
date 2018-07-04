@@ -1,7 +1,6 @@
 import expect from 'expect.js';
 import { stub } from 'sinon';
 
-import WebAuth from '../../src/web-auth';
 import windowHelper from '../../src/helper/window';
 import IframeHandler from '../../src/helper/iframe-handler';
 
@@ -89,13 +88,13 @@ function stubWindow(eventType, data) {
       },
       body: {
         removeChild: function(ele) {
-          expect(ele).to.be(iFrame);
+          expect(ele.id).to.be(iFrame.id);
           expect(fauxWindow.mockObjectStore.iframe).to.be(iFrame);
           fauxWindow.mockObjectStore.iframe = null;
         },
         appendChild: function(ele) {
           expect(fauxWindow.mockObjectStore.iframe).to.be(null);
-          expect(ele.id).to.be('the_iframe');
+          expect(ele.id).to.be(iFrame.id);
           fauxWindow.mockObjectStore.iframe = ele;
         }
       }
@@ -109,7 +108,7 @@ function stubWindow(eventType, data) {
   return iFrame;
 }
 
-describe.skip('helpers iframeHandler', function() {
+describe('helpers iframeHandler', function() {
   context('with context', function() {
     afterEach(function() {
       windowHelper.getWindow.restore();
@@ -130,7 +129,7 @@ describe.skip('helpers iframeHandler', function() {
     });
 
     it('should callback after a timeout', function() {
-      var iframe = stubWindow('message');
+      stubWindow('message');
       var timeOutCalled = false;
       var iframeHandler = new IframeHandler({
         timeout: 10,
@@ -188,47 +187,40 @@ describe.skip('helpers iframeHandler', function() {
       expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
     });
 
-    it('should call an event validator for a message event on the window', function() {
-      var iframe = stubWindow('message');
-      var validatorCalled = false;
+    it('should call an event validator for a message event on the window', function(done) {
+      stubWindow('message');
       var iframeHandler = new IframeHandler({
         eventListenerType: 'message',
         eventValidator: {
           isValid: function(eventData) {
-            validatorCalled = true;
             expect(eventData.event).to.eql({ id: 'my-id' });
-
             expect(eventData.sourceObject).to.eql(windowHelper.getWindow());
+            done();
           }
         },
         callback: function() {}
       });
 
       iframeHandler.init();
-      expect(validatorCalled).to.be(false);
       windowHelper.getWindow().emitEvent('message', { id: 'my-id' });
-      expect(validatorCalled).to.be(true);
     });
 
-    it('should call an event validator for a load event on the Iframe', function() {
+    it('should call an event validator for a load event on the Iframe', function(done) {
       var iframe = stubWindow('load');
-      var validatorCalled = false;
       var iframeHandler = new IframeHandler({
         eventListenerType: 'load',
         eventValidator: {
           isValid: function(eventData) {
-            validatorCalled = true;
             expect(eventData.event).to.eql({ id: 'my-id-2' });
             expect(eventData.sourceObject).to.eql(iframe);
+            done();
           }
         },
         callback: function() {}
       });
 
       iframeHandler.init();
-      expect(validatorCalled).to.be(false);
       iframe.emitEvent('load', { id: 'my-id-2' });
-      expect(validatorCalled).to.be(true);
     });
 
     it('should not destroy or callback if an event is not valid', function() {
