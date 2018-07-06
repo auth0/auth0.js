@@ -541,7 +541,7 @@ WebAuth.prototype.signup = function(options, cb) {
  * After that, you'll have to use the {@link parseHash} function at the specified `redirectUri`.
  *
  * @method authorize
- * @param {Object} options
+ * @param {Object} [options]
  * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} options.redirectUri url that the Auth0 will redirect after Auth with the Authorization Response
  * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
