@@ -52,11 +52,11 @@
     "winchan": "^0.2.0"
   },
   "devDependencies": {
+    "@auth0/component-cdn-uploader": "auth0/component-cdn-uploader#v2.1.1",
     "babel-plugin-istanbul": "^4.1.6",
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
     "codecov": "^3.0.2",
-    "component-cdn-uploader": "auth0/component-cdn-uploader#v2.1.0",
     "cross-env": "^5.1.6",
     "eslint": "^4.19.1",
     "eslint-config-auth0-base": "^13.1.0",
@@ -99,8 +99,12 @@
     "bucket": "assets.us.auth0.com",
     "localPath": "dist",
     "digest": {
-      "hashes": ["sha384"],
-      "extensions": [".js"]
+      "hashes": [
+        "sha384"
+      ],
+      "extensions": [
+        ".js"
+      ]
     }
   },
   "lint-staged": {
