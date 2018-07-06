@@ -1,5 +1,5 @@
-var expect = require('expect.js');
-var base64url = require('../../src/helper/base64_url');
+import expect from 'expect.js';
+import base64url from '../../src/helper/base64_url';
 
 var tests = [
   { decoded: 'test', encoded: 'dGVzdA==' },

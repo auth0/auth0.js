@@ -1,4 +1,4 @@
-var version = require('../../src/version');
+import version from '../../src/version';
 
 function MockPlugin(configuration) {
   configuration = configuration || {};

@@ -1,6 +1,6 @@
-var storage = require('./storage');
+import storage from './storage';
 
-module.exports = {
+export default {
   set: function(connection, sub) {
     var ssodata = {
       lastUsedConnection: connection,

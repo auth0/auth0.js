@@ -1,11 +1,11 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
+import expect from 'expect.js';
+import { stub } from 'sinon';
 
-var RequestMock = require('../mock/request-mock');
+import RequestMock from '../mock/request-mock';
 
-var request = require('superagent');
+import request from 'superagent';
 
-var Authentication = require('../../src/authentication');
+import Authentication from '../../src/authentication';
 
 describe('auth0.authentication', function() {
   context('passwordless start options', function() {

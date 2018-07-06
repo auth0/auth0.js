@@ -1,4 +1,4 @@
-var windowHelper = require('./window');
+import windowHelper from './window';
 
 function IframeHandler(options) {
   this.url = options.url;
@@ -49,9 +49,9 @@ IframeHandler.prototype.init = function() {
   this.eventSourceObject.addEventListener(this.eventListenerType, this.proxyEventListener, false);
 
   _window.document.body.appendChild(this.iframe);
-  
+
   this.iframe.src = this.url;
-  
+
   this.timeoutHandle = setTimeout(function() {
     _this.timeoutHandler();
   }, this.timeout);
@@ -91,4 +91,4 @@ IframeHandler.prototype.destroy = function() {
   }, 0);
 };
 
-module.exports = IframeHandler;
+export default IframeHandler;

@@ -9,7 +9,7 @@ function invalidToken(description) {
   return buildResponse('invalid_token', description);
 }
 
-module.exports = {
+export default {
   buildResponse: buildResponse,
   invalidToken: invalidToken
 };

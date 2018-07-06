@@ -1,10 +1,9 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
-var spy = require('sinon').spy;
+import expect from 'expect.js';
+import { stub, spy } from 'sinon';
 
-var windowHandler = require('../../src/helper/window');
-var StorageHandler = require('../../src/helper/storage/handler');
-var storage = require('../../src/helper/storage');
+import windowHandler from '../../src/helper/window';
+import StorageHandler from '../../src/helper/storage/handler';
+import storage from '../../src/helper/storage';
 
 describe('helpers storage', function() {
   describe('setItem', function() {
