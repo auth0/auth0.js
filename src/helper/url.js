@@ -6,6 +6,6 @@ function extractOrigin(url) {
   return url;
 }
 
-module.exports = {
+export default {
   extractOrigin: extractOrigin
 };

@@ -1,8 +1,8 @@
-var urljoin = require('url-join');
+import urljoin from 'url-join';
 
-var objectHelper = require('../helper/object');
-var assert = require('../helper/assert');
-var responseHandler = require('../helper/response-handler');
+import objectHelper from '../helper/object';
+import assert from '../helper/assert';
+import responseHandler from '../helper/response-handler';
 
 function DBConnection(request, options) {
   this.baseOptions = options;
@@ -59,7 +59,10 @@ DBConnection.prototype.signup = function(options, cb) {
     body.user_metadata = metadata;
   }
 
-  return this.request.post(url).send(body).end(responseHandler(cb));
+  return this.request
+    .post(url)
+    .send(body)
+    .end(responseHandler(cb));
 };
 
 /**
@@ -97,7 +100,10 @@ DBConnection.prototype.changePassword = function(options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
-  return this.request.post(url).send(body).end(responseHandler(cb));
+  return this.request
+    .post(url)
+    .send(body)
+    .end(responseHandler(cb));
 };
 
-module.exports = DBConnection;
+export default DBConnection;

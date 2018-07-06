@@ -1,17 +1,17 @@
-var urljoin = require('url-join');
-var qs = require('qs');
+import urljoin from 'url-join';
+import qs from 'qs';
 
-var RequestBuilder = require('../helper/request-builder');
-var objectHelper = require('../helper/object');
-var assert = require('../helper/assert');
-var ssodata = require('../helper/ssodata');
-var windowHelper = require('../helper/window');
-var responseHandler = require('../helper/response-handler');
-var parametersWhitelist = require('../helper/parameters-whitelist');
-var Warn = require('../helper/warn');
-
-var PasswordlessAuthentication = require('./passwordless-authentication');
-var DBConnection = require('./db-connection');
+import RequestBuilder from '../helper/request-builder';
+import objectHelper from '../helper/object';
+import assert from '../helper/assert';
+import ssodata from '../helper/ssodata';
+import windowHelper from '../helper/window';
+import responseHandler from '../helper/response-handler';
+import parametersWhitelist from '../helper/parameters-whitelist';
+import Warn from '../helper/warn';
+import WebAuth from '../web-auth/index';
+import PasswordlessAuthentication from './passwordless-authentication';
+import DBConnection from './db-connection';
 
 /**
  * Creates a new Auth0 Authentication API client
@@ -68,9 +68,8 @@ function Authentication(auth0, options) {
   /* eslint-enable */
 
   this.baseOptions = options;
-  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
-    ? this.baseOptions._sendTelemetry
-    : true;
+  this.baseOptions._sendTelemetry =
+    this.baseOptions._sendTelemetry === false ? this.baseOptions._sendTelemetry : true;
 
   this.baseOptions.rootUrl = 'https://' + this.baseOptions.domain;
 
@@ -319,7 +318,10 @@ Authentication.prototype.oauthToken = function(options, cb) {
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
   body = parametersWhitelist.oauthTokenParams(this.warn, body);
 
-  return this.request.post(url).send(body).end(responseHandler(cb));
+  return this.request
+    .post(url)
+    .send(body)
+    .end(responseHandler(cb));
 };
 
 /**
@@ -364,7 +366,10 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
 
   body.grant_type = body.grant_type || 'password';
 
-  return this.request.post(url).send(body).end(responseHandler(cb));
+  return this.request
+    .post(url)
+    .send(body)
+    .end(responseHandler(cb));
 };
 
 /**
@@ -377,8 +382,6 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
 Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
   /* istanbul ignore if  */
   if (!this.auth0) {
-    // we can't import this in the constructor because it'd be a ciclic dependency
-    var WebAuth = require('../web-auth/index'); // eslint-disable-line
     this.auth0 = new WebAuth(this.baseOptions);
   }
   var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
@@ -469,7 +472,7 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
  *
  * @method delegation
  * @param {Object} options
-  * @param {String} [options.clientID] the Client ID found on your Application settings page
+ * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} options.grantType  grant type used for delegation. The only valid value is `urn:ietf:params:oauth:grant-type:jwt-bearer`
  * @param {String} [options.idToken] valid token of the user issued after Auth. If no `refresh_token` is provided this parameter is required
  * @param {String} [options.refreshToken] valid refresh token of the user issued after Auth. If no `id_token` is provided this parameter is required
@@ -499,7 +502,10 @@ Authentication.prototype.delegation = function(options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
-  return this.request.post(url).send(body).end(responseHandler(cb));
+  return this.request
+    .post(url)
+    .send(body)
+    .end(responseHandler(cb));
 };
 
 /**
@@ -519,4 +525,4 @@ Authentication.prototype.getUserCountry = function(cb) {
   return this.request.get(url).end(responseHandler(cb));
 };
 
-module.exports = Authentication;
+export default Authentication;

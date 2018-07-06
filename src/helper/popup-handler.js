@@ -1,10 +1,10 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
-var WinChan = require('winchan');
+import WinChan from 'winchan';
 
-var windowHandler = require('./window');
-var objectHelper = require('./object');
-var qs = require('qs');
+import windowHandler from './window';
+import objectHelper from './object';
+import qs from 'qs';
 
 function PopupHandler() {
   this._current_popup = null;
@@ -18,13 +18,15 @@ PopupHandler.prototype.calculatePosition = function(options) {
   var screenX = typeof _window.screenX !== 'undefined' ? _window.screenX : _window.screenLeft;
   var screenY = typeof _window.screenY !== 'undefined' ? _window.screenY : _window.screenTop;
 
-  var outerWidth = typeof _window.outerWidth !== 'undefined'
-    ? _window.outerWidth
-    : _window.document.body.clientWidth;
+  var outerWidth =
+    typeof _window.outerWidth !== 'undefined'
+      ? _window.outerWidth
+      : _window.document.body.clientWidth;
 
-  var outerHeight = typeof _window.outerHeight !== 'undefined'
-    ? _window.outerHeight
-    : _window.document.body.clientHeight;
+  var outerHeight =
+    typeof _window.outerHeight !== 'undefined'
+      ? _window.outerHeight
+      : _window.document.body.clientHeight;
 
   var left = (outerWidth - width) / 2;
   var top = (outerHeight - height) / 2;
@@ -84,4 +86,4 @@ PopupHandler.prototype.load = function(url, relayUrl, options, cb) {
   return popup;
 };
 
-module.exports = PopupHandler;
+export default PopupHandler;

@@ -12,4 +12,4 @@ Warn.prototype.warning = function(message) {
   console.warn(message);
 };
 
-module.exports = Warn;
+export default Warn;

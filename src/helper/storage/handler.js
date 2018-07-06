@@ -1,7 +1,7 @@
-var windowHandler = require('../window');
-var DummyStorage = require('./dummy');
-var CookieStorage = require('./cookie');
-var Warn = require('../warn');
+import windowHandler from '../window';
+import DummyStorage from './dummy';
+import CookieStorage from './cookie';
+import Warn from '../warn';
 
 function StorageHandler() {
   this.warn = new Warn({});
@@ -62,4 +62,4 @@ StorageHandler.prototype.setItem = function(key, value, options) {
   }
 };
 
-module.exports = StorageHandler;
+export default StorageHandler;

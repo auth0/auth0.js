@@ -1,8 +1,8 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
+import expect from 'expect.js';
+import { stub } from 'sinon';
 
-var storage = require('../../src/helper/storage');
-var ssodata = require('../../src/helper/ssodata');
+import storage from '../../src/helper/storage';
+import ssodata from '../../src/helper/ssodata';
 
 describe('helpers', function() {
   describe('ssodata', function() {
