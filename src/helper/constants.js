@@ -70,16 +70,25 @@ const constants = {
     },
     toSnakeCase: {
       auth0Client: 'auth0Client',
-      authParams: 'authParams'
+      authParams: 'authParams',
+      returnTo: 'returnTo'
     }
   }
 };
 
 const paramsArray = {
-  toSnakeCaseBaseParams: [constants.params.toSnakeCase.auth0Client]
+  toSnakeCaseAuthParams: [
+    constants.params.toSnakeCase.auth0Client,
+    constants.params.toSnakeCase.authParams
+  ],
+  toSnakeCaseBaseParams: [constants.params.toSnakeCase.auth0Client],
+  toSnakeCaseReturnParams: [
+    constants.params.toSnakeCase.auth0,
+    constants.params.toSnakeCase.returnTo
+  ]
 };
 
 export default {
   constants: constants,
-  paramAsrray: paramsArray
+  paramsArray: paramsArray
 };

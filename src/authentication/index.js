@@ -193,7 +193,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
     params.auth0Client = this.request.getTelemetryData();
   }
 
-  params = objectHelper.toSnakeCase(params, ['auth0Client', 'returnTo']);
+  params = objectHelper.toSnakeCase(params, paramsArray.toSnakeCaseReturnParams);
 
   qString = qs.stringify(objectHelper.blacklist(params, ['federated']));
   if (

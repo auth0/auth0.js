@@ -134,7 +134,7 @@ PasswordlessAuthentication.prototype.start = function(options, cb) {
   delete body.responseType;
   delete body.scope;
 
-  body = objectHelper.toSnakeCase(body, ['auth0Client', 'authParams']);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseAuthParams);
 
   return this.request
     .post(url)
