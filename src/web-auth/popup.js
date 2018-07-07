@@ -10,7 +10,6 @@ import windowHelper from '../helper/window';
 import Warn from '../helper/warn';
 import TransactionManager from './transaction-manager';
 import CrossOriginAuthentication from './cross-origin-authentication';
-import constants from '../helper/constants';
 import paramsArray from '../helper/param-constants';
 
 function Popup(webAuth, options) {
@@ -153,7 +152,7 @@ Popup.prototype.authorize = function(options, cb) {
 
   var params = objectHelper
     .merge(this.baseOptions, paramsArray.pluginParams)
-    .with(objectHelper.blacklist(options, paramsArray.blacklistPopupParams));
+    .with(objectHelper.blacklist(options, paramsArray.blacklist.popup.handler.base));
 
   assert.check(
     params,
@@ -215,12 +214,7 @@ Popup.prototype.loginWithCredentials = function(options, cb) {
   options.popup = true;
   options = objectHelper
     .merge(this.baseOptions, paramsArray.loginWithCredentialsParams)
-    .with(
-      objectHelper.blacklist(options, [
-        constants.blacklist.popupHandler,
-        constants.blacklist.connection
-      ])
-    );
+    .with(objectHelper.blacklist(options, paramsArray.blacklist.popup.handler.connection));
   options = this.transactionManager.process(options);
   this.crossOriginAuthentication.login(options, cb);
 };
@@ -240,7 +234,7 @@ Popup.prototype.loginWithCredentials = function(options, cb) {
 Popup.prototype.passwordlessVerify = function(options, cb) {
   var _this = this;
   return this.client.passwordless.verify(
-    objectHelper.blacklist(options, paramsArray.blacklistPopupParams),
+    objectHelper.blacklist(options, paramsArray.blacklist.popup.handler.base),
     function(err) {
       if (err) {
         return cb(err);
@@ -280,7 +274,7 @@ Popup.prototype.signupAndLogin = function(options, cb) {
   options.popupHandler = popupHandler;
 
   return this.client.dbConnection.signup(
-    objectHelper.blacklist(options, paramsArray.blacklistPopupParams),
+    objectHelper.blacklist(options, paramsArray.blacklist.popup.handler.base),
     function(err) {
       if (err) {
         if (popupHandler._current_popup) {

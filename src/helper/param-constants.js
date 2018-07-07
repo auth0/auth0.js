@@ -1,6 +1,51 @@
 import params from '../helper/constants';
 
 const paramsArray = {
+  blacklist: {
+    popup: {
+      handler: {
+        base: [params.blacklist.popupHandler],
+        connection: [params.blacklist.popupHandler, params.blacklist.connection]
+      },
+      auth: [
+        params.blacklist.domain,
+        params.blacklist.popupOptions,
+        params.blacklist.username,
+        params.blacklist.tenant,
+        params.blacklist.timeout
+      ],
+      crossOrigin: [
+        params.blacklist.password,
+        params.blacklist.credentialType,
+        params.blacklist.otp,
+        params.blacklist.popup
+      ]
+    },
+    post: {
+      base: [
+        params.blacklist.postMessageDataType,
+        params.blacklist.tenant,
+        params.blacklist.usePostMessage
+      ],
+      origin: [
+        params.blacklist.postMessageDataType,
+        params.blacklist.postMessageOrigin,
+        params.blacklist.tenant,
+        params.blacklist.usePostMessage
+      ]
+    },
+    metadata: [
+      params.blacklist.scope,
+      params.blacklist.userMetadata,
+      params.blacklist.user_metadata
+    ],
+    login: [
+      params.blacklist.connection,
+      params.blacklist.email,
+      params.blacklist.phoneNumber,
+      params.blacklist.verificationCode
+    ]
+  },
   resourceOwnerloginParams: [params.oauth2.clientID, params.oauth2.scope],
   passwordlessAuthParams: [
     params.oauth2.clientID,
@@ -124,36 +169,6 @@ const paramsArray = {
   ],
   oauthUrlParams: [params.oauth2.clientID, params.oauth2.scope, params.oauth2.audience],
   baseParams: [params.oauth2.clientID],
-  blacklistAuthParams: [
-    params.blacklist.domain,
-    params.blacklist.popupOptions,
-    params.blacklist.username,
-    params.blacklist.tenant,
-    params.blacklist.timeout
-  ],
-  blacklistDBParams: [
-    params.blacklist.scope,
-    params.blacklist.userMetadata,
-    params.blacklist.user_metadata
-  ],
-  blacklistPopupParams: [params.blacklist.popupHandler],
-  blacklistPostMessageParams: [
-    params.blacklist.postMessageDataType,
-    params.blacklist.tenant,
-    params.blacklist.usePostMessage
-  ],
-  blacklistPostMessageOriginParams: [
-    params.blacklist.postMessageDataType,
-    params.blacklist.postMessageOrigin,
-    params.blacklist.tenant,
-    params.blacklist.usePostMessage
-  ],
-  blacklistUnhostedLoginParams: [
-    params.blacklist.connection,
-    params.blacklist.email,
-    params.blacklist.phoneNumber,
-    params.blacklist.verificationCode
-  ],
   toSnakeCaseAuthParams: [params.toSnakeCase.auth0Client, params.toSnakeCase.authParams],
   toSnakeCaseBaseParams: [params.toSnakeCase.auth0Client]
 };

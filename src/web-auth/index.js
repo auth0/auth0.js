@@ -396,7 +396,7 @@ WebAuth.prototype.renewAuth = function(options, cb) {
 
   params.prompt = 'none';
 
-  params = objectHelper.blacklist(params, paramsArray.blacklistPostMessageOriginParams);
+  params = objectHelper.blacklist(params, paramsArray.blacklist.post.origin);
 
   handler = SilentAuthenticationHandler.create({
     authenticationUrl: this.client.buildAuthorizeUrl(params),
@@ -443,7 +443,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
   assert.check(params, { type: 'object', message: 'options parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
-  params = objectHelper.blacklist(params, paramsArray.blacklistPostMessageParams);
+  params = objectHelper.blacklist(params, paramsArray.blacklist.post.base);
   this.webMessageHandler.run(params, cb);
 };
 
@@ -548,7 +548,7 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
   var _this = this;
 
   return this.client.dbConnection.signup(
-    objectHelper.blacklist(options, paramsArray.blacklistPopupParams),
+    objectHelper.blacklist(options, paramsArray.blacklist.popup.handler.base),
     function(err) {
       if (err) {
         return cb(err);
@@ -622,7 +622,7 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
         username: params.email || params.phoneNumber,
         otp: params.verificationCode
       },
-      objectHelper.blacklist(params, paramsArray.blacklistUnhostedLoginParams)
+      objectHelper.blacklist(params, paramsArray.blacklist.login)
     );
     this.crossOriginAuthentication.login(crossOriginOptions, cb);
   }

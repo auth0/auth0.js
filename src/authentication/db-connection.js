@@ -52,7 +52,7 @@ DBConnection.prototype.signup = function(options, cb) {
 
   metadata = body.user_metadata || body.userMetadata;
 
-  body = objectHelper.blacklist(body, paramsArray.blacklistDBParams);
+  body = objectHelper.blacklist(body, paramsArray.blacklist.metadata);
 
   body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
