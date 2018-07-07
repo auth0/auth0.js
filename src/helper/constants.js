@@ -43,6 +43,7 @@ const params = {
     assertion: 'assertion',
     claims: 'claims',
     claims_locales: 'claims_locales',
+    clientID: 'clientID',
     client_assertion: 'client_assertion',
     client_assertion_type: 'client_assertion_type',
     client_id: 'client_id',
@@ -80,6 +81,7 @@ const params = {
 };
 
 const paramsArray = {
+  baseParams: [params.oauth2.clientID],
   blacklistAuthParams: [
     params.blacklist.domain,
     params.blacklist.popupOptions,
@@ -112,7 +114,7 @@ const paramsArray = {
   ],
   blacklistUnhostedLoginParams: [
     params.blacklist.connection,
-    params.blackllist.email,
+    params.blacklist.email,
     params.blacklist.phoneNumber,
     params.blacklist.verificationCode
   ],
