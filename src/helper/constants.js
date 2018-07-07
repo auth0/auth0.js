@@ -74,11 +74,11 @@ const constants = {
   }
 };
 
-const paramArrays = {
+const paramsArray = {
   toSnakeCaseBaseParams: [constants.params.toSnakeCase.auth0Client]
 };
 
 export default {
   constants: constants,
-  paramArrays: paramArrays
+  paramAsrray: paramsArray
 };

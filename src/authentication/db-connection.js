@@ -3,7 +3,7 @@ import urljoin from 'url-join';
 import objectHelper from '../helper/object';
 import assert from '../helper/assert';
 import responseHandler from '../helper/response-handler';
-import paramArrays from '../helper/constants';
+import paramsArray from '../helper/constants';
 
 function DBConnection(request, options) {
   this.baseOptions = options;
@@ -99,7 +99,7 @@ DBConnection.prototype.changePassword = function(options, cb) {
 
   body = objectHelper.merge(this.baseOptions, ['clientID']).with(options, ['email', 'connection']);
 
-  body = objectHelper.toSnakeCase(body, paramArrays.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
   return this.request
     .post(url)
