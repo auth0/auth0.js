@@ -1,5 +1,5 @@
 // alphabetical order
-const params = {
+const constants = {
   additional: {
     access_type: 'access_type',
     display: 'display'
@@ -86,4 +86,4 @@ const params = {
   }
 };
 
-export default params;
+export default constants;

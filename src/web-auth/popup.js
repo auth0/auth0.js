@@ -11,6 +11,7 @@ import Warn from '../helper/warn';
 import TransactionManager from './transaction-manager';
 import CrossOriginAuthentication from './cross-origin-authentication';
 import constants from '../helper/constants';
+import paramsArray from '../helper/param-constants';
 
 function Popup(webAuth, options) {
   this.baseOptions = options;
@@ -164,7 +165,7 @@ Popup.prototype.authorize = function(options, cb) {
       '_intstate',
       'nonce'
     ])
-    .with(objectHelper.blacklist(options, constants.paramsArray.blacklistPopupParams));
+    .with(objectHelper.blacklist(options, paramsArray.blacklistPopupParams));
 
   assert.check(
     params,
@@ -228,8 +229,8 @@ Popup.prototype.loginWithCredentials = function(options, cb) {
     .merge(this.baseOptions, ['redirectUri', 'responseType', 'state', 'nonce'])
     .with(
       objectHelper.blacklist(options, [
-        constants.params.blacklist.popupHandler,
-        constants.params.blacklist.connection
+        constants.blacklist.popupHandler,
+        constants.blacklist.connection
       ])
     );
   options = this.transactionManager.process(options);
@@ -251,7 +252,7 @@ Popup.prototype.loginWithCredentials = function(options, cb) {
 Popup.prototype.passwordlessVerify = function(options, cb) {
   var _this = this;
   return this.client.passwordless.verify(
-    objectHelper.blacklist(options, constants.paramsArray.blacklistPopupParams),
+    objectHelper.blacklist(options, paramsArray.blacklistPopupParams),
     function(err) {
       if (err) {
         return cb(err);
@@ -291,7 +292,7 @@ Popup.prototype.signupAndLogin = function(options, cb) {
   options.popupHandler = popupHandler;
 
   return this.client.dbConnection.signup(
-    objectHelper.blacklist(options, constants.paramsArray.blacklistPopupParams),
+    objectHelper.blacklist(options, paramsArray.blacklistPopupParams),
     function(err) {
       if (err) {
         if (popupHandler._current_popup) {

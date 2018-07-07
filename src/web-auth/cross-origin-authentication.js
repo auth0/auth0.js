@@ -87,10 +87,10 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       }
       var popupMode = options.popup === true;
       options = objectHelper.blacklist(options, [
-        constants.params.blacklist.password,
-        constants.params.blacklist.credentialType,
-        constants.params.blacklist.otp,
-        constants.params.blacklist.popup
+        constants.blacklist.password,
+        constants.blacklist.credentialType,
+        constants.blacklist.otp,
+        constants.blacklist.popup
       ]);
       var authorizeOptions = objectHelper
         .merge(options)

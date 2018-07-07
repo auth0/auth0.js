@@ -3,7 +3,7 @@ import urljoin from 'url-join';
 import objectHelper from '../helper/object';
 import assert from '../helper/assert';
 import responseHandler from '../helper/response-handler';
-import constants from '../helper/constants';
+import paramsArray from '../helper/param-constants';
 
 function DBConnection(request, options) {
   this.baseOptions = options;
@@ -48,13 +48,13 @@ DBConnection.prototype.signup = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'signup');
 
-  body = objectHelper.merge(this.baseOptions, constants.paramsArray.baseParams).with(options);
+  body = objectHelper.merge(this.baseOptions, paramsArray.baseParams).with(options);
 
   metadata = body.user_metadata || body.userMetadata;
 
-  body = objectHelper.blacklist(body, constants.paramsArray.blacklistDBParams);
+  body = objectHelper.blacklist(body, paramsArray.blacklistDBParams);
 
-  body = objectHelper.toSnakeCase(body, constants.paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
   if (metadata) {
     body.user_metadata = metadata;
@@ -98,10 +98,10 @@ DBConnection.prototype.changePassword = function(options, cb) {
   url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'change_password');
 
   body = objectHelper
-    .merge(this.baseOptions, constants.paramsArray.baseParams)
+    .merge(this.baseOptions, paramsArray.baseParams)
     .with(options, ['email', 'connection']);
 
-  body = objectHelper.toSnakeCase(body, constants.paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
   return this.request
     .post(url)

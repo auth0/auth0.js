@@ -12,6 +12,7 @@ import Warn from '../helper/warn';
 import WebAuth from '../web-auth/index';
 import PasswordlessAuthentication from './passwordless-authentication';
 import DBConnection from './db-connection';
+import paramsArray from '../helper/param-constants';
 import constants from '../helper/constants';
 
 /**
@@ -108,8 +109,8 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
 
   params = objectHelper
     .merge(this.baseOptions, [
-      constants.params.oauth2.clientID,
-      constants.params.oauth2.responseType,
+      constants.oauth2.clientID,
+      constants.oauth2.responseType,
       'responseMode',
       'redirectUri',
       'scope',
@@ -147,8 +148,8 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
     params.connection_scope = params.connection_scope.join(',');
   }
 
-  params = objectHelper.blacklist(params, constants.paramsArray.blacklistAuthParams);
-  params = objectHelper.toSnakeCase(params, constants.paramsArray.toSnakeCaseBaseParams);
+  params = objectHelper.blacklist(params, paramsArray.blacklistAuthParams);
+  params = objectHelper.toSnakeCase(params, paramsArray.toSnakeCaseBaseParams);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 
   qString = qs.stringify(params);
@@ -180,9 +181,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
     message: 'options parameter is not valid'
   });
 
-  params = objectHelper
-    .merge(this.baseOptions, constants.paramsArray.baseParams)
-    .with(options || {});
+  params = objectHelper.merge(this.baseOptions, paramsArray.baseParams).with(options || {});
 
   // eslint-disable-next-line
   if (this.baseOptions._sendTelemetry) {
@@ -190,11 +189,11 @@ Authentication.prototype.buildLogoutUrl = function(options) {
   }
 
   params = objectHelper.toSnakeCase(params, [
-    constants.params.toSnakeCase.auth0Client,
-    constants.params.toSnakeCase.returnTo
+    constants.toSnakeCase.auth0Client,
+    constants.toSnakeCase.returnTo
   ]);
 
-  qString = qs.stringify(objectHelper.blacklist(params, constants.params.blacklist.federated));
+  qString = qs.stringify(objectHelper.blacklist(params, constants.blacklist.federated));
   if (
     options &&
     options.federated !== undefined &&
@@ -315,7 +314,7 @@ Authentication.prototype.oauthToken = function(options, cb) {
     }
   );
 
-  body = objectHelper.toSnakeCase(body, constants.paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
   body = parametersWhitelist.oauthTokenParams(this.warn, body);
 
   return this.request
@@ -362,7 +361,7 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
     .merge(this.baseOptions, ['clientID', 'scope'])
     .with(options, ['username', 'password', 'scope', 'connection', 'device']);
 
-  body = objectHelper.toSnakeCase(body, constants.paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
   body.grant_type = body.grant_type || 'password';
 
@@ -498,9 +497,9 @@ Authentication.prototype.delegation = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'delegation');
 
-  body = objectHelper.merge(this.baseOptions, constants.paramsArray.baseParams).with(options);
+  body = objectHelper.merge(this.baseOptions, paramsArray.baseParams).with(options);
 
-  body = objectHelper.toSnakeCase(body, constants.paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
   return this.request
     .post(url)

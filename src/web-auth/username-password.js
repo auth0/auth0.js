@@ -6,6 +6,7 @@ import responseHandler from '../helper/response-handler';
 import windowHelper from '../helper/window';
 import TransactionManager from './transaction-manager';
 import constants from '../helper/constants';
+import paramsArray from '../helper/param-constants';
 
 function UsernamePassword(options) {
   this.baseOptions = options;
@@ -21,7 +22,7 @@ UsernamePassword.prototype.login = function(options, cb) {
 
   options.username = options.username || options.email; // eslint-disable-line
 
-  options = objectHelper.blacklist(options, constants.params.blacklist.email); // eslint-disable-line
+  options = objectHelper.blacklist(options, constants.blacklist.email); // eslint-disable-line
 
   body = objectHelper
     .merge(this.baseOptions, [
@@ -36,7 +37,7 @@ UsernamePassword.prototype.login = function(options, cb) {
     .with(options);
   body = this.transactionManager.process(body);
 
-  body = objectHelper.toSnakeCase(body, constants.paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
   return this.request
     .post(url)
