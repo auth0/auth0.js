@@ -152,19 +152,7 @@ Popup.prototype.authorize = function(options, cb) {
   var pluginHandler = this.baseOptions.plugins.get('popup.authorize');
 
   var params = objectHelper
-    .merge(this.baseOptions, [
-      'clientID',
-      'scope',
-      'domain',
-      'audience',
-      'tenant',
-      'responseType',
-      'redirectUri',
-      '_csrf',
-      'state',
-      '_intstate',
-      'nonce'
-    ])
+    .merge(this.baseOptions, paramsArray.pluginParams)
     .with(objectHelper.blacklist(options, paramsArray.blacklistPopupParams));
 
   assert.check(
@@ -226,7 +214,7 @@ Popup.prototype.loginWithCredentials = function(options, cb) {
   options.realm = options.realm || options.connection;
   options.popup = true;
   options = objectHelper
-    .merge(this.baseOptions, ['redirectUri', 'responseType', 'state', 'nonce'])
+    .merge(this.baseOptions, paramsArray.loginWithCredentialsParams)
     .with(
       objectHelper.blacklist(options, [
         constants.blacklist.popupHandler,

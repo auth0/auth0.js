@@ -56,6 +56,7 @@ const constants = {
     code_challenge_method: 'code_challenge_method',
     code_verifier: 'code_verifier',
     display: 'display',
+    domain: 'domain',
     grant_type: 'grant_type',
     id_token_hint: 'id_token_hint',
     login_hint: 'login_hint',

@@ -24,17 +24,7 @@ UsernamePassword.prototype.login = function(options, cb) {
 
   options = objectHelper.blacklist(options, constants.blacklist.email); // eslint-disable-line
 
-  body = objectHelper
-    .merge(this.baseOptions, [
-      'clientID',
-      'redirectUri',
-      'tenant',
-      'responseType',
-      'responseMode',
-      'scope',
-      'audience'
-    ])
-    .with(options);
+  body = objectHelper.merge(this.baseOptions, paramsArray.usernamePasswordLogin).with(options);
   body = this.transactionManager.process(body);
 
   body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
