@@ -408,7 +408,7 @@ WebAuth.prototype.renewAuth = function(options, cb) {
 
   params.prompt = 'none';
 
-  params = objectHelper.blacklist(params, constants.paramsArray.blacklistPostMessageParamsOrigin);
+  params = objectHelper.blacklist(params, constants.paramsArray.blacklistPostMessageOriginParams);
 
   handler = SilentAuthenticationHandler.create({
     authenticationUrl: this.client.buildAuthorizeUrl(params),

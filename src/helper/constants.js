@@ -83,7 +83,7 @@ const paramsArray = {
     params.blacklist.tenant,
     params.blacklist.usePostMessage
   ],
-  blacklistPostMessageParamsOrigin: [
+  blacklistPostMessageOriginParams: [
     params.blacklist.postMessageDataType,
     params.blacklist.postMessageOrigin,
     params.blacklist.tenant,
