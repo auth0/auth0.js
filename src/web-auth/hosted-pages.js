@@ -8,6 +8,7 @@ import objectHelper from '../helper/object';
 import windowHelper from '../helper/window';
 import Warn from '../helper/warn';
 import assert from '../helper/assert';
+import paramsArray from '../helper/param-constants';
 
 function HostedPages(client, options) {
   this.baseOptions = options;
@@ -48,21 +49,7 @@ HostedPages.prototype.login = function(options, cb) {
   }
   var usernamePassword;
 
-  var params = objectHelper
-    .merge(this.baseOptions, [
-      'clientID',
-      'redirectUri',
-      'tenant',
-      'responseType',
-      'responseMode',
-      'scope',
-      'audience',
-      '_csrf',
-      'state',
-      '_intstate',
-      'nonce'
-    ])
-    .with(options);
+  var params = objectHelper.merge(this.baseOptions, paramsArray.hostedAuthParams).with(options);
 
   assert.check(
     params,

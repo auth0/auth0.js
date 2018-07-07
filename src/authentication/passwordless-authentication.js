@@ -42,21 +42,7 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function(options) {
   );
   /* eslint-enable */
 
-  params = objectHelper
-    .merge(this.baseOptions, [
-      'clientID',
-      'responseType',
-      'responseMode',
-      'redirectUri',
-      'scope',
-      'audience',
-      '_csrf',
-      'state',
-      '_intstate',
-      'protocol',
-      'nonce'
-    ])
-    .with(options);
+  params = objectHelper.merge(this.baseOptions, paramsArray.passwordlessAuthParams).with(options);
 
   // eslint-disable-next-line
   if (this.baseOptions._sendTelemetry) {
@@ -112,7 +98,7 @@ PasswordlessAuthentication.prototype.start = function(options, cb) {
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'start');
 
   body = objectHelper
-    .merge(this.baseOptions, ['clientID', 'responseType', 'redirectUri', 'scope'])
+    .merge(this.baseOptions, paramsArray.passwordlessAuthUrlBaseParams)
     .with(options);
 
   if (body.scope) {

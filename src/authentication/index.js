@@ -12,8 +12,8 @@ import Warn from '../helper/warn';
 import WebAuth from '../web-auth/index';
 import PasswordlessAuthentication from './passwordless-authentication';
 import DBConnection from './db-connection';
-import paramsArray from '../helper/param-constants';
 import constants from '../helper/constants';
+import paramsArray from '../helper/param-constants';
 
 /**
  * Creates a new Auth0 Authentication API client
@@ -107,16 +107,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
 
   assert.check(options, { type: 'object', message: 'options parameter is not valid' });
 
-  params = objectHelper
-    .merge(this.baseOptions, [
-      constants.oauth2.clientID,
-      constants.oauth2.responseType,
-      'responseMode',
-      'redirectUri',
-      'scope',
-      'audience'
-    ])
-    .with(options);
+  params = objectHelper.merge(this.baseOptions, paramsArray.authUrlParams).with(options);
 
   /* eslint-disable */
   assert.check(
@@ -301,7 +292,7 @@ Authentication.prototype.oauthToken = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'oauth', 'token');
 
-  body = objectHelper.merge(this.baseOptions, ['clientID', 'scope', 'audience']).with(options);
+  body = objectHelper.merge(this.baseOptions, paramsArray.oauthUrlParams).with(options);
 
   assert.check(
     body,
@@ -358,8 +349,8 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
   url = urljoin(this.baseOptions.rootUrl, 'oauth', 'ro');
 
   body = objectHelper
-    .merge(this.baseOptions, ['clientID', 'scope'])
-    .with(options, ['username', 'password', 'scope', 'connection', 'device']);
+    .merge(this.baseOptions, paramsArray.resourceOwnerloginParams)
+    .with(options, paramsArray.resourceOwnerOptionsParams);
 
   body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
