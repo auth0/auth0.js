@@ -107,7 +107,9 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
 
   assert.check(options, { type: 'object', message: 'options parameter is not valid' });
 
-  params = objectHelper.merge(this.baseOptions, paramsArray.authUrlParams).with(options);
+  params = objectHelper
+    .merge(this.baseOptions, paramsArray.clientID.scope.response.audience)
+    .with(options);
 
   /* eslint-disable */
   assert.check(
@@ -172,7 +174,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
     message: 'options parameter is not valid'
   });
 
-  params = objectHelper.merge(this.baseOptions, paramsArray.baseParams).with(options || {});
+  params = objectHelper.merge(this.baseOptions, paramsArray.clientID.base).with(options || {});
 
   // eslint-disable-next-line
   if (this.baseOptions._sendTelemetry) {
@@ -292,7 +294,7 @@ Authentication.prototype.oauthToken = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'oauth', 'token');
 
-  body = objectHelper.merge(this.baseOptions, paramsArray.oauthUrlParams).with(options);
+  body = objectHelper.merge(this.baseOptions, paramsArray.clientID.scope.audience).with(options);
 
   assert.check(
     body,
@@ -349,8 +351,8 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
   url = urljoin(this.baseOptions.rootUrl, 'oauth', 'ro');
 
   body = objectHelper
-    .merge(this.baseOptions, paramsArray.resourceOwnerloginParams)
-    .with(options, paramsArray.resourceOwnerOptionsParams);
+    .merge(this.baseOptions, paramsArray.clientID.scope.base)
+    .with(options, paramsArray.resourceOptions);
 
   body = objectHelper.toSnakeCase(body, paramsArray.snakeCase.base);
 
@@ -488,7 +490,7 @@ Authentication.prototype.delegation = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'delegation');
 
-  body = objectHelper.merge(this.baseOptions, paramsArray.baseParams).with(options);
+  body = objectHelper.merge(this.baseOptions, paramsArray.clientID.base).with(options);
 
   body = objectHelper.toSnakeCase(body, paramsArray.snakeCase.base);
 

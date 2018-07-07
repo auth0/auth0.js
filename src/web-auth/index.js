@@ -385,7 +385,9 @@ WebAuth.prototype.renewAuth = function(options, cb) {
   var timeout = options.timeout;
   var _this = this;
 
-  var params = objectHelper.merge(this.baseOptions, paramsArray.renewAuthParams).with(options);
+  var params = objectHelper
+    .merge(this.baseOptions, paramsArray.clientID.scope.response.nonce.base)
+    .with(options);
 
   params.responseType = params.responseType || 'token';
   params.responseMode = params.responseMode || 'fragment';
@@ -430,7 +432,9 @@ WebAuth.prototype.renewAuth = function(options, cb) {
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
  */
 WebAuth.prototype.checkSession = function(options, cb) {
-  var params = objectHelper.merge(this.baseOptions, paramsArray.renewAuthParams).with(options);
+  var params = objectHelper
+    .merge(this.baseOptions, paramsArray.clientID.scope.response.nonce.base)
+    .with(options);
 
   if (params.responseType === 'code') {
     return cb({ error: 'error', error_description: "responseType can't be `code`" });
@@ -476,7 +480,7 @@ WebAuth.prototype.changePassword = function(options, cb) {
  */
 WebAuth.prototype.passwordlessStart = function(options, cb) {
   var authParams = objectHelper
-    .merge(this.baseOptions, paramsArray.passwordlessStartParams)
+    .merge(this.baseOptions, paramsArray.noClientID.responseMode)
     .with(options.authParams);
 
   options.authParams = this.transactionManager.process(authParams);
@@ -515,7 +519,9 @@ WebAuth.prototype.signup = function(options, cb) {
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
 WebAuth.prototype.authorize = function(options) {
-  var params = objectHelper.merge(this.baseOptions, paramsArray.authorizeParams).with(options);
+  var params = objectHelper
+    .merge(this.baseOptions, paramsArray.noClientID.responseMode)
+    .with(options);
 
   assert.check(
     params,
@@ -582,7 +588,9 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.login = function(options, cb) {
-  var params = objectHelper.merge(this.baseOptions, paramsArray.renewAuthParams).with(options);
+  var params = objectHelper
+    .merge(this.baseOptions, paramsArray.clientID.scope.response.nonce.base)
+    .with(options);
   params = this.transactionManager.process(params);
 
   var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
@@ -608,7 +616,9 @@ WebAuth.prototype.login = function(options, cb) {
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.passwordlessLogin = function(options, cb) {
-  var params = objectHelper.merge(this.baseOptions, paramsArray.renewAuthParams).with(options);
+  var params = objectHelper
+    .merge(this.baseOptions, paramsArray.clientID.scope.response.nonce.base)
+    .with(options);
   params = this.transactionManager.process(params);
 
   var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
@@ -681,7 +691,7 @@ WebAuth.prototype.logout = function(options) {
 WebAuth.prototype.passwordlessVerify = function(options, cb) {
   var _this = this;
   var params = objectHelper
-    .merge(this.baseOptions, paramsArray.passwordlessVerifyParams)
+    .merge(this.baseOptions, paramsArray.clientID.scope.response.nonce.responseMode)
     .with(options);
 
   assert.check(

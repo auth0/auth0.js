@@ -151,7 +151,7 @@ Popup.prototype.authorize = function(options, cb) {
   var pluginHandler = this.baseOptions.plugins.get('popup.authorize');
 
   var params = objectHelper
-    .merge(this.baseOptions, paramsArray.pluginParams)
+    .merge(this.baseOptions, paramsArray.clientID.scope.response.nonce.domain)
     .with(objectHelper.blacklist(options, paramsArray.blacklist.popup.handler.base));
 
   assert.check(
@@ -213,7 +213,7 @@ Popup.prototype.loginWithCredentials = function(options, cb) {
   options.realm = options.realm || options.connection;
   options.popup = true;
   options = objectHelper
-    .merge(this.baseOptions, paramsArray.loginWithCredentialsParams)
+    .merge(this.baseOptions, paramsArray.noClientID.base)
     .with(objectHelper.blacklist(options, paramsArray.blacklist.popup.handler.connection));
   options = this.transactionManager.process(options);
   this.crossOriginAuthentication.login(options, cb);

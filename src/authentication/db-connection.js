@@ -48,7 +48,7 @@ DBConnection.prototype.signup = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'signup');
 
-  body = objectHelper.merge(this.baseOptions, paramsArray.baseParams).with(options);
+  body = objectHelper.merge(this.baseOptions, paramsArray.clientID.base).with(options);
 
   metadata = body.user_metadata || body.userMetadata;
 
@@ -98,7 +98,7 @@ DBConnection.prototype.changePassword = function(options, cb) {
   url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'change_password');
 
   body = objectHelper
-    .merge(this.baseOptions, paramsArray.baseParams)
+    .merge(this.baseOptions, paramsArray.clientID.base)
     .with(options, ['email', 'connection']);
 
   body = objectHelper.toSnakeCase(body, paramsArray.snakeCase.base);

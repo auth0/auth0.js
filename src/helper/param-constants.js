@@ -50,129 +50,131 @@ const paramsArray = {
     base: [params.toSnakeCase.auth0Client],
     auth: [params.toSnakeCase.auth0Client, params.toSnakeCase.authParams]
   },
-  resourceOwnerloginParams: [params.oauth2.clientID, params.oauth2.scope],
-  passwordlessAuthParams: [
-    params.oauth2.clientID,
-    params.oauth2.responseType,
-    params.oauth2.responseMode,
-    params.oauth2.redirectUri,
-    params.oauth2.scope,
-    params.oauth2.audience,
-    params.auth0._csrf,
-    params.oauth2.state,
-    params.auth0._intstate,
-    params.auth0.protocol,
-    params.oauth2.nonce
-  ],
-  usernamePasswordLogin: [
-    params.oauth2.clientID,
-    params.oauth2.redirectUri,
-    params.oauth2.tenant,
-    params.oauth2.responseType,
-    params.oauth2.responseMode,
-    params.oauth2.scope,
-    params.oauth2.audience
-  ],
-  pluginParams: [
-    params.oauth2.clientID,
-    params.oauth2.scope,
-    params.oauth2.domain,
-    params.oauth2.audience,
-    params.oauth2.tenant,
-    params.oauth2.responseType,
-    params.oauth2.redirectUri,
-    params.auth0._csrf,
-    params.oauth2.state,
-    params.auth0._intstate,
-    params.oauth2.nonce
-  ],
-  loginWithCredentialsParams: [
-    params.oauth2.responseType,
-    params.oauth2.redirectUri,
-    params.oauth2.state,
-    params.oauth2.nonce
-  ],
-  hostedAuthParams: [
-    params.oauth2.clientID,
-    params.oauth2.responseType,
-    params.oauth2.responseMode,
-    params.oauth2.redirectUri,
-    params.oauth2.scope,
-    params.oauth2.audience,
-    params.auth0._csrf,
-    params.oauth2.state,
-    params.auth0._intstate,
-    params.oauth2.tenant,
-    params.oauth2.nonce
-  ],
-  passwordlessVerifyParams: [
-    params.oauth2.clientID,
-    params.oauth2.responseType,
-    params.oauth2.responseMode,
-    params.oauth2.redirectUri,
-    params.oauth2.scope,
-    params.oauth2.audience,
-    params.auth0._csrf,
-    params.oauth2.state,
-    params.auth0._intstate,
-    params.oauth2.nonce
-  ],
-  passwordlessStartParams: [
-    params.oauth2.responseType,
-    params.oauth2.responseMode,
-    params.oauth2.redirectUri,
-    params.oauth2.scope,
-    params.oauth2.audience,
-    params.auth0._csrf,
-    params.oauth2.state,
-    params.auth0._intstate,
-    params.oauth2.nonce
-  ],
-  authorizeParams: [
-    params.oauth2.responseType,
-    params.oauth2.responseMode,
-    params.oauth2.redirectUri,
-    params.oauth2.scope,
-    params.oauth2.audience,
-    params.auth0._csrf,
-    params.oauth2.state,
-    params.auth0._intstate,
-    params.oauth2.nonce
-  ],
-  renewAuthParams: [
-    params.oauth2.clientID,
-    params.oauth2.responseType,
-    params.oauth2.redirectUri,
-    params.oauth2.scope,
-    params.oauth2.audience,
-    params.auth0._csrf,
-    params.oauth2.state,
-    params.auth0._intstate,
-    params.oauth2.nonce
-  ],
-  resourceOwnerOptionsParams: [
+  clientID: {
+    base: [params.oauth2.clientID],
+    scope: {
+      base: [params.oauth2.clientID, params.oauth2.scope],
+      audience: [params.oauth2.clientID, params.oauth2.scope, params.oauth2.audience],
+      response: {
+        base: [
+          params.oauth2.clientID,
+          params.oauth2.responseType,
+          params.oauth2.redirectUri,
+          params.oauth2.scope
+        ],
+        audience: [
+          params.oauth2.clientID,
+          params.oauth2.responseType,
+          params.oauth2.responseMode,
+          params.oauth2.redirectUri,
+          params.oauth2.scope,
+          params.oauth2.audience
+        ],
+        nonce: {
+          base: [
+            params.oauth2.clientID,
+            params.oauth2.responseType,
+            params.oauth2.redirectUri,
+            params.oauth2.scope,
+            params.oauth2.audience,
+            params.auth0._csrf,
+            params.oauth2.state,
+            params.auth0._intstate,
+            params.oauth2.nonce
+          ],
+          responseMode: [
+            params.oauth2.clientID,
+            params.oauth2.responseType,
+            params.oauth2.responseMode,
+            params.oauth2.redirectUri,
+            params.oauth2.scope,
+            params.oauth2.audience,
+            params.auth0._csrf,
+            params.oauth2.state,
+            params.auth0._intstate,
+            params.oauth2.nonce
+          ],
+          domain: [
+            params.oauth2.clientID,
+            params.oauth2.scope,
+            params.oauth2.domain,
+            params.oauth2.audience,
+            params.oauth2.tenant,
+            params.oauth2.responseType,
+            params.oauth2.redirectUri,
+            params.auth0._csrf,
+            params.oauth2.state,
+            params.auth0._intstate,
+            params.oauth2.nonce
+          ],
+          protocol: [
+            params.oauth2.clientID,
+            params.oauth2.responseType,
+            params.oauth2.responseMode,
+            params.oauth2.redirectUri,
+            params.oauth2.scope,
+            params.oauth2.audience,
+            params.auth0._csrf,
+            params.oauth2.state,
+            params.auth0._intstate,
+            params.auth0.protocol,
+            params.oauth2.nonce
+          ],
+          tenant: {
+            base: [
+              params.oauth2.clientID,
+              params.oauth2.responseType,
+              params.oauth2.responseMode,
+              params.oauth2.redirectUri,
+              params.oauth2.scope,
+              params.oauth2.audience,
+              params.auth0._csrf,
+              params.oauth2.state,
+              params.auth0._intstate,
+              params.oauth2.tenant,
+              params.oauth2.nonce
+            ]
+          }
+        },
+        tenant: [
+          params.oauth2.clientID,
+          params.oauth2.redirectUri,
+          params.oauth2.tenant,
+          params.oauth2.responseType,
+          params.oauth2.responseMode,
+          params.oauth2.scope,
+          params.oauth2.audience
+        ]
+      }
+    }
+  },
+  noClientID: {
+    base: [
+      params.oauth2.responseType,
+      params.oauth2.redirectUri,
+      params.oauth2.state,
+      params.oauth2.nonce
+    ],
+    responseMode: [
+      params.oauth2.responseType,
+      params.oauth2.responseMode,
+      params.oauth2.redirectUri,
+      params.oauth2.scope,
+      params.oauth2.audience,
+      params.auth0._csrf,
+      params.oauth2.state,
+      params.auth0._intstate,
+      params.oauth2.nonce
+    ]
+  },
+
+  resourceOptions: [
     params.oauth2.username,
     params.oauth2.password,
     params.oauth2.scope,
     params.auth0.connection,
     params.auth0.device
-  ],
-  passwordlessAuthUrlBaseParams: [
-    params.oauth2.clientID,
-    params.oauth2.responseType,
-    params.oauth2.redirectUri,
-    params.oauth2.scope
-  ],
-  authUrlParams: [
-    params.oauth2.clientID,
-    params.oauth2.responseType,
-    params.oauth2.responseMode,
-    params.oauth2.redirectUri,
-    params.oauth2.scope,
-    params.oauth2.audience
-  ],
-  oauthUrlParams: [params.oauth2.clientID, params.oauth2.scope, params.oauth2.audience],
-  baseParams: [params.oauth2.clientID]
+  ]
 };
 
 export default paramsArray;

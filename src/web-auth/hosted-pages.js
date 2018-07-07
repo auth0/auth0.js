@@ -49,7 +49,9 @@ HostedPages.prototype.login = function(options, cb) {
   }
   var usernamePassword;
 
-  var params = objectHelper.merge(this.baseOptions, paramsArray.hostedAuthParams).with(options);
+  var params = objectHelper
+    .merge(this.baseOptions, paramsArray.clientID.scope.response.nonce.tenant.base)
+    .with(options);
 
   assert.check(
     params,
