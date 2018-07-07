@@ -693,7 +693,7 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
         username: params.email || params.phoneNumber,
         otp: params.verificationCode
       },
-      objectHelper.blacklist(params, ['connection', 'email', 'phoneNumber', 'verificationCode'])
+      objectHelper.blacklist(params, constants.paramsArray.blacklistUnhostedLoginParams)
     );
     this.crossOriginAuthentication.login(crossOriginOptions, cb);
   }

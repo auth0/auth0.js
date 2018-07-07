@@ -1,5 +1,5 @@
+// alphabetical order
 const params = {
-  // alphabetical order
   additional: {
     access_type: 'access_type',
     display: 'display'
@@ -109,6 +109,12 @@ const paramsArray = {
     params.blacklist.postMessageOrigin,
     params.blacklist.tenant,
     params.blacklist.usePostMessage
+  ],
+  blacklistUnhostedLoginParams: [
+    params.blacklist.connection,
+    params.blackllist.email,
+    params.blacklist.phoneNumber,
+    params.blacklist.verificationCode
   ],
   toSnakeCaseAuthParams: [params.toSnakeCase.auth0Client, params.toSnakeCase.authParams],
   toSnakeCaseBaseParams: [params.toSnakeCase.auth0Client],
