@@ -18,6 +18,22 @@ const constants = {
       protocol: 'protocol',
       realm: 'realm'
     },
+    blacklist: {
+      connection: 'connection',
+      domain: 'domain',
+      email: 'email',
+      federated: 'federated',
+      phoneNumber: 'phoneNumber',
+      popupOptions: 'popupOptions',
+      postMessageDataType: 'postMessageDataType',
+      postMessageOrigin: 'postMessageOrigin',
+      tenant: 'tenant',
+      timeout: 'timeout',
+      usePostMessage: 'usePostMessage',
+      userMetadata: 'userMetadata',
+      username: 'username',
+      verificationCode: 'verificationCode'
+    },
     oauth2: {
       acr_values: 'acr_values',
       assertion: 'assertion',
@@ -39,7 +55,6 @@ const constants = {
       nonce: 'nonce',
       password: 'password',
       prompt: 'prompt',
-      ui_locales: 'ui_locales',
       redirect_uri: 'redirect_uri',
       registration: 'registration',
       refresh_token: 'refresh_token',
@@ -49,7 +64,12 @@ const constants = {
       response_type: 'response_type',
       scope: 'scope',
       state: 'state',
+      tenant: 'tenant',
+      ui_locales: 'ui_locales',
       username: 'username'
+    },
+    toSnakeCase: {
+      auth0Client: 'auth0Client'
     }
   }
 };
