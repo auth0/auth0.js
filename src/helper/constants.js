@@ -74,4 +74,10 @@ const constants = {
   }
 };
 
-export default constants;
+const paramArrays = {
+  toSnakeCaseBaseParams: [constants.params.toSnakeCase.auth0Client]
+};
+export default {
+  constants: constants,
+  paramArrays: paramArrays
+};
