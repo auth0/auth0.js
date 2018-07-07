@@ -1,5 +1,5 @@
 // alphabetical order
-const constants = {
+var constants = {
   additional: {
     access_type: 'access_type',
     display: 'display'

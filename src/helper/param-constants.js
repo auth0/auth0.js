@@ -1,6 +1,6 @@
 import params from '../helper/constants';
 
-const paramsArray = {
+var paramsArray = {
   blacklist: {
     popup: {
       handler: {
