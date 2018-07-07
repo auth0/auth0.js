@@ -69,7 +69,8 @@ const constants = {
       username: 'username'
     },
     toSnakeCase: {
-      auth0Client: 'auth0Client'
+      auth0Client: 'auth0Client',
+      authParams: 'authParams'
     }
   }
 };

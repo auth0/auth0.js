@@ -12,6 +12,7 @@ import Warn from '../helper/warn';
 import WebAuth from '../web-auth/index';
 import PasswordlessAuthentication from './passwordless-authentication';
 import DBConnection from './db-connection';
+import paramsArray from '../helper/constants';
 
 /**
  * Creates a new Auth0 Authentication API client
@@ -153,7 +154,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
     'tenant',
     'timeout'
   ]);
-  params = objectHelper.toSnakeCase(params, ['auth0Client']);
+  params = objectHelper.toSnakeCase(params, paramsArray.toSnakeCaseBaseParams);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 
   qString = qs.stringify(params);
@@ -315,7 +316,7 @@ Authentication.prototype.oauthToken = function(options, cb) {
     }
   );
 
-  body = objectHelper.toSnakeCase(body, ['auth0Client']);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
   body = parametersWhitelist.oauthTokenParams(this.warn, body);
 
   return this.request
@@ -362,7 +363,7 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
     .merge(this.baseOptions, ['clientID', 'scope'])
     .with(options, ['username', 'password', 'scope', 'connection', 'device']);
 
-  body = objectHelper.toSnakeCase(body, ['auth0Client']);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
   body.grant_type = body.grant_type || 'password';
 
@@ -500,7 +501,7 @@ Authentication.prototype.delegation = function(options, cb) {
 
   body = objectHelper.merge(this.baseOptions, ['clientID']).with(options);
 
-  body = objectHelper.toSnakeCase(body, ['auth0Client']);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
   return this.request
     .post(url)

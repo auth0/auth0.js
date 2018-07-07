@@ -54,7 +54,7 @@ DBConnection.prototype.signup = function(options, cb) {
 
   body = objectHelper.blacklist(body, ['scope', 'userMetadata', 'user_metadata']);
 
-  body = objectHelper.toSnakeCase(body, ['auth0Client']);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
   if (metadata) {
     body.user_metadata = metadata;

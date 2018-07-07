@@ -5,6 +5,7 @@ import RequestBuilder from '../helper/request-builder';
 import responseHandler from '../helper/response-handler';
 import windowHelper from '../helper/window';
 import TransactionManager from './transaction-manager';
+import paramsArray from '../helper/constants';
 
 function UsernamePassword(options) {
   this.baseOptions = options;
@@ -35,7 +36,7 @@ UsernamePassword.prototype.login = function(options, cb) {
     .with(options);
   body = this.transactionManager.process(body);
 
-  body = objectHelper.toSnakeCase(body, ['auth0Client']);
+  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
 
   return this.request
     .post(url)
