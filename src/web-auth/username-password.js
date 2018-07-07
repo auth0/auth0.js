@@ -27,7 +27,7 @@ UsernamePassword.prototype.login = function(options, cb) {
   body = objectHelper.merge(this.baseOptions, paramsArray.usernamePasswordLogin).with(options);
   body = this.transactionManager.process(body);
 
-  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.snakeCase.base);
 
   return this.request
     .post(url)

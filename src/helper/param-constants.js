@@ -46,6 +46,10 @@ const paramsArray = {
       params.blacklist.verificationCode
     ]
   },
+  snakeCase: {
+    base: [params.toSnakeCase.auth0Client],
+    auth: [params.toSnakeCase.auth0Client, params.toSnakeCase.authParams]
+  },
   resourceOwnerloginParams: [params.oauth2.clientID, params.oauth2.scope],
   passwordlessAuthParams: [
     params.oauth2.clientID,
@@ -168,9 +172,7 @@ const paramsArray = {
     params.oauth2.audience
   ],
   oauthUrlParams: [params.oauth2.clientID, params.oauth2.scope, params.oauth2.audience],
-  baseParams: [params.oauth2.clientID],
-  toSnakeCaseAuthParams: [params.toSnakeCase.auth0Client, params.toSnakeCase.authParams],
-  toSnakeCaseBaseParams: [params.toSnakeCase.auth0Client]
+  baseParams: [params.oauth2.clientID]
 };
 
 export default paramsArray;

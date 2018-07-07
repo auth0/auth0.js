@@ -54,7 +54,7 @@ DBConnection.prototype.signup = function(options, cb) {
 
   body = objectHelper.blacklist(body, paramsArray.blacklist.metadata);
 
-  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.snakeCase.base);
 
   if (metadata) {
     body.user_metadata = metadata;
@@ -101,7 +101,7 @@ DBConnection.prototype.changePassword = function(options, cb) {
     .merge(this.baseOptions, paramsArray.baseParams)
     .with(options, ['email', 'connection']);
 
-  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.snakeCase.base);
 
   return this.request
     .post(url)

@@ -49,7 +49,7 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function(options) {
     params.auth0Client = this.request.getTelemetryData();
   }
 
-  params = objectHelper.toSnakeCase(params, paramsArray.toSnakeCaseBaseParams);
+  params = objectHelper.toSnakeCase(params, paramsArray.snakeCase.base);
 
   qString = qs.stringify(params);
 
@@ -120,7 +120,7 @@ PasswordlessAuthentication.prototype.start = function(options, cb) {
   delete body.responseType;
   delete body.scope;
 
-  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseAuthParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.snakeCase.auth);
 
   return this.request
     .post(url)
@@ -168,7 +168,7 @@ PasswordlessAuthentication.prototype.verify = function(options, cb) {
     'email',
     'auth0Client'
   ]);
-  cleanOption = objectHelper.toSnakeCase(cleanOption, paramsArray.toSnakeCaseBaseParams);
+  cleanOption = objectHelper.toSnakeCase(cleanOption, paramsArray.snakeCase.base);
 
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify');
 

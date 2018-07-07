@@ -140,7 +140,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
   }
 
   params = objectHelper.blacklist(params, paramsArray.blacklist.popup.auth);
-  params = objectHelper.toSnakeCase(params, paramsArray.toSnakeCaseBaseParams);
+  params = objectHelper.toSnakeCase(params, paramsArray.snakeCase.base);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 
   qString = qs.stringify(params);
@@ -305,7 +305,7 @@ Authentication.prototype.oauthToken = function(options, cb) {
     }
   );
 
-  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.snakeCase.base);
   body = parametersWhitelist.oauthTokenParams(this.warn, body);
 
   return this.request
@@ -352,7 +352,7 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
     .merge(this.baseOptions, paramsArray.resourceOwnerloginParams)
     .with(options, paramsArray.resourceOwnerOptionsParams);
 
-  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.snakeCase.base);
 
   body.grant_type = body.grant_type || 'password';
 
@@ -490,7 +490,7 @@ Authentication.prototype.delegation = function(options, cb) {
 
   body = objectHelper.merge(this.baseOptions, paramsArray.baseParams).with(options);
 
-  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, paramsArray.snakeCase.base);
 
   return this.request
     .post(url)
