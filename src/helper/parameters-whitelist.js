@@ -4,69 +4,70 @@
 // need for compatibility
 
 import objectHelper from './object';
+import constants from './constants';
 
 var tokenParams = [
   // auth0
-  'realm',
-  'audience',
+  constants.params.auth0.realm,
+  constants.params.auth0.audience,
   // oauth2
-  'client_id',
-  'client_secret',
-  'redirect_uri',
-  'scope',
-  'code',
-  'grant_type',
-  'username',
-  'password',
-  'refresh_token',
-  'assertion',
-  'client_assertion',
-  'client_assertion_type',
-  'code_verifier'
+  constants.params.oauth2.client_id,
+  constants.params.oauth2.client_secret,
+  constants.params.oauth2.redirect_uri,
+  constants.params.oauth2.scope,
+  constants.params.oauth2.code,
+  constants.params.oauth2.grant_type,
+  constants.params.oauth2.username,
+  constants.params.oauth2.password,
+  constants.params.oauth2.refresh_token,
+  constants.params.oauth2.assertion,
+  constants.params.oauth2.client_assertion,
+  constants.params.oauth2.client_assertion_type,
+  constants.params.oauth2.code_verifier
 ];
 
 var authorizeParams = [
   // auth0
-  'connection',
-  'connection_scope',
-  'auth0Client',
-  'owp',
-  'device',
-  'realm',
+  constants.params.auth0.connection,
+  constants.params.auth0.connection_scope,
+  constants.params.auth0.auth0Client,
+  constants.params.auth0.owp,
+  constants.params.auth0.device,
+  constants.params.auth0.realm,
 
-  'protocol',
-  '_csrf',
-  '_intstate',
-  'login_ticket',
+  constants.params.auth0.protocol,
+  constants.params.auth0._csrf,
+  constants.params.auth0._intstate,
+  constants.params.auth0.login_ticket,
 
   // oauth2
-  'client_id',
-  'response_type',
-  'response_mode',
-  'redirect_uri',
-  'audience',
-  'scope',
-  'state',
-  'nonce',
-  'display',
-  'prompt',
-  'max_age',
-  'ui_locales',
-  'claims_locales',
-  'id_token_hint',
-  'login_hint',
-  'acr_values',
-  'claims',
-  'registration',
-  'request',
-  'request_uri',
-  'code_challenge',
-  'code_challenge_method',
+  constants.params.oauth2.client_id,
+  constants.params.oauth2.response_type,
+  constants.params.oauth2.response_mode,
+  constants.params.oauth2.redirect_uri,
+  constants.params.oauth2.audience,
+  constants.params.oauth2.scope,
+  constants.params.oauth2.state,
+  constants.params.oauth2.nonce,
+  constants.params.oauth2.display,
+  constants.params.oauth2.prompt,
+  constants.params.oauth2.max_age,
+  constants.params.oauth2.ui_locales,
+  constants.params.oauth2.claims_locales,
+  constants.params.oauth2.id_token_hint,
+  constants.params.oauth2.login_hint,
+  constants.params.oauth2.acr_values,
+  constants.params.oauth2.claims,
+  constants.params.oauth2.registration,
+  constants.params.oauth2.request,
+  constants.params.oauth2.request_uri,
+  constants.params.oauth2.code_challenge,
+  constants.params.oauth2.code_challenge_method,
 
   // ADDITIONAL_PARAMETERS:
   // https://auth0.com/docs/api/authentication?javascript#social
-  'access_type',
-  'display'
+  constants.params.additional.access_type,
+  constants.params.additional.display
 ];
 
 function oauthAuthorizeParams(warn, params) {
