@@ -86,7 +86,12 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
         return responseHandler(cb, { forceLegacyError: true })(errorObject);
       }
       var popupMode = options.popup === true;
-      options = objectHelper.blacklist(options, constants.paramsArray.blacklistCrossOriginParams);
+      options = objectHelper.blacklist(options, [
+        constants.params.blacklist.password,
+        constants.params.blacklist.credentialType,
+        constants.params.blacklist.otp,
+        constants.params.blacklist.popup
+      ]);
       var authorizeOptions = objectHelper
         .merge(options)
         .with({ loginTicket: data.body.login_ticket });

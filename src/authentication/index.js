@@ -180,14 +180,19 @@ Authentication.prototype.buildLogoutUrl = function(options) {
     message: 'options parameter is not valid'
   });
 
-  params = objectHelper.merge(this.baseOptions, ['clientID']).with(options || {});
+  params = objectHelper
+    .merge(this.baseOptions, constants.paramsArray.baseParams)
+    .with(options || {});
 
   // eslint-disable-next-line
   if (this.baseOptions._sendTelemetry) {
     params.auth0Client = this.request.getTelemetryData();
   }
 
-  params = objectHelper.toSnakeCase(params, constants.paramsArray.toSnakeCaseReturnParams);
+  params = objectHelper.toSnakeCase(params, [
+    constants.params.toSnakeCase.auth0Client,
+    constants.params.toSnakeCase.returnTo
+  ]);
 
   qString = qs.stringify(objectHelper.blacklist(params, constants.params.blacklist.federated));
   if (
@@ -493,7 +498,7 @@ Authentication.prototype.delegation = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'delegation');
 
-  body = objectHelper.merge(this.baseOptions, ['clientID']).with(options);
+  body = objectHelper.merge(this.baseOptions, constants.paramsArray.baseParams).with(options);
 
   body = objectHelper.toSnakeCase(body, constants.paramsArray.toSnakeCaseBaseParams);
 
