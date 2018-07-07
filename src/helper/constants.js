@@ -80,7 +80,6 @@ const params = {
 };
 
 const paramsArray = {
-  toSnakeCaseAuthParams: [params.toSnakeCase.auth0Client, params.toSnakeCase.authParams],
   blacklistAuthParams: [
     params.blacklist.domain,
     params.blacklist.popupOptions,
@@ -111,6 +110,7 @@ const paramsArray = {
     params.blacklist.tenant,
     params.blacklist.usePostMessage
   ],
+  toSnakeCaseAuthParams: [params.toSnakeCase.auth0Client, params.toSnakeCase.authParams],
   toSnakeCaseBaseParams: [params.toSnakeCase.auth0Client],
   toSnakeCaseReturnParams: [params.toSnakeCase.auth0, params.toSnakeCase.returnTo]
 };
