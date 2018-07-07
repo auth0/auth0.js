@@ -12,7 +12,7 @@ import Warn from '../helper/warn';
 import WebAuth from '../web-auth/index';
 import PasswordlessAuthentication from './passwordless-authentication';
 import DBConnection from './db-connection';
-import paramsArray from '../helper/constants';
+import constants from '../helper/constants';
 
 /**
  * Creates a new Auth0 Authentication API client
@@ -154,7 +154,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
     'tenant',
     'timeout'
   ]);
-  params = objectHelper.toSnakeCase(params, paramsArray.toSnakeCaseBaseParams);
+  params = objectHelper.toSnakeCase(params, constants.paramsArray.toSnakeCaseBaseParams);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 
   qString = qs.stringify(params);
@@ -193,9 +193,9 @@ Authentication.prototype.buildLogoutUrl = function(options) {
     params.auth0Client = this.request.getTelemetryData();
   }
 
-  params = objectHelper.toSnakeCase(params, paramsArray.toSnakeCaseReturnParams);
+  params = objectHelper.toSnakeCase(params, constants.paramsArray.toSnakeCaseReturnParams);
 
-  qString = qs.stringify(objectHelper.blacklist(params, ['federated']));
+  qString = qs.stringify(objectHelper.blacklist(params, constants.params.blacklist.federated));
   if (
     options &&
     options.federated !== undefined &&
@@ -316,7 +316,7 @@ Authentication.prototype.oauthToken = function(options, cb) {
     }
   );
 
-  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, constants.paramsArray.toSnakeCaseBaseParams);
   body = parametersWhitelist.oauthTokenParams(this.warn, body);
 
   return this.request
@@ -363,7 +363,7 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
     .merge(this.baseOptions, ['clientID', 'scope'])
     .with(options, ['username', 'password', 'scope', 'connection', 'device']);
 
-  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, constants.paramsArray.toSnakeCaseBaseParams);
 
   body.grant_type = body.grant_type || 'password';
 
@@ -501,7 +501,7 @@ Authentication.prototype.delegation = function(options, cb) {
 
   body = objectHelper.merge(this.baseOptions, ['clientID']).with(options);
 
-  body = objectHelper.toSnakeCase(body, paramsArray.toSnakeCaseBaseParams);
+  body = objectHelper.toSnakeCase(body, constants.paramsArray.toSnakeCaseBaseParams);
 
   return this.request
     .post(url)

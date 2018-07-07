@@ -15,6 +15,7 @@ import SilentAuthenticationHandler from './silent-authentication-handler';
 import CrossOriginAuthentication from './cross-origin-authentication';
 import WebMessageHandler from './web-message-handler';
 import HostedPages from './hosted-pages';
+import constants from '../helper/constants';
 
 /**
  * Handles all the browser's AuthN/AuthZ flows
@@ -407,12 +408,7 @@ WebAuth.prototype.renewAuth = function(options, cb) {
 
   params.prompt = 'none';
 
-  params = objectHelper.blacklist(params, [
-    'usePostMessage',
-    'tenant',
-    'postMessageDataType',
-    'postMessageOrigin'
-  ]);
+  params = objectHelper.blacklist(params, constants.paramsArray.blacklistPostMessageParamsOrigin);
 
   handler = SilentAuthenticationHandler.create({
     authenticationUrl: this.client.buildAuthorizeUrl(params),
@@ -471,7 +467,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
   assert.check(params, { type: 'object', message: 'options parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
-  params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType']);
+  params = objectHelper.blacklist(params, constants.paramsArray.blacklistPostMessageParams);
   this.webMessageHandler.run(params, cb);
 };
 
@@ -599,7 +595,7 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
   var _this = this;
 
   return this.client.dbConnection.signup(
-    objectHelper.blacklist(options, ['popupHandler']),
+    objectHelper.blacklist(options, constants.paramsArray.blacklistPopupParams),
     function(err) {
       if (err) {
         return cb(err);
