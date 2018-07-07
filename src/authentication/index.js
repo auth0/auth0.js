@@ -108,8 +108,8 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
 
   params = objectHelper
     .merge(this.baseOptions, [
-      'clientID',
-      'responseType',
+      constants.params.oauth2.clientID,
+      constants.params.oauth2.responseType,
       'responseMode',
       'redirectUri',
       'scope',

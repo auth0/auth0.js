@@ -43,6 +43,7 @@ const params = {
   oauth2: {
     acr_values: 'acr_values',
     assertion: 'assertion',
+    audience: 'audience',
     claims: 'claims',
     claims_locales: 'claims_locales',
     clientID: 'clientID',
@@ -62,12 +63,15 @@ const params = {
     nonce: 'nonce',
     password: 'password',
     prompt: 'prompt',
+    redirectUri: 'redirectUri',
     redirect_uri: 'redirect_uri',
     registration: 'registration',
     refresh_token: 'refresh_token',
     request: 'request',
     request_uri: 'request_uri',
+    responseMode: 'responseMode',
     response_mode: 'response_mode',
+    responseType: 'responseType',
     response_type: 'response_type',
     scope: 'scope',
     state: 'state',
@@ -82,43 +86,4 @@ const params = {
   }
 };
 
-const paramsArray = {
-  baseParams: [params.oauth2.clientID],
-  blacklistAuthParams: [
-    params.blacklist.domain,
-    params.blacklist.popupOptions,
-    params.blacklist.username,
-    params.blacklist.tenant,
-    params.blacklist.timeout
-  ],
-  blacklistDBParams: [
-    params.blacklist.scope,
-    params.blacklist.userMetadata,
-    params.blacklist.user_metadata
-  ],
-  blacklistPopupParams: [params.blacklist.popupHandler],
-  blacklistPostMessageParams: [
-    params.blacklist.postMessageDataType,
-    params.blacklist.tenant,
-    params.blacklist.usePostMessage
-  ],
-  blacklistPostMessageOriginParams: [
-    params.blacklist.postMessageDataType,
-    params.blacklist.postMessageOrigin,
-    params.blacklist.tenant,
-    params.blacklist.usePostMessage
-  ],
-  blacklistUnhostedLoginParams: [
-    params.blacklist.connection,
-    params.blacklist.email,
-    params.blacklist.phoneNumber,
-    params.blacklist.verificationCode
-  ],
-  toSnakeCaseAuthParams: [params.toSnakeCase.auth0Client, params.toSnakeCase.authParams],
-  toSnakeCaseBaseParams: [params.toSnakeCase.auth0Client]
-};
-
-export default {
-  params: params,
-  paramsArray: paramsArray
-};
+export default params;
