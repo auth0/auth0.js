@@ -19,18 +19,22 @@ const params = {
   },
   blacklist: {
     connection: 'connection',
+    credentialType: 'credentialType',
     domain: 'domain',
     email: 'email',
     federated: 'federated',
+    otp: 'otp',
     phoneNumber: 'phoneNumber',
     popupOptions: 'popupOptions',
     popupHandler: 'popupHandler',
     postMessageDataType: 'postMessageDataType',
     postMessageOrigin: 'postMessageOrigin',
+    scope: 'scope',
     tenant: 'tenant',
     timeout: 'timeout',
     usePostMessage: 'usePostMessage',
     userMetadata: 'userMetadata',
+    user_metadata: 'user_metadata',
     username: 'username',
     verificationCode: 'verificationCode'
   },
@@ -77,6 +81,24 @@ const params = {
 
 const paramsArray = {
   toSnakeCaseAuthParams: [params.toSnakeCase.auth0Client, params.toSnakeCase.authParams],
+  blacklistAuthParams: [
+    params.blacklist.domain,
+    params.blacklist.popupOptions,
+    params.blacklist.username,
+    params.blacklist.tenant,
+    params.blacklist.timeout
+  ],
+  blacklistCrossOriginParams: [
+    params.blacklist.credentialType,
+    params.blacklist.otp,
+    params.blacklist.password,
+    params.blacklist.popup
+  ],
+  blacklistDBParams: [
+    params.blacklist.scope,
+    params.blacklist.userMetadata,
+    params.blacklist.user_metadata
+  ],
   blacklistPopupParams: [params.blacklist.popupHandler],
   blacklistPostMessageParams: [
     params.blacklist.postMessageDataType,

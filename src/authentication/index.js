@@ -147,13 +147,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
     params.connection_scope = params.connection_scope.join(',');
   }
 
-  params = objectHelper.blacklist(params, [
-    'username',
-    'popupOptions',
-    'domain',
-    'tenant',
-    'timeout'
-  ]);
+  params = objectHelper.blacklist(params, constants.paramsArray.blacklistAuthParams);
   params = objectHelper.toSnakeCase(params, constants.paramsArray.toSnakeCaseBaseParams);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 

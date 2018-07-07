@@ -7,6 +7,7 @@ import WebMessageHandler from './web-message-handler';
 import responseHandler from '../helper/response-handler';
 import storage from '../helper/storage';
 import * as times from '../helper/times';
+import constants from '../helper/constants';
 
 function CrossOriginAuthentication(webAuth, options) {
   this.webAuth = webAuth;
@@ -85,7 +86,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
         return responseHandler(cb, { forceLegacyError: true })(errorObject);
       }
       var popupMode = options.popup === true;
-      options = objectHelper.blacklist(options, ['password', 'credentialType', 'otp', 'popup']);
+      options = objectHelper.blacklist(options, constants.paramsArray.blacklistCrossOriginParams);
       var authorizeOptions = objectHelper
         .merge(options)
         .with({ loginTicket: data.body.login_ticket });
