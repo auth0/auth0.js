@@ -1,5 +1,5 @@
-var urljoin = require('url-join');
-var PopupHandler = require('./popup-handler');
+import urljoin from 'url-join';
+import PopupHandler from './popup-handler';
 
 function PluginHandler(webAuth) {
   this.webAuth = webAuth;
@@ -15,4 +15,4 @@ PluginHandler.prototype.getPopupHandler = function () {
   return new PopupHandler(this.webAuth);
 };
 
-module.exports = PluginHandler;
+export default PluginHandler;

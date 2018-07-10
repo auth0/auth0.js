@@ -1,20 +1,20 @@
-var IdTokenVerifier = require('idtoken-verifier');
+import IdTokenVerifier from 'idtoken-verifier';
 
-var assert = require('../helper/assert');
-var error = require('../helper/error');
-var qs = require('qs');
-var PluginHandler = require('../helper/plugins');
-var windowHelper = require('../helper/window');
-var objectHelper = require('../helper/object');
-var ssodata = require('../helper/ssodata');
-var TransactionManager = require('./transaction-manager');
-var Authentication = require('../authentication');
-var Redirect = require('./redirect');
-var Popup = require('./popup');
-var SilentAuthenticationHandler = require('./silent-authentication-handler');
-var CrossOriginAuthentication = require('./cross-origin-authentication');
-var WebMessageHandler = require('./web-message-handler');
-var HostedPages = require('./hosted-pages');
+import assert from '../helper/assert';
+import error from '../helper/error';
+import qs from 'qs';
+import PluginHandler from '../helper/plugins';
+import windowHelper from '../helper/window';
+import objectHelper from '../helper/object';
+import ssodata from '../helper/ssodata';
+import TransactionManager from './transaction-manager';
+import Authentication from '../authentication';
+import Redirect from './redirect';
+import Popup from './popup';
+import SilentAuthenticationHandler from './silent-authentication-handler';
+import CrossOriginAuthentication from './cross-origin-authentication';
+import WebMessageHandler from './web-message-handler';
+import HostedPages from './hosted-pages';
 
 /**
  * Handles all the browser's AuthN/AuthZ flows
@@ -90,9 +90,8 @@ function WebAuth(options) {
   this.baseOptions = options;
   this.baseOptions.plugins = new PluginHandler(this, this.baseOptions.plugins || []);
 
-  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
-    ? this.baseOptions._sendTelemetry
-    : true;
+  this.baseOptions._sendTelemetry =
+    this.baseOptions._sendTelemetry === false ? this.baseOptions._sendTelemetry : true;
 
   this.baseOptions._timesToRetryFailedRequests = options._timesToRetryFailedRequests
     ? parseInt(options._timesToRetryFailedRequests, 0)
@@ -292,7 +291,8 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
     if (!parsedHash.access_token) {
       var noAccessTokenError = {
         error: 'invalid_token',
-        description: 'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this. Read more: https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
+        description:
+          'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this. Read more: https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
       };
       return callback(noAccessTokenError);
     }
@@ -622,7 +622,7 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
  * Some browsers might not be able to successfully authenticate if 3rd party cookies are disabled in your browser. [See here for more information.]{@link https://auth0.com/docs/cross-origin-authentication}.
  * After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
- * 
+ *
  * @method login
  * @see Requires [`Implicit` grant]{@link https://auth0.com/docs/api-auth/grant/implicit}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
@@ -787,4 +787,4 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
   });
 };
 
-module.exports = WebAuth;
+export default WebAuth;

@@ -1,5 +1,5 @@
-var Cookie = require('js-cookie');
-var objectHelper = require('../object');
+import Cookie from 'js-cookie';
+import objectHelper from '../object';
 function CookieStorage() {}
 
 CookieStorage.prototype.getItem = function(key) {
@@ -20,4 +20,4 @@ CookieStorage.prototype.setItem = function(key, value, options) {
   Cookie.set(key, value, params);
 };
 
-module.exports = CookieStorage;
+export default CookieStorage;

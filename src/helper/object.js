@@ -2,8 +2,8 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 
-var assert = require('./assert');
-var objectAssign = require('./object-assign');
+import assert from './assert';
+import objectAssign from './object-assign';
 
 function pick(object, keys) {
   return keys.reduce(function(prev, key) {
@@ -147,7 +147,7 @@ function getOriginFromUrl(url) {
   return origin;
 }
 
-module.exports = {
+export default {
   toSnakeCase: toSnakeCase,
   toCamelCase: toCamelCase,
   blacklist: blacklist,

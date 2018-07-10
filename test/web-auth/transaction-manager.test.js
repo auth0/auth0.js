@@ -1,11 +1,10 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
-var spy = require('sinon').spy;
+import expect from 'expect.js';
+import { stub, spy } from 'sinon';
 
-var TransactionManager = require('../../src/web-auth/transaction-manager');
-var objectHelper = require('../../src/helper/object');
-var random = require('../../src/helper/random');
-var storage = require('../../src/helper/storage');
+import TransactionManager from '../../src/web-auth/transaction-manager';
+import objectHelper from '../../src/helper/object';
+import random from '../../src/helper/random';
+import storage from '../../src/helper/storage';
 
 context('TransactionManager', function() {
   beforeEach(function() {
