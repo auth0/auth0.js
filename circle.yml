@@ -21,3 +21,4 @@ test:
 general:
   artifacts:
     - dist
+    
