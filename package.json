@@ -1,6 +1,6 @@
 {
   "name": "auth0-js",
-  "version": "9.7.1",
+  "version": "9.7.2",
   "description": "Auth0 headless browser sdk",
   "author": "Auth0",
   "license": "MIT",
@@ -26,7 +26,7 @@
   "scripts": {
     "start": "rollup -c --watch",
     "build": "rm -rf dist && rm -rf build && rollup -c --prod && cp -rf dist build",
-    "test": "cross-env BABEL_ENV=test mocha --require babel-register test/*.test.js test/**/*.test.js --exit",
+    "test": "cross-env BABEL_ENV=test mocha --require babel-register test/**/*.test.js --exit",
     "test:integration": "cross-env BABEL_ENV=test mocha-parallel-tests --compilers babel-register --max-parallel 2 integration/**/*.test.js",
     "test:watch": "npm run test -- --watch -R min",
     "ci:test": "cross-env BABEL_ENV=test nyc npm run test -- --forbid-only -R mocha-multi --reporter-options spec=-,mocha-junit-reporter=-",
