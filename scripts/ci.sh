@@ -54,10 +54,12 @@ bower_release()
     verbose "Deploying $VERSION to git"
 
     LAST_COMMIT=$(git log -1 --pretty=%B)
-    # removing dist from gitignore so it gets pushed to the tag
+    # removing dist/build from gitignore so it gets pushed to the tag
     grep -v -e '^dist$' -e '^dist/$' .gitignore > /tmp/.gitignore
+    grep -v -e '^build$' -e '^build/$' .gitignore > /tmp/.gitignore
     mv /tmp/.gitignore .gitignore
     git add --force dist/*
+    git add --force build/*
     git commit -am "$TAG_NAME"
     git tag "$TAG_NAME" -m "$LAST_COMMIT"
     git push origin $TAG_NAME
