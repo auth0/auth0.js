@@ -1,4 +1,10 @@
 
+## [v9.7.2](https://github.com/auth0/auth0.js/tree/v9.7.2) (2018-07-13)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.1...v9.7.2)
+
+**Fixed**
+- Fix default export for auth0js [\#803](https://github.com/auth0/auth0.js/pull/803) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.7.1](https://github.com/auth0/auth0.js/tree/v9.7.1) (2018-07-13)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.0...v9.7.1)
 
