@@ -54,7 +54,7 @@ bower_release()
     verbose "Deploying $VERSION to git"
 
     LAST_COMMIT=$(git log -1 --pretty=%B)
-    # removing dist/build from gitignore so it gets pushed to the tag
+    # removing dist and build folders from gitignore so it gets pushed to the tag
     grep -v -e '^dist$' -e '^dist/$' .gitignore > /tmp/.gitignore
     grep -v -e '^build$' -e '^build/$' .gitignore > /tmp/.gitignore
     mv /tmp/.gitignore .gitignore
