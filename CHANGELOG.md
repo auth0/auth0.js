@@ -1,4 +1,10 @@
 
+## [v9.7.1](https://github.com/auth0/auth0.js/tree/v9.7.1) (2018-07-13)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.0...v9.7.1)
+
+**Fixed**
+- Fix build folder not being published in the tag [\#801](https://github.com/auth0/auth0.js/pull/801) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.7.0](https://github.com/auth0/auth0.js/tree/v9.7.0) (2018-07-12)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.6.1...v9.7.0)
 
