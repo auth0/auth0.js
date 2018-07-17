@@ -1,9 +1,9 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
+import expect from 'expect.js';
+import { stub } from 'sinon';
 
-var objectAssign = require('../../src/helper/object-assign');
-var objectHelper = require('../../src/helper/object');
-var windowHelper = require('../../src/helper/window');
+import objectAssign from '../../src/helper/object-assign';
+import objectHelper from '../../src/helper/object';
+import windowHelper from '../../src/helper/window';
 
 describe('helpers', function() {
   describe('getKeysNotIn', function() {

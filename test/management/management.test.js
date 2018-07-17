@@ -1,12 +1,12 @@
-var expect = require('expect.js');
+import expect from 'expect.js';
 
-var stub = require('sinon').stub;
+import { stub } from 'sinon';
 
-var RequestMock = require('../mock/request-mock');
+import RequestMock from '../mock/request-mock';
 
-var request = require('superagent');
+import request from 'superagent';
 
-var Management = require('../../src/management');
+import Management from '../../src/management';
 
 describe('auth0.Management', function() {
   describe('initialization', function() {

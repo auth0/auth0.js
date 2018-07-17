@@ -1,5 +1,5 @@
-var IframeHandler = require('../helper/iframe-handler');
-var windowHelper = require('../helper/window');
+import IframeHandler from '../helper/iframe-handler';
+import windowHelper from '../helper/window';
 
 function SilentAuthenticationHandler(options) {
   this.authenticationUrl = options.authenticationUrl;
@@ -11,8 +11,10 @@ function SilentAuthenticationHandler(options) {
   this.postMessageOrigin =
     options.postMessageOrigin ||
     windowHelper.getWindow().location.origin ||
-    windowHelper.getWindow().location.protocol + '//' + windowHelper.getWindow().location.hostname
-      + (windowHelper.getWindow().location.port ? ':' + windowHelper.getWindow().location.port : '');
+    windowHelper.getWindow().location.protocol +
+      '//' +
+      windowHelper.getWindow().location.hostname +
+      (windowHelper.getWindow().location.port ? ':' + windowHelper.getWindow().location.port : '');
 }
 
 SilentAuthenticationHandler.create = function(options) {
@@ -86,4 +88,4 @@ SilentAuthenticationHandler.prototype.getCallbackHandler = function(callback, us
   };
 };
 
-module.exports = SilentAuthenticationHandler;
+export default SilentAuthenticationHandler;

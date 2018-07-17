@@ -1,4 +1,4 @@
-var windowHelper = require('./window');
+import windowHelper from './window';
 
 function randomString(length) {
   // eslint-disable-next-line
@@ -20,6 +20,6 @@ function randomString(length) {
   return result.join('');
 }
 
-module.exports = {
+export default {
   randomString: randomString
 };

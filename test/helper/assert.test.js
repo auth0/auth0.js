@@ -1,7 +1,7 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
+import expect from 'expect.js';
+import { stub } from 'sinon';
 
-var assert = require('../../src/helper/assert');
+import assert from '../../src/helper/assert';
 
 describe('helpers assert', function() {
   describe('isArray native', function() {

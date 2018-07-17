@@ -1,19 +1,18 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
-var spy = require('sinon').spy;
-var request = require('superagent');
+import expect from 'expect.js';
+import { stub, spy } from 'sinon';
+import request from 'superagent';
 
-var storage = require('../../src/helper/storage');
-var IframeHandler = require('../../src/helper/iframe-handler');
-var times = require('../../src/helper/times');
-var RequestMock = require('../mock/request-mock');
+import storage from '../../src/helper/storage';
+import IframeHandler from '../../src/helper/iframe-handler';
+import * as times from '../../src/helper/times';
+import RequestMock from '../mock/request-mock';
 
-var TransactionManager = require('../../src/web-auth/transaction-manager');
-var SilentAuthenticationHandler = require('../../src/web-auth/silent-authentication-handler');
-var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
-var WebAuth = require('../../src/web-auth');
-var windowHelper = require('../../src/helper/window');
-var WebMessageHandler = require('../../src/web-auth/web-message-handler');
+import TransactionManager from '../../src/web-auth/transaction-manager';
+import SilentAuthenticationHandler from '../../src/web-auth/silent-authentication-handler';
+import CrossOriginAuthentication from '../../src/web-auth/cross-origin-authentication';
+import WebAuth from '../../src/web-auth';
+import windowHelper from '../../src/helper/window';
+import WebMessageHandler from '../../src/web-auth/web-message-handler';
 
 describe('auth0.WebAuth.crossOriginAuthentication', function() {
   context('login', function() {
@@ -114,9 +113,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         anotherOption: 'foobar'
       });
     });
-    it('should call /co/authenticate and call `webMessageHandler.run` when popup:true', function(
-      done
-    ) {
+    it('should call /co/authenticate and call `webMessageHandler.run` when popup:true', function(done) {
       stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({

@@ -3,7 +3,7 @@
 // defined by the specification, or existing parameters that we
 // need for compatibility
 
-var objectHelper = require('./object');
+import objectHelper from './object';
 
 var tokenParams = [
   // auth0
@@ -62,7 +62,7 @@ var authorizeParams = [
   'request_uri',
   'code_challenge',
   'code_challenge_method',
-  
+
   // ADDITIONAL_PARAMETERS:
   // https://auth0.com/docs/api/authentication?javascript#social
   'access_type',
@@ -87,7 +87,7 @@ function oauthTokenParams(warn, params) {
   return objectHelper.pick(params, tokenParams);
 }
 
-module.exports = {
+export default {
   oauthTokenParams: oauthTokenParams,
   oauthAuthorizeParams: oauthAuthorizeParams
 };

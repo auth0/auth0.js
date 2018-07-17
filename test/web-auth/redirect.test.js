@@ -1,15 +1,15 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
-var request = require('superagent');
+import expect from 'expect.js';
+import { stub } from 'sinon';
+import request from 'superagent';
 
-var RequestMock = require('../mock/request-mock');
-var windowHelper = require('../../src/helper/window');
-var WebAuth = require('../../src/web-auth');
-var RequestBuilder = require('../../src/helper/request-builder');
-var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
+import RequestMock from '../mock/request-mock';
+import windowHelper from '../../src/helper/window';
+import WebAuth from '../../src/web-auth';
+import RequestBuilder from '../../src/helper/request-builder';
+import CrossOriginAuthentication from '../../src/web-auth/cross-origin-authentication';
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
-var TransactionManager = require('../../src/web-auth/transaction-manager');
-var objectHelper = require('../../src/helper/object');
+import TransactionManager from '../../src/web-auth/transaction-manager';
+import objectHelper from '../../src/helper/object';
 
 describe('auth0.WebAuth.redirect', function() {
   before(function() {

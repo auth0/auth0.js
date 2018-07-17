@@ -1,8 +1,8 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
+import expect from 'expect.js';
+import { stub } from 'sinon';
 
-var windowHelper = require('../../src/helper/window');
-var random = require('../../src/helper/random');
+import windowHelper from '../../src/helper/window';
+import random from '../../src/helper/random';
 
 describe('helpers random', function() {
   describe('randomString with crypto', function() {

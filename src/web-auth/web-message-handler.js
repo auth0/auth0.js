@@ -1,7 +1,7 @@
-var IframeHandler = require('../helper/iframe-handler');
-var objectHelper = require('../helper/object');
-var windowHelper = require('../helper/window');
-var Warn = require('../helper/warn');
+import IframeHandler from '../helper/iframe-handler';
+import objectHelper from '../helper/object';
+import windowHelper from '../helper/window';
+import Warn from '../helper/warn';
 
 function runWebMessageFlow(authorizeUrl, options, callback) {
   var handler = new IframeHandler({
@@ -45,7 +45,8 @@ WebMessageHandler.prototype.run = function(options, cb) {
   if (redirectUriOrigin && currentOrigin !== redirectUriOrigin) {
     return cb({
       error: 'origin_mismatch',
-      error_description: "The redirectUri's origin (" +
+      error_description:
+        "The redirectUri's origin (" +
         redirectUriOrigin +
         ") should match the window's origin (" +
         currentOrigin +
@@ -78,4 +79,4 @@ WebMessageHandler.prototype.run = function(options, cb) {
   });
 };
 
-module.exports = WebMessageHandler;
+export default WebMessageHandler;

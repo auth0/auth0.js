@@ -1,15 +1,15 @@
-var urljoin = require('url-join');
-var WinChan = require('winchan');
+import urljoin from 'url-join';
+import WinChan from 'winchan';
 
-var urlHelper = require('../helper/url');
-var assert = require('../helper/assert');
-var responseHandler = require('../helper/response-handler');
-var PopupHandler = require('../helper/popup-handler');
-var objectHelper = require('../helper/object');
-var windowHelper = require('../helper/window');
-var Warn = require('../helper/warn');
-var TransactionManager = require('./transaction-manager');
-var CrossOriginAuthentication = require('./cross-origin-authentication');
+import urlHelper from '../helper/url';
+import assert from '../helper/assert';
+import responseHandler from '../helper/response-handler';
+import PopupHandler from '../helper/popup-handler';
+import objectHelper from '../helper/object';
+import windowHelper from '../helper/window';
+import Warn from '../helper/warn';
+import TransactionManager from './transaction-manager';
+import CrossOriginAuthentication from './cross-origin-authentication';
 
 function Popup(webAuth, options) {
   this.baseOptions = options;
@@ -110,7 +110,8 @@ Popup.prototype.callback = function(options) {
     if (popupOrigin !== originUrl) {
       return cb({
         error: 'origin_mismatch',
-        error_description: "The popup's origin (" +
+        error_description:
+          "The popup's origin (" +
           popupOrigin +
           ') should match the `popupOrigin` parameter (' +
           originUrl +
@@ -297,4 +298,4 @@ Popup.prototype.signupAndLogin = function(options, cb) {
   );
 };
 
-module.exports = Popup;
+export default Popup;

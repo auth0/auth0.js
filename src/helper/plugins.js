@@ -1,4 +1,4 @@
-var version = require('../version');
+import version from '../version';
 
 function PluginHandler(webAuth, plugins) {
   this.plugins = plugins;
@@ -37,4 +37,4 @@ PluginHandler.prototype.get = function(extensibilityPoint) {
   return null;
 };
 
-module.exports = PluginHandler;
+export default PluginHandler;
