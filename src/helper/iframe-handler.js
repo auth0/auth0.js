@@ -87,10 +87,9 @@ IframeHandler.prototype.destroy = function() {
       false
     );
 
-  if (_this.iframe.parentNode) {
-    _this.iframe.parentNode.removeChild(_this.iframe);
-  }
-
+    if (_this.iframe.parentNode) {
+      _this.iframe.parentNode.removeChild(_this.iframe);
+    }
   }, 0);
 };
 
