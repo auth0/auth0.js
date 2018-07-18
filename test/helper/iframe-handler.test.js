@@ -87,11 +87,6 @@ function stubWindow(eventType, data) {
         return iFrame;
       },
       body: {
-        removeChild: function(ele) {
-          expect(ele.id).to.be(iFrame.id);
-          expect(fauxWindow.mockObjectStore.iframe).to.be(iFrame);
-          fauxWindow.mockObjectStore.iframe = null;
-        },
         appendChild: function(ele) {
           expect(fauxWindow.mockObjectStore.iframe).to.be(null);
           expect(ele.id).to.be(iFrame.id);
@@ -278,7 +273,6 @@ describe('helpers iframeHandler', function() {
       setTimeout(function() {
         expect(callbackCalled).to.eql(true);
         expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
-        expect(windowHelper.getWindow().mockObjectStore.iframe).to.be(null);
 
         done();
       }, 200);
@@ -350,6 +344,26 @@ describe('helpers iframeHandler', function() {
         expect(e.message).to.eql('Unsupported event listener type: invalid');
         done();
       }
+    });
+
+    it('destroy() should call parentNode.removeChild when available', function(done) {
+      var iframe = stubWindow('message');
+      iframe.assimilate({
+        parentNode: {
+          removeChild: function() {
+            done();
+          }
+        }
+      });
+
+      var iframeHandler = new IframeHandler({
+        eventListenerType: 'message',
+        timeout: 1,
+        timeoutCallback: function() {},
+        callback: function() {}
+      });
+
+      iframeHandler.init();
     });
   });
 });
