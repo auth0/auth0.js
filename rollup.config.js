@@ -1,7 +1,7 @@
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const replace = require('rollup-plugin-replace');
-const { uglify } = require('rollup-plugin-uglify');
+const { terser } = require('rollup-plugin-terser');
 const serve = require('rollup-plugin-serve');
 const livereload = require('rollup-plugin-livereload');
 const license = require('rollup-plugin-license');
@@ -26,7 +26,7 @@ const getPlugins = isProduction => {
       'process.env.NODE_ENV': isProduction ? "'production'" : "'development'"
     }),
     isProduction &&
-      uglify({
+      terser({
         compress: { warnings: false },
         output: { comments: false },
         mangle: false
@@ -48,12 +48,22 @@ export default [
     input: 'src/index.js',
     output: {
       name: 'auth0',
-      file: pkg.browser,
+      file: pkg.main,
       format: 'umd',
       sourcemap: true,
       exports: 'named'
     },
     plugins: getPlugins(isProduction)
+  },
+  {
+    input: 'src/index.js',
+    output: {
+      name: 'auth0',
+      file: pkg.module,
+      format: 'es',
+      sourcemap: true
+    },
+    plugins: getPlugins(false)
   },
   {
     input: 'plugins/cordova/index.js',
