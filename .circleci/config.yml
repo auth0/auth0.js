@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build-and-test:
+  build:
     docker:
       - image: circleci/node:8.11.3-browsers
     environment:
@@ -36,9 +36,3 @@ jobs:
           command: yarn run ci:coverage
       - store_artifacts:
           path: dist
-
-workflows:
-  version: 2
-  build-test-report:
-    jobs:
-      - build-and-test
