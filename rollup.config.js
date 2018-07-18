@@ -42,28 +42,24 @@ const getPlugins = isProduction => {
   ];
 };
 
-export default [
-  //prod
+const prodFiles = [
   {
     input: 'src/index.js',
-    output: {
-      name: 'auth0',
-      file: pkg.main,
-      format: 'umd',
-      sourcemap: true,
-      exports: 'named'
-    },
+    output: [
+      {
+        name: 'auth0',
+        file: pkg.main,
+        format: 'umd',
+        sourcemap: true,
+        exports: 'named'
+      },
+      {
+        file: pkg.module,
+        format: 'es',
+        sourcemap: true
+      }
+    ],
     plugins: getPlugins(isProduction)
-  },
-  {
-    input: 'src/index.js',
-    output: {
-      name: 'auth0',
-      file: pkg.module,
-      format: 'es',
-      sourcemap: true
-    },
-    plugins: getPlugins(false)
   },
   {
     input: 'plugins/cordova/index.js',
@@ -75,8 +71,9 @@ export default [
       exports: 'default'
     },
     plugins: getPlugins(isProduction)
-  },
-  //dev
+  }
+];
+const devFiles = [
   {
     input: 'src/index.js',
     output: {
@@ -109,3 +106,9 @@ export default [
     plugins: getPlugins(false)
   }
 ];
+
+const finalFiles = [...devFiles];
+if (isProduction) {
+  finalFiles.push(...prodFiles);
+}
+export default finalFiles;
