@@ -1,4 +1,7 @@
 
+## [v9.7.3-beta1](https://github.com/auth0/auth0.js/tree/v9.7.3-beta1) (2018-07-18)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.2...v9.7.3-beta1)
+
 ## [v9.7.2](https://github.com/auth0/auth0.js/tree/v9.7.2) (2018-07-13)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.1...v9.7.2)
 
