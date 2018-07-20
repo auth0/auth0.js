@@ -1,4 +1,33 @@
 
+## [v9.7.3-beta1](https://github.com/auth0/auth0.js/tree/v9.7.3-beta1) (2018-07-18)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.2...v9.7.3-beta1)
+
+**Fixed**
+- Fix npm module export [\#808](https://github.com/auth0/auth0.js/pull/808) ([luisrudge](https://github.com/luisrudge))
+  - We're testing the new module export to make sure we restore the previous behavior before committing to a patch fix
+
+## [v9.7.2](https://github.com/auth0/auth0.js/tree/v9.7.2) (2018-07-13)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.1...v9.7.2)
+
+**Fixed**
+- Fix default export for auth0js [\#803](https://github.com/auth0/auth0.js/pull/803) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.7.1](https://github.com/auth0/auth0.js/tree/v9.7.1) (2018-07-13)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.0...v9.7.1)
+
+**Fixed**
+- Fix build folder not being published in the tag [\#801](https://github.com/auth0/auth0.js/pull/801) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.7.0](https://github.com/auth0/auth0.js/tree/v9.7.0) (2018-07-12)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.6.1...v9.7.0)
+
+**Added**
+- Add SRI hashes to the cdn [\#782](https://github.com/auth0/auth0.js/pull/782) ([luisrudge](https://github.com/luisrudge))
+
+**Fixed**
+- options is optional in WebAuth.prototype.authorize [\#789](https://github.com/auth0/auth0.js/pull/789) ([behrangsa](https://github.com/behrangsa))
+- Removing `domain` option from methods (it can't be overridden) [\#781](https://github.com/auth0/auth0.js/pull/781) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.6.1](https://github.com/auth0/auth0.js/tree/v9.6.1) (2018-06-07)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.6.0...v9.6.1)
 
