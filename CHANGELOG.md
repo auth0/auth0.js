@@ -1,4 +1,10 @@
 
+## [v9.7.3](https://github.com/auth0/auth0.js/tree/v9.7.3) (2018-07-23)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.3-beta1...v9.7.3)
+
+**Fixed**
+- Fix npm module export [\#808](https://github.com/auth0/auth0.js/pull/808) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.7.3-beta1](https://github.com/auth0/auth0.js/tree/v9.7.3-beta1) (2018-07-18)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.2...v9.7.3-beta1)
 
