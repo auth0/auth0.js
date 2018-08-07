@@ -5,9 +5,9 @@ import * as times from '../helper/times';
 var DEFAULT_NAMESPACE = 'com.auth0.auth.';
 
 function TransactionManager(options) {
-  options = options || {};
-  this.namespace = options.namespace || DEFAULT_NAMESPACE;
-  this.keyLength = options.keyLength || 32;
+  var transaction = options.transaction || {};
+  this.namespace = transaction.namespace || DEFAULT_NAMESPACE;
+  this.keyLength = transaction.keyLength || 32;
   this.storage = new Storage(options);
 }
 

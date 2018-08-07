@@ -9,7 +9,7 @@ import TransactionManager from './transaction-manager';
 function UsernamePassword(options) {
   this.baseOptions = options;
   this.request = new RequestBuilder(options);
-  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
+  this.transactionManager = new TransactionManager(this.baseOptions);
 }
 
 UsernamePassword.prototype.login = function(options, cb) {

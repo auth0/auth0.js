@@ -28,8 +28,12 @@ describe('helpers storage handler', function() {
   afterEach(function() {
     windowHandler.getWindow.restore();
   });
-  it('should use localStorage by default', function() {
-    var handler = new StorageHandler();
+  it('should use CookieStorage by default', function() {
+    var handler = new StorageHandler({});
+    expect(handler.storage).to.be.a(CookieStorage);
+  });
+  it('should use localStorage when __tryLocalStorageFirst is true', function() {
+    var handler = new StorageHandler({ __tryLocalStorageFirst: true });
     expect(handler.storage).to.be.a(MockLocalStorage);
   });
   describe('when using localStorage', function() {
@@ -55,30 +59,30 @@ describe('helpers storage handler', function() {
     });
     it('calls getItem correctly', function() {
       var key = 'foo';
-      var handler = new StorageHandler();
+      var handler = new StorageHandler({ __tryLocalStorageFirst: true });
       expect(handler.getItem(key)).to.be('test');
       expect(getItemStub.firstCall.args).to.be.eql([key]);
     });
     it('calls setItem correctly', function() {
       var key = 'foo';
       var value = 'bar';
-      var handler = new StorageHandler();
+      var handler = new StorageHandler({ __tryLocalStorageFirst: true });
       handler.setItem(key, value, {});
       expect(setItemSpy.firstCall.args).to.be.eql([key, value, {}]);
     });
     it('calls removeItem correctly', function() {
       var key = 'foo';
-      var handler = new StorageHandler();
+      var handler = new StorageHandler({ __tryLocalStorageFirst: true });
       handler.removeItem(key);
       expect(removeItemSpy.firstCall.args).to.be.eql([key]);
     });
   });
   describe('should use cookie storage', function() {
-    it('when localstorage is not available', function() {
+    it('when __tryLocalStorageFirst is true but localSTorage is not available', function() {
       windowHandler.getWindow.restore();
       stub(windowHandler, 'getWindow', function(message) {});
 
-      var handler = new StorageHandler();
+      var handler = new StorageHandler({ __tryLocalStorageFirst: true });
       expect(handler.storage).to.be.a(CookieStorage);
     });
     it('when localstorage throws an error', function() {
@@ -91,14 +95,13 @@ describe('helpers storage handler', function() {
         };
       });
 
-      var handler = new StorageHandler();
+      var handler = new StorageHandler({ __tryLocalStorageFirst: true });
       expect(handler.storage).to.be.a(CookieStorage);
     });
-
     it('when localstorage fails with getItem', function() {
       spy(CookieStorage.prototype, 'getItem');
 
-      var handler = new StorageHandler();
+      var handler = new StorageHandler({ __tryLocalStorageFirst: true });
 
       expect(handler.storage).to.be.a(MockLocalStorage);
       handler.getItem('pepe');
@@ -108,11 +111,10 @@ describe('helpers storage handler', function() {
 
       CookieStorage.prototype.getItem.restore();
     });
-
     it('when localstorage fails with setItem', function() {
       spy(CookieStorage.prototype, 'setItem');
 
-      var handler = new StorageHandler();
+      var handler = new StorageHandler({ __tryLocalStorageFirst: true });
 
       expect(handler.storage).to.be.a(MockLocalStorage);
       handler.setItem('some', 'value', { options: true });
@@ -126,11 +128,10 @@ describe('helpers storage handler', function() {
 
       CookieStorage.prototype.setItem.restore();
     });
-
     it('when localstorage fails with removeItem', function() {
       spy(CookieStorage.prototype, 'removeItem');
 
-      var handler = new StorageHandler();
+      var handler = new StorageHandler({ __tryLocalStorageFirst: true });
 
       expect(handler.storage).to.be.a(MockLocalStorage);
       handler.removeItem('some');
@@ -142,8 +143,8 @@ describe('helpers storage handler', function() {
     });
   });
 
-  it('should failover to dummy', function() {
-    var handler = new StorageHandler();
+  it('should failover to from localStorage to CookieStorage to DummyStorage', function() {
+    var handler = new StorageHandler({ __tryLocalStorageFirst: true });
 
     expect(handler.storage).to.be.a(MockLocalStorage);
     handler.failover();

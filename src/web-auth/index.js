@@ -107,7 +107,7 @@ function WebAuth(options) {
 
   this.baseOptions.jwksURI = this.baseOptions.overrides && this.baseOptions.overrides.__jwks_uri;
 
-  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
+  this.transactionManager = new TransactionManager(this.baseOptions);
 
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this, this.baseOptions);

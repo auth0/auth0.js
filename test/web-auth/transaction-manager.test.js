@@ -7,7 +7,7 @@ import Storage from '../../src/helper/storage';
 
 context('TransactionManager', function() {
   beforeEach(function() {
-    this.tm = new TransactionManager();
+    this.tm = new TransactionManager({});
   });
   context('process', function() {
     beforeEach(function() {
