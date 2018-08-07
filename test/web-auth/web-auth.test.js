@@ -5,7 +5,7 @@ import request from 'superagent';
 import IdTokenVerifier from 'idtoken-verifier';
 
 import windowHelper from '../../src/helper/window';
-import ssodata from '../../src/helper/ssodata';
+import SSODataStorage from '../../src/helper/ssodata';
 import Warn from '../../src/helper/warn';
 
 import RequestMock from '../mock/request-mock';
@@ -266,13 +266,13 @@ describe('auth0.WebAuth', function() {
         state: 'foo',
         appState: null
       });
-      spy(ssodata, 'set');
+      spy(SSODataStorage.prototype, 'set');
       stub(IdTokenVerifier.prototype, 'validateAccessToken', function(at, alg, atHash, cb) {
         cb(null);
       });
     });
     afterEach(function() {
-      ssodata.set.restore();
+      SSODataStorage.prototype.set.restore();
       if (IdTokenVerifier.prototype.validateAccessToken.restore) {
         IdTokenVerifier.prototype.validateAccessToken.restore();
       }
@@ -569,8 +569,11 @@ describe('auth0.WebAuth', function() {
                 '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
             },
             function() {
-              expect(ssodata.set.calledOnce).to.be.ok();
-              expect(ssodata.set.firstCall.args).to.be.eql(['lastUsedConnection', undefined]);
+              expect(SSODataStorage.prototype.set.calledOnce).to.be.ok();
+              expect(SSODataStorage.prototype.set.firstCall.args).to.be.eql([
+                'lastUsedConnection',
+                undefined
+              ]);
               expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
               done();
             }
@@ -584,8 +587,8 @@ describe('auth0.WebAuth', function() {
               nonce: 'wEOe7-LC8nl1AuHp7nucF_5LMVPVkMBY'
             },
             function() {
-              expect(ssodata.set.calledOnce).to.be.ok();
-              expect(ssodata.set.firstCall.args).to.be.eql([
+              expect(SSODataStorage.prototype.set.calledOnce).to.be.ok();
+              expect(SSODataStorage.prototype.set.firstCall.args).to.be.eql([
                 'lastUsedConnection',
                 'auth0|59fbe11937039b263a8b29a2'
               ]);
@@ -2316,7 +2319,7 @@ describe('auth0.WebAuth', function() {
       stub(TransactionManager.prototype, 'process', function(params) {
         return Object.assign({}, params, { from: 'transaction-manager' });
       });
-      spy(TransactionManager.prototype, 'clearTransaction');
+      stub(TransactionManager.prototype, 'clearTransaction', function() {});
       stub(windowHelper, 'getOrigin', function() {
         return 'https://test-origin.com';
       });

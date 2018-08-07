@@ -4,7 +4,7 @@ import qs from 'qs';
 import RequestBuilder from '../helper/request-builder';
 import objectHelper from '../helper/object';
 import assert from '../helper/assert';
-import ssodata from '../helper/ssodata';
+import SSODataStorage from '../helper/ssodata';
 import windowHelper from '../helper/window';
 import responseHandler from '../helper/response-handler';
 import parametersWhitelist from '../helper/parameters-whitelist';
@@ -81,6 +81,7 @@ function Authentication(auth0, options) {
   this.warn = new Warn({
     disableWarnings: !!options._disableDeprecationWarnings
   });
+  this.ssodataStorage = new SSODataStorage(this.baseOptions);
 }
 
 /**
@@ -393,7 +394,7 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
   }
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
   var clientId = this.baseOptions.clientID;
-  var ssodataInformation = ssodata.get() || {};
+  var ssodataInformation = this.ssodataStorage.get() || {};
 
   this.auth0.checkSession(
     {

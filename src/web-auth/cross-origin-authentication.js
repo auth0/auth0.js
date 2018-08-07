@@ -5,7 +5,7 @@ import objectHelper from '../helper/object';
 import RequestBuilder from '../helper/request-builder';
 import WebMessageHandler from './web-message-handler';
 import responseHandler from '../helper/response-handler';
-import storage from '../helper/storage';
+import Storage from '../helper/storage';
 import * as times from '../helper/times';
 
 function CrossOriginAuthentication(webAuth, options) {
@@ -13,6 +13,7 @@ function CrossOriginAuthentication(webAuth, options) {
   this.baseOptions = options;
   this.request = new RequestBuilder(options);
   this.webMessageHandler = new WebMessageHandler(webAuth);
+  this.storage = new Storage(options);
 }
 
 function getFragment(name) {
@@ -90,7 +91,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
         .merge(options)
         .with({ loginTicket: data.body.login_ticket });
       var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
-      storage.setItem(key, data.body.co_verifier, { expires: times.MINUTES_15 });
+      _this.storage.setItem(key, data.body.co_verifier, { expires: times.MINUTES_15 });
       if (popupMode) {
         _this.webMessageHandler.run(
           authorizeOptions,
@@ -102,7 +103,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
     });
 };
 
-function tryGetVerifier(theWindow, key) {
+function tryGetVerifier(storage, key) {
   try {
     var verifier = storage.getItem(key);
     storage.removeItem(key);
@@ -120,13 +121,14 @@ function tryGetVerifier(theWindow, key) {
 CrossOriginAuthentication.prototype.callback = function() {
   var targetOrigin = decodeURIComponent(getFragment('origin'));
   var theWindow = windowHelper.getWindow();
+  var _this = this;
 
   theWindow.addEventListener('message', function(evt) {
     if (evt.data.type !== 'co_verifier_request') {
       return;
     }
     var key = createKey(evt.origin, evt.data.request.id);
-    var verifier = tryGetVerifier(theWindow, key);
+    var verifier = tryGetVerifier(_this.storage, key);
 
     evt.source.postMessage(
       {

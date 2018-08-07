@@ -1,5 +1,5 @@
 import random from '../helper/random';
-import storage from '../helper/storage';
+import Storage from '../helper/storage';
 import * as times from '../helper/times';
 
 var DEFAULT_NAMESPACE = 'com.auth0.auth.';
@@ -8,6 +8,7 @@ function TransactionManager(options) {
   options = options || {};
   this.namespace = options.namespace || DEFAULT_NAMESPACE;
   this.keyLength = options.keyLength || 32;
+  this.storage = new Storage(options);
 }
 
 TransactionManager.prototype.process = function(options) {
@@ -45,7 +46,7 @@ TransactionManager.prototype.generateTransaction = function(
   state = state || random.randomString(this.keyLength);
   nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
 
-  storage.setItem(
+  this.storage.setItem(
     this.namespace + state,
     {
       nonce: nonce,
@@ -64,13 +65,13 @@ TransactionManager.prototype.generateTransaction = function(
 TransactionManager.prototype.getStoredTransaction = function(state) {
   var transactionData;
 
-  transactionData = storage.getItem(this.namespace + state);
+  transactionData = this.storage.getItem(this.namespace + state);
   this.clearTransaction(state);
   return transactionData;
 };
 
 TransactionManager.prototype.clearTransaction = function(state) {
-  storage.removeItem(this.namespace + state);
+  this.storage.removeItem(this.namespace + state);
 };
 
 export default TransactionManager;

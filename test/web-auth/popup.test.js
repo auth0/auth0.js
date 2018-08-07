@@ -8,7 +8,7 @@ import request from 'superagent';
 
 import PopupHandler from '../../src/helper/popup-handler';
 import windowHandler from '../../src/helper/window';
-import storage from '../../src/helper/storage';
+import Storage from '../../src/helper/storage';
 import WebAuth from '../../src/web-auth';
 import CrossOriginAuthentication from '../../src/web-auth/cross-origin-authentication';
 import TransactionManager from '../../src/web-auth/transaction-manager';
@@ -94,11 +94,11 @@ describe('auth0.WebAuth.popup', function() {
         expect(url).to.be(
           'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&state=123&nonce=456&scope=openid'
         );
-        storage.setItem.restore();
+        Storage.prototype.setItem.restore();
         TransactionManager.prototype.process.restore();
         done();
       });
-      stub(storage, 'setItem', function() {});
+      stub(Storage.prototype, 'setItem', function() {});
       stub(TransactionManager.prototype, 'process', function(options) {
         return options;
       });

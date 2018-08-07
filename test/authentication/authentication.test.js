@@ -8,7 +8,7 @@ import request from 'superagent';
 
 import RequestBuilder from '../../src/helper/request-builder';
 import windowHelper from '../../src/helper/window';
-import storage from '../../src/helper/storage';
+import Storage from '../../src/helper/storage';
 import Authentication from '../../src/authentication';
 import WebAuth from '../../src/web-auth';
 
@@ -279,7 +279,7 @@ describe('auth0.authentication', function() {
           responseType: 'code',
           _sendTelemetry: false
         });
-        stub(storage, 'getItem', function(key) {
+        stub(Storage.prototype, 'getItem', function(key) {
           expect(key).to.be('auth0.ssodata');
           return JSON.stringify({
             lastUsedConnection: 'lastUsedConnection',
@@ -289,7 +289,7 @@ describe('auth0.authentication', function() {
         });
       });
       after(function() {
-        storage.getItem.restore();
+        Storage.prototype.getItem.restore();
       });
       beforeEach(function() {
         stub(windowHelper, 'getWindow', function() {
