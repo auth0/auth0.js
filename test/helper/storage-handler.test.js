@@ -78,7 +78,7 @@ describe('helpers storage handler', function() {
     });
   });
   describe('should use cookie storage', function() {
-    it('when __tryLocalStorageFirst is true but localSTorage is not available', function() {
+    it('when __tryLocalStorageFirst is true but localStorage is not available', function() {
       windowHandler.getWindow.restore();
       stub(windowHandler, 'getWindow', function(message) {});
 

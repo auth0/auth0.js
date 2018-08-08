@@ -6,7 +6,7 @@ import Warn from '../warn';
 function StorageHandler(options) {
   this.warn = new Warn({});
   this.storage = new CookieStorage();
-  if (!options.__tryLocalStorageFirst) {
+  if (options.__tryLocalStorageFirst !== true) {
     return;
   }
   try {
