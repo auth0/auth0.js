@@ -3,9 +3,12 @@ import DummyStorage from './dummy';
 import CookieStorage from './cookie';
 import Warn from '../warn';
 
-function StorageHandler() {
+function StorageHandler(options) {
   this.warn = new Warn({});
   this.storage = new CookieStorage();
+  if (options.__tryLocalStorageFirst !== true) {
+    return;
+  }
   try {
     // some browsers throw an error when trying to access localStorage
     // when localStorage is disabled.

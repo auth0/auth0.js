@@ -6,7 +6,7 @@ import qs from 'qs';
 import PluginHandler from '../helper/plugins';
 import windowHelper from '../helper/window';
 import objectHelper from '../helper/object';
-import ssodata from '../helper/ssodata';
+import SSODataStorage from '../helper/ssodata';
 import TransactionManager from './transaction-manager';
 import Authentication from '../authentication';
 import Redirect from './redirect';
@@ -107,7 +107,7 @@ function WebAuth(options) {
 
   this.baseOptions.jwksURI = this.baseOptions.overrides && this.baseOptions.overrides.__jwks_uri;
 
-  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
+  this.transactionManager = new TransactionManager(this.baseOptions);
 
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this, this.baseOptions);
@@ -115,6 +115,7 @@ function WebAuth(options) {
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
   this.webMessageHandler = new WebMessageHandler(this);
   this._universalLogin = new HostedPages(this, this.baseOptions);
+  this.ssodataStorage = new SSODataStorage(this.baseOptions);
 }
 
 /**
@@ -245,7 +246,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
       if (payload) {
         sub = payload.sub;
       }
-      ssodata.set(transaction.lastUsedConnection, sub);
+      _this.ssodataStorage.set(transaction.lastUsedConnection, sub);
     }
     return cb(null, buildParseHashResponse(parsedHash, appState, payload));
   };

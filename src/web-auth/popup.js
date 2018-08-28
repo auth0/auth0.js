@@ -17,7 +17,7 @@ function Popup(webAuth, options) {
   this.client = webAuth.client;
   this.webAuth = webAuth;
 
-  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
+  this.transactionManager = new TransactionManager(this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(webAuth, this.baseOptions);
   this.warn = new Warn({
     disableWarnings: !!options._disableDeprecationWarnings
