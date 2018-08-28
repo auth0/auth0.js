@@ -1,4 +1,10 @@
 
+## [v9.7.4-beta1](https://github.com/auth0/auth0.js/tree/v9.7.4-beta1) (2018-08-28)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.3...v9.7.4-beta1)
+
+**Changed**
+- Start using cookies instead of localStorage by default [\#817](https://github.com/auth0/auth0.js/pull/817) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.7.3](https://github.com/auth0/auth0.js/tree/v9.7.3) (2018-07-23)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.3-beta1...v9.7.3)
 
