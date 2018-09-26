@@ -5095,9 +5095,9 @@ wide-align@^1.1.0:
   dependencies:
     string-width "^1.0.1"
 
-winchan@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/winchan/-/winchan-0.2.0.tgz#3863028e7f974b0da1412f28417ba424972abd94"
+winchan@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/winchan/-/winchan-0.2.1.tgz#19b334e49f7c07c0849f921f405fad87dfc8a1da"
 
 window-size@0.1.0:
   version "0.1.0"

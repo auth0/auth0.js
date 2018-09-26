@@ -1,6 +1,6 @@
 {
   "name": "auth0-js",
-  "version": "9.7.4-beta1",
+  "version": "9.8.0",
   "description": "Auth0 headless browser sdk",
   "author": "Auth0",
   "license": "MIT",
@@ -49,7 +49,7 @@
     "qs": "^6.4.0",
     "superagent": "^3.8.2",
     "url-join": "^1.1.0",
-    "winchan": "^0.2.0"
+    "winchan": "^0.2.1"
   },
   "devDependencies": {
     "@auth0/component-cdn-uploader": "auth0/component-cdn-uploader#v2.1.1",
