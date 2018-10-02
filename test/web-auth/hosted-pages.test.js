@@ -404,7 +404,7 @@ describe('auth0.WebAuth._universalLogin', function() {
 
     it('should call /user/ssodata with no options', function(done) {
       stub(request, 'get', function(url) {
-        expect(url).to.be('https://me.auth0.com/user/ssodata/');
+        expect(url).to.be('https://me.auth0.com/user/ssodata');
         return new RequestMock({
           headers: {},
           cb: function(cb) {

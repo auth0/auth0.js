@@ -48,7 +48,7 @@
     "js-cookie": "^2.2.0",
     "qs": "^6.4.0",
     "superagent": "^3.8.2",
-    "url-join": "^1.1.0",
+    "url-join": "^4.0.0",
     "winchan": "^0.2.1"
   },
   "devDependencies": {
