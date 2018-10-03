@@ -35,3 +35,7 @@ test-results.xml
 
 # jsdocs
 out/
+
+# vscode
+
+.vscode
