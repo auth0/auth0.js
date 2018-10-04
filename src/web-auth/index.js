@@ -620,12 +620,12 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  */
 
 /**
- * Logs in the user with username and password using the correct flow based on where it's called from:
+ * Logs the user in with username and password using the correct flow based on where it's called from:
  * - If you're calling this method from the Universal Login Page, it will use the usernamepassword/login endpoint
  * - If you're calling this method outside the Universal Login Page, it will use the cross origin authentication (/co/authenticate) flow
  * You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
- * When using the cross origin authentication flow, some browsers might not be able to successfully authenticate if 3rd party cookies are disabled in your browser. [See here for more information.]{@link https://auth0.com/docs/cross-origin-authentication}.
- * After the redirect, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
+ * After the redirect to `redirectUri`, use {@link parseHash} to retrieve the authentication data.
+ * **Notice that when using the cross origin authentication flow, some browsers might not be able to successfully authenticate if 3rd party cookies are disabled. [See here for more information.]{@link https://auth0.com/docs/cross-origin-authentication}.**
  *
  * @method login
  * @see Requires [`Implicit` grant]{@link https://auth0.com/docs/api-auth/grant/implicit}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
