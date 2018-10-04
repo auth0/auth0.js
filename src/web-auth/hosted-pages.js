@@ -34,7 +34,7 @@ function HostedPages(client, options) {
  * This method is not compatible with API Auth so if you need to fetch API tokens with audience
  * you should use {@link authorize} or {@link login}.
  *
- * @method loginWithCredentials
+ * @method login
  * @param {Object} options
  * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
  * @param {String} [options.responseType] type of the response used. It can be any of the values `code` and `token`
