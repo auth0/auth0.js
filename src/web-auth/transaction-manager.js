@@ -54,7 +54,7 @@ TransactionManager.prototype.generateTransaction = function(
       state: state,
       lastUsedConnection: lastUsedConnection
     },
-    times.MINUTES_30
+    { expires: times.MINUTES_30 }
   );
   return {
     state: state,
