@@ -4,6 +4,7 @@ import { stub, spy } from 'sinon';
 import TransactionManager from '../../src/web-auth/transaction-manager';
 import random from '../../src/helper/random';
 import Storage from '../../src/helper/storage';
+import * as times from '../../src/helper/times';
 
 context('TransactionManager', function() {
   beforeEach(function() {
@@ -129,6 +130,12 @@ context('TransactionManager', function() {
         state: 'state',
         lastUsedConnection: 'lastUsedConnection'
       });
+    });
+    it('stores state with expires option equal to 30 mins', function() {
+      this.tm.generateTransaction('appState', 'state', 'nonce', null);
+      expect(Storage.prototype.setItem.calledOnce).to.be(true);
+      expect(typeof Storage.prototype.setItem.lastCall.args[2]).to.be('object');
+      expect(Storage.prototype.setItem.lastCall.args[2]).to.be.eql({ expires: times.MINUTES_30 });
     });
   });
   context('getStoredTransaction', function() {
