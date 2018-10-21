@@ -127,7 +127,7 @@
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.3...v9.3.0)
 
 **Fixed**
-- Fix CSRF vulnerability when `hash.state` is empty. Please read more about it [here](https://github.com/auth0/auth0.js/blob/master/security-incidents.md#security-vulnerability-details-for-auth0js--93) and [here](https://auth0.com/docs/security/bulletins/cve-2018-7307). [\#673](https://github.com/auth0/auth0.js/pull/673) ([luisrudge](https://github.com/luisrudge))
+- Fix CSRF vulnerability when `hash.state` is empty. Please read more about it [here](https://github.com/auth0/auth0.js/blob/master/SECURITY-NOTICE.md) and [here](https://auth0.com/docs/security/bulletins/cve-2018-7307). [\#673](https://github.com/auth0/auth0.js/pull/673) ([luisrudge](https://github.com/luisrudge))
 - Use WinChan on popup.callback again + adding origin check to keep it secure [\#669](https://github.com/auth0/auth0.js/pull/669) ([luisrudge](https://github.com/luisrudge))
 - Fixed error handling for auth in popup mode [\#668](https://github.com/auth0/auth0.js/pull/668) ([luisrudge](https://github.com/luisrudge))
 - Fix inconsistent cross origin error handling [\#667](https://github.com/auth0/auth0.js/pull/667) ([luisrudge](https://github.com/luisrudge))
