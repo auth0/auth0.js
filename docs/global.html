@@ -3154,7 +3154,7 @@ After that, you'll have to use the <a href="global.html#parseHash"><code>parseHa
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line707">line 707</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line710">line 710</a>
     </li></ul></dd>
     
 
@@ -3237,7 +3237,7 @@ After that, you'll have to use the <a href="global.html#parseHash"><code>parseHa
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line717">line 717</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line720">line 720</a>
     </li></ul></dd>
     
 
@@ -4254,9 +4254,14 @@ After that, you'll have to use the <a href="global.html#parseHash"><code>parseHa
 
 
 <div class="description">
-    <p>Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either <code>username</code> or <code>email</code> to identify the user, but <code>username</code> will take precedence over <code>email</code>.
-Some browsers might not be able to successfully authenticate if 3rd party cookies are disabled in your browser. <a href="https://auth0.com/docs/cross-origin-authentication">See here for more information.</a>.
-After the /co/authenticate call, you'll have to use the <a href="global.html#parseHash"><code>parseHash</code></a> function at the <code>redirectUri</code> specified in the constructor.</p>
+    <p>Logs the user in with username and password using the correct flow based on where it's called from:</p>
+<ul>
+<li>If you're calling this method from the Universal Login Page, it will use the usernamepassword/login endpoint</li>
+<li>If you're calling this method outside the Universal Login Page, it will use the cross origin authentication (/co/authenticate) flow
+You can use either <code>username</code> or <code>email</code> to identify the user, but <code>username</code> will take precedence over <code>email</code>.
+After the redirect to <code>redirectUri</code>, use <a href="global.html#parseHash"><code>parseHash</code></a> to retrieve the authentication data.
+<strong>Notice that when using the cross origin authentication flow, some browsers might not be able to successfully authenticate if 3rd party cookies are disabled. <a href="https://auth0.com/docs/cross-origin-authentication">See here for more information.</a>.</strong></li>
+</ul>
 </div>
 
 
@@ -4962,338 +4967,6 @@ After the /co/authenticate call, you'll have to use the <a href="global.html#par
 
 
 <div class="description">
-    <p>Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either <code>username</code> or <code>email</code> to identify the user, but <code>username</code> will take precedence over <code>email</code>.
-Some browsers might not be able to successfully authenticate if 3rd party cookies are disabled in your browser. <a href="https://auth0.com/docs/cross-origin-authentication">See here for more information.</a>.
-After the /co/authenticate call, you'll have to use the <a href="global.html#parseHash"><code>parseHash</code></a> function at the <code>redirectUri</code> specified in the constructor.</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_cross-origin-authentication.js.html">web-auth/cross-origin-authentication.js</a>, <a href="web-auth_cross-origin-authentication.js.html#line35">line 35</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>Object</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>options used in the <a href="global.html#authorize"><code>authorize</code></a> call after the login_ticket is acquired</p>
-                
-                    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>username</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                <p>Username (mutually exclusive with email)</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>email</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                <p>Email  (mutually exclusive with username)</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                <p>Password</p>
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>realm</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>String</code></span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">
-                <p>Realm used to authenticate the user, it can be a realm name or a database connection name</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>cb</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code><a href="global.html#crossOriginLoginCallback">crossOriginLoginCallback</a></code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                <p>Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the <code>redirectUri</code>.</p>
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="loginWithCredentials"><span class="type-signature"></span>loginWithCredentials<span class="signature">(options, cb)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
     <p>Performs authentication with username/email and password with a database connection</p>
 <p>This method is not compatible with API Auth so if you need to fetch API tokens with audience
 you should use <a href="global.html#authorize"><code>authorize</code></a> or <a href="global.html#login"><code>login</code></a>.</p>
@@ -5591,6 +5264,338 @@ you should use <a href="global.html#authorize"><code>authorize</code></a> or <a 
 
             <td class="description last">
                 
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="login"><span class="type-signature"></span>login<span class="signature">(options, cb)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either <code>username</code> or <code>email</code> to identify the user, but <code>username</code> will take precedence over <code>email</code>.
+Some browsers might not be able to successfully authenticate if 3rd party cookies are disabled in your browser. <a href="https://auth0.com/docs/cross-origin-authentication">See here for more information.</a>.
+After the /co/authenticate call, you'll have to use the <a href="global.html#parseHash"><code>parseHash</code></a> function at the <code>redirectUri</code> specified in the constructor.</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="web-auth_cross-origin-authentication.js.html">web-auth/cross-origin-authentication.js</a>, <a href="web-auth_cross-origin-authentication.js.html#line35">line 35</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Object</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>options used in the <a href="global.html#authorize"><code>authorize</code></a> call after the login_ticket is acquired</p>
+                
+                    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>username</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>String</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>Username (mutually exclusive with email)</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>email</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>String</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>Email  (mutually exclusive with username)</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>password</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>String</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>Password</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>realm</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>String</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>Realm used to authenticate the user, it can be a realm name or a database connection name</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code><a href="global.html#crossOriginLoginCallback">crossOriginLoginCallback</a></code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the <code>redirectUri</code>.</p>
                 
             </td>
         </tr>
@@ -7037,7 +7042,7 @@ you should use <a href="global.html#login"><code>login</code></a> or <a href="gl
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line726">line 726</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line729">line 729</a>
     </li></ul></dd>
     
 
@@ -7663,7 +7668,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line662">line 662</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line665">line 665</a>
     </li></ul></dd>
     
 
@@ -8362,7 +8367,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line745">line 745</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line748">line 748</a>
     </li></ul></dd>
     
 
@@ -14351,7 +14356,7 @@ Tokens signed with other algorithms will not be accepted.</p>
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Sep 26 2018 16:46:32 GMT-0300 (-03) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Oct 23 2018 11:20:23 GMT-0300 (-03) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
