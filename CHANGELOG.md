@@ -1,4 +1,11 @@
 
+## [v9.9.0](https://github.com/auth0/auth0.js/tree/v9.9.0) (2018-10-23)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.8.0...v9.9.0)
+
+**Fixed**
+- Fixed transaction state not being set to expire in 30 minutes [\#835](https://github.com/auth0/auth0.js/pull/835) ([sayuti-daniel](https://github.com/sayuti-daniel))
+- Fix incorrect error wrapping for signup/change password errors [\#829](https://github.com/auth0/auth0.js/pull/829) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.8.0](https://github.com/auth0/auth0.js/tree/v9.8.0) (2018-09-26)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.4-beta1...v9.8.0)
 
