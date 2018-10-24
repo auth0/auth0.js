@@ -473,7 +473,6 @@ WebAuth.prototype.checkSession = function (options, cb) {
     return cb({ error: 'error', error_description: "redirectUri can't be null" });
   }
 
-  assert.check(params.redirectUri, { type: 'string', message: 'redirect uri parameter is not valid' });
   assert.check(params, { type: 'object', message: 'options parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
   params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType']);
