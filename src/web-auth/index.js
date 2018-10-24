@@ -469,6 +469,10 @@ WebAuth.prototype.checkSession = function(options, cb) {
     params = this.transactionManager.process(params);
   }
 
+  if (!options.redirectUri) {
+    return cb({ error: 'error', error_description: "redirectUri can't be null" })
+  }
+
   assert.check(params, { type: 'object', message: 'options parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
