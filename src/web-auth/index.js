@@ -470,7 +470,7 @@ WebAuth.prototype.checkSession = function (options, cb) {
   }
 
   if (!params.redirectUri) {
-    return cb({ error: 'error', error_description: "redirectUri can't be null" })
+    return cb({ error: 'error', error_description: "redirectUri can't be null" });
   }
 
   assert.check(params.redirectUri, { type: 'string', message: 'redirect uri parameter is not valid' });
