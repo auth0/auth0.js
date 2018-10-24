@@ -136,7 +136,7 @@ function WebAuth(options) {
  * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `token`, `id_token`. For this specific method, we'll only use this value to check if the hash contains the tokens requested in the responseType.
  * @param {authorizeCallback} cb
  */
-WebAuth.prototype.parseHash = function(options, cb) {
+WebAuth.prototype.parseHash = function (options, cb) {
   var parsedQs;
   var err;
 
@@ -216,7 +216,7 @@ WebAuth.prototype.parseHash = function(options, cb) {
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
  * @param {authorizeCallback} cb
  */
-WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash, cb) {
+WebAuth.prototype.validateAuthenticationResponse = function (options, parsedHash, cb) {
   var _this = this;
   options.__enableIdPInitiatedLogin =
     options.__enableIdPInitiatedLogin || options.__enableImpersonation;
@@ -237,7 +237,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
 
   var appState = options.state || (transaction && transaction.appState) || null;
 
-  var callback = function(err, payload) {
+  var callback = function (err, payload) {
     if (err) {
       return cb(err);
     }
@@ -254,7 +254,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
   if (!parsedHash.id_token) {
     return callback(null, null);
   }
-  return this.validateToken(parsedHash.id_token, transactionNonce, function(
+  return this.validateToken(parsedHash.id_token, transactionNonce, function (
     validationError,
     payload
   ) {
@@ -272,7 +272,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
         parsedHash.access_token,
         'RS256',
         payload.at_hash,
-        function(err) {
+        function (err) {
           if (err) {
             return callback(error.invalidToken(err.message));
           }
@@ -298,7 +298,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
       return callback(noAccessTokenError);
     }
     // if the alg is HS256, use the /userinfo endpoint to build the payload
-    return _this.client.userInfo(parsedHash.access_token, function(errUserInfo, profile) {
+    return _this.client.userInfo(parsedHash.access_token, function (errUserInfo, profile) {
       // if the /userinfo request fails, use the validationError instead
       if (errUserInfo) {
         return callback(errUserInfo);
@@ -337,7 +337,7 @@ function buildParseHashResponse(qsParams, appState, token) {
  * @param {String} nonce
  * @param {validateTokenCallback} cb
  */
-WebAuth.prototype.validateToken = function(token, nonce, cb) {
+WebAuth.prototype.validateToken = function (token, nonce, cb) {
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     jwksURI: this.baseOptions.jwksURI,
@@ -346,7 +346,7 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
     __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
   });
 
-  verifier.verify(token, nonce, function(err, payload) {
+  verifier.verify(token, nonce, function (err, payload) {
     if (err) {
       return cb(error.invalidToken(err.message));
     }
@@ -377,7 +377,7 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
  * @param {authorizeCallback} cb
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
-WebAuth.prototype.renewAuth = function(options, cb) {
+WebAuth.prototype.renewAuth = function (options, cb) {
   var handler;
   var usePostMessage = !!options.usePostMessage;
   var postMessageDataType = options.postMessageDataType || false;
@@ -422,7 +422,7 @@ WebAuth.prototype.renewAuth = function(options, cb) {
     timeout: timeout
   });
 
-  handler.login(usePostMessage, function(err, hash) {
+  handler.login(usePostMessage, function (err, hash) {
     if (typeof hash === 'object') {
       // hash was already parsed, so we just return it.
       // it's here to be backwards compatible and should be removed in the next major version.
@@ -446,7 +446,7 @@ WebAuth.prototype.renewAuth = function(options, cb) {
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
  */
-WebAuth.prototype.checkSession = function(options, cb) {
+WebAuth.prototype.checkSession = function (options, cb) {
   var params = objectHelper
     .merge(this.baseOptions, [
       'clientID',
@@ -469,13 +469,13 @@ WebAuth.prototype.checkSession = function(options, cb) {
     params = this.transactionManager.process(params);
   }
 
-  if (!options.redirectUri) {
+  if (!params.redirectUri) {
     return cb({ error: 'error', error_description: "redirectUri can't be null" })
   }
 
+  assert.check(params.redirectUri, { type: 'string', message: 'redirect uri parameter is not valid' });
   assert.check(params, { type: 'object', message: 'options parameter is not valid' });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
   params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType']);
   this.webMessageHandler.run(params, cb);
 };
@@ -490,7 +490,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
  * @param {changePasswordCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#change-password}
  */
-WebAuth.prototype.changePassword = function(options, cb) {
+WebAuth.prototype.changePassword = function (options, cb) {
   return this.client.dbConnection.changePassword(options, cb);
 };
 
@@ -507,7 +507,7 @@ WebAuth.prototype.changePassword = function(options, cb) {
  * @param {Function} cb
  * @see   {@link https://auth0.com/docs/api/authentication#passwordless}
  */
-WebAuth.prototype.passwordlessStart = function(options, cb) {
+WebAuth.prototype.passwordlessStart = function (options, cb) {
   var authParams = objectHelper
     .merge(this.baseOptions, [
       'responseType',
@@ -537,7 +537,7 @@ WebAuth.prototype.passwordlessStart = function(options, cb) {
  * @param {signUpCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
  */
-WebAuth.prototype.signup = function(options, cb) {
+WebAuth.prototype.signup = function (options, cb) {
   return this.client.dbConnection.signup(options, cb);
 };
 
@@ -557,7 +557,7 @@ WebAuth.prototype.signup = function(options, cb) {
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
-WebAuth.prototype.authorize = function(options) {
+WebAuth.prototype.authorize = function (options) {
   var params = objectHelper
     .merge(this.baseOptions, [
       'clientID',
@@ -600,12 +600,12 @@ WebAuth.prototype.authorize = function(options) {
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
  * @see   {@link https://auth0.com/docs/api-auth/grant/password}
  */
-WebAuth.prototype.signupAndAuthorize = function(options, cb) {
+WebAuth.prototype.signupAndAuthorize = function (options, cb) {
   var _this = this;
 
   return this.client.dbConnection.signup(
     objectHelper.blacklist(options, ['popupHandler']),
-    function(err) {
+    function (err) {
       if (err) {
         return cb(err);
       }
@@ -640,7 +640,7 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
-WebAuth.prototype.login = function(options, cb) {
+WebAuth.prototype.login = function (options, cb) {
   var params = objectHelper
     .merge(this.baseOptions, [
       'clientID',
@@ -678,7 +678,7 @@ WebAuth.prototype.login = function(options, cb) {
  * @param {String} options.connection Passwordless connection to use. It can either be 'sms' or 'email'.
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
-WebAuth.prototype.passwordlessLogin = function(options, cb) {
+WebAuth.prototype.passwordlessLogin = function (options, cb) {
   var params = objectHelper
     .merge(this.baseOptions, [
       'clientID',
@@ -717,7 +717,7 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
  * @method crossOriginAuthenticationCallback
  * @deprecated Use {@link crossOriginVerification} instead.
  */
-WebAuth.prototype.crossOriginAuthenticationCallback = function() {
+WebAuth.prototype.crossOriginAuthenticationCallback = function () {
   this.crossOriginVerification();
 };
 
@@ -726,7 +726,7 @@ WebAuth.prototype.crossOriginAuthenticationCallback = function() {
  *
  * @method crossOriginVerification
  */
-WebAuth.prototype.crossOriginVerification = function() {
+WebAuth.prototype.crossOriginVerification = function () {
   this.crossOriginAuthentication.callback();
 };
 
@@ -745,7 +745,7 @@ WebAuth.prototype.crossOriginVerification = function() {
  * @param {Boolean} [options.federated] tells Auth0 if it should logout the user also from the IdP.
  * @see   {@link https://auth0.com/docs/api/authentication#logout}
  */
-WebAuth.prototype.logout = function(options) {
+WebAuth.prototype.logout = function (options) {
   windowHelper.redirect(this.client.buildLogoutUrl(options));
 };
 
@@ -761,7 +761,7 @@ WebAuth.prototype.logout = function(options) {
  * @param {String} options.verificationCode the TOTP code
  * @param {Function} cb
  */
-WebAuth.prototype.passwordlessVerify = function(options, cb) {
+WebAuth.prototype.passwordlessVerify = function (options, cb) {
   var _this = this;
   var params = objectHelper
     .merge(this.baseOptions, [
@@ -787,7 +787,7 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
   );
 
   params = this.transactionManager.process(params);
-  return this.client.passwordless.verify(params, function(err) {
+  return this.client.passwordless.verify(params, function (err) {
     if (err) {
       return cb(err);
     }
