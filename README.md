@@ -173,7 +173,7 @@ For a complete reference and examples please check our [docs](https://auth0.com/
 
 ## Develop
 
-Run `npm start` and point your browser to `https://localhost:3000/example` to run the example page.
+Run `npm start` and point your browser to [`https://localhost:3000/example`](https://localhost:3000/example) to run the example page.
 
 Run `npm run test` to run the test suite.
 
