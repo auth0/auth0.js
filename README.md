@@ -12,18 +12,18 @@ Client Side Javascript toolkit for Auth0 API.
 
 Need help migrating from v8? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide).
 
-If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html)
+If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html).
 
 ## Install
 
-From CDN
+From CDN:
 
 ```html
 <!-- Latest patch release -->
 <script src="https://cdn.auth0.com/js/auth0/9.8.1/auth0.min.js"></script>
 ```
 
-From [npm](https://npmjs.org)
+From [npm](https://npmjs.org):
 
 ```sh
 npm install auth0-js
@@ -169,7 +169,7 @@ var auth0 = new auth0.Management({
 
 ## Documentation
 
-For a complete reference and examples please check our [docs](https://auth0.com/docs/libraries/auth0js) and our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide) if you need help to migrate from v7
+For a complete reference and examples please check our [docs](https://auth0.com/docs/libraries/auth0js) and our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide) if you need help to migrate from v7.
 
 ## Develop
 
