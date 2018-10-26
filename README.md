@@ -185,9 +185,9 @@ For a complete reference and examples please check our [docs](https://auth0.com/
 
 ## Migration
 
-If you need help migrating from v8 to v9, please refer to the [v9 Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide).
+If you need help migrating to v9, please refer to the [v9 Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide).
 
-If you need help migrating from v7 to v8, please refer to the [v8 Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide).
+If you need help migrating to v8, please refer to the [v8 Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide).
 
 ## Develop
 
