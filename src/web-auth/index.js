@@ -437,7 +437,6 @@ WebAuth.prototype.renewAuth = function(options, cb) {
  *
  * @method checkSession
  * @param {Object} [options]
-
  * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
@@ -467,6 +466,10 @@ WebAuth.prototype.checkSession = function(options, cb) {
 
   if (!options.nonce) {
     params = this.transactionManager.process(params);
+  }
+
+  if (!params.redirectUri) {
+    return cb({ error: 'error', error_description: "redirectUri can't be empty" });
   }
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' });
