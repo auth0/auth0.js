@@ -14,6 +14,18 @@ Need help migrating from v8? Please check our [Migration Guide](https://auth0.co
 
 If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html).
 
+## Index
+
+1. [Install](#install)
+2. [auth0.WebAuth](#auth0webauth)
+3. [auth0.Authentication](#auth0authentication)
+4. [auth0.Management](#auth0management)
+5. [Documentation](#documentation)
+6. [Develop](#develop)
+7. [Issue Reporting](#issue-reporting)
+8. [Author](#author)
+9. [License](#license)
+
 ## Install
 
 From CDN:
