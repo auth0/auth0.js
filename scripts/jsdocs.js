@@ -3,9 +3,9 @@ if (process.platform === 'win32') {
   process.exit(1);
 }
 
-var library = require('../package.json');
-var execSync = require('child_process').execSync;
-var fs = require('fs');
+const library = require('../package.json');
+const execSync = require('child_process').execSync;
+const fs = require('fs');
 
 execSync('npm run jsdocs', { stdio: 'inherit' });
 if (fs.existsSync('docs')) {
