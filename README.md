@@ -164,7 +164,7 @@ var auth0 = new auth0.Management({
 ### API
 
 - **getUser(userId, cb)**: Returns the user profile. https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
-- **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metdata. It will patch the user metdata with the attributes sent. https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
+- **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metadata. It will patch the user metadata with the attributes sent. https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
 - **linkUser(userId, secondaryUserToken, cb)**: Link two users. https://auth0.com/docs/api/management/v2#!/Users/post_identities
 
 ## Documentation
