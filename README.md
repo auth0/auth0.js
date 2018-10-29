@@ -28,14 +28,14 @@ If you want to read the full API documentation of auth0.js, see [here](https://a
 
 ## Install
 
-From CDN:
+From CDN -
 
 ```html
 <!-- Latest patch release -->
 <script src="https://cdn.auth0.com/js/auth0/9.8.1/auth0.min.js"></script>
 ```
 
-From [npm](https://npmjs.org):
+From [npm](https://npmjs.org) -
 
 ```sh
 npm install auth0-js
