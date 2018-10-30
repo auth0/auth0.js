@@ -1,7 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,500i,500,600,600i|Roboto);
 
 * {
-  box-sizing: border-box
+  box-sizing: border-box;
 }
 
 html, body {
@@ -26,7 +26,7 @@ a:active {
 }
 
 a:hover {
-  text-decoration: underline
+  text-decoration: underline;
 }
 
 p, ul, ol, blockquote {
@@ -113,7 +113,7 @@ blockquote {
 }
 
 .class-description:empty {
-  margin: 0
+  margin: 0;
 }
 
 /** Container **/
@@ -125,7 +125,7 @@ blockquote {
 }
 
 header {
-  display: block
+  display: block;
 }
 
 section {
@@ -135,7 +135,7 @@ section {
 }
 
 .variation {
-  display: none
+  display: none;
 }
 
 .signature-attributes {
@@ -295,7 +295,7 @@ footer {
 }
 
 .ancestors {
-  color: #999
+  color: #999;
 }
 
 .ancestors a {
@@ -304,7 +304,7 @@ footer {
 }
 
 .clear {
-  clear: both
+  clear: both;
 }
 
 .important {
@@ -317,7 +317,7 @@ footer {
 }
 
 .type-signature {
-  color: #aaa
+  color: #aaa;
 }
 
 .name, .signature {
@@ -337,27 +337,27 @@ footer {
 }
 
 .details dd {
-   margin-left: 70px
+   margin-left: 70px;
 }
 
 .details ul {
-   margin: 0
+   margin: 0;
 }
 
 .details ul {
-   list-style-type: none
+   list-style-type: none;
 }
 
 .details li {
-   margin-left: 30px
+   margin-left: 30px;
 }
 
 .details pre.prettyprint {
-   margin: 0
+   margin: 0;
 }
 
 .details .object-value {
-   padding-top: 0
+   padding-top: 0;
 }
 
 .description {
@@ -380,7 +380,7 @@ footer {
 }
 
 .prettyprint.source {
-  width: inherit
+  width: inherit;
 }
 
 .prettyprint code {
@@ -396,19 +396,19 @@ footer {
 }
 
 .prettyprint > code {
-  padding: 15px
+  padding: 15px;
 }
 
 .prettyprint .linenums code {
-  padding: 0 15px
+  padding: 0 15px;
 }
 
 .prettyprint .linenums li:first-of-type code {
-  padding-top: 15px
+  padding-top: 15px;
 }
 
 .prettyprint code span.line {
-  display: inline-block
+  display: inline-block;
 }
 
 .prettyprint.linenums {
@@ -420,15 +420,15 @@ footer {
 }
 
 .prettyprint.linenums ol {
-   padding-left: 0
+   padding-left: 0;
 }
 
 .prettyprint.linenums li {
-   border-left: 3px #ddd solid
+   border-left: 3px #ddd solid;
 }
 
 .prettyprint.linenums li.selected, .prettyprint.linenums li.selected * {
-   background-color: lightyellow
+   background-color: lightyellow;
 }
 
 .prettyprint.linenums li * {
@@ -464,7 +464,7 @@ footer {
 }
 
 .params td {
-   border-top: 1px solid #eee
+   border-top: 1px solid #eee;
 }
 
 .params thead tr, .props thead tr {
@@ -495,7 +495,7 @@ dl.param-type {
 }
 
 .param-type dt, .param-type dd {
-  display: inline-block
+  display: inline-block;
 }
 
 .param-type dd {
@@ -507,7 +507,7 @@ dl.param-type {
 }
 
 .disabled {
-  color: #454545
+  color: #454545;
 }
 
 /* navicon button */
