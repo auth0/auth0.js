@@ -10,8 +10,6 @@
 
 Client Side Javascript toolkit for Auth0 API.
 
-Need help migrating from v8? Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide).
-
 If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html).
 
 ## Index
@@ -21,10 +19,11 @@ If you want to read the full API documentation of auth0.js, see [here](https://a
 3. [auth0.Authentication](#auth0authentication)
 4. [auth0.Management](#auth0management)
 5. [Documentation](#documentation)
-6. [Develop](#develop)
-7. [Issue Reporting](#issue-reporting)
-8. [Author](#author)
-9. [License](#license)
+6. [Migration](#migration)
+7. [Develop](#develop)
+8. [Issue Reporting](#issue-reporting)
+9. [Author](#author)
+10. [License](#license)
 
 ## Install
 
@@ -181,7 +180,14 @@ var auth0 = new auth0.Management({
 
 ## Documentation
 
-For a complete reference and examples please check our [docs](https://auth0.com/docs/libraries/auth0js) and our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide) if you need help to migrate from v7.
+
+For a complete reference and examples please check our [docs](https://auth0.com/docs/libraries/auth0js).
+
+## Migration
+
+If you need help migrating to v9, please refer to the [v9 Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide).
+
+If you need help migrating to v8, please refer to the [v8 Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide).
 
 ## Develop
 
