@@ -2352,6 +2352,13 @@ describe('auth0.WebAuth', function() {
           error_description: "responseType can't be `code`"
         });
       });
+    });it('throws an error if redirectUri is empty', function() {
+      this.auth0.checkSession({ redirectUri: '' }, function(err) {
+        expect(err).to.be.eql({
+          error: 'error',
+          error_description: "redirectUri can't be empty"
+        });
+      });
     });
     it('does not throw an origin_mismatch error if redirectUri is empty', function() {
       objectHelper.getOriginFromUrl.restore();
