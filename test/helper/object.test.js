@@ -562,6 +562,16 @@ describe('helpers', function() {
         pathname: '',
         search: '',
         hash: '#access_token=foo'
+      },
+      'file://electron-app/foo?id=1': {
+        href: 'file://electron-app/foo?id=1',
+        protocol: 'file:',
+        host: 'electron-app',
+        hostname: 'electron-app',
+        port: undefined,
+        pathname: '/foo',
+        search: '?id=1',
+        hash: ''
       }
     };
     for (const url in mapping) {
