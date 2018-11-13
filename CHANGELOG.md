@@ -1,4 +1,11 @@
 
+## [v9.8.2](https://github.com/auth0/auth0.js/tree/v9.8.2) (2018-11-13)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.8.1...v9.8.2)
+
+**Fixed**
+- Prevent checkSession to be called without a redirect_uri [\#851](https://github.com/auth0/auth0.js/pull/851) ([ojas360](https://github.com/ojas360))
+- Parse file protocol from Url [\#846](https://github.com/auth0/auth0.js/pull/846) ([anion155](https://github.com/anion155))
+
 ## [v9.8.1](https://github.com/auth0/auth0.js/tree/v9.8.1) (2018-10-23)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.8.0...v9.8.1)
 
