@@ -3,8 +3,10 @@
 
 <head>
   <title>Auth0.js Demo Examples</title>
-  <link rel="stylesheet" type="text/css" href="//cdn.auth0.com/styleguide/1/index.css">
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.auth0.com/styleguide/core/2.0.5/core.min.css" />
+  <link rel="stylesheet" href="https://cdn.auth0.com/styleguide/components/2.0.0/components.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/latest/js.cookie.min.js"></script>
   <script src="/auth0.js"></script>
   <script src="/cordova-auth0-plugin.js"></script>
 
@@ -115,77 +117,132 @@
     </div>
     <div class="col-xs-6">
 
-      <div>
-        <h2>Login with username and password:</h2>
-        <input class="login-username" value="johnfoo@gmail.com" />
-        <input class="login-password" value="1234" />
-        <input type="button" class="login-db" value="login" />
-      </div>
+      <h2>Actions</h2>
+
+      <hr>
 
       <div>
-        <h2>Login with passwordless connection:</h2>
+        <h4>Login with username and password:</h4>
+        <p><input class="form-control login-username update-user-email" value="" /></p>
+        <p><input class="form-control login-password update-user-password" value="" /></p>
+        <p><input type="button" class="btn btn-default login-db" value="login" /></p>
+      </div>
+
+      <hr>
+
+      <div>
+        <h4>Login with passwordless connection:</h4>
         <div>
-          <input class="passwordless-login-username" value="" />
-          <input type="button" class="passwordless-login-db" value="login" />
+          <p><input class="form-control passwordless-login-username update-user-email" value="" type="email" /></p>
+          <p><input type="button" class="btn btn-default passwordless-login-db" value="login" /></p>
         </div>
         <div>
-          <input class="passwordless-login-code" value="Code" />
-          <input type="button" class="passwordless-login-verify" value="verify" />
+          <p><input class="form-control passwordless-login-code" value="" /></p>
+          <p><input type="button" class="btn btn-default passwordless-login-verify" value="verify" /></p>
         </div>
       </div>
 
-      <div>
-        <h2>Login with database connection (popup):</h2>
-        <input class="popup-login-username" value="johnfoo@gmail.com" />
-        <input class="popup-login-password" value="1234" />
-        <input type="button" class="popup-login-db-preload" value="preload" />
-        <input type="button" class="popup-login-db" value="login" />
-      </div>
+      <hr>
 
       <div>
-        <h2>Login with database connection (client login):</h2>
-        <input class="client-login-username" value="johnfoo@gmail.com" />
-        <input class="client-login-password" value="1234" />
-        <input type="button" class="client-login-db" value="login" />
+        <h4>Login with database connection (popup):</h4>
+        <p><input class="form-control" id="popup-login-connection" value="" placeholder="Connection name; leave blank to use tenant default" /></p>
+        <p><input class="form-control popup-login-username update-user-email" value="" /></p>
+        <p><input class="form-control popup-login-password update-user-password" value="" /></p>
+        <p>
+          <input type="button" class="btn btn-default popup-login-db-preload" value="preload" />
+          <input type="button" class="btn btn-default popup-login-db" value="login" />
+        </p>
       </div>
 
-      <div>
-        <h2>Login with /authorize:</h2>
-        <input type="button" class="login-hosted" value="Hosted login page" />
-        <input type="button" class="login-facebook" value="Facebook" />
-        <input type="button" class="login-twitter" value="Twitter" />
-        <input type="button" class="login-github" value="Github" />
-      </div>
+      <hr>
 
       <div>
-        <h2>Login with /authorize (popup):</h2>
-        <input type="button" class="popup-login-hosted" value="Hosted login page" />
-        <input type="button" class="popup-login-facebook" value="Facebook" />
-        <input type="button" class="popup-login-twitter" value="Twitter" />
-        <input type="button" class="popup-login-github" value="Github" />
+        <h4>Login with database connection (client login):</h4>
+        <p><input class="form-control" id="client-login-realm" value="" placeholder="Realm name; leave blank to use tenant default" /></p>
+        <p><input class="form-control client-login-username update-user-email" value="" placeholder="User email"/></p>
+        <p><input class="form-control client-login-password update-user-password" value="" placeholder="User password" /></p>
+        <p><input type="button" class="btn btn-default client-login-db" value="login" /></p>
       </div>
 
-      <div>
-        <h2>Renew authentication:</h2>
-        <input type="button" class="renew-auth" value="Renew" />
-      </div>
-      <div>
-        <h2>Check if you have an active session:</h2>
-        <input type="button" class="web-message-check-session" value="Check session" />
-      </div>
-      <div>
-        <h2>Get information about the last successful authorization request</h2>
-        <input type="button" class="getssodata" value="Get SSO data" />
-      </div>
+      <hr>
 
       <div>
-        <h2>SSO Logout:</h2>
-        <input type="button" class="logout" value="Logout" />
+        <h4>Login with /authorize:</h4>
+        <p>
+          <input type="button" class="btn btn-default btn-sm login-hosted" value="Hosted login page" />
+          <input type="button" class="btn btn-default btn-sm login-facebook" value="Facebook" />
+          <input type="button" class="btn btn-default btn-sm login-twitter" value="Twitter" />
+          <input type="button" class="btn btn-default btn-sm login-github" value="Github" />
+        </p>
+      </div>
+
+      <hr>
+
+      <div>
+        <h4>Login with /authorize (popup):</h4>
+        <input type="button" class="btn btn-default btn-sm popup-login-hosted" value="Hosted login page" />
+        <input type="button" class="btn btn-default btn-sm popup-login-facebook" value="Facebook" />
+        <input type="button" class="btn btn-default btn-sm popup-login-twitter" value="Twitter" />
+        <input type="button" class="btn btn-default btn-sm popup-login-github" value="Github" />
+      </div>
+
+      <hr>
+
+      <div>
+        <h4>Renew authentication:</h4>
+        <input type="button" class="btn btn-default renew-auth" value="Renew" />
+      </div>
+
+      <hr>
+
+      <div>
+        <h4>Check if you have an active session:</h4>
+        <input type="button" class="btn btn-default web-message-check-session" value="Check session" />
+      </div>
+
+      <hr>
+
+      <div>
+        <h4>Get information about the last successful authorization request</h4>
+        <input type="button" class="btn btn-default getssodata" value="Get SSO data" />
+      </div>
+
+      <hr>
+
+      <div>
+        <h4>SSO Logout:</h4>
+        <input type="button" class="btn btn-default logout" value="Logout" />
+      </div>
+
+      <hr>
+
+      <h2>Config</h2>
+
+      <div>
+        <h4>Domain:</h4>
+        <input class="form-control" id="config-domain" value="" />
+
+        <h4>Client ID:</h4>
+        <input class="form-control" id="config-client-id" value="" />
+
+        <h4>Client ID (passwordless):</h4>
+        <input class="form-control" id="config-client-id-pwl" value="" />
+
+        <h4>User email:</h4>
+        <input class="form-control update-user-email" id="config-user-email" type="email" value="" />
+
+        <h4>User password:</h4>
+        <input class="form-control update-user-password" id="config-user-password" value="" />
+
+        <br>
+        <input type="button"class="btn btn-default" id="config-update" value="Update" />
       </div>
 
     </div>
+
     <div class="col-xs-6">
-      <h2>Console:</h2>
+      <h4>Console:</h4>
       <pre><code id="console"></code></pre>
       <div class="text-right">
         <i id="clear-console" aria-hidden="true" class="icon-budicon-498 icon"></i>
@@ -200,22 +257,59 @@
 
     var REDIRECT_URL = window.location.origin;
 
-    var webAuth = new auth0.WebAuth({
-      domain: 'brucke.auth0.com',
-      redirectUri: REDIRECT_URL,
-      clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
-      responseType: 'token id_token',
-      plugins: [
-        new CordovaAuth0Plugin()
-      ]
-    });
+    var webAuth;
+    var webAuthPasswordless;
 
-    var webAuthPasswordless = new auth0.WebAuth({
-      domain: 'brucke.auth0.com',
-      redirectUri: REDIRECT_URL,
-      clientID: 'VZUvmnj3pd9yNgq8BjX4YA8Km14jQ0PN',
-      responseType: 'token'
-    });
+    function setConfig() {
+      var $domainInput = $('#config-domain');
+      var $clientIdInput = $('#config-client-id');
+      var $clientIdPwl = $('#config-client-id-pwl');
+      var $userEmailInput = $('#config-user-email');
+      var $userPwdInput = $('#config-user-password');
+
+      var domain = $domainInput.val() || Cookies.get('auth0_domain') || 'brucke.auth0.com';
+      var clientId = $clientIdInput.val() || Cookies.get('auth0_client_id') || 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6';
+      var clientIdPwl = $clientIdPwl.val() || Cookies.get('auth0_client_id_pwl') || 'VZUvmnj3pd9yNgq8BjX4YA8Km14jQ0PN';
+      var userEmail = $userEmailInput.val() || Cookies.get('auth0_user_email') || 'johnfoo@gmail.com';
+      var userPass = $userPwdInput.val() || Cookies.get('auth0_user_pw') || '1234';
+
+      webAuth = new auth0.WebAuth({
+        domain: domain,
+        redirectUri: REDIRECT_URL,
+        clientID: clientId,
+        responseType: 'token id_token',
+        plugins: [
+          new CordovaAuth0Plugin()
+        ]
+      });
+
+      webAuthPasswordless = new auth0.WebAuth({
+        domain: domain,
+        redirectUri: REDIRECT_URL,
+        clientID: clientIdPwl,
+        responseType: 'token'
+      });
+
+      Cookies.set('auth0_domain', domain);
+      Cookies.set('auth0_client_id', clientId);
+      Cookies.set('auth0_client_id_pwl', clientIdPwl);
+      Cookies.set('auth0_user_email', userEmail);
+      Cookies.set('auth0_user_pw', userPass);
+
+      $domainInput.val(domain);
+      $clientIdInput.val(clientId);
+      $clientIdPwl.val(clientIdPwl);
+
+      $('.update-user-email').each(function(index, el) {
+        $(el).val(userEmail);
+      });
+
+      $('.update-user-password').each(function(index, el) {
+        $(el).val(userPass);
+      });
+    }
+
+    setConfig();
 
     webAuth.parseHash(function (err, data) {
       console.log(err, data);
@@ -246,10 +340,11 @@
       }, 250);
     });
 
+    $('#config-update').click(setConfig);
+
     $('.login-db').click(function (e) {
       e.preventDefault();
       webAuth.login({
-        realm: 'acme',
         username: $('.login-username').val(),
         password: $('.login-password').val()
       }, htmlConsole.dumpCallback.bind(htmlConsole));
@@ -284,7 +379,7 @@
       e.preventDefault();
 
       webAuth.popup.loginWithCredentials({
-        connection: 'acme',
+        connection: $('#popup-login-connection').val(),
         username: $('.popup-login-username').val(),
         password: $('.popup-login-password').val()
       }, htmlConsole.dumpCallback.bind(htmlConsole));
@@ -293,7 +388,7 @@
     $('.client-login-db').click(function (e) {
       e.preventDefault();
       webAuth.client.login({
-        realm: 'acme',
+        realm: $('#client-login-realm').val(),
         username: $('.client-login-username').val(),
         password: $('.client-login-password').val()
       }, function (err, data) {
@@ -358,14 +453,17 @@
         htmlConsole.dumpCallback.bind(htmlConsole)
       );
     });
+
     $('.web-message-check-session').click(function (e) {
       e.preventDefault();
       webAuth.checkSession({}, htmlConsole.dumpCallback.bind(htmlConsole));
     });
+
     $('.getssodata').click(function (e) {
       e.preventDefault();
       webAuth.client.getSSOData(htmlConsole.dumpCallback.bind(htmlConsole));
     });
+
     $(document.body).append($('<div class="loaded">LOADED</div>'));
   </script>
 </body>
