@@ -653,7 +653,6 @@ WebAuth.prototype.login = function(options, cb) {
       'nonce'
     ])
     .with(options);
-  params = this.transactionManager.process(params);
 
   var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
   if (isHostedLoginPage) {
@@ -661,6 +660,7 @@ WebAuth.prototype.login = function(options, cb) {
     delete params.realm;
     this._universalLogin.login(params, cb);
   } else {
+    params = this.transactionManager.process(params);
     this.crossOriginAuthentication.login(params, cb);
   }
 };
