@@ -33,7 +33,6 @@ UsernamePassword.prototype.login = function(options, cb) {
       'audience'
     ])
     .with(options);
-  body = this.transactionManager.process(body);
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
