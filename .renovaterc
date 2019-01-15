@@ -1,0 +1,29 @@
+{
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "packagePatterns": ["^babel|^@babel"],
+      "groupName": "babel packages"
+    },
+    {
+      "packagePatterns": ["^eslint"],
+      "groupName": "eslint packages"
+    },
+    {
+      "packagePatterns": ["^jsdoc"],
+      "groupName": "jsdoc packages"
+    },
+    {
+      "packagePatterns": ["^mocha"],
+      "groupName": "mocha packages"
+    },
+    {
+      "packagePatterns": ["rollup"],
+      "groupName": "rollup packages"
+    }
+  ],
+  "prCreation": "not-pending",
+  "rangeStrategy": "auto",
+  "schedule": ["after 10pm and before 5am on every weekday", "every weekend"],
+  "timezone": "America/Los_Angeles"
+}
