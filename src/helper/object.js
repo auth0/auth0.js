@@ -150,7 +150,7 @@ function getOriginFromUrl(url) {
 function trim(options, key) {
   var trimmed = extend(options);
   if (options[key]) {
-    return objectAssign.get()(trimmed, { [key]: options[key].trim() });
+    trimmed[key] = options[key].trim();
   }
   return trimmed;
 }
