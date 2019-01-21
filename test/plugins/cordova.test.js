@@ -10,12 +10,16 @@ import PopupHandler from '../../plugins/cordova/popup-handler';
 
 describe('auth0.plugins.cordova', function() {
   beforeEach(function() {
+    stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
+      return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
+    });
     stub(TransactionManager.prototype, 'getStoredTransaction', function(state) {
       expect(state).to.be('foo');
       return { state: 'foo' };
     });
   });
   afterEach(function() {
+    TransactionManager.prototype.generateTransaction.restore();
     TransactionManager.prototype.getStoredTransaction.restore();
   });
   context('platform support cordova', function() {

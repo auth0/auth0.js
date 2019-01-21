@@ -1,5 +1,6 @@
 import random from '../helper/random';
 import Storage from '../helper/storage';
+import windowHelper from '../helper/window';
 import * as times from '../helper/times';
 
 var DEFAULT_NAMESPACE = 'com.auth0.auth.';
@@ -9,6 +10,7 @@ function TransactionManager(options) {
   this.namespace = transaction.namespace || DEFAULT_NAMESPACE;
   this.keyLength = transaction.keyLength || 32;
   this.storage = new Storage(options);
+  this.options = options;
 }
 
 TransactionManager.prototype.process = function(options) {
@@ -45,17 +47,19 @@ TransactionManager.prototype.generateTransaction = function(
 ) {
   state = state || random.randomString(this.keyLength);
   nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
-
-  this.storage.setItem(
-    this.namespace + state,
-    {
-      nonce: nonce,
-      appState: appState,
-      state: state,
-      lastUsedConnection: lastUsedConnection
-    },
-    { expires: times.MINUTES_30 }
-  );
+  const isHostedLoginPage = windowHelper.getWindow().location.host === this.options.domain;
+  if (!isHostedLoginPage) {
+    this.storage.setItem(
+      this.namespace + state,
+      {
+        nonce: nonce,
+        appState: appState,
+        state: state,
+        lastUsedConnection: lastUsedConnection
+      },
+      { expires: times.MINUTES_30 }
+    );
+  }
   return {
     state: state,
     nonce: nonce
