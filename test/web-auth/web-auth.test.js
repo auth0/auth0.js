@@ -2268,6 +2268,7 @@ describe('auth0.WebAuth', function() {
           clientID: '...',
           responseType: 'token',
           redirectUri: 'http://page.com/callback',
+          state: 'randomState',
           connection: 'bar'
         };
         stub(HostedPages.prototype, 'login', function(options, cb) {
@@ -2351,8 +2352,7 @@ describe('auth0.WebAuth', function() {
           error_description: "responseType can't be `code`"
         });
       });
-    });
-    it('throws an error if redirectUri is empty', function() {
+    });it('throws an error if redirectUri is empty', function() {
       this.auth0.checkSession({ redirectUri: '' }, function(err) {
         expect(err).to.be.eql({
           error: 'error',
