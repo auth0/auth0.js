@@ -1,4 +1,10 @@
 
+## [v9.9.0](https://github.com/auth0/auth0.js/tree/v9.9.0) (2019-01-10)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.8.2...v9.9.0)
+
+**Fixed**
+- Don't use storage when inside the Universal Login Page [\#889](https://github.com/auth0/auth0.js/pull/889) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.8.2](https://github.com/auth0/auth0.js/tree/v9.8.2) (2018-11-13)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.8.1...v9.8.2)
 
