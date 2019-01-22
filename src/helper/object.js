@@ -159,8 +159,8 @@ function trimMultiple(options, keys) {
   return keys.reduce(trim, options);
 }
 
-function trimUsernameAndEmail(options) {
-  return trimMultiple(options, ['username', 'email']);
+function trimUserDetails(options) {
+  return trimMultiple(options, ['username', 'email', 'phoneNumber']);
 }
 
 export default {
@@ -173,5 +173,5 @@ export default {
   extend: extend,
   getOriginFromUrl: getOriginFromUrl,
   getLocationFromUrl: getLocationFromUrl,
-  trimUsernameAndEmail: trimUsernameAndEmail
+  trimUserDetails: trimUserDetails
 };

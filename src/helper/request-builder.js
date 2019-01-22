@@ -46,7 +46,7 @@ RequestObj.prototype.set = function(key, value) {
 };
 
 RequestObj.prototype.send = function(body) {
-  this.request = this.request.send(objectHelper.trimUsernameAndEmail(body));
+  this.request = this.request.send(objectHelper.trimUserDetails(body));
   return this;
 };
 

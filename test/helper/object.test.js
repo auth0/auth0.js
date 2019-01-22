@@ -580,20 +580,22 @@ describe('helpers', function() {
       });
     }
   });
-  describe('trimUsernameAndEmail', function() {
+  describe('trimUserDetails', function() {
     var options;
     function getTrimmed() {
-      return objectHelper.trimUsernameAndEmail(options);
+      return objectHelper.trimUserDetails(options);
     }
     beforeEach(function() {
       options = {
         email: '   me@example.com   ',
+        phoneNumber: '   +16505555555   ',
         username: '   johndoe   '
       };
     });
-    it('should trim the username and email properties of an options object', function() {
+    it('should trim the username, email, and phoneNumber in an options object', function() {
       expect(getTrimmed()).to.eql({
         email: 'me@example.com',
+        phoneNumber: '+16505555555',
         username: 'johndoe'
       });
     });
@@ -602,6 +604,7 @@ describe('helpers', function() {
         .to.not.equal(getTrimmed())
         .and.eql({
           email: '   me@example.com   ',
+          phoneNumber: '   +16505555555   ',
           username: '   johndoe   '
         });
     });
@@ -610,10 +613,11 @@ describe('helpers', function() {
       expect(getTrimmed()).to.eql({
         email: 'me@example.com',
         otherAttribute: '   stay untrimmed my friend   ',
+        phoneNumber: '+16505555555',
         username: 'johndoe'
       });
     });
-    it('should not fail when username and/or email are absent', function() {
+    it('should not fail when username, email, and/or phoneNumber are absent', function() {
       options = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
@@ -639,6 +643,16 @@ describe('helpers', function() {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
         email: 'email@example.com'
+      });
+      options = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        phoneNumber: '   +16505555555   '
+      };
+      expect(getTrimmed()).to.eql({
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        phoneNumber: '+16505555555'
       });
     });
   });
