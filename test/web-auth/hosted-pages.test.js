@@ -132,9 +132,9 @@ describe('auth0.WebAuth._universalLogin', function() {
         }
       );
     });
-    it('should not call transactionManager.process', function(done) {
+    it('should use transactionManager.process', function(done) {
       stub(request, 'post', function() {
-        expect(TransactionManager.prototype.process.calledOnce).to.be(false);
+        expect(TransactionManager.prototype.process.calledOnce).to.be(true);
         done();
       });
 
