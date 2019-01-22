@@ -131,6 +131,25 @@ describe('helpers responseHandler', function() {
     })(null, assert_err);
   });
 
+  it('should return normalized format 6', function(done) {
+    var assert_err = {};
+    assert_err.response = {};
+    assert_err.response.body = {
+      code: 'the_error_code',
+      error: 'The error description.'
+    };
+
+    responseHandler(function(err, data) {
+      expect(data).to.be(undefined);
+      expect(err).to.eql({
+        original: assert_err,
+        code: 'the_error_code',
+        description: 'The error description.'
+      });
+      done();
+    })(assert_err, null);
+  });
+
   it('should return the data', function(done) {
     var assert_data = {
       body: {

@@ -1,26 +1,23 @@
 import StorageHandler from './storage/handler';
-var storage;
-var getStorage = function() {
-  if (!storage) {
-    storage = new StorageHandler();
+
+function Storage(options) {
+  this.handler = new StorageHandler(options);
+}
+
+Storage.prototype.getItem = function(key) {
+  var value = this.handler.getItem(key);
+  try {
+    return JSON.parse(value);
+  } catch (_) {
+    return value;
   }
-  return storage;
+};
+Storage.prototype.removeItem = function(key) {
+  return this.handler.removeItem(key);
+};
+Storage.prototype.setItem = function(key, value, options) {
+  var json = JSON.stringify(value);
+  return this.handler.setItem(key, json, options);
 };
 
-export default {
-  getItem: function(key) {
-    var value = getStorage().getItem(key);
-    try {
-      return JSON.parse(value);
-    } catch (_) {
-      return value;
-    }
-  },
-  removeItem: function(key) {
-    return getStorage().removeItem(key);
-  },
-  setItem: function(key, value, options) {
-    var json = JSON.stringify(value);
-    return getStorage().setItem(key, json, options);
-  }
-};
+export default Storage;

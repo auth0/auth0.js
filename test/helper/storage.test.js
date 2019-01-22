@@ -1,11 +1,14 @@
 import expect from 'expect.js';
 import { stub, spy } from 'sinon';
 
-import windowHandler from '../../src/helper/window';
 import StorageHandler from '../../src/helper/storage/handler';
-import storage from '../../src/helper/storage';
+import Storage from '../../src/helper/storage';
 
 describe('helpers storage', function() {
+  var storage;
+  beforeEach(function() {
+    storage = new Storage({});
+  });
   describe('setItem', function() {
     beforeEach(function() {
       spy(StorageHandler.prototype, 'setItem');

@@ -42,7 +42,8 @@ function wrapCallback(cb, options) {
       if (err.err) {
         err = err.err;
       }
-      errObj.code = err.error || err.code || err.error_code || err.status || null;
+
+      errObj.code = err.code || err.error || err.error_code || err.status || null;
       errObj.description =
         err.errorDescription ||
         err.error_description ||

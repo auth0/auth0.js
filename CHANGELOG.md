@@ -1,4 +1,42 @@
 
+## [v9.9.0](https://github.com/auth0/auth0.js/tree/v9.9.0) (2019-01-10)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.8.2...v9.9.0)
+
+**Fixed**
+- Don't use storage when inside the Universal Login Page [\#889](https://github.com/auth0/auth0.js/pull/889) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.8.2](https://github.com/auth0/auth0.js/tree/v9.8.2) (2018-11-13)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.8.1...v9.8.2)
+
+**Fixed**
+- Prevent checkSession to be called without a redirect_uri [\#851](https://github.com/auth0/auth0.js/pull/851) ([ojas360](https://github.com/ojas360))
+- Parse file protocol from Url [\#846](https://github.com/auth0/auth0.js/pull/846) ([anion155](https://github.com/anion155))
+
+## [v9.8.1](https://github.com/auth0/auth0.js/tree/v9.8.1) (2018-10-23)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.8.0...v9.8.1)
+
+**Fixed**
+- Fixed transaction state not being set to expire in 30 minutes [\#835](https://github.com/auth0/auth0.js/pull/835) ([sayuti-daniel](https://github.com/sayuti-daniel))
+- Fix incorrect error wrapping for signup/change password errors [\#829](https://github.com/auth0/auth0.js/pull/829) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.8.0](https://github.com/auth0/auth0.js/tree/v9.8.0) (2018-09-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.4-beta1...v9.8.0)
+
+**Released**
+- Start using cookies instead of localStorage by default [\#817](https://github.com/auth0/auth0.js/pull/817) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.7.4-beta1](https://github.com/auth0/auth0.js/tree/v9.7.4-beta1) (2018-08-28)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.3...v9.7.4-beta1)
+
+**Changed**
+- Start using cookies instead of localStorage by default [\#817](https://github.com/auth0/auth0.js/pull/817) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.7.3](https://github.com/auth0/auth0.js/tree/v9.7.3) (2018-07-23)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.3-beta1...v9.7.3)
+
+**Fixed**
+- Fix npm module export [\#808](https://github.com/auth0/auth0.js/pull/808) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.7.3-beta1](https://github.com/auth0/auth0.js/tree/v9.7.3-beta1) (2018-07-18)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.7.2...v9.7.3-beta1)
 
@@ -109,7 +147,7 @@
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.2.3...v9.3.0)
 
 **Fixed**
-- Fix CSRF vulnerability when `hash.state` is empty. Please read more about it [here](https://github.com/auth0/auth0.js/blob/master/security-incidents.md#security-vulnerability-details-for-auth0js--93) and [here](https://auth0.com/docs/security/bulletins/cve-2018-7307). [\#673](https://github.com/auth0/auth0.js/pull/673) ([luisrudge](https://github.com/luisrudge))
+- Fix CSRF vulnerability when `hash.state` is empty. Please read more about it [here](https://github.com/auth0/auth0.js/blob/master/SECURITY-NOTICE.md) and [here](https://auth0.com/docs/security/bulletins/cve-2018-7307). [\#673](https://github.com/auth0/auth0.js/pull/673) ([luisrudge](https://github.com/luisrudge))
 - Use WinChan on popup.callback again + adding origin check to keep it secure [\#669](https://github.com/auth0/auth0.js/pull/669) ([luisrudge](https://github.com/luisrudge))
 - Fixed error handling for auth in popup mode [\#668](https://github.com/auth0/auth0.js/pull/668) ([luisrudge](https://github.com/luisrudge))
 - Fix inconsistent cross origin error handling [\#667](https://github.com/auth0/auth0.js/pull/667) ([luisrudge](https://github.com/luisrudge))

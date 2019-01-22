@@ -6,7 +6,7 @@ import qs from 'qs';
 import PluginHandler from '../helper/plugins';
 import windowHelper from '../helper/window';
 import objectHelper from '../helper/object';
-import ssodata from '../helper/ssodata';
+import SSODataStorage from '../helper/ssodata';
 import TransactionManager from './transaction-manager';
 import Authentication from '../authentication';
 import Redirect from './redirect';
@@ -24,12 +24,12 @@ import paramsArray from '../helper/param-constants';
  * @param {String} options.domain your Auth0 domain
  * @param {String} options.clientID the Client ID found on your Application settings page
  * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
- * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {Array} [options.plugins]
- * @param {Number} [options._timesToRetryFailedRequests] Number of times to retry a failed request, according to {@link https://github.com/visionmedia/superagent/blob/master/lib/should-retry.js}
+ * @param {Number} [options._timesToRetryFailedRequests] Number of times to retry a failed request, according to {@link https://github.com/visionmedia/superagent/blob/master/lib/request-base.js}
  * @see {@link https://auth0.com/docs/api/authentication}
  */
 function WebAuth(options) {
@@ -108,7 +108,7 @@ function WebAuth(options) {
 
   this.baseOptions.jwksURI = this.baseOptions.overrides && this.baseOptions.overrides.__jwks_uri;
 
-  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
+  this.transactionManager = new TransactionManager(this.baseOptions);
 
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this, this.baseOptions);
@@ -116,6 +116,7 @@ function WebAuth(options) {
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
   this.webMessageHandler = new WebMessageHandler(this);
   this._universalLogin = new HostedPages(this, this.baseOptions);
+  this.ssodataStorage = new SSODataStorage(this.baseOptions);
 }
 
 /**
@@ -246,7 +247,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
       if (payload) {
         sub = payload.sub;
       }
-      ssodata.set(transaction.lastUsedConnection, sub);
+      _this.ssodataStorage.set(transaction.lastUsedConnection, sub);
     }
     return cb(null, buildParseHashResponse(parsedHash, appState, payload));
   };
@@ -364,7 +365,7 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
  * @param {Object} [options]
  * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
- * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
@@ -422,9 +423,8 @@ WebAuth.prototype.renewAuth = function(options, cb) {
  *
  * @method checkSession
  * @param {Object} [options]
-
  * @param {String} [options.clientID] the Client ID found on your Application settings page
- * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
@@ -442,6 +442,10 @@ WebAuth.prototype.checkSession = function(options, cb) {
 
   if (!options.nonce) {
     params = this.transactionManager.process(params);
+  }
+
+  if (!params.redirectUri) {
+    return cb({ error: 'error', error_description: "redirectUri can't be empty" });
   }
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' });
@@ -510,7 +514,7 @@ WebAuth.prototype.signup = function(options, cb) {
  * @param {Object} [options]
  * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} options.redirectUri url that the Auth0 will redirect after Auth with the Authorization Response
- * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
@@ -574,9 +578,12 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  */
 
 /**
- * Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
- * Some browsers might not be able to successfully authenticate if 3rd party cookies are disabled in your browser. [See here for more information.]{@link https://auth0.com/docs/cross-origin-authentication}.
- * After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
+ * Logs the user in with username and password using the correct flow based on where it's called from:
+ * - If you're calling this method from the Universal Login Page, it will use the usernamepassword/login endpoint
+ * - If you're calling this method outside the Universal Login Page, it will use the cross origin authentication (/co/authenticate) flow
+ * You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
+ * After the redirect to `redirectUri`, use {@link parseHash} to retrieve the authentication data.
+ * **Notice that when using the cross origin authentication flow, some browsers might not be able to successfully authenticate if 3rd party cookies are disabled. [See here for more information.]{@link https://auth0.com/docs/cross-origin-authentication}.**
  *
  * @method login
  * @see Requires [`Implicit` grant]{@link https://auth0.com/docs/api-auth/grant/implicit}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
