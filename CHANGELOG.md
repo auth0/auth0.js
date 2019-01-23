@@ -1,4 +1,10 @@
 
+## [v9.9.1](https://github.com/auth0/auth0.js/tree/v9.9.1) (2019-01-23)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.9.0...v9.9.1)
+
+**Fixed**
+- Don't store transactions when inside the hosted login page [\#899](https://github.com/auth0/auth0.js/pull/899) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.9.0](https://github.com/auth0/auth0.js/tree/v9.9.0) (2019-01-10)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.8.2...v9.9.0)
 
