@@ -18,7 +18,6 @@ describe('helpers storage', function() {
     });
     it('should call setItem when value is a string', function() {
       storage.setItem('data', 'text', { options: true });
-      console.log(StorageHandler.prototype.setItem.toString());
       expect(StorageHandler.prototype.setItem.firstCall.args).to.be.eql([
         'data',
         '"text"',
