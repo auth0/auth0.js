@@ -147,6 +147,22 @@ function getOriginFromUrl(url) {
   return origin;
 }
 
+function trim(options, key) {
+  var trimmed = extend(options);
+  if (options[key]) {
+    trimmed[key] = options[key].trim();
+  }
+  return trimmed;
+}
+
+function trimMultiple(options, keys) {
+  return keys.reduce(trim, options);
+}
+
+function trimUserDetails(options) {
+  return trimMultiple(options, ['username', 'email', 'phoneNumber']);
+}
+
 export default {
   toSnakeCase: toSnakeCase,
   toCamelCase: toCamelCase,
@@ -156,5 +172,6 @@ export default {
   getKeysNotIn: getKeysNotIn,
   extend: extend,
   getOriginFromUrl: getOriginFromUrl,
-  getLocationFromUrl: getLocationFromUrl
+  getLocationFromUrl: getLocationFromUrl,
+  trimUserDetails: trimUserDetails
 };

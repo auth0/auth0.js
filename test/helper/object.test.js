@@ -102,7 +102,7 @@ describe('helpers', function() {
   });
 
   describe('extend', function() {
-    it('shold merge objects attributes', function() {
+    it('should merge objects attributes', function() {
       var object1 = {
         attr1: 'attribute_1',
         attr2: 'attribute_2'
@@ -305,7 +305,7 @@ describe('helpers', function() {
       });
     });
 
-    it('shold merge picking attributes of both objects', function() {
+    it('should merge picking attributes of both objects', function() {
       var object1 = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
@@ -579,5 +579,81 @@ describe('helpers', function() {
         expect(objectHelper.getLocationFromUrl(url)).to.be.eql(mapping[url]);
       });
     }
+  });
+  describe('trimUserDetails', function() {
+    var options;
+    function getTrimmed() {
+      return objectHelper.trimUserDetails(options);
+    }
+    beforeEach(function() {
+      options = {
+        email: '   me@example.com   ',
+        phoneNumber: '   +16505555555   ',
+        username: '   johndoe   '
+      };
+    });
+    it('should trim the username, email, and phoneNumber in an options object', function() {
+      expect(getTrimmed()).to.eql({
+        email: 'me@example.com',
+        phoneNumber: '+16505555555',
+        username: 'johndoe'
+      });
+    });
+    it('should not mutate the original options object', function() {
+      expect(options)
+        .to.not.equal(getTrimmed())
+        .and.eql({
+          email: '   me@example.com   ',
+          phoneNumber: '   +16505555555   ',
+          username: '   johndoe   '
+        });
+    });
+    it('should only trim username & email--not other properties', function() {
+      options.otherAttribute = '   stay untrimmed my friend   ';
+      expect(getTrimmed()).to.eql({
+        email: 'me@example.com',
+        otherAttribute: '   stay untrimmed my friend   ',
+        phoneNumber: '+16505555555',
+        username: 'johndoe'
+      });
+    });
+    it('should not fail when username, email, and/or phoneNumber are absent', function() {
+      options = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        attr3: 'attribute_3'
+      };
+      expect(getTrimmed()).to.eql(options);
+      options = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        username: '   johndoe   '
+      };
+      expect(getTrimmed()).to.eql({
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        username: 'johndoe'
+      });
+      options = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        email: '   email@example.com   '
+      };
+      expect(getTrimmed()).to.eql({
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        email: 'email@example.com'
+      });
+      options = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        phoneNumber: '   +16505555555   '
+      };
+      expect(getTrimmed()).to.eql({
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        phoneNumber: '+16505555555'
+      });
+    });
   });
 });

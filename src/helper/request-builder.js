@@ -2,6 +2,7 @@
 import request from 'superagent';
 import base64Url from './base64_url';
 import version from '../version';
+import objectHelper from './object';
 
 // ------------------------------------------------ RequestWrapper
 
@@ -45,7 +46,7 @@ RequestObj.prototype.set = function(key, value) {
 };
 
 RequestObj.prototype.send = function(body) {
-  this.request = this.request.send(body);
+  this.request = this.request.send(objectHelper.trimUserDetails(body));
   return this;
 };
 

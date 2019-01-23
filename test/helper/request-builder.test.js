@@ -7,6 +7,7 @@ import RequestMock from '../mock/request-mock';
 import RequestBuilder from '../../src/helper/request-builder';
 import base64url from '../../src/helper/base64_url';
 import version from '../../src/version';
+import objectHelper from '../../src/helper/object';
 
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
@@ -140,6 +141,9 @@ describe('helpers requestBuilder', function() {
 
     it('should post stuff', function() {
       var req = new RequestBuilder({});
+      var trimUserDetailsStub = stub(objectHelper, 'trimUserDetails', function(obj) {
+        return obj;
+      });
       var handler = req
         .post('https://test.com')
         .send({
@@ -148,6 +152,8 @@ describe('helpers requestBuilder', function() {
         })
         .end(function(err, data) {});
 
+      expect(trimUserDetailsStub).to.be.called;
+      trimUserDetailsStub.restore();
       expect(handler.getMethod()).to.eql('POST');
       expect(handler.getUrl()).to.eql('https://test.com');
       expect(handler.getBody()).to.eql({
@@ -286,6 +292,9 @@ describe('helpers requestBuilder', function() {
 
     it('should post stuff', function() {
       var req = new RequestBuilder({});
+      var trimUserDetailsStub = stub(objectHelper, 'trimUserDetails', function(obj) {
+        return obj;
+      });
       var handler = req
         .post('https://test.com', { noHeaders: true })
         .send({
@@ -294,6 +303,8 @@ describe('helpers requestBuilder', function() {
         })
         .end(function(err, data) {});
 
+      expect(trimUserDetailsStub).to.be.called;
+      trimUserDetailsStub.restore();
       expect(handler.getMethod()).to.eql('POST');
       expect(handler.getUrl()).to.eql('https://test.com');
       expect(handler.getBody()).to.eql({
