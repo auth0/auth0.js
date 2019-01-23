@@ -99,15 +99,20 @@ context('TransactionManager', function() {
         this.tm = new TransactionManager({ domain: 'auth.myapp.com' });
       });
       it('uses nonce/state when provided', function() {
-        var result = this.tm.generateTransaction('appState', 'state', 'nonce', null);
-        expect(result).to.be.eql({ state: 'state', nonce: 'nonce' });
+        var result = this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null
+        );
+        expect(result).to.be.eql({ state: 'providedState', nonce: 'providedNonce' });
       });
       it('uses random state/nonce when they are not provided', function() {
         var result = this.tm.generateTransaction(null, null, null, null, true);
         expect(result).to.be.eql({ state: 'randomString', nonce: 'randomString' });
       });
       it('does not store transaction', function() {
-        this.tm.generateTransaction('appState', 'state', 'nonce', null);
+        this.tm.generateTransaction('appState', 'providedState', 'providedNonce', null);
         expect(Storage.prototype.setItem.calledOnce).to.be(false);
       });
     });
@@ -137,36 +142,41 @@ context('TransactionManager', function() {
         });
       });
       it('uses nonce/state when provided', function() {
-        var result = this.tm.generateTransaction('appState', 'state', 'nonce', null);
-        expect(result).to.be.eql({ state: 'state', nonce: 'nonce' });
+        var result = this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null
+        );
+        expect(result).to.be.eql({ state: 'providedState', nonce: 'providedNonce' });
         expect(Storage.prototype.setItem.calledOnce).to.be(true);
-        expect(Storage.prototype.setItem.lastCall.args[0]).to.be('com.auth0.auth.state');
+        expect(Storage.prototype.setItem.lastCall.args[0]).to.be('com.auth0.auth.providedState');
         expect(Storage.prototype.setItem.lastCall.args[1]).to.be.eql({
-          nonce: 'nonce',
+          nonce: 'providedNonce',
           appState: 'appState',
-          state: 'state',
+          state: 'providedState',
           lastUsedConnection: null
         });
       });
       it('uses lastUsedConnection when provided', function() {
         var result = this.tm.generateTransaction(
           'appState',
-          'state',
-          'nonce',
+          'providedState',
+          'providedNonce',
           'lastUsedConnection'
         );
-        expect(result).to.be.eql({ state: 'state', nonce: 'nonce' });
+        expect(result).to.be.eql({ state: 'providedState', nonce: 'providedNonce' });
         expect(Storage.prototype.setItem.calledOnce).to.be(true);
-        expect(Storage.prototype.setItem.lastCall.args[0]).to.be('com.auth0.auth.state');
+        expect(Storage.prototype.setItem.lastCall.args[0]).to.be('com.auth0.auth.providedState');
         expect(Storage.prototype.setItem.lastCall.args[1]).to.be.eql({
-          nonce: 'nonce',
+          nonce: 'providedNonce',
           appState: 'appState',
-          state: 'state',
+          state: 'providedState',
           lastUsedConnection: 'lastUsedConnection'
         });
       });
       it('stores state with expires option equal to 30 mins', function() {
-        this.tm.generateTransaction('appState', 'state', 'nonce', null);
+        this.tm.generateTransaction('appState', 'providedState', 'providedNonce', null);
         expect(Storage.prototype.setItem.calledOnce).to.be(true);
         expect(typeof Storage.prototype.setItem.lastCall.args[2]).to.be('object');
         expect(Storage.prototype.setItem.lastCall.args[2]).to.be.eql({ expires: times.MINUTES_30 });
@@ -176,7 +186,7 @@ context('TransactionManager', function() {
   context('getStoredTransaction', function() {
     beforeEach(function() {
       stub(Storage.prototype, 'getItem', function(state) {
-        expect(state).to.be('com.auth0.auth.state');
+        expect(state).to.be('com.auth0.auth.providedState');
         return { from: 'storage' };
       });
       spy(TransactionManager.prototype, 'clearTransaction');
@@ -186,12 +196,14 @@ context('TransactionManager', function() {
       TransactionManager.prototype.clearTransaction.restore();
     });
     it('returns transaction data from storage', function() {
-      var state = this.tm.getStoredTransaction('state');
+      var state = this.tm.getStoredTransaction('providedState');
       expect(state).to.be.eql({ from: 'storage' });
     });
     it('removes data from storage', function() {
-      this.tm.getStoredTransaction('state');
-      expect(TransactionManager.prototype.clearTransaction.firstCall.args[0]).to.be('state');
+      this.tm.getStoredTransaction('providedState');
+      expect(TransactionManager.prototype.clearTransaction.firstCall.args[0]).to.be(
+        'providedState'
+      );
     });
   });
   context('clearTransaction', function() {
@@ -202,9 +214,9 @@ context('TransactionManager', function() {
       Storage.prototype.removeItem.restore();
     });
     it('removes data from storage', function() {
-      this.tm.clearTransaction('state');
+      this.tm.clearTransaction('providedState');
       expect(Storage.prototype.removeItem.calledOnce).to.be(true);
-      expect(Storage.prototype.removeItem.lastCall.args[0]).to.be('com.auth0.auth.state');
+      expect(Storage.prototype.removeItem.lastCall.args[0]).to.be('com.auth0.auth.providedState');
     });
   });
 });
