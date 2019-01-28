@@ -1,4 +1,10 @@
 
+## [v9.10.0](https://github.com/auth0/auth0.js/tree/v9.10.0) (2019-01-28)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.9.1...v9.10.0)
+
+**Changed**
+- Trim `username`, `email` and `phoneNumber` params in every request [\#895](https://github.com/auth0/auth0.js/pull/895) ([ScottRudiger](https://github.com/ScottRudiger))
+
 ## [v9.9.1](https://github.com/auth0/auth0.js/tree/v9.9.1) (2019-01-23)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.9.0...v9.9.1)
 
