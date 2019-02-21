@@ -220,7 +220,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
   var _this = this;
   options.__enableIdPInitiatedLogin =
     options.__enableIdPInitiatedLogin || options.__enableImpersonation;
-  var state = parsedHash.state;
+  var state = parsedHash.state || null;
   var transaction = this.transactionManager.getStoredTransaction(state);
   var transactionState = options.state || (transaction && transaction.state) || null;
 
