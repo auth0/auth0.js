@@ -180,6 +180,7 @@ describe('auth0.WebAuth.popup', function() {
           expect(err).to.be(null);
           expect(data).to.eql({
             emailVerified: false,
+            email_verified: false,
             email: 'me@example.com'
           });
           done();

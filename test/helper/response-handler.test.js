@@ -180,4 +180,24 @@ describe('helpers responseHandler', function() {
       done();
     })(null, assert_data);
   });
+
+  it('should return the data respecting the `keepOriginalCasing` option', function(done) {
+    var assert_data = {
+      body: {
+        the_attr: 'attr'
+      }
+    };
+
+    responseHandler(
+      function(err, data) {
+        expect(err).to.be(null);
+        expect(data).to.eql({
+          the_attr: 'attr',
+          theAttr: 'attr'
+        });
+        done();
+      },
+      { keepOriginalCasing: true }
+    )(null, assert_data);
+  });
 });
