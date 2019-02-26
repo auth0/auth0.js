@@ -103,16 +103,21 @@ function toSnakeCase(object, exceptions) {
   }, {});
 }
 
-function toCamelCase(object, exceptions) {
+function toCamelCase(object, exceptions, options) {
   if (typeof object !== 'object' || assert.isArray(object) || object === null) {
     return object;
   }
 
   exceptions = exceptions || [];
-
+  options = options || {};
   return Object.keys(object).reduce(function(p, key) {
     var newKey = exceptions.indexOf(key) === -1 ? snakeToCamel(key) : key;
-    p[newKey] = toCamelCase(object[key]);
+
+    p[newKey] = toCamelCase(object[newKey] || object[key], [], options);
+
+    if (options.keepOriginal) {
+      p[key] = toCamelCase(object[key], [], options);
+    }
     return p;
   }, {});
 }

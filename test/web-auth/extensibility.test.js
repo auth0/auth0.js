@@ -111,6 +111,7 @@ describe('auth0.WebAuth extensibility', function() {
       this.webAuth.popup.authorize({ owp: true, scope: 'openid' }, function(err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
+          email_verified: false,
           emailVerified: false,
           email: 'me@example.com'
         });

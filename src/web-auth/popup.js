@@ -203,7 +203,7 @@ Popup.prototype.authorize = function(options, cb) {
 
   popup = this.getPopupHandler(options);
 
-  return popup.load(url, relayUrl, popOpts, responseHandler(cb));
+  return popup.load(url, relayUrl, popOpts, responseHandler(cb, { keepOriginalCasing: true }));
 };
 
 /**

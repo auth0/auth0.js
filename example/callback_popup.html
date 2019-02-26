@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <script src="/auth0.js"></script>
+    <script type="text/javascript">
+      var auth0 = new auth0.WebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://localhost:3000/example',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        popupOrigin: 'http://localhost:3000'
+      });
 
-<head>
-  <script src="/auth0.js"></script>
-  <script type="text/javascript">
-    var auth0 = new auth0.WebAuth({
-      domain: 'brucke.auth0.com',
-      redirectUri: 'https://localhost:3000/example',
-      clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
-      popupOrigin: 'https://localhost:3000'
-    });
+      auth0.popup.callback();
+    </script>
+  </head>
 
-    auth0.popup.callback();
-  </script>
-</head>
-
-<body></body>
-
+  <body></body>
 </html>

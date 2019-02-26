@@ -76,7 +76,10 @@ function wrapCallback(cb, options) {
       return cb(null, data.body || data);
     }
 
-    return cb(null, objectHelper.toCamelCase(data.body || data));
+    return cb(
+      null,
+      objectHelper.toCamelCase(data.body || data, [], { keepOriginal: options.keepOriginalCasing })
+    );
   };
 }
 
