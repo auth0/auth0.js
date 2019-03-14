@@ -1211,6 +1211,9 @@ describe('auth0.WebAuth', function() {
         if (this.webAuth.client.userInfo.restore) {
           this.webAuth.client.userInfo.restore();
         }
+        if (IdTokenVerifier.prototype.verify.restore) {
+          IdTokenVerifier.prototype.verify.restore();
+        }
       });
       it('should use result from /userinfo as idTokenPayload', function(done) {
         stub(this.webAuth.client, 'userInfo', function(accessToken, cb) {
@@ -1236,6 +1239,32 @@ describe('auth0.WebAuth', function() {
               expiresIn: null,
               tokenType: 'Bearer',
               scope: null
+            });
+            done();
+          }
+        );
+      });
+      it('should still throw an error with an invalid nonce', function(done) {
+        var webAuth = new WebAuth({
+          domain: 'auth0-tests-lock.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+          responseType: 'id_token',
+          __disableExpirationCheck: true
+        });
+        stub(IdTokenVerifier.prototype, 'verify', function(_, __, cb) {
+          cb({ message: 'Nonce does not match.' });
+        });
+
+        webAuth.parseHash(
+          {
+            hash:
+              '#state=foo&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2F1dGgwLXRlc3RzLWxvY2suYXV0aDAuY29tLyIsImlhdCI6MTUwOTA0MDk4MiwiZXhwIjoxNTQwNTc2OTgyLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19._JvcLjX308NtT16oegF2wFeOcdEYKM3DqX-V4POwIeg&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function(err, data) {
+            expect(err).to.be.eql({
+              error: 'invalid_token',
+              errorDescription: 'Nonce does not match.'
             });
             done();
           }
@@ -2352,7 +2381,8 @@ describe('auth0.WebAuth', function() {
           error_description: "responseType can't be `code`"
         });
       });
-    });it('throws an error if redirectUri is empty', function() {
+    });
+    it('throws an error if redirectUri is empty', function() {
       this.auth0.checkSession({ redirectUri: '' }, function(err) {
         expect(err).to.be.eql({
           error: 'error',
