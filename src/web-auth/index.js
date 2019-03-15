@@ -280,7 +280,10 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
         }
       );
     }
-    if (validationError.error !== 'invalid_token') {
+    if (
+      validationError.error !== 'invalid_token' ||
+      validationError.errorDescription === 'Nonce does not match.'
+    ) {
       return callback(validationError);
     }
     // if it's an invalid_token error, decode the token
