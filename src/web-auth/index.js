@@ -214,6 +214,7 @@ WebAuth.prototype.parseHash = function(options, cb) {
  * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
  * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
+ * @param {Object} parsedHash an object that represents the parsed hash
  * @param {authorizeCallback} cb
  */
 WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash, cb) {
