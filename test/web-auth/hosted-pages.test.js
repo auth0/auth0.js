@@ -9,7 +9,7 @@ import WebAuth from '../../src/web-auth';
 import TransactionManager from '../../src/web-auth/transaction-manager';
 import RequestBuilder from '../../src/helper/request-builder';
 
-var telemetryInfo = new RequestBuilder({}).getTelemetryData();
+var telemetryInfo = new RequestBuilder({ universalLoginPage: true }).getTelemetryData();
 
 describe('auth0.WebAuth._universalLogin', function() {
   beforeEach(function() {
