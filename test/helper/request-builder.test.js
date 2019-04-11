@@ -27,6 +27,14 @@ describe('helpers requestBuilder', function() {
         version: version.raw
       });
     });
+    it('should use ulp telemetry when `universalLoginPage` is true', function() {
+      var rb = new RequestBuilder({ _telemetryInfo: null, universalLoginPage: true });
+      var telemetry = rb.getTelemetryData();
+      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({
+        name: 'auth0.js-ulp',
+        version: version.raw
+      });
+    });
   });
   describe('with noHeaders:false', function() {
     before(function() {
