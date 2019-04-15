@@ -1,4 +1,10 @@
 
+## [v9.10.2](https://github.com/auth0/auth0.js/tree/v9.10.2) (2019-04-15)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.10.1...v9.10.2)
+
+**Changed**
+- Modify telemetry inside the ULP [\#922](https://github.com/auth0/auth0.js/pull/922) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.10.1](https://github.com/auth0/auth0.js/tree/v9.10.1) (2019-03-18)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.10.0...v9.10.1)
 
