@@ -14,10 +14,19 @@ var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 describe('helpers requestBuilder', function() {
   describe('getTelemetryData', function() {
     it('should encode telemetry', function() {
-      var rb = new RequestBuilder({ _telemetryInfo: { foo: 'bar' } });
+      var rb = new RequestBuilder({ _telemetryInfo: { foo: 'bar', env: { other: 'key' } } });
       var telemetry = rb.getTelemetryData();
-      expect(telemetry).to.be('eyJmb28iOiJiYXIifQ==');
-      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({ foo: 'bar' });
+
+      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({
+        foo: 'bar',
+        env: {
+          other: 'key',
+          'auth0.js': version.raw
+        }
+      });
+      expect(telemetry).to.be(
+        'eyJmb28iOiJiYXIiLCJlbnYiOnsib3RoZXIiOiJrZXkiLCJhdXRoMC5qcyI6IjkuMTAuMiJ9fQ=='
+      );
     });
     it('should use default telemetry', function() {
       var rb = new RequestBuilder({ _telemetryInfo: null });
