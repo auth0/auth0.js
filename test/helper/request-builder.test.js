@@ -20,12 +20,12 @@ describe('helpers requestBuilder', function() {
       expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({
         foo: 'bar',
         env: {
-          name: 'auth0.js',
-          version: version.raw
+          other: 'key',
+          'auth0.js': version.raw
         }
       });
       expect(telemetry).to.be(
-        'eyJmb28iOiJiYXIiLCJlbnYiOnsibmFtZSI6ImF1dGgwLmpzIiwidmVyc2lvbiI6IjkuMTAuMiJ9fQ=='
+        'eyJmb28iOiJiYXIiLCJlbnYiOnsib3RoZXIiOiJrZXkiLCJhdXRoMC5qcyI6IjkuMTAuMiJ9fQ=='
       );
     });
     it('should use default telemetry', function() {

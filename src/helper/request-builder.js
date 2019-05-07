@@ -101,7 +101,9 @@ RequestBuilder.prototype.getTelemetryData = function() {
   var telemetryName = this._universalLoginPage ? 'auth0.js-ulp' : 'auth0.js';
   var clientInfo = { name: telemetryName, version: version.raw };
   if (this._telemetryInfo) {
-    clientInfo = objectHelper.extend({}, this._telemetryInfo, { env: clientInfo });
+    clientInfo = objectHelper.extend({}, this._telemetryInfo);
+    clientInfo.env = objectHelper.extend({}, this._telemetryInfo.env);
+    clientInfo.env[telemetryName] = version.raw;
   }
   var jsonClientInfo = JSON.stringify(clientInfo);
   return base64Url.encode(jsonClientInfo);
