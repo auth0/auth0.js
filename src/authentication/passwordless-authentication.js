@@ -1,9 +1,9 @@
-var urljoin = require('url-join');
+import urljoin from 'url-join';
 
-var objectHelper = require('../helper/object');
-var assert = require('../helper/assert');
-var qs = require('qs');
-var responseHandler = require('../helper/response-handler');
+import objectHelper from '../helper/object';
+import assert from '../helper/assert';
+import qs from 'qs';
+import responseHandler from '../helper/response-handler';
 
 function PasswordlessAuthentication(request, options) {
   this.baseOptions = options;
@@ -135,7 +135,10 @@ PasswordlessAuthentication.prototype.start = function(options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client', 'authParams']);
 
-  return this.request.post(url).send(body).end(responseHandler(cb));
+  return this.request
+    .post(url)
+    .send(body)
+    .end(responseHandler(cb));
 };
 
 PasswordlessAuthentication.prototype.verify = function(options, cb) {
@@ -182,7 +185,10 @@ PasswordlessAuthentication.prototype.verify = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify');
 
-  return this.request.post(url).send(cleanOption).end(responseHandler(cb));
+  return this.request
+    .post(url)
+    .send(cleanOption)
+    .end(responseHandler(cb));
 };
 
-module.exports = PasswordlessAuthentication;
+export default PasswordlessAuthentication;

@@ -1,11 +1,11 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
+import expect from 'expect.js';
+import { stub } from 'sinon';
 
-var RequestMock = require('../mock/request-mock');
-var request = require('superagent');
+import RequestMock from '../mock/request-mock';
+import request from 'superagent';
 
-var RequestBuilder = require('../../src/helper/request-builder');
-var Authentication = require('../../src/authentication');
+import RequestBuilder from '../../src/helper/request-builder';
+import Authentication from '../../src/authentication';
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
 describe('auth0.authentication', function() {

@@ -1,12 +1,12 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
+import expect from 'expect.js';
+import { stub } from 'sinon';
 
-var PopupHandler = require('../../src/helper/popup-handler');
-var MockAuth0Plugin = require('../mock/mock-auth0-plugin');
-var WebAuth = require('../../src/web-auth');
-var version = require('../../src/version');
-var TransactionManager = require('../../src/web-auth/transaction-manager');
-var objectHelper = require('../../src/helper/object');
+import PopupHandler from '../../src/helper/popup-handler';
+import MockAuth0Plugin from '../mock/mock-auth0-plugin';
+import WebAuth from '../../src/web-auth';
+import version from '../../src/version';
+import TransactionManager from '../../src/web-auth/transaction-manager';
+import objectHelper from '../../src/helper/object';
 
 describe('auth0.WebAuth extensibility', function() {
   context('validations', function() {
@@ -111,6 +111,7 @@ describe('auth0.WebAuth extensibility', function() {
       this.webAuth.popup.authorize({ owp: true, scope: 'openid' }, function(err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
+          email_verified: false,
           emailVerified: false,
           email: 'me@example.com'
         });

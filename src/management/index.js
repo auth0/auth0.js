@@ -1,8 +1,8 @@
-var urljoin = require('url-join');
+import urljoin from 'url-join';
 
-var RequestBuilder = require('../helper/request-builder');
-var assert = require('../helper/assert');
-var responseHandler = require('../helper/response-handler');
+import RequestBuilder from '../helper/request-builder';
+import assert from '../helper/assert';
+import responseHandler from '../helper/response-handler';
 
 /**
  * Auth0 Management API Client (methods allowed to be called from the browser only)
@@ -119,4 +119,4 @@ Management.prototype.linkUser = function(userId, secondaryUserToken, cb) {
     .end(responseHandler(cb, { ignoreCasing: true }));
 };
 
-module.exports = Management;
+export default Management;

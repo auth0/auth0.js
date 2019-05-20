@@ -1,14 +1,41 @@
-Thank you for using Auth0.js! Please read the following before creating a new issue.
+In order to efficiently and accurately address your issue or feature request, please read through the template below and answer all relevant questions. Your additional work here is greatly appreciated and will help us respond as quickly as possible. Please delete any sections or questions below that do not pertain to this request.
 
-- [ ] Is this a question about Auth0 in general or a support request? Get in touch with us at https://support.auth0.com.
-- [ ] Is this issue something you can fix? Please send us a pull request! Bug fixes are welcome.
+For general support or usage questions, please use the [Auth0 Community](https://community.auth0.com/) or [Auth0 Support](https://support.auth0.com.).
 
-Otherwise, create a new issue with the following information:
--------------------------------------------------------------
+### Description
 
-- [ ] Code snippet or sample project that reproduces the bug
-- [ ] Screenshots when appropriate
-- [ ] Auth0.js version
-- [ ] Browser & OS
+Description of the bug or feature request and why it's a problem. Consider including:
 
-Make sure to include **as much information as possible** for us to understand and reproduce the bug, that way we can fix it as quickly as possible.
+- The use case or overall problem you're trying to solve
+- Information about when the problem started
+
+### Prerequisites
+
+[ ] I have checked the [documentation for this library](https://auth0.github.io/auth0.js/index.html).
+
+[ ] I have checked the [Auth0 Community](https://community.auth0.com/) for related posts.
+
+[ ] I have checked for related or duplicate [Issues](https://github.com/auth0/auth0.js/issues) and [PRs](https://github.com/auth0/auth0.js/pulls).
+
+[ ] I have read the [Auth0 general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md).
+
+[ ] I have read the [Auth0 Code of Conduct](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md).
+
+### Environment
+
+Please provide the following:
+
+- Version of Auth0.js used:
+- Browser and OS version(s) affected:
+- Additional libraries or browser extensions being used that might affect behavior:
+
+### Reproduction
+
+Detail the steps taken to reproduce this error and note if this issue can be reproduced consistently or if it is intermittent.
+
+Please include:
+
+- Code snippets or a sample project that reproduces the bug
+- Log files (redact/remove sensitive information)
+- Application settings (redact/remove sensitive information)
+- Screenshots, if helpful

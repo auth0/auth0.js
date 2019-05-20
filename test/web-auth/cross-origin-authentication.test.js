@@ -1,19 +1,14 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
-var spy = require('sinon').spy;
-var request = require('superagent');
+import expect from 'expect.js';
+import { stub, spy } from 'sinon';
+import request from 'superagent';
 
-var storage = require('../../src/helper/storage');
-var IframeHandler = require('../../src/helper/iframe-handler');
-var times = require('../../src/helper/times');
-var RequestMock = require('../mock/request-mock');
+import Storage from '../../src/helper/storage';
+import * as times from '../../src/helper/times';
+import RequestMock from '../mock/request-mock';
 
-var TransactionManager = require('../../src/web-auth/transaction-manager');
-var SilentAuthenticationHandler = require('../../src/web-auth/silent-authentication-handler');
-var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
-var WebAuth = require('../../src/web-auth');
-var windowHelper = require('../../src/helper/window');
-var WebMessageHandler = require('../../src/web-auth/web-message-handler');
+import CrossOriginAuthentication from '../../src/web-auth/cross-origin-authentication';
+import windowHelper from '../../src/helper/window';
+import WebMessageHandler from '../../src/web-auth/web-message-handler';
 
 describe('auth0.WebAuth.crossOriginAuthentication', function() {
   context('login', function() {
@@ -31,11 +26,11 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       global.window = {};
     });
     beforeEach(function() {
-      spy(storage, 'setItem');
+      spy(Storage.prototype, 'setItem');
     });
     afterEach(function() {
       request.post.restore();
-      storage.setItem.restore();
+      Storage.prototype.setItem.restore();
       this.webAuthSpy.authorize = spy();
       if (windowHelper.redirect.restore) {
         windowHelper.redirect.restore();
@@ -114,9 +109,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         anotherOption: 'foobar'
       });
     });
-    it('should call /co/authenticate and call `webMessageHandler.run` when popup:true', function(
-      done
-    ) {
+    it('should call /co/authenticate and call `webMessageHandler.run` when popup:true', function(done) {
       stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
@@ -282,7 +275,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         realm: 'email'
       });
     });
-    it('should call /co/authenticate and save the verifier in sessionStorage', function() {
+    it('should call /co/authenticate and save the verifier in storage', function() {
       stub(request, 'post', function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
@@ -311,8 +304,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         password: '123456',
         anotherOption: 'foobar'
       });
-      expect(storage.setItem.callCount).to.be(1);
-      expect(storage.setItem.firstCall.args).to.be.eql([
+      expect(Storage.prototype.setItem.callCount).to.be(1);
+      expect(Storage.prototype.setItem.firstCall.args).to.be.eql([
         'co/verifier/https%3A%2F%2Fme.auth0.com/co_id',
         'co_verifier',
         { expires: times.MINUTES_15 }
@@ -424,10 +417,6 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           redirectUri: 'https://page.com/callback'
         }
       );
-      stub(storage, 'getItem', function(key) {
-        expect(key).to.be('co/verifier/https%3A%2F%2Fme.auth0.com/co_id');
-        return 'co_verifier';
-      });
       global.window = {
         addEventListener: spy(),
         parent: {
@@ -439,10 +428,15 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       };
     });
     beforeEach(function() {
-      spy(storage, 'removeItem');
+      spy(Storage.prototype, 'removeItem');
+      stub(Storage.prototype, 'getItem', function(key) {
+        expect(key).to.be('co/verifier/https%3A%2F%2Fme.auth0.com/co_id');
+        return 'co_verifier';
+      });
     });
     afterEach(function() {
-      storage.removeItem.restore();
+      Storage.prototype.getItem.restore();
+      Storage.prototype.removeItem.restore();
     });
     it('should call parent.postMessage on load', function() {
       this.co.callback();
@@ -465,9 +459,9 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           }
         };
         theCall.args[1](evt);
-        expect(storage.removeItem.called).to.be(false);
+        expect(Storage.prototype.removeItem.called).to.be(false);
       });
-      it('should remove item from sessionStorage', function() {
+      it('should remove item from storage', function() {
         this.co.callback();
         var onMessageHandler = global.window.addEventListener.getCall(0).args[1];
         var evt = {
@@ -483,7 +477,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           }
         };
         onMessageHandler(evt);
-        var theCall = storage.removeItem.getCall(0);
+        var theCall = Storage.prototype.removeItem.getCall(0);
         expect(theCall.args[0]).to.be('co/verifier/https%3A%2F%2Fme.auth0.com/co_id');
       });
       it('should send the verifier response', function() {
@@ -509,9 +503,9 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         });
         expect(theCall.args[1]).to.be('https://me.auth0.com');
       });
-      it('should send empty verifier in the response when sessionStorage can not be accessed', function() {
-        storage.getItem.restore();
-        stub(storage, 'getItem', function() {
+      it('should send empty verifier in the response when storage can not be accessed', function() {
+        Storage.prototype.getItem.restore();
+        stub(Storage.prototype, 'getItem', function() {
           throw new Error('');
         });
         this.co.callback();
@@ -535,7 +529,6 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           response: { verifier: '' }
         });
         expect(theCall.args[1]).to.be('https://me.auth0.com');
-        storage.getItem.restore();
       });
     });
   });

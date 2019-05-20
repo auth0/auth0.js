@@ -1,29 +1,47 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
+import expect from 'expect.js';
+import { stub } from 'sinon';
 
-var request = require('superagent');
+import request from 'superagent';
 
-var RequestMock = require('../mock/request-mock');
-var RequestBuilder = require('../../src/helper/request-builder');
-var base64url = require('../../src/helper/base64_url');
-var version = require('../../src/version').raw;
+import RequestMock from '../mock/request-mock';
+import RequestBuilder from '../../src/helper/request-builder';
+import base64url from '../../src/helper/base64_url';
+import version from '../../src/version';
+import objectHelper from '../../src/helper/object';
 
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
 describe('helpers requestBuilder', function() {
   describe('getTelemetryData', function() {
     it('should encode telemetry', function() {
-      var rb = new RequestBuilder({ _telemetryInfo: { foo: 'bar' } });
+      var rb = new RequestBuilder({ _telemetryInfo: { foo: 'bar', env: { other: 'key' } } });
       var telemetry = rb.getTelemetryData();
-      expect(telemetry).to.be('eyJmb28iOiJiYXIifQ==');
-      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({ foo: 'bar' });
+
+      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({
+        foo: 'bar',
+        env: {
+          other: 'key',
+          'auth0.js': version.raw
+        }
+      });
+      expect(telemetry).to.be(
+        'eyJmb28iOiJiYXIiLCJlbnYiOnsib3RoZXIiOiJrZXkiLCJhdXRoMC5qcyI6IjkuMTAuMiJ9fQ=='
+      );
     });
     it('should use default telemetry', function() {
       var rb = new RequestBuilder({ _telemetryInfo: null });
       var telemetry = rb.getTelemetryData();
       expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({
         name: 'auth0.js',
-        version: version
+        version: version.raw
+      });
+    });
+    it('should use ulp telemetry when `universalLoginPage` is true', function() {
+      var rb = new RequestBuilder({ _telemetryInfo: null, universalLoginPage: true });
+      var telemetry = rb.getTelemetryData();
+      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({
+        name: 'auth0.js-ulp',
+        version: version.raw
       });
     });
   });
@@ -112,7 +130,10 @@ describe('helpers requestBuilder', function() {
 
     it('should get stuff', function() {
       var req = new RequestBuilder({});
-      var handler = req.get('https://test.com').withCredentials().end(function(err, data) {});
+      var handler = req
+        .get('https://test.com')
+        .withCredentials()
+        .end(function(err, data) {});
 
       expect(handler.getMethod()).to.eql('GET');
       expect(handler.getUrl()).to.eql('https://test.com');
@@ -127,13 +148,19 @@ describe('helpers requestBuilder', function() {
       var req = new RequestBuilder({
         _timesToRetryFailedRequests: retryTimes
       });
-      var handler = req.get('https://test.com').withCredentials().end(function(err, data) {});
+      var handler = req
+        .get('https://test.com')
+        .withCredentials()
+        .end(function(err, data) {});
 
       expect(handler.request.willRetry).to.eql(retryTimes);
     });
 
     it('should post stuff', function() {
       var req = new RequestBuilder({});
+      var trimUserDetailsStub = stub(objectHelper, 'trimUserDetails', function(obj) {
+        return obj;
+      });
       var handler = req
         .post('https://test.com')
         .send({
@@ -142,6 +169,8 @@ describe('helpers requestBuilder', function() {
         })
         .end(function(err, data) {});
 
+      expect(trimUserDetailsStub).to.be.called;
+      trimUserDetailsStub.restore();
       expect(handler.getMethod()).to.eql('POST');
       expect(handler.getUrl()).to.eql('https://test.com');
       expect(handler.getBody()).to.eql({
@@ -280,6 +309,9 @@ describe('helpers requestBuilder', function() {
 
     it('should post stuff', function() {
       var req = new RequestBuilder({});
+      var trimUserDetailsStub = stub(objectHelper, 'trimUserDetails', function(obj) {
+        return obj;
+      });
       var handler = req
         .post('https://test.com', { noHeaders: true })
         .send({
@@ -288,6 +320,8 @@ describe('helpers requestBuilder', function() {
         })
         .end(function(err, data) {});
 
+      expect(trimUserDetailsStub).to.be.called;
+      trimUserDetailsStub.restore();
       expect(handler.getMethod()).to.eql('POST');
       expect(handler.getUrl()).to.eql('https://test.com');
       expect(handler.getBody()).to.eql({

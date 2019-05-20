@@ -1,9 +1,9 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
+import expect from 'expect.js';
+import { stub } from 'sinon';
 
-var WebAuth = require('../../src/web-auth');
-var SilentAuthenticationHandler = require('../../src/web-auth/silent-authentication-handler');
-var IframeHandler = require('../../src/helper/iframe-handler');
+import WebAuth from '../../src/web-auth';
+import SilentAuthenticationHandler from '../../src/web-auth/silent-authentication-handler';
+import IframeHandler from '../../src/helper/iframe-handler';
 
 var eventEmitter = {
   emitEvent: function(mockEvent) {
@@ -15,7 +15,7 @@ var iframeHandler = {};
 describe('handlers silent-authentication-handler', function() {
   context('with context', function() {
     beforeEach(function() {
-      global.window = { location: { origin: 'unit-test-origin' } }
+      global.window = { location: { origin: 'unit-test-origin' } };
     });
     afterEach(function() {
       if (IframeHandler.prototype.init.restore) {
@@ -263,18 +263,20 @@ describe('handlers silent-authentication-handler', function() {
       });
       var validator = sah.getEventValidator();
 
-      expect(validator.isValid({
-        event: {
-          type: 'load'
-        },
-        sourceObject: {
-          contentWindow: {
-            location: {
-              protocol: 'https:'
+      expect(
+        validator.isValid({
+          event: {
+            type: 'load'
+          },
+          sourceObject: {
+            contentWindow: {
+              location: {
+                protocol: 'https:'
+              }
             }
           }
-        }
-      })).to.be(true);
+        })
+      ).to.be(true);
     });
 
     it('should negatively validate load event types for "about:" protocol', function() {
@@ -283,7 +285,8 @@ describe('handlers silent-authentication-handler', function() {
       });
       var validator = sah.getEventValidator();
 
-      expect(validator.isValid({
+      expect(
+        validator.isValid({
           event: {
             type: 'load'
           },
@@ -294,7 +297,8 @@ describe('handlers silent-authentication-handler', function() {
               }
             }
           }
-      })).to.be(false);
+        })
+      ).to.be(false);
     });
   });
 

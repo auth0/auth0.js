@@ -9,7 +9,6 @@ function get() {
 }
 
 function objectAssignPolyfill(target) {
-  'use strict';
   if (target === undefined || target === null) {
     throw new TypeError('Cannot convert first argument to object');
   }
@@ -33,7 +32,7 @@ function objectAssignPolyfill(target) {
   return to;
 }
 
-module.exports = {
+export default {
   get: get,
   objectAssignPolyfill: objectAssignPolyfill
 };

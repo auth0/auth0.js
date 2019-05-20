@@ -1,30 +1,34 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
+import expect from 'expect.js';
+import { stub } from 'sinon';
 
-var storage = require('../../src/helper/storage');
-var ssodata = require('../../src/helper/ssodata');
+import Storage from '../../src/helper/storage';
+import SSODataStorage from '../../src/helper/ssodata';
 
 describe('helpers', function() {
+  var ssodata;
+  beforeEach(function() {
+    ssodata = new SSODataStorage({});
+  });
   describe('ssodata', function() {
     afterEach(function() {
-      if (storage.setItem.restore) {
-        storage.setItem.restore();
+      if (Storage.prototype.setItem.restore) {
+        Storage.prototype.setItem.restore();
       }
-      if (storage.getItem.restore) {
-        storage.getItem.restore();
+      if (Storage.prototype.getItem.restore) {
+        Storage.prototype.getItem.restore();
       }
     });
     describe('get', function() {
       it('when there is data', function() {
         var expectedObject = { foo: 'bar' };
-        stub(storage, 'getItem', function() {
+        stub(Storage.prototype, 'getItem', function() {
           return JSON.stringify(expectedObject);
         });
         var data = ssodata.get();
         expect(data).to.be.eql(expectedObject);
       });
       it('when there is no data', function() {
-        stub(storage, 'getItem', function() {
+        stub(Storage.prototype, 'getItem', function() {
           return undefined;
         });
         var data = ssodata.get();
@@ -33,7 +37,7 @@ describe('helpers', function() {
     });
     describe('set', function() {
       it('sets ssodata', function(done) {
-        stub(storage, 'setItem', function(key, value) {
+        stub(Storage.prototype, 'setItem', function(key, value) {
           expect(key).to.be('auth0.ssodata');
           expect(JSON.parse(value)).to.be.eql({
             lastUsedConnection: 'connection',

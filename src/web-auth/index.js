@@ -1,20 +1,20 @@
-var IdTokenVerifier = require('idtoken-verifier');
+import IdTokenVerifier from 'idtoken-verifier';
 
-var assert = require('../helper/assert');
-var error = require('../helper/error');
-var qs = require('qs');
-var PluginHandler = require('../helper/plugins');
-var windowHelper = require('../helper/window');
-var objectHelper = require('../helper/object');
-var ssodata = require('../helper/ssodata');
-var TransactionManager = require('./transaction-manager');
-var Authentication = require('../authentication');
-var Redirect = require('./redirect');
-var Popup = require('./popup');
-var SilentAuthenticationHandler = require('./silent-authentication-handler');
-var CrossOriginAuthentication = require('./cross-origin-authentication');
-var WebMessageHandler = require('./web-message-handler');
-var HostedPages = require('./hosted-pages');
+import assert from '../helper/assert';
+import error from '../helper/error';
+import qs from 'qs';
+import PluginHandler from '../helper/plugins';
+import windowHelper from '../helper/window';
+import objectHelper from '../helper/object';
+import SSODataStorage from '../helper/ssodata';
+import TransactionManager from './transaction-manager';
+import Authentication from '../authentication';
+import Redirect from './redirect';
+import Popup from './popup';
+import SilentAuthenticationHandler from './silent-authentication-handler';
+import CrossOriginAuthentication from './cross-origin-authentication';
+import WebMessageHandler from './web-message-handler';
+import HostedPages from './hosted-pages';
 
 /**
  * Handles all the browser's AuthN/AuthZ flows
@@ -23,12 +23,12 @@ var HostedPages = require('./hosted-pages');
  * @param {String} options.domain your Auth0 domain
  * @param {String} options.clientID the Client ID found on your Application settings page
  * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
- * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {Array} [options.plugins]
- * @param {Number} [options._timesToRetryFailedRequests] Number of times to retry a failed request, according to {@link https://github.com/visionmedia/superagent/blob/master/lib/should-retry.js}
+ * @param {Number} [options._timesToRetryFailedRequests] Number of times to retry a failed request, according to {@link https://github.com/visionmedia/superagent/blob/master/lib/request-base.js}
  * @see {@link https://auth0.com/docs/api/authentication}
  */
 function WebAuth(options) {
@@ -90,9 +90,8 @@ function WebAuth(options) {
   this.baseOptions = options;
   this.baseOptions.plugins = new PluginHandler(this, this.baseOptions.plugins || []);
 
-  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
-    ? this.baseOptions._sendTelemetry
-    : true;
+  this.baseOptions._sendTelemetry =
+    this.baseOptions._sendTelemetry === false ? this.baseOptions._sendTelemetry : true;
 
   this.baseOptions._timesToRetryFailedRequests = options._timesToRetryFailedRequests
     ? parseInt(options._timesToRetryFailedRequests, 0)
@@ -108,7 +107,7 @@ function WebAuth(options) {
 
   this.baseOptions.jwksURI = this.baseOptions.overrides && this.baseOptions.overrides.__jwks_uri;
 
-  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
+  this.transactionManager = new TransactionManager(this.baseOptions);
 
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this, this.baseOptions);
@@ -116,6 +115,7 @@ function WebAuth(options) {
   this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
   this.webMessageHandler = new WebMessageHandler(this);
   this._universalLogin = new HostedPages(this, this.baseOptions);
+  this.ssodataStorage = new SSODataStorage(this.baseOptions);
 }
 
 /**
@@ -214,6 +214,7 @@ WebAuth.prototype.parseHash = function(options, cb) {
  * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
  * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
+ * @param {Object} parsedHash an object that represents the parsed hash
  * @param {authorizeCallback} cb
  */
 WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash, cb) {
@@ -246,7 +247,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
       if (payload) {
         sub = payload.sub;
       }
-      ssodata.set(transaction.lastUsedConnection, sub);
+      _this.ssodataStorage.set(transaction.lastUsedConnection, sub);
     }
     return cb(null, buildParseHashResponse(parsedHash, appState, payload));
   };
@@ -280,7 +281,10 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
         }
       );
     }
-    if (validationError.error !== 'invalid_token') {
+    if (
+      validationError.error !== 'invalid_token' ||
+      validationError.errorDescription === 'Nonce does not match.'
+    ) {
       return callback(validationError);
     }
     // if it's an invalid_token error, decode the token
@@ -292,7 +296,8 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
     if (!parsedHash.access_token) {
       var noAccessTokenError = {
         error: 'invalid_token',
-        description: 'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this. Read more: https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
+        description:
+          'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this. Read more: https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
       };
       return callback(noAccessTokenError);
     }
@@ -360,10 +365,10 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
  * Watch out! If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling this method.
  *
  * @method renewAuth
- * @param {Object} options
+ * @param {Object} [options]
  * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
- * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
@@ -435,10 +440,9 @@ WebAuth.prototype.renewAuth = function(options, cb) {
  * Renews an existing session on Auth0's servers using `response_mode=web_message`
  *
  * @method checkSession
- * @param {Object} options
-
+ * @param {Object} [options]
  * @param {String} [options.clientID] the Client ID found on your Application settings page
- * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
@@ -466,6 +470,10 @@ WebAuth.prototype.checkSession = function(options, cb) {
 
   if (!options.nonce) {
     params = this.transactionManager.process(params);
+  }
+
+  if (!params.redirectUri) {
+    return cb({ error: 'error', error_description: "redirectUri can't be empty" });
   }
 
   assert.check(params, { type: 'object', message: 'options parameter is not valid' });
@@ -541,10 +549,10 @@ WebAuth.prototype.signup = function(options, cb) {
  * After that, you'll have to use the {@link parseHash} function at the specified `redirectUri`.
  *
  * @method authorize
- * @param {Object} options
+ * @param {Object} [options]
  * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} options.redirectUri url that the Auth0 will redirect after Auth with the Authorization Response
- * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
@@ -619,10 +627,13 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  */
 
 /**
- * Logs in the user with username and password using the cross origin authentication (/co/authenticate) flow. You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
- * Some browsers might not be able to successfully authenticate if 3rd party cookies are disabled in your browser. [See here for more information.]{@link https://auth0.com/docs/cross-origin-authentication}.
- * After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
- * 
+ * Logs the user in with username and password using the correct flow based on where it's called from:
+ * - If you're calling this method from the Universal Login Page, it will use the usernamepassword/login endpoint
+ * - If you're calling this method outside the Universal Login Page, it will use the cross origin authentication (/co/authenticate) flow
+ * You can use either `username` or `email` to identify the user, but `username` will take precedence over `email`.
+ * After the redirect to `redirectUri`, use {@link parseHash} to retrieve the authentication data.
+ * **Notice that when using the cross origin authentication flow, some browsers might not be able to successfully authenticate if 3rd party cookies are disabled. [See here for more information.]{@link https://auth0.com/docs/cross-origin-authentication}.**
+ *
  * @method login
  * @see Requires [`Implicit` grant]{@link https://auth0.com/docs/api-auth/grant/implicit}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
@@ -731,7 +742,7 @@ WebAuth.prototype.crossOriginVerification = function() {
  * - If the client_id parameter is NOT included, the returnTo URL must be listed in the Allowed Logout URLs set at the account level (see Setting Allowed Logout URLs at the Account Level).
  *
  * @method logout
- * @param {Object} options
+ * @param {Object} [options]
  * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} [options.returnTo] URL to be redirected after the logout
  * @param {Boolean} [options.federated] tells Auth0 if it should logout the user also from the IdP.
@@ -787,4 +798,4 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
   });
 };
 
-module.exports = WebAuth;
+export default WebAuth;

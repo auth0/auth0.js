@@ -1,6 +1,6 @@
-var windowHandler = require('../../src/helper/window');
-var qs = require('qs');
-var urljoin = require('url-join');
+import windowHandler from '../../src/helper/window';
+import qs from 'qs';
+import urljoin from 'url-join';
 
 function PopupHandler(webAuth) {
   this.webAuth = webAuth;
@@ -131,4 +131,4 @@ PopupHandler.prototype.startHandler = function(event, cb) {
   });
 };
 
-module.exports = PopupHandler;
+export default PopupHandler;

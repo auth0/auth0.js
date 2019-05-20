@@ -1,0 +1,33 @@
+{
+  "extends": [
+    "auth0-base/prettier"
+  ],
+  "plugins": [
+    "compat"
+  ],
+  "env": {
+    "browser": true
+  },
+  "rules": {
+    "func-names": "off",
+    "no-underscore-dangle": "off",
+    "no-prototype-builtins": "off",
+    "no-param-reassign": "off",
+    "consistent-return": "off",
+    "vars-on-top": "off",
+    "compat/compat": "error",
+    "no-var": 0,
+    "object-shorthand": 0,
+    "prefer-template": 0,
+    "prefer-arrow-callback": 0,
+    "no-plusplus": 0,
+    "import/newline-after-import": 0,
+    "no-useless-return": 0,
+    "import/no-mutable-exports": 0,
+    "import/first": 0,
+    "prefer-spread": 0,
+    "prefer-rest-params": 0,
+    "lines-around-directive": 0,
+    "valid-typeof": 0
+  }
+}

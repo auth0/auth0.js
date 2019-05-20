@@ -1,4 +1,4 @@
-var expect = require('expect.js');
+import expect from 'expect.js';
 
 var RequestMock = function(options, method, url) {
   this.options = options;

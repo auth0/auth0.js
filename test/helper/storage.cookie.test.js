@@ -1,9 +1,8 @@
-var CookieLibrary = require('js-cookie');
-var expect = require('expect.js');
-var stub = require('sinon').stub;
-var spy = require('sinon').spy;
+import CookieLibrary from 'js-cookie';
+import expect from 'expect.js';
+import { stub, spy } from 'sinon';
 
-var CookieStorage = require('../../src/helper/storage/cookie');
+import CookieStorage from '../../src/helper/storage/cookie';
 var cookieStorage = new CookieStorage();
 const KEY = 'foo';
 const VALUE = 'bar';

@@ -1,13 +1,16 @@
-var random = require('../helper/random');
-var storage = require('../helper/storage');
-var times = require('../helper/times');
+import random from '../helper/random';
+import Storage from '../helper/storage';
+import windowHelper from '../helper/window';
+import * as times from '../helper/times';
 
 var DEFAULT_NAMESPACE = 'com.auth0.auth.';
 
 function TransactionManager(options) {
-  options = options || {};
-  this.namespace = options.namespace || DEFAULT_NAMESPACE;
-  this.keyLength = options.keyLength || 32;
+  var transaction = options.transaction || {};
+  this.namespace = transaction.namespace || DEFAULT_NAMESPACE;
+  this.keyLength = transaction.keyLength || 32;
+  this.storage = new Storage(options);
+  this.options = options;
 }
 
 TransactionManager.prototype.process = function(options) {
@@ -44,17 +47,19 @@ TransactionManager.prototype.generateTransaction = function(
 ) {
   state = state || random.randomString(this.keyLength);
   nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
-
-  storage.setItem(
-    this.namespace + state,
-    {
-      nonce: nonce,
-      appState: appState,
-      state: state,
-      lastUsedConnection: lastUsedConnection
-    },
-    times.MINUTES_30
-  );
+  var isHostedLoginPage = windowHelper.getWindow().location.host === this.options.domain;
+  if (!isHostedLoginPage) {
+    this.storage.setItem(
+      this.namespace + state,
+      {
+        nonce: nonce,
+        appState: appState,
+        state: state,
+        lastUsedConnection: lastUsedConnection
+      },
+      { expires: times.MINUTES_30 }
+    );
+  }
   return {
     state: state,
     nonce: nonce
@@ -64,13 +69,13 @@ TransactionManager.prototype.generateTransaction = function(
 TransactionManager.prototype.getStoredTransaction = function(state) {
   var transactionData;
 
-  transactionData = storage.getItem(this.namespace + state);
+  transactionData = this.storage.getItem(this.namespace + state);
   this.clearTransaction(state);
   return transactionData;
 };
 
 TransactionManager.prototype.clearTransaction = function(state) {
-  storage.removeItem(this.namespace + state);
+  this.storage.removeItem(this.namespace + state);
 };
 
-module.exports = TransactionManager;
+export default TransactionManager;

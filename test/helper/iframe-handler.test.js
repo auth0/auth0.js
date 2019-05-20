@@ -1,9 +1,8 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
+import expect from 'expect.js';
+import { stub } from 'sinon';
 
-var WebAuth = require('../../src/web-auth');
-var windowHelper = require('../../src/helper/window');
-var IframeHandler = require('../../src/helper/iframe-handler');
+import windowHelper from '../../src/helper/window';
+import IframeHandler from '../../src/helper/iframe-handler';
 
 function MockEventSourceObject() {
   this.eventListeners = {
@@ -56,9 +55,10 @@ function stubWindow(eventType, data) {
       style: {},
       contentWindow: {
         location: {
-          hash: data !== undefined
-            ? data
-            : '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          hash:
+            data !== undefined
+              ? data
+              : '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
         }
       }
     });
@@ -87,14 +87,9 @@ function stubWindow(eventType, data) {
         return iFrame;
       },
       body: {
-        removeChild: function(ele) {
-          expect(ele).to.be(iFrame);
-          expect(fauxWindow.mockObjectStore.iframe).to.be(iFrame);
-          fauxWindow.mockObjectStore.iframe = null;
-        },
         appendChild: function(ele) {
           expect(fauxWindow.mockObjectStore.iframe).to.be(null);
-          expect(ele.id).to.be('the_iframe');
+          expect(ele.id).to.be(iFrame.id);
           fauxWindow.mockObjectStore.iframe = ele;
         }
       }
@@ -129,7 +124,7 @@ describe('helpers iframeHandler', function() {
     });
 
     it('should callback after a timeout', function() {
-      var iframe = stubWindow('message');
+      stubWindow('message');
       var timeOutCalled = false;
       var iframeHandler = new IframeHandler({
         timeout: 10,
@@ -187,46 +182,40 @@ describe('helpers iframeHandler', function() {
       expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
     });
 
-    it('should call an event validator for a message event on the window', function() {
-      var iframe = stubWindow('message');
-      var validatorCalled = false;
+    it('should call an event validator for a message event on the window', function(done) {
+      stubWindow('message');
       var iframeHandler = new IframeHandler({
         eventListenerType: 'message',
         eventValidator: {
           isValid: function(eventData) {
-            validatorCalled = true;
             expect(eventData.event).to.eql({ id: 'my-id' });
             expect(eventData.sourceObject).to.eql(windowHelper.getWindow());
+            done();
           }
         },
         callback: function() {}
       });
 
       iframeHandler.init();
-      expect(validatorCalled).to.be(false);
       windowHelper.getWindow().emitEvent('message', { id: 'my-id' });
-      expect(validatorCalled).to.be(true);
     });
 
-    it('should call an event validator for a load event on the Iframe', function() {
+    it('should call an event validator for a load event on the Iframe', function(done) {
       var iframe = stubWindow('load');
-      var validatorCalled = false;
       var iframeHandler = new IframeHandler({
         eventListenerType: 'load',
         eventValidator: {
           isValid: function(eventData) {
-            validatorCalled = true;
             expect(eventData.event).to.eql({ id: 'my-id-2' });
             expect(eventData.sourceObject).to.eql(iframe);
+            done();
           }
         },
         callback: function() {}
       });
 
       iframeHandler.init();
-      expect(validatorCalled).to.be(false);
       iframe.emitEvent('load', { id: 'my-id-2' });
-      expect(validatorCalled).to.be(true);
     });
 
     it('should not destroy or callback if an event is not valid', function() {
@@ -284,7 +273,6 @@ describe('helpers iframeHandler', function() {
       setTimeout(function() {
         expect(callbackCalled).to.eql(true);
         expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
-        expect(windowHelper.getWindow().mockObjectStore.iframe).to.be(null);
 
         done();
       }, 200);
@@ -356,6 +344,26 @@ describe('helpers iframeHandler', function() {
         expect(e.message).to.eql('Unsupported event listener type: invalid');
         done();
       }
+    });
+
+    it('destroy() should call parentNode.removeChild when available', function(done) {
+      var iframe = stubWindow('message');
+      iframe.assimilate({
+        parentNode: {
+          removeChild: function() {
+            done();
+          }
+        }
+      });
+
+      var iframeHandler = new IframeHandler({
+        eventListenerType: 'message',
+        timeout: 1,
+        timeoutCallback: function() {},
+        callback: function() {}
+      });
+
+      iframeHandler.init();
     });
   });
 });

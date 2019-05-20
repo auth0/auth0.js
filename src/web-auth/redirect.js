@@ -1,5 +1,5 @@
-var CrossOriginAuthentication = require('./cross-origin-authentication');
-var Warn = require('../helper/warn');
+import CrossOriginAuthentication from './cross-origin-authentication';
+import Warn from '../helper/warn';
 
 function Redirect(auth0, options) {
   this.webAuth = auth0;
@@ -53,4 +53,4 @@ Redirect.prototype.signupAndLogin = function(options, cb) {
   });
 };
 
-module.exports = Redirect;
+export default Redirect;

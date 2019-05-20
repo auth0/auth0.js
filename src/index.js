@@ -1,11 +1,13 @@
-var Authentication = require('./authentication');
-var Management = require('./management');
-var WebAuth = require('./web-auth');
-var version = require('./version');
+import Authentication from './authentication';
+import Management from './management';
+import WebAuth from './web-auth';
+import version from './version';
 
-module.exports = {
+export { Authentication, Management, WebAuth, version };
+
+export default {
   Authentication: Authentication,
   Management: Management,
   WebAuth: WebAuth,
-  version: version.raw
+  version: version
 };

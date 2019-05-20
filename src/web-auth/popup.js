@@ -1,15 +1,15 @@
-var urljoin = require('url-join');
-var WinChan = require('winchan');
+import urljoin from 'url-join';
+import WinChan from 'winchan';
 
-var urlHelper = require('../helper/url');
-var assert = require('../helper/assert');
-var responseHandler = require('../helper/response-handler');
-var PopupHandler = require('../helper/popup-handler');
-var objectHelper = require('../helper/object');
-var windowHelper = require('../helper/window');
-var Warn = require('../helper/warn');
-var TransactionManager = require('./transaction-manager');
-var CrossOriginAuthentication = require('./cross-origin-authentication');
+import urlHelper from '../helper/url';
+import assert from '../helper/assert';
+import responseHandler from '../helper/response-handler';
+import PopupHandler from '../helper/popup-handler';
+import objectHelper from '../helper/object';
+import windowHelper from '../helper/window';
+import Warn from '../helper/warn';
+import TransactionManager from './transaction-manager';
+import CrossOriginAuthentication from './cross-origin-authentication';
 
 function Popup(webAuth, options) {
   this.baseOptions = options;
@@ -17,7 +17,7 @@ function Popup(webAuth, options) {
   this.client = webAuth.client;
   this.webAuth = webAuth;
 
-  this.transactionManager = new TransactionManager(this.baseOptions.transaction);
+  this.transactionManager = new TransactionManager(this.baseOptions);
   this.crossOriginAuthentication = new CrossOriginAuthentication(webAuth, this.baseOptions);
   this.warn = new Warn({
     disableWarnings: !!options._disableDeprecationWarnings
@@ -131,7 +131,7 @@ Popup.prototype.callback = function(options) {
  * @param {Object} options
  * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} options.redirectUri url that the Auth0 will redirect after Auth with the Authorization Response
- * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
@@ -203,7 +203,7 @@ Popup.prototype.authorize = function(options, cb) {
 
   popup = this.getPopupHandler(options);
 
-  return popup.load(url, relayUrl, popOpts, responseHandler(cb));
+  return popup.load(url, relayUrl, popOpts, responseHandler(cb, { keepOriginalCasing: true }));
 };
 
 /**
@@ -288,4 +288,4 @@ Popup.prototype.signupAndLogin = function(options, cb) {
   });
 };
 
-module.exports = Popup;
+export default Popup;

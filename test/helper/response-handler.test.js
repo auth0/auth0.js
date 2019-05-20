@@ -1,6 +1,6 @@
-var expect = require('expect.js');
+import expect from 'expect.js';
 
-var responseHandler = require('../../src/helper/response-handler');
+import responseHandler from '../../src/helper/response-handler';
 
 describe('helpers responseHandler', function() {
   it('should return default error', function(done) {
@@ -131,6 +131,25 @@ describe('helpers responseHandler', function() {
     })(null, assert_err);
   });
 
+  it('should return normalized format 6', function(done) {
+    var assert_err = {};
+    assert_err.response = {};
+    assert_err.response.body = {
+      code: 'the_error_code',
+      error: 'The error description.'
+    };
+
+    responseHandler(function(err, data) {
+      expect(data).to.be(undefined);
+      expect(err).to.eql({
+        original: assert_err,
+        code: 'the_error_code',
+        description: 'The error description.'
+      });
+      done();
+    })(assert_err, null);
+  });
+
   it('should return the data', function(done) {
     var assert_data = {
       body: {
@@ -160,5 +179,25 @@ describe('helpers responseHandler', function() {
       expect(data).to.eql('The response message');
       done();
     })(null, assert_data);
+  });
+
+  it('should return the data respecting the `keepOriginalCasing` option', function(done) {
+    var assert_data = {
+      body: {
+        the_attr: 'attr'
+      }
+    };
+
+    responseHandler(
+      function(err, data) {
+        expect(err).to.be(null);
+        expect(data).to.eql({
+          the_attr: 'attr',
+          theAttr: 'attr'
+        });
+        done();
+      },
+      { keepOriginalCasing: true }
+    )(null, assert_data);
   });
 });

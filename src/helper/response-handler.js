@@ -1,5 +1,5 @@
-var error = require('./error');
-var objectHelper = require('./object');
+import error from './error';
+import objectHelper from './object';
 
 function wrapCallback(cb, options) {
   options = options || {};
@@ -42,7 +42,8 @@ function wrapCallback(cb, options) {
       if (err.err) {
         err = err.err;
       }
-      errObj.code = err.error || err.code || err.error_code || err.status || null;
+
+      errObj.code = err.code || err.error || err.error_code || err.status || null;
       errObj.description =
         err.errorDescription ||
         err.error_description ||
@@ -75,8 +76,11 @@ function wrapCallback(cb, options) {
       return cb(null, data.body || data);
     }
 
-    return cb(null, objectHelper.toCamelCase(data.body || data));
+    return cb(
+      null,
+      objectHelper.toCamelCase(data.body || data, [], { keepOriginal: options.keepOriginalCasing })
+    );
   };
 }
 
-module.exports = wrapCallback;
+export default wrapCallback;

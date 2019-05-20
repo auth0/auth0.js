@@ -1,15 +1,15 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
-var request = require('superagent');
+import expect from 'expect.js';
+import { stub } from 'sinon';
+import request from 'superagent';
 
-var RequestMock = require('../mock/request-mock');
-var UsernamePassword = require('../../src/web-auth/username-password');
-var windowHelper = require('../../src/helper/window');
-var WebAuth = require('../../src/web-auth');
-var TransactionManager = require('../../src/web-auth/transaction-manager');
-var RequestBuilder = require('../../src/helper/request-builder');
+import RequestMock from '../mock/request-mock';
+import UsernamePassword from '../../src/web-auth/username-password';
+import windowHelper from '../../src/helper/window';
+import WebAuth from '../../src/web-auth';
+import TransactionManager from '../../src/web-auth/transaction-manager';
+import RequestBuilder from '../../src/helper/request-builder';
 
-var telemetryInfo = new RequestBuilder({}).getTelemetryData();
+var telemetryInfo = new RequestBuilder({ universalLoginPage: true }).getTelemetryData();
 
 describe('auth0.WebAuth._universalLogin', function() {
   beforeEach(function() {
@@ -404,7 +404,7 @@ describe('auth0.WebAuth._universalLogin', function() {
 
     it('should call /user/ssodata with no options', function(done) {
       stub(request, 'get', function(url) {
-        expect(url).to.be('https://me.auth0.com/user/ssodata/');
+        expect(url).to.be('https://me.auth0.com/user/ssodata');
         return new RequestMock({
           headers: {},
           cb: function(cb) {

@@ -8,4 +8,4 @@ DummyStorage.prototype.removeItem = function() {};
 
 DummyStorage.prototype.setItem = function() {};
 
-module.exports = DummyStorage;
+export default DummyStorage;

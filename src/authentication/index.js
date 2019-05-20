@@ -1,17 +1,17 @@
-var urljoin = require('url-join');
-var qs = require('qs');
+import urljoin from 'url-join';
+import qs from 'qs';
 
-var RequestBuilder = require('../helper/request-builder');
-var objectHelper = require('../helper/object');
-var assert = require('../helper/assert');
-var ssodata = require('../helper/ssodata');
-var windowHelper = require('../helper/window');
-var responseHandler = require('../helper/response-handler');
-var parametersWhitelist = require('../helper/parameters-whitelist');
-var Warn = require('../helper/warn');
-
-var PasswordlessAuthentication = require('./passwordless-authentication');
-var DBConnection = require('./db-connection');
+import RequestBuilder from '../helper/request-builder';
+import objectHelper from '../helper/object';
+import assert from '../helper/assert';
+import SSODataStorage from '../helper/ssodata';
+import windowHelper from '../helper/window';
+import responseHandler from '../helper/response-handler';
+import parametersWhitelist from '../helper/parameters-whitelist';
+import Warn from '../helper/warn';
+import WebAuth from '../web-auth/index';
+import PasswordlessAuthentication from './passwordless-authentication';
+import DBConnection from './db-connection';
 
 /**
  * Creates a new Auth0 Authentication API client
@@ -20,7 +20,7 @@ var DBConnection = require('./db-connection');
  * @param {String} options.domain your Auth0 domain
  * @param {String} options.clientID the Client ID found on your Application settings page
  * @param {String} [options.redirectUri] url that the Auth0 will redirect after Auth with the Authorization Response
- * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
@@ -68,9 +68,8 @@ function Authentication(auth0, options) {
   /* eslint-enable */
 
   this.baseOptions = options;
-  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false
-    ? this.baseOptions._sendTelemetry
-    : true;
+  this.baseOptions._sendTelemetry =
+    this.baseOptions._sendTelemetry === false ? this.baseOptions._sendTelemetry : true;
 
   this.baseOptions.rootUrl = 'https://' + this.baseOptions.domain;
 
@@ -82,6 +81,7 @@ function Authentication(auth0, options) {
   this.warn = new Warn({
     disableWarnings: !!options._disableDeprecationWarnings
   });
+  this.ssodataStorage = new SSODataStorage(this.baseOptions);
 }
 
 /**
@@ -91,7 +91,7 @@ function Authentication(auth0, options) {
  * @param {Object} options
  * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} options.redirectUri url that the Auth0 will redirect after Auth with the Authorization Response
- * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0}
+ * @param {String} options.responseType type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `code`, `token`, `id_token`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html}
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
@@ -319,7 +319,10 @@ Authentication.prototype.oauthToken = function(options, cb) {
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
   body = parametersWhitelist.oauthTokenParams(this.warn, body);
 
-  return this.request.post(url).send(body).end(responseHandler(cb));
+  return this.request
+    .post(url)
+    .send(body)
+    .end(responseHandler(cb));
 };
 
 /**
@@ -364,7 +367,10 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
 
   body.grant_type = body.grant_type || 'password';
 
-  return this.request.post(url).send(body).end(responseHandler(cb));
+  return this.request
+    .post(url)
+    .send(body)
+    .end(responseHandler(cb));
 };
 
 /**
@@ -377,8 +383,6 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
 Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
   /* istanbul ignore if  */
   if (!this.auth0) {
-    // we can't import this in the constructor because it'd be a ciclic dependency
-    var WebAuth = require('../web-auth/index'); // eslint-disable-line
     this.auth0 = new WebAuth(this.baseOptions);
   }
   var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
@@ -390,7 +394,7 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
   }
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
   var clientId = this.baseOptions.clientID;
-  var ssodataInformation = ssodata.get() || {};
+  var ssodataInformation = this.ssodataStorage.get() || {};
 
   this.auth0.checkSession(
     {
@@ -469,7 +473,7 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
  *
  * @method delegation
  * @param {Object} options
-  * @param {String} [options.clientID] the Client ID found on your Application settings page
+ * @param {String} [options.clientID] the Client ID found on your Application settings page
  * @param {String} options.grantType  grant type used for delegation. The only valid value is `urn:ietf:params:oauth:grant-type:jwt-bearer`
  * @param {String} [options.idToken] valid token of the user issued after Auth. If no `refresh_token` is provided this parameter is required
  * @param {String} [options.refreshToken] valid refresh token of the user issued after Auth. If no `id_token` is provided this parameter is required
@@ -499,7 +503,10 @@ Authentication.prototype.delegation = function(options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
-  return this.request.post(url).send(body).end(responseHandler(cb));
+  return this.request
+    .post(url)
+    .send(body)
+    .end(responseHandler(cb));
 };
 
 /**
@@ -519,4 +526,4 @@ Authentication.prototype.getUserCountry = function(cb) {
   return this.request.get(url).end(responseHandler(cb));
 };
 
-module.exports = Authentication;
+export default Authentication;

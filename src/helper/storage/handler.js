@@ -1,11 +1,14 @@
-var windowHandler = require('../window');
-var DummyStorage = require('./dummy');
-var CookieStorage = require('./cookie');
-var Warn = require('../warn');
+import windowHandler from '../window';
+import DummyStorage from './dummy';
+import CookieStorage from './cookie';
+import Warn from '../warn';
 
-function StorageHandler() {
+function StorageHandler(options) {
   this.warn = new Warn({});
   this.storage = new CookieStorage();
+  if (options.__tryLocalStorageFirst !== true) {
+    return;
+  }
   try {
     // some browsers throw an error when trying to access localStorage
     // when localStorage is disabled.
@@ -62,4 +65,4 @@ StorageHandler.prototype.setItem = function(key, value, options) {
   }
 };
 
-module.exports = StorageHandler;
+export default StorageHandler;

@@ -1,20 +1,27 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
-var spy = require('sinon').spy;
-var URL = require('url');
-var WinChan = require('winchan');
+import expect from 'expect.js';
+import { stub, spy } from 'sinon';
+import URL from 'url';
+import WinChan from 'winchan';
 
-var RequestMock = require('../mock/request-mock');
-var request = require('superagent');
+import RequestMock from '../mock/request-mock';
+import request from 'superagent';
 
-var PopupHandler = require('../../src/helper/popup-handler');
-var windowHandler = require('../../src/helper/window');
-var storage = require('../../src/helper/storage');
-var WebAuth = require('../../src/web-auth');
-var CrossOriginAuthentication = require('../../src/web-auth/cross-origin-authentication');
-var TransactionManager = require('../../src/web-auth/transaction-manager');
+import PopupHandler from '../../src/helper/popup-handler';
+import windowHandler from '../../src/helper/window';
+import Storage from '../../src/helper/storage';
+import WebAuth from '../../src/web-auth';
+import CrossOriginAuthentication from '../../src/web-auth/cross-origin-authentication';
+import TransactionManager from '../../src/web-auth/transaction-manager';
 
 describe('auth0.WebAuth.popup', function() {
+  beforeEach(function() {
+    stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
+      return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
+    });
+  });
+  afterEach(function() {
+    TransactionManager.prototype.generateTransaction.restore();
+  });
   before(function() {
     this.auth0 = new WebAuth({
       domain: 'me.auth0.com',
@@ -95,11 +102,11 @@ describe('auth0.WebAuth.popup', function() {
         expect(url).to.be(
           'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&state=123&nonce=456&scope=openid'
         );
-        storage.setItem.restore();
+        Storage.prototype.setItem.restore();
         TransactionManager.prototype.process.restore();
         done();
       });
-      stub(storage, 'setItem', function() {});
+      stub(Storage.prototype, 'setItem', function() {});
       stub(TransactionManager.prototype, 'process', function(options) {
         return options;
       });
@@ -173,6 +180,7 @@ describe('auth0.WebAuth.popup', function() {
           expect(err).to.be(null);
           expect(data).to.eql({
             emailVerified: false,
+            email_verified: false,
             email: 'me@example.com'
           });
           done();
@@ -654,7 +662,8 @@ describe('auth0.WebAuth.popup', function() {
         onOpenCallback('https://notBaseOptions.popupOrigin.com', null, function(result) {
           expect(result).to.be.eql({
             error: 'origin_mismatch',
-            error_description: "The popup's origin (https://notBaseOptions.popupOrigin.com) should match the `popupOrigin` parameter (https://baseoptions.popupOrigin.com)."
+            error_description:
+              "The popup's origin (https://notBaseOptions.popupOrigin.com) should match the `popupOrigin` parameter (https://baseoptions.popupOrigin.com)."
           });
           done();
         });
@@ -667,7 +676,8 @@ describe('auth0.WebAuth.popup', function() {
         onOpenCallback('https://notOptions.popupOrigin.com', null, function(result) {
           expect(result).to.be.eql({
             error: 'origin_mismatch',
-            error_description: "The popup's origin (https://notOptions.popupOrigin.com) should match the `popupOrigin` parameter (https://options.popupOrigin.com)."
+            error_description:
+              "The popup's origin (https://notOptions.popupOrigin.com) should match the `popupOrigin` parameter (https://options.popupOrigin.com)."
           });
           done();
         });
@@ -690,7 +700,8 @@ describe('auth0.WebAuth.popup', function() {
         onOpenCallback('https://notWindow.popupOrigin.com', null, function(result) {
           expect(result).to.be.eql({
             error: 'origin_mismatch',
-            error_description: "The popup's origin (https://notWindow.popupOrigin.com) should match the `popupOrigin` parameter (https://window.popupOrigin.com)."
+            error_description:
+              "The popup's origin (https://notWindow.popupOrigin.com) should match the `popupOrigin` parameter (https://window.popupOrigin.com)."
           });
           done();
         });

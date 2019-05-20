@@ -1,12 +1,14 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
-var spy = require('sinon').spy;
+import expect from 'expect.js';
+import { stub, spy } from 'sinon';
 
-var windowHandler = require('../../src/helper/window');
-var StorageHandler = require('../../src/helper/storage/handler');
-var storage = require('../../src/helper/storage');
+import StorageHandler from '../../src/helper/storage/handler';
+import Storage from '../../src/helper/storage';
 
 describe('helpers storage', function() {
+  var storage;
+  beforeEach(function() {
+    storage = new Storage({});
+  });
   describe('setItem', function() {
     beforeEach(function() {
       spy(StorageHandler.prototype, 'setItem');
@@ -16,7 +18,6 @@ describe('helpers storage', function() {
     });
     it('should call setItem when value is a string', function() {
       storage.setItem('data', 'text', { options: true });
-      console.log(StorageHandler.prototype.setItem.toString());
       expect(StorageHandler.prototype.setItem.firstCall.args).to.be.eql([
         'data',
         '"text"',

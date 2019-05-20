@@ -1,8 +1,8 @@
-var expect = require('expect.js');
+import expect from 'expect.js';
 
-var stub = require('sinon').stub;
+import { stub } from 'sinon';
 
-var Warn = require('../../src/helper/warn');
+import Warn from '../../src/helper/warn';
 
 describe('helpers warn', function() {
   afterEach(function() {

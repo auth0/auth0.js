@@ -2,8 +2,8 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 
-var assert = require('./assert');
-var objectAssign = require('./object-assign');
+import assert from './assert';
+import objectAssign from './object-assign';
 
 function pick(object, keys) {
   return keys.reduce(function(prev, key) {
@@ -103,23 +103,28 @@ function toSnakeCase(object, exceptions) {
   }, {});
 }
 
-function toCamelCase(object, exceptions) {
+function toCamelCase(object, exceptions, options) {
   if (typeof object !== 'object' || assert.isArray(object) || object === null) {
     return object;
   }
 
   exceptions = exceptions || [];
-
+  options = options || {};
   return Object.keys(object).reduce(function(p, key) {
     var newKey = exceptions.indexOf(key) === -1 ? snakeToCamel(key) : key;
-    p[newKey] = toCamelCase(object[key]);
+
+    p[newKey] = toCamelCase(object[newKey] || object[key], [], options);
+
+    if (options.keepOriginal) {
+      p[key] = toCamelCase(object[key], [], options);
+    }
     return p;
   }, {});
 }
 
 function getLocationFromUrl(href) {
   var match = href.match(
-    /^(https?:)\/\/(([^:/?#]*)(?::([0-9]+))?)([/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/
+    /^(https?:|file:)\/\/(([^:/?#]*)(?::([0-9]+))?)([/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/
   );
   return (
     match && {
@@ -147,7 +152,23 @@ function getOriginFromUrl(url) {
   return origin;
 }
 
-module.exports = {
+function trim(options, key) {
+  var trimmed = extend(options);
+  if (options[key]) {
+    trimmed[key] = options[key].trim();
+  }
+  return trimmed;
+}
+
+function trimMultiple(options, keys) {
+  return keys.reduce(trim, options);
+}
+
+function trimUserDetails(options) {
+  return trimMultiple(options, ['username', 'email', 'phoneNumber']);
+}
+
+export default {
   toSnakeCase: toSnakeCase,
   toCamelCase: toCamelCase,
   blacklist: blacklist,
@@ -156,5 +177,6 @@ module.exports = {
   getKeysNotIn: getKeysNotIn,
   extend: extend,
   getOriginFromUrl: getOriginFromUrl,
-  getLocationFromUrl: getLocationFromUrl
+  getLocationFromUrl: getLocationFromUrl,
+  trimUserDetails: trimUserDetails
 };

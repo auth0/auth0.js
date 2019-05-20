@@ -1,6 +1,6 @@
-var expect = require('expect.js');
+import expect from 'expect.js';
 
-var windowHelper = require('../../src/helper/window');
+import windowHelper from '../../src/helper/window';
 
 describe('helpers window', function() {
   beforeEach(function() {

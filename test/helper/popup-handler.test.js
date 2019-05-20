@@ -1,8 +1,8 @@
-var expect = require('expect.js');
-var stub = require('sinon').stub;
-var WinChan = require('winchan');
+import expect from 'expect.js';
+import { stub } from 'sinon';
+import WinChan from 'winchan';
 
-var PopupHandler = require('../../src/helper/popup-handler');
+import PopupHandler from '../../src/helper/popup-handler';
 
 describe('helpers popupHandler', function() {
   describe('calculates the window position', function() {
