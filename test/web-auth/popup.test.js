@@ -46,6 +46,24 @@ describe('auth0.WebAuth.popup', function() {
     });
   });
 
+  describe('getPopupHandler should preload when requested', function() {
+    afterEach(function() {
+      PopupHandler.prototype.preload.restore();
+    });
+
+    it('should call preload', function() {
+      var preloadStub = stub(PopupHandler.prototype, 'preload');
+      this.auth0.popup.getPopupHandler({}, true);
+      expect(preloadStub.called).to.be(true);
+    });
+
+    it('should not call preload', function() {
+      var preloadStub = stub(PopupHandler.prototype, 'preload');
+      this.auth0.popup.getPopupHandler({}, false);
+      expect(preloadStub.called).to.be(false);
+    });
+  });
+
   describe('preload should open the popup', function() {
     before(function() {
       global.window = {};
