@@ -1,4 +1,29 @@
 
+## [v9.10.2](https://github.com/auth0/auth0.js/tree/v9.10.2) (2019-04-15)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.10.1...v9.10.2)
+
+**Changed**
+- Modify telemetry inside the ULP [\#922](https://github.com/auth0/auth0.js/pull/922) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.10.1](https://github.com/auth0/auth0.js/tree/v9.10.1) (2019-03-18)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.10.0...v9.10.1)
+
+**Fixed**
+- Throw nonce error when using HS256 id_tokens [\#913](https://github.com/auth0/auth0.js/pull/913) ([luisrudge](https://github.com/luisrudge))
+- Fix different id_token payload casing between authorize and popup.authorize [\#911](https://github.com/auth0/auth0.js/pull/911) ([luisrudge](https://github.com/luisrudge))
+
+## [v9.10.0](https://github.com/auth0/auth0.js/tree/v9.10.0) (2019-01-28)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.9.1...v9.10.0)
+
+**Changed**
+- Trim `username`, `email` and `phoneNumber` params in every request [\#895](https://github.com/auth0/auth0.js/pull/895) ([ScottRudiger](https://github.com/ScottRudiger))
+
+## [v9.9.1](https://github.com/auth0/auth0.js/tree/v9.9.1) (2019-01-23)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.9.0...v9.9.1)
+
+**Fixed**
+- Don't store transactions when inside the hosted login page [\#899](https://github.com/auth0/auth0.js/pull/899) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.9.0](https://github.com/auth0/auth0.js/tree/v9.9.0) (2019-01-10)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.8.2...v9.9.0)
 

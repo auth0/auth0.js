@@ -14,6 +14,14 @@ import CrossOriginAuthentication from '../../src/web-auth/cross-origin-authentic
 import TransactionManager from '../../src/web-auth/transaction-manager';
 
 describe('auth0.WebAuth.popup', function() {
+  beforeEach(function() {
+    stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
+      return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
+    });
+  });
+  afterEach(function() {
+    TransactionManager.prototype.generateTransaction.restore();
+  });
   before(function() {
     this.auth0 = new WebAuth({
       domain: 'me.auth0.com',
@@ -172,6 +180,7 @@ describe('auth0.WebAuth.popup', function() {
           expect(err).to.be(null);
           expect(data).to.eql({
             emailVerified: false,
+            email_verified: false,
             email: 'me@example.com'
           });
           done();

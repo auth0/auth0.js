@@ -102,7 +102,7 @@ describe('helpers', function() {
   });
 
   describe('extend', function() {
-    it('shold merge objects attributes', function() {
+    it('should merge objects attributes', function() {
       var object1 = {
         attr1: 'attribute_1',
         attr2: 'attribute_2'
@@ -305,7 +305,7 @@ describe('helpers', function() {
       });
     });
 
-    it('shold merge picking attributes of both objects', function() {
+    it('should merge picking attributes of both objects', function() {
       var object1 = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
@@ -452,22 +452,6 @@ describe('helpers', function() {
 
       var newObject = objectHelper.toCamelCase(object);
 
-      expect(object).to.eql({
-        attr_name_1: 'attribute_1',
-        attr_name_22: 'attribute_2',
-        attr__name_3: 'attribute_3',
-        attr_null: null,
-        arr_att: ['one', 'two'],
-        some_obj: {
-          obj_att_1: 'asdf',
-          obj_att_2: '1234',
-          inner_array_att: ['one', 'two']
-        }
-      });
-
-      expect(newObject.arrAtt).to.be.an('array');
-      expect(newObject.someObj.innerArrayAtt).to.be.an('array');
-
       expect(newObject).to.eql({
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
@@ -514,6 +498,61 @@ describe('helpers', function() {
         attr_name_22: 'attribute_2',
         attrName3: 'attribute_3'
       });
+    });
+
+    it('should keep original property as well', function() {
+      var object = {
+        attr_name_1: 'attribute_1',
+        attr_name_22: 'attribute_2',
+        attr__name_3: 'attribute_3',
+        attr_null: null,
+        arr_att: ['one', 'two'],
+        some_obj: {
+          obj_att_1: 'asdf',
+          obj_att_2: '1234',
+          inner_array_att: ['one', 'two']
+        }
+      };
+
+      var newObject = objectHelper.toCamelCase(object, [], { keepOriginal: true });
+
+      expect(newObject).to.eql({
+        attrName1: 'attribute_1',
+        attr_name_1: 'attribute_1',
+        attrName22: 'attribute_2',
+        attr_name_22: 'attribute_2',
+        attrName3: 'attribute_3',
+        attr__name_3: 'attribute_3',
+        attrNull: null,
+        attr_null: null,
+        arrAtt: ['one', 'two'],
+        arr_att: ['one', 'two'],
+        someObj: {
+          objAtt1: 'asdf',
+          obj_att_1: 'asdf',
+          objAtt2: '1234',
+          obj_att_2: '1234',
+          innerArrayAtt: ['one', 'two'],
+          inner_array_att: ['one', 'two']
+        },
+        some_obj: {
+          objAtt1: 'asdf',
+          obj_att_1: 'asdf',
+          objAtt2: '1234',
+          obj_att_2: '1234',
+          innerArrayAtt: ['one', 'two'],
+          inner_array_att: ['one', 'two']
+        }
+      });
+    });
+
+    it('do not change a property if it already exists in the object', function() {
+      var object = { attrName1: 'attr1', attr_name_1: 'attr_1' };
+      var object2 = { attr_name_1: 'attr_1', attrName1: 'attr1' };
+      var newObject = objectHelper.toCamelCase(object, [], { keepOriginal: true });
+      var newObject2 = objectHelper.toCamelCase(object2, [], { keepOriginal: true });
+      expect(newObject).to.eql({ attrName1: 'attr1', attr_name_1: 'attr_1' });
+      expect(newObject2).to.eql({ attr_name_1: 'attr_1', attrName1: 'attr1' });
     });
   });
   describe('getOriginFromUrl', function() {
@@ -579,5 +618,81 @@ describe('helpers', function() {
         expect(objectHelper.getLocationFromUrl(url)).to.be.eql(mapping[url]);
       });
     }
+  });
+  describe('trimUserDetails', function() {
+    var options;
+    function getTrimmed() {
+      return objectHelper.trimUserDetails(options);
+    }
+    beforeEach(function() {
+      options = {
+        email: '   me@example.com   ',
+        phoneNumber: '   +16505555555   ',
+        username: '   johndoe   '
+      };
+    });
+    it('should trim the username, email, and phoneNumber in an options object', function() {
+      expect(getTrimmed()).to.eql({
+        email: 'me@example.com',
+        phoneNumber: '+16505555555',
+        username: 'johndoe'
+      });
+    });
+    it('should not mutate the original options object', function() {
+      expect(options)
+        .to.not.equal(getTrimmed())
+        .and.eql({
+          email: '   me@example.com   ',
+          phoneNumber: '   +16505555555   ',
+          username: '   johndoe   '
+        });
+    });
+    it('should only trim username & email--not other properties', function() {
+      options.otherAttribute = '   stay untrimmed my friend   ';
+      expect(getTrimmed()).to.eql({
+        email: 'me@example.com',
+        otherAttribute: '   stay untrimmed my friend   ',
+        phoneNumber: '+16505555555',
+        username: 'johndoe'
+      });
+    });
+    it('should not fail when username, email, and/or phoneNumber are absent', function() {
+      options = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        attr3: 'attribute_3'
+      };
+      expect(getTrimmed()).to.eql(options);
+      options = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        username: '   johndoe   '
+      };
+      expect(getTrimmed()).to.eql({
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        username: 'johndoe'
+      });
+      options = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        email: '   email@example.com   '
+      };
+      expect(getTrimmed()).to.eql({
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        email: 'email@example.com'
+      });
+      options = {
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        phoneNumber: '   +16505555555   '
+      };
+      expect(getTrimmed()).to.eql({
+        attr1: 'attribute_1',
+        attr2: 'attribute_2',
+        phoneNumber: '+16505555555'
+      });
+    });
   });
 });

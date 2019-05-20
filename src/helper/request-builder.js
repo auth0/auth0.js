@@ -2,6 +2,7 @@
 import request from 'superagent';
 import base64Url from './base64_url';
 import version from '../version';
+import objectHelper from './object';
 
 // ------------------------------------------------ RequestWrapper
 
@@ -45,7 +46,7 @@ RequestObj.prototype.set = function(key, value) {
 };
 
 RequestObj.prototype.send = function(body) {
-  this.request = this.request.send(body);
+  this.request = this.request.send(objectHelper.trimUserDetails(body));
   return this;
 };
 
@@ -66,6 +67,7 @@ function RequestBuilder(options) {
   this._telemetryInfo = options._telemetryInfo || null;
   this._timesToRetryFailedRequests = options._timesToRetryFailedRequests;
   this.headers = options.headers || {};
+  this._universalLoginPage = options.universalLoginPage;
 }
 
 RequestBuilder.prototype.setCommonConfiguration = function(ongoingRequest, options) {
@@ -96,7 +98,13 @@ RequestBuilder.prototype.setCommonConfiguration = function(ongoingRequest, optio
 };
 
 RequestBuilder.prototype.getTelemetryData = function() {
-  var clientInfo = this._telemetryInfo || { name: 'auth0.js', version: version.raw };
+  var telemetryName = this._universalLoginPage ? 'auth0.js-ulp' : 'auth0.js';
+  var clientInfo = { name: telemetryName, version: version.raw };
+  if (this._telemetryInfo) {
+    clientInfo = objectHelper.extend({}, this._telemetryInfo);
+    clientInfo.env = objectHelper.extend({}, this._telemetryInfo.env);
+    clientInfo.env[telemetryName] = version.raw;
+  }
   var jsonClientInfo = JSON.stringify(clientInfo);
   return base64Url.encode(jsonClientInfo);
 };

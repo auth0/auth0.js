@@ -28,10 +28,10 @@ PopupHandler.prototype.calculatePosition = function(options) {
       ? _window.outerHeight
       : _window.document.body.clientHeight;
 
-  var left = (outerWidth - width) / 2;
-  var top = (outerHeight - height) / 2;
+  var left = options.left || screenX + (outerWidth - width) / 2;
+  var top = options.top || screenY + (outerHeight - height) / 2;
 
-  return { width: width, height: height, left: screenX + left, top: screenY + top };
+  return { width: width, height: height, left: left, top: top };
 };
 
 PopupHandler.prototype.preload = function(options) {
