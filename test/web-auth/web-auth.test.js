@@ -2408,6 +2408,14 @@ describe('auth0.WebAuth', function() {
       });
       this.auth0.checkSession({}, function(err) {
         expect(err).to.be.eql({
+          original: {
+            error: 'origin_mismatch',
+            error_description:
+              "The redirectUri's origin (some-other-origin) should match the window's origin (https://test-origin.com)."
+          },
+          code: 'origin_mismatch',
+          description:
+            "The redirectUri's origin (some-other-origin) should match the window's origin (https://test-origin.com).",
           error: 'origin_mismatch',
           error_description:
             "The redirectUri's origin (some-other-origin) should match the window's origin (https://test-origin.com)."
@@ -2459,6 +2467,12 @@ describe('auth0.WebAuth', function() {
       });
       this.auth0.checkSession({ state: 'foobar' }, function(err, data) {
         expect(err).to.be.eql({
+          original: {
+            error: 'timeout',
+            error_description: 'Timeout during executing web_message communication'
+          },
+          code: 'timeout',
+          description: 'Timeout during executing web_message communication',
           error: 'timeout',
           error_description: 'Timeout during executing web_message communication'
         });
@@ -2476,6 +2490,12 @@ describe('auth0.WebAuth', function() {
       });
       this.auth0.checkSession({}, function(err, data) {
         expect(err).to.be.eql({
+          original: {
+            error: 'the-error',
+            error_description: 'error description'
+          },
+          code: 'the-error',
+          description: 'error description',
           error: 'the-error',
           error_description: 'error description'
         });
