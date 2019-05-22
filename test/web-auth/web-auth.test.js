@@ -2336,7 +2336,7 @@ describe('auth0.WebAuth', function() {
     });
   });
 
-  context.only('checkSession', function() {
+  context('checkSession', function() {
     beforeEach(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
