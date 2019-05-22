@@ -1,12 +1,13 @@
 import IdTokenVerifier from 'idtoken-verifier';
+import qs from 'qs';
 
 import assert from '../helper/assert';
 import error from '../helper/error';
-import qs from 'qs';
 import PluginHandler from '../helper/plugins';
 import windowHelper from '../helper/window';
 import objectHelper from '../helper/object';
 import SSODataStorage from '../helper/ssodata';
+import responseHandler from '../helper/response-handler';
 import TransactionManager from './transaction-manager';
 import Authentication from '../authentication';
 import Redirect from './redirect';
@@ -480,7 +481,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType']);
-  this.webMessageHandler.run(params, cb);
+  this.webMessageHandler.run(params, responseHandler(cb, { forceLegacyError: true }));
 };
 
 /**
