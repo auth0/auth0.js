@@ -152,7 +152,8 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
     'popupOptions',
     'domain',
     'tenant',
-    'timeout'
+    'timeout',
+    'appState'
   ]);
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
