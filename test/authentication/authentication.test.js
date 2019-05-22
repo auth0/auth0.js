@@ -76,7 +76,9 @@ describe('auth0.authentication', function() {
       });
     });
 
-    ['username', 'popupOptions', 'domain', 'tenant', 'timeout'].forEach(function(param) {
+    ['username', 'popupOptions', 'domain', 'tenant', 'timeout', 'appState'].forEach(function(
+      param
+    ) {
       it('should remove parameter: ' + param, function() {
         var options = {};
         options[param] = 'foobar';
