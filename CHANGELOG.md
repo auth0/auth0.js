@@ -1,4 +1,7 @@
 
+## [v9.10.3](https://github.com/auth0/auth0.js/tree/v9.10.3) (2019-05-22)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.10.2...v9.10.3)
+
 ## [v9.10.2](https://github.com/auth0/auth0.js/tree/v9.10.2) (2019-04-15)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.10.1...v9.10.2)
 

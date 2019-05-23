@@ -16,17 +16,16 @@ describe('helpers requestBuilder', function() {
     it('should encode telemetry', function() {
       var rb = new RequestBuilder({ _telemetryInfo: { foo: 'bar', env: { other: 'key' } } });
       var telemetry = rb.getTelemetryData();
-
-      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({
+      const expectedTelemetry = {
         foo: 'bar',
         env: {
           other: 'key',
           'auth0.js': version.raw
         }
-      });
-      expect(telemetry).to.be(
-        'eyJmb28iOiJiYXIiLCJlbnYiOnsib3RoZXIiOiJrZXkiLCJhdXRoMC5qcyI6IjkuMTAuMiJ9fQ=='
-      );
+      };
+
+      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql(expectedTelemetry);
+      expect(telemetry).to.be(base64url.encode(JSON.stringify(expectedTelemetry)));
     });
     it('should use default telemetry', function() {
       var rb = new RequestBuilder({ _telemetryInfo: null });
