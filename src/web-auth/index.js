@@ -481,7 +481,10 @@ WebAuth.prototype.checkSession = function(options, cb) {
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType']);
-  this.webMessageHandler.run(params, responseHandler(cb, { forceLegacyError: true }));
+  this.webMessageHandler.run(
+    params,
+    responseHandler(cb, { forceLegacyError: true, ignoreCasing: true })
+  );
 };
 
 /**
