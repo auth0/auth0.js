@@ -2577,6 +2577,28 @@ describe('auth0.WebAuth', function() {
         done();
       });
     });
+    it('callback handles success response without changing idTokenPayload casing', function(done) {
+      var response = {
+        access_token: 'foobar',
+        idTokenPayload: {
+          email_verified: false
+        }
+      };
+      stub(WebAuth.prototype, 'validateAuthenticationResponse', function(options, parsedHash, cb) {
+        cb(null, {
+          accessToken: response.access_token,
+          idTokenPayload: response.idTokenPayload
+        });
+      });
+      stub(IframeHandler.prototype, 'init', function() {
+        this.callback({ event: { data: { response: response } } });
+      });
+      this.auth0.checkSession({}, function(err, data) {
+        expect(err).to.be(null);
+        expect(data).to.be.eql({ accessToken: 'foobar', idTokenPayload: response.idTokenPayload });
+        done();
+      });
+    });
   });
 
   context('validateToken', function() {
