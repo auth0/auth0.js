@@ -1,4 +1,10 @@
 
+## [v9.10.4](https://github.com/auth0/auth0.js/tree/v9.10.4) (2019-05-24)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.10.3...v9.10.4)
+
+**Fixed**
+- Fix checksession success response casing [\#943](https://github.com/auth0/auth0.js/pull/943) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.10.3](https://github.com/auth0/auth0.js/tree/v9.10.3) (2019-05-22)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.10.2...v9.10.3)
 
