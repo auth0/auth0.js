@@ -77,6 +77,10 @@ PopupHandler.prototype.load = function(url, relayUrl, options, cb) {
     .with(options);
 
   var popup = WinChan.open(winchanOptions, function(err, data) {
+    // Ignores messages sent by browser extensions.
+    if (err && err.name === 'SyntaxError') {
+      return;
+    }
     _this._current_popup = null;
     return cb(err, data);
   });
