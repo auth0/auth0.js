@@ -5,19 +5,30 @@ import WinChan from 'winchan';
 import PopupHandler from '../../src/helper/popup-handler';
 
 describe('helpers popupHandler', function() {
+  beforeEach(() => {
+    global.window = {
+      screenX: 500,
+      screenY: 500,
+      outerWidth: 2000,
+      outerHeight: 2000,
+      screenLeft: 500,
+      screenTop: 500,
+      document: {
+        body: {
+          clientHeight: 2000,
+          clientWidth: 2000
+        }
+      }
+    };
+  });
+
+  afterEach(() => {
+    delete global.window;
+    if (WinChan.open.restore) {
+      WinChan.open.restore();
+    }
+  });
   describe('calculates the window position', function() {
-    before(function() {
-      global.window = {};
-      global.window.screenX = 500;
-      global.window.screenY = 500;
-      global.window.outerWidth = 2000;
-      global.window.outerHeight = 2000;
-    });
-
-    after(function() {
-      delete global.window;
-    });
-
     it('should use default values', function() {
       var handler = new PopupHandler();
       var position = handler.calculatePosition({});
@@ -42,20 +53,6 @@ describe('helpers popupHandler', function() {
   });
 
   describe('calculates the window position w screen left/top and body client size', function() {
-    before(function() {
-      global.window = {};
-      global.window.screenLeft = 500;
-      global.window.screenTop = 500;
-      global.window.document = {};
-      global.window.document.body = {};
-      global.window.document.body.clientHeight = 2000;
-      global.window.document.body.clientWidth = 2000;
-    });
-
-    after(function() {
-      delete global.window;
-    });
-
     it('should use default values', function() {
       var handler = new PopupHandler();
       var position = handler.calculatePosition({});
@@ -80,19 +77,6 @@ describe('helpers popupHandler', function() {
   });
 
   describe('should open the popup', function() {
-    before(function() {
-      global.window = {};
-      global.window.screenX = 500;
-      global.window.screenY = 500;
-      global.window.outerWidth = 2000;
-      global.window.outerHeight = 2000;
-    });
-
-    after(function() {
-      delete global.window;
-      WinChan.open.restore();
-    });
-
     it('with the correct parametrs', function(done) {
       stub(WinChan, 'open', function(options, cb) {
         expect(options).to.eql({
@@ -122,18 +106,6 @@ describe('helpers popupHandler', function() {
   });
 
   describe('preload should open the popup', function() {
-    before(function() {
-      global.window = {};
-      global.window.screenX = 500;
-      global.window.screenY = 500;
-      global.window.outerWidth = 2000;
-      global.window.outerHeight = 2000;
-    });
-
-    after(function() {
-      delete global.window;
-    });
-
     it('should open the window', function(done) {
       global.window.open = function(url, name, windowFeatures) {
         expect(url).to.eql('about:blank');
@@ -180,7 +152,7 @@ describe('helpers popupHandler', function() {
     });
   });
 
-  describe.only('load', () => {
+  describe('load', () => {
     it('ignores `SyntaxError` errors', done => {
       const url = 'https://test.popup.com';
       const relayUrl = 'https://relay.test.popup.com';
@@ -203,8 +175,6 @@ describe('helpers popupHandler', function() {
       });
 
       new PopupHandler().load(url, relayUrl, options, callback);
-
-      WinChan.open.restore();
     });
   });
 });
