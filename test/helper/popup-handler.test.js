@@ -179,4 +179,32 @@ describe('helpers popupHandler', function() {
       popup.kill();
     });
   });
+
+  describe.only('load', () => {
+    it('ignores `SyntaxError` errors', done => {
+      const url = 'https://test.popup.com';
+      const relayUrl = 'https://relay.test.popup.com';
+      const options = {};
+      const callback = (err, data) => {
+        expect(err).to.be(null);
+        done();
+      };
+
+      stub(WinChan, 'open', function(_, cb) {
+        const err = new Error('An error');
+        err.name = 'SyntaxError';
+        cb(err, null);
+        setTimeout(() => {
+          cb(null, { data: 'now it works' });
+        }, 100);
+        return {
+          focus: function() {}
+        };
+      });
+
+      new PopupHandler().load(url, relayUrl, options, callback);
+
+      WinChan.open.restore();
+    });
+  });
 });
