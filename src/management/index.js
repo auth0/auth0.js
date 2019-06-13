@@ -94,7 +94,7 @@ Management.prototype.patchUserMetadata = function(userId, userMetadata, cb) {
 /**
  * Updates the user attributes. It will patch the user attributes that the server allows it.
  *
- * @method patchUserMetadata
+ * @method patchUserAttributes
  * @param {String} userId
  * @param {Object} user
  * @param {userCallback} cb
