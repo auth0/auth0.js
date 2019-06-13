@@ -92,6 +92,30 @@ Management.prototype.patchUserMetadata = function(userId, userMetadata, cb) {
 };
 
 /**
+ * Updates the user attributes. It will patch the user attributes that the server allows it.
+ *
+ * @method patchUserAttributes
+ * @param {String} userId
+ * @param {Object} user
+ * @param {userCallback} cb
+ * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id}
+ */
+Management.prototype.patchUserAttributes = function(userId, user, cb) {
+  var url;
+
+  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
+  assert.check(user, { type: 'object', message: 'user parameter is not valid' });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  url = urljoin(this.baseOptions.rootUrl, 'users', userId);
+
+  return this.request
+    .patch(url)
+    .send(user)
+    .end(responseHandler(cb, { ignoreCasing: true }));
+};
+
+/**
  * Link two users
  *
  * @method linkUser

@@ -50,12 +50,13 @@ Provides support for all the authentication flows.
 
 ```js
 var auth0 = new auth0.WebAuth({
-  domain: "{YOUR_AUTH0_DOMAIN}",
-  clientID: "{YOUR_AUTH0_CLIENT_ID}"
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  clientID: '{YOUR_AUTH0_CLIENT_ID}'
 });
 ```
 
 Parameters:
+
 - **domain {REQUIRED, string}**: Your Auth0 account domain such as `'example.auth0.com'` or `'example.eu.auth0.com'`.
 - **clientID {REQUIRED, string}**: The Client ID found on your Application settings page.
 - **redirectUri {OPTIONAL, string}**: The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be whitelisted in the "Allowed Callback URLs" in your Auth0 Application's settings.
@@ -63,12 +64,12 @@ Parameters:
 - **audience {OPTIONAL, string}**: The default audience, used if requesting access to an API.
 - **responseType {OPTIONAL, string}**: Response type for all authentication requests. It can be any space separated list of the values `code`, `token`, `id_token`. **If you don't provide a global `responseType`, you will have to provide a `responseType` for each method that you use**.
 - **responseMode {OPTIONAL, string}**: The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`.
-- **_disableDeprecationWarnings {OPTIONAL, boolean}**: Indicates if deprecation warnings should be output to the browser console, defaults to `false`.
+- **\_disableDeprecationWarnings {OPTIONAL, boolean}**: Indicates if deprecation warnings should be output to the browser console, defaults to `false`.
 
 ### API
 
 - **authorize(options)**: Redirects to the `/authorize` endpoint to start an authentication/authorization transaction.
-Auth0 will call back to your application with the results at the specified `redirectUri`. **The default scope for this method is `openid profile email`**.
+  Auth0 will call back to your application with the results at the specified `redirectUri`. **The default scope for this method is `openid profile email`**.
 
 ```js
 auth0.authorize({
@@ -102,15 +103,18 @@ auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
 ```
 
 - **checkSession(options, callback)**: Allows you to acquire a new token from Auth0 for a user who already has an SSO session established against Auth0 for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
-Everything happens inside an iframe, so it will not reload your application or redirect away from it.
+  Everything happens inside an iframe, so it will not reload your application or redirect away from it.
 
 ```js
-auth0.checkSession({
-  audience: 'https://mystore.com/api/v2',
-  scope: 'read:order write:order'
-  }, function (err, authResult) {
+auth0.checkSession(
+  {
+    audience: 'https://mystore.com/api/v2',
+    scope: 'read:order write:order'
+  },
+  function(err, authResult) {
     // Authentication tokens or error
-});
+  }
+);
 ```
 
 The contents of `authResult` are identical to those returned by `parseHash()`.
@@ -124,15 +128,18 @@ Remember to add the URL where the authorization request originates from to the A
 - **client.login(options, callback)**: Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
 
 ```js
-auth0.client.login({
-  realm: 'Username-Password-Authentication', //connection name or HRD domain
-  username: 'info@auth0.com',
-  password: 'areallystrongpassword',
-  audience: 'https://mystore.com/api/v2',
-  scope: 'read:order write:order',
-  }, function(err, authResult) {
+auth0.client.login(
+  {
+    realm: 'Username-Password-Authentication', //connection name or HRD domain
+    username: 'info@auth0.com',
+    password: 'areallystrongpassword',
+    audience: 'https://mystore.com/api/v2',
+    scope: 'read:order write:order'
+  },
+  function(err, authResult) {
     // Auth tokens in the result or an error
-});
+  }
+);
 ```
 
 The contents of `authResult` are identical to those returned by `parseHash()`.
@@ -145,8 +152,8 @@ Provides an API client for the Auth0 Authentication API.
 
 ```js
 var auth0 = new auth0.Authentication({
-  domain: "{YOUR_AUTH0_DOMAIN}",
-  clientID: "{YOUR_AUTH0_CLIENT_ID}"
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  clientID: '{YOUR_AUTH0_CLIENT_ID}'
 });
 ```
 
@@ -167,8 +174,8 @@ Provides an API Client for the Auth0 Management API (only methods meant to be us
 
 ```js
 var auth0 = new auth0.Management({
-  domain: "{YOUR_AUTH0_DOMAIN}",
-  token: "{ACCESS_TOKEN_FROM_THE_USER}"
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  token: '{ACCESS_TOKEN_FROM_THE_USER}'
 });
 ```
 
@@ -176,10 +183,10 @@ var auth0 = new auth0.Management({
 
 - **getUser(userId, cb)**: Returns the user profile. https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
 - **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metadata. It will patch the user metadata with the attributes sent. https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
+- **patchUserAttributes(userId, user, cb)**: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
 - **linkUser(userId, secondaryUserToken, cb)**: Link two users. https://auth0.com/docs/api/management/v2#!/Users/post_identities
 
 ## Documentation
-
 
 For a complete reference and examples please check our [docs](https://auth0.com/docs/libraries/auth0js).
 

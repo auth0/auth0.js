@@ -186,6 +186,88 @@ describe('auth0.Management', function() {
     });
   });
 
+  context('patchUserAttributes options', function() {
+    before(function() {
+      this.auth0 = new Management({
+        domain: 'me.auth0.com',
+        token: '...',
+        _sendTelemetry: false
+      });
+    });
+
+    it('should check that userId is valid', function() {
+      expect(() => {
+        this.auth0.patchUserAttributes();
+      }).to.throwException(function(e) {
+        expect(e.message).to.be('userId parameter is not valid');
+      });
+    });
+
+    it('should check that user is valid', function() {
+      expect(() => {
+        this.auth0.patchUserAttributes('...');
+      }).to.throwException(function(e) {
+        expect(e.message).to.be('user parameter is not valid');
+      });
+    });
+
+    it('should check that cb is valid', function() {
+      expect(() => {
+        this.auth0.patchUserAttributes('...', {});
+      }).to.throwException(function(e) {
+        expect(e.message).to.be('cb parameter is not valid');
+      });
+    });
+  });
+
+  context('patchUserAttributes', function() {
+    before(function() {
+      this.auth0 = new Management({
+        domain: 'me.auth0.com',
+        token: 'the_token',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function() {
+      request.patch.restore();
+    });
+
+    it('should fetch the user from the api', function(done) {
+      stub(request, 'patch', function(url) {
+        expect(url).to.be('https://me.auth0.com/api/v2/users/auth0|123');
+        return new RequestMock({
+          body: {
+            name: 'test name'
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer the_token'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                user_id: 'auth0|123',
+                email: 'me@example.com',
+                name: 'test name'
+              }
+            });
+          }
+        });
+      });
+
+      this.auth0.patchUserAttributes('auth0|123', { name: 'test name' }, function(err, user) {
+        expect(err).to.be(null);
+        expect(user).to.eql({
+          user_id: 'auth0|123',
+          email: 'me@example.com',
+          name: 'test name'
+        });
+        done();
+      });
+    });
+  });
+
   context('linkUsers options', function() {
     before(function() {
       this.auth0 = new Management({
