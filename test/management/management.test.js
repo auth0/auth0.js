@@ -203,7 +203,7 @@ describe('auth0.Management', function() {
       });
     });
 
-    it('should check that userMetadata is valid', function() {
+    it('should check that user is valid', function() {
       expect(() => {
         this.auth0.patchUserAttributes('...');
       }).to.throwException(function(e) {
