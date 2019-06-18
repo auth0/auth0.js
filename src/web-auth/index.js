@@ -294,6 +294,12 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
     if (decodedToken.header.alg !== 'HS256') {
       return callback(validationError);
     }
+    if (decodedToken.payload.nonce !== transactionNonce) {
+      return callback({
+        error: 'invalid_token',
+        errorDescription: 'Nonce does not match.'
+      });
+    }
     if (!parsedHash.access_token) {
       var noAccessTokenError = {
         error: 'invalid_token',
