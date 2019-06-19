@@ -14,33 +14,31 @@ const isProduction = argv.prod === true;
 
 const OUTPUT_PATH = 'dist';
 
-const getPlugins = isProduction => {
-  return [
-    resolve({
-      browser: true
+const getPlugins = prod => [
+  resolve({
+    browser: true
+  }),
+  commonjs(),
+  json(),
+  replace({
+    __DEV__: prod ? 'false' : 'true',
+    'process.env.NODE_ENV': prod ? "'production'" : "'development'"
+  }),
+  prod &&
+    terser({
+      compress: { warnings: false },
+      output: { comments: false },
+      mangle: false
     }),
-    commonjs(),
-    json(),
-    replace({
-      __DEV__: isProduction ? 'false' : 'true',
-      'process.env.NODE_ENV': isProduction ? "'production'" : "'development'"
-    }),
-    isProduction &&
-      terser({
-        compress: { warnings: false },
-        output: { comments: false },
-        mangle: false
-      }),
-    license({
-      banner: `
+  license({
+    banner: `
     <%= pkg.name %> v<%= pkg.version %>
     Author: Auth0
     Date: <%= moment().format('YYYY-MM-DD') %>
     License: MIT
     `
-    })
-  ];
-};
+  })
+];
 
 const prodFiles = [
   {
