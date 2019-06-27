@@ -1247,7 +1247,7 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
-      it.only('should not throw an error when the payload.nonce is undefined and transactionNonce is null', function(done) {
+      it('should not throw an error when the payload.nonce is undefined and transactionNonce is null', function(done) {
         TransactionManager.prototype.getStoredTransaction.restore();
         stub(TransactionManager.prototype, 'getStoredTransaction', function() {
           return {
