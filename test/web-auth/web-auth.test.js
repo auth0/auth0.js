@@ -1247,6 +1247,53 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
+      it('should not throw an error when the payload.nonce is undefined and transactionNonce is null', function(done) {
+        TransactionManager.prototype.getStoredTransaction.restore();
+        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+          return {
+            nonce: null,
+            state: 'foo'
+          };
+        });
+        var webAuth = new WebAuth({
+          domain: 'auth0-tests-lock.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+          responseType: 'id_token',
+          __disableExpirationCheck: true
+        });
+        stub(webAuth.client, 'userInfo', function(accessToken, cb) {
+          expect(accessToken).to.be('VjubIMBmpgQ2W2');
+          cb(null, { from: 'userinfo' });
+        });
+        stub(IdTokenVerifier.prototype, 'verify', function(_, __, cb) {
+          cb({ error: true });
+        });
+
+        //nonce: undefined
+        webAuth.parseHash(
+          {
+            hash:
+              '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjE2NjM3ODMsImV4cCI6MTU5MzE5OTc4MywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSJ9.Hoq1Go3McuHgSMg9rWVxQsEenoDWYi5MEumc32Ah9CQ&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function(err, data) {
+            expect(err).to.be(null);
+            expect(data).to.be.eql({
+              accessToken: 'VjubIMBmpgQ2W2',
+              idToken:
+                'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjE2NjM3ODMsImV4cCI6MTU5MzE5OTc4MywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSJ9.Hoq1Go3McuHgSMg9rWVxQsEenoDWYi5MEumc32Ah9CQ',
+              idTokenPayload: { from: 'userinfo' },
+              appState: null,
+              refreshToken: 'kajshdgfkasdjhgfas',
+              state: 'foo',
+              expiresIn: null,
+              tokenType: 'Bearer',
+              scope: null
+            });
+            done();
+          }
+        );
+      });
       it('should still throw an error with an invalid nonce', function(done) {
         var webAuth = new WebAuth({
           domain: 'auth0-tests-lock.auth0.com',
@@ -1274,6 +1321,7 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
+
       it('should still throw an error with an invalid state', function(done) {
         var webAuth = new WebAuth({
           domain: 'auth0-tests-lock.auth0.com',
