@@ -1,4 +1,10 @@
 
+## [v9.11.1](https://github.com/auth0/auth0.js/tree/v9.11.1) (2019-06-27)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.11.0...v9.11.1)
+
+**Fixed**
+- Fix nonce error when id_token doesn't have a nonce [\#954](https://github.com/auth0/auth0.js/pull/954) ([luisrudge](https://github.com/luisrudge))
+
 ## [v9.11.0](https://github.com/auth0/auth0.js/tree/v9.11.0) (2019-06-25)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.10.4...v9.11.0)
 
