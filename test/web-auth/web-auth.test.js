@@ -1274,6 +1274,40 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
+      it('should not throw a nonce error when the payload.nonce is undefined and transactionNonce is null', function(done) {
+        TransactionManager.prototype.getStoredTransaction.restore();
+        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
+          return {
+            nonce: null,
+            state: 'foo'
+          };
+        });
+        var webAuth = new WebAuth({
+          domain: 'auth0-tests-lock.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+          responseType: 'id_token',
+          __disableExpirationCheck: true
+        });
+        stub(IdTokenVerifier.prototype, 'verify', function(_, __, cb) {
+          cb({ error: true });
+        });
+
+        //nonce: undefined
+        webAuth.parseHash(
+          {
+            hash:
+              '#state=foo&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjE2NjM3ODMsImV4cCI6MTU5MzE5OTc4MywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSJ9.Hoq1Go3McuHgSMg9rWVxQsEenoDWYi5MEumc32Ah9CQ&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function(err, data) {
+            expect(err).not.to.be.eql({
+              error: 'invalid_token',
+              errorDescription: 'Nonce does not match.'
+            });
+            done();
+          }
+        );
+      });
       it('should still throw an error with an invalid state', function(done) {
         var webAuth = new WebAuth({
           domain: 'auth0-tests-lock.auth0.com',
