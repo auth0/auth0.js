@@ -55,7 +55,7 @@
     "winchan": "^0.2.1"
   },
   "devDependencies": {
-    "@auth0/component-cdn-uploader": "auth0/component-cdn-uploader#v2.2.1",
+    "@auth0/component-cdn-uploader": "auth0/component-cdn-uploader#v2.2.2",
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
