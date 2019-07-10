@@ -2,19 +2,6 @@
 # yarn lockfile v1
 
 
-"@auth0/component-cdn-uploader@auth0/component-cdn-uploader#v2.2.1":
-  version "2.2.1"
-  resolved "https://codeload.github.com/auth0/component-cdn-uploader/tar.gz/db92e90770ec4cd9d59f88db881cfea5c1a5d9af"
-  dependencies:
-    "@auth0/s3" "^1.0.0"
-    chalk "^1.1.3"
-    meow "^3.7.0"
-    mime "^2.3.1"
-    request "^2.78.0"
-    rx "^4.1.0"
-    semver "^5.3.0"
-    walk "^2.3.9"
-
 "@auth0/component-cdn-uploader@auth0/component-cdn-uploader#v2.2.2":
   version "2.2.2"
   resolved "https://codeload.github.com/auth0/component-cdn-uploader/tar.gz/c86a1f043b9f30b3a3407b19b2e6cd9f1ccdc21b"
@@ -2037,11 +2024,6 @@ es-to-primitive@^1.2.0:
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
 
-es6-promise-polyfill@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/es6-promise-polyfill/-/es6-promise-polyfill-1.2.0.tgz#f38925f23cb3e3e8ce6cda8ff774fcebbb090cde"
-  integrity sha1-84kl8jyz4+jObNqP93T867sJDN4=
-
 es6-promise@^4.0.3:
   version "4.2.6"
   resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.6.tgz#b685edd8258886365ea62b57d30de28fadcd974f"
@@ -2935,16 +2917,16 @@ iconv-lite@0.4.24, iconv-lite@^0.4.17, iconv-lite@^0.4.4:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-idtoken-verifier@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/idtoken-verifier/-/idtoken-verifier-1.4.0.tgz#55ad5670b5e9a6a3e2ef808621a234d2064719c5"
-  integrity sha512-644kKg9712hhEkyrRPncBGWKHd9pEh6b3r9DtkQ5zlqgoaX6YtsZGghNLXFVF+541MnwTLjFQqaDDmdQvT4qCQ==
+idtoken-verifier@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/idtoken-verifier/-/idtoken-verifier-1.4.1.tgz#032d7720fdd091830d22f694eb94b5f6644b0d3b"
+  integrity sha512-BoJc00Gj37hrNlx7NYmd8uJFvvC9/FiWDKugDluP4JmgOGT/AfNlPfnRmi9fHEEqSatnIIr3WTyf0dlhHfSHnA==
   dependencies:
     base64-js "^1.2.0"
     crypto-js "^3.1.9-1"
-    es6-promise-polyfill "^1.2.0"
-    isomorphic-unfetch "^3.0.0"
     jsbn "^0.1.0"
+    promise-polyfill "^8.1.3"
+    unfetch "^4.1.0"
     url-join "^1.1.0"
 
 ieee754@1.1.8:
@@ -3332,14 +3314,6 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
-
-isomorphic-unfetch@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/isomorphic-unfetch/-/isomorphic-unfetch-3.0.0.tgz#de6d80abde487b17de2c400a7ef9e5ecc2efb362"
-  integrity sha512-V0tmJSYfkKokZ5mgl0cmfQMTb7MLHsBMngTkbLY0eXvKqiVRRoZP04Ly+KhKrJfKtzC9E6Pp15Jo+bwh7Vi2XQ==
-  dependencies:
-    node-fetch "^2.2.0"
-    unfetch "^4.0.0"
 
 isstream@0.1.x, isstream@~0.1.2:
   version "0.1.2"
@@ -4939,6 +4913,11 @@ progress@^2.0.0:
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
+promise-polyfill@^8.1.3:
+  version "8.1.3"
+  resolved "https://registry.yarnpkg.com/promise-polyfill/-/promise-polyfill-8.1.3.tgz#8c99b3cf53f3a91c68226ffde7bde81d7f904116"
+  integrity sha512-MG5r82wBzh7pSKDRa9y+vllNHz3e3d4CNj1PQE4BQYxLme0gKYYBm9YENq+UkEikyZ0XbiGWxYlVw3Rl9O/U8g==
+
 proxyquire@^2.0.1:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/proxyquire/-/proxyquire-2.1.0.tgz#c2263a38bf0725f2ae950facc130e27510edce8d"
@@ -6242,7 +6221,7 @@ underscore@~1.8.3:
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
   integrity sha1-Tz+1OxBuYJf8+ctBCfKl6b36UCI=
 
-unfetch@^4.0.0:
+unfetch@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/unfetch/-/unfetch-4.1.0.tgz#6ec2dd0de887e58a4dee83a050ded80ffc4137db"
   integrity sha512-crP/n3eAPUJxZXM9T80/yv0YhkTEx2K1D3h7D1AJM6fzsWZrxdyRuLN0JH/dkZh1LNH8LxCnBzoPFCPbb2iGpg==
