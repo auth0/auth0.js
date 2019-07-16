@@ -75,7 +75,7 @@
     "jsdoc-to-markdown": "4.0.1",
     "jsdom": "^15.1.1",
     "jsdom-global": "^3.0.2",
-    "lint-staged": "^3.4.2",
+    "lint-staged": "^9.2.0",
     "minami": "^1.2.3",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
