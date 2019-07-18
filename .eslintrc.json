@@ -1,10 +1,6 @@
 {
-  "extends": [
-    "auth0-base/prettier"
-  ],
-  "plugins": [
-    "compat"
-  ],
+  "extends": ["auth0-base/prettier"],
+  "plugins": ["compat"],
   "env": {
     "browser": true
   },
@@ -29,5 +25,8 @@
     "prefer-rest-params": 0,
     "lines-around-directive": 0,
     "valid-typeof": 0
+  },
+  "settings": {
+    "polyfills": ["Object.assign"]
   }
 }
