@@ -20,9 +20,6 @@
     "jwt",
     "browser"
   ],
-  "engine": {
-    "node": ">=6.9.0"
-  },
   "scripts": {
     "clean": "rm -rf dist && rm -rf build",
     "start": "npm run clean && rollup -c --watch",
