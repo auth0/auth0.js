@@ -1,8 +1,8 @@
-import expect from 'expect.js';
-import { stub } from 'sinon';
+import expect from "expect.js";
+import sinon from "sinon";
 
-import windowHelper from '../../src/helper/window';
-import IframeHandler from '../../src/helper/iframe-handler';
+import windowHelper from "../../src/helper/window";
+import IframeHandler from "../../src/helper/iframe-handler";
 
 function MockEventSourceObject() {
   this.eventListeners = {
@@ -44,21 +44,21 @@ function MockEventSourceObject() {
 function stubWindow(eventType, data) {
   var iFrame = new MockEventSourceObject();
 
-  if (eventType === 'message') {
+  if (eventType === "message") {
     iFrame.assimilate({
-      id: 'the_iframe',
+      id: "the_iframe",
       style: {}
     });
-  } else if (eventType === 'load') {
+  } else if (eventType === "load") {
     iFrame.assimilate({
-      id: 'the_iframe',
+      id: "the_iframe",
       style: {},
       contentWindow: {
         location: {
           hash:
             data !== undefined
               ? data
-              : '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+              : "#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas"
         }
       }
     });
@@ -71,19 +71,19 @@ function stubWindow(eventType, data) {
     },
     localStorage: {
       removeItem: function(key) {
-        expect(key).to.be('com.auth0.auth.theState');
+        expect(key).to.be("com.auth0.auth.theState");
       },
       getItem: function(key) {
-        expect(key).to.be('com.auth0.auth.theState');
+        expect(key).to.be("com.auth0.auth.theState");
         return JSON.stringify({
-          nonce: 'asfd',
+          nonce: "asfd",
           appState: null
         });
       }
     },
     document: {
       createElement: function(element) {
-        expect(element).to.be('iframe');
+        expect(element).to.be("iframe");
         return iFrame;
       },
       body: {
@@ -96,35 +96,35 @@ function stubWindow(eventType, data) {
     }
   });
 
-  stub(windowHelper, 'getWindow', function() {
+  sinon.stub(windowHelper, "getWindow").callsFake(function() {
     return fauxWindow;
   });
 
   return iFrame;
 }
 
-describe('helpers iframeHandler', function() {
-  context('with context', function() {
+describe("helpers iframeHandler", function() {
+  context("with context", function() {
     afterEach(function() {
       windowHelper.getWindow.restore();
     });
 
-    it('should create a hidden iframe with a specific url', function() {
-      var iframe = stubWindow('message');
+    it("should create a hidden iframe with a specific url", function() {
+      var iframe = stubWindow("message");
       var iframeHandler = new IframeHandler({
-        url: 'my-url',
+        url: "my-url",
         callback: function() {}
       });
 
       iframeHandler.init();
 
       expect(windowHelper.getWindow().document.body);
-      expect(iframe.src).to.be('my-url');
-      expect(iframe.style.display).to.be('none');
+      expect(iframe.src).to.be("my-url");
+      expect(iframe.style.display).to.be("none");
     });
 
-    it('should callback after a timeout', function() {
-      stubWindow('message');
+    it("should callback after a timeout", function() {
+      stubWindow("message");
       var timeOutCalled = false;
       var iframeHandler = new IframeHandler({
         timeout: 10,
@@ -141,54 +141,66 @@ describe('helpers iframeHandler', function() {
       }, 20);
     });
 
-    it('should add an event listener, adding it to the window for message type events by default', function() {
-      var iframe = stubWindow('message');
+    it("should add an event listener, adding it to the window for message type events by default", function() {
+      var iframe = stubWindow("message");
       var iframeHandler = new IframeHandler({
         callback: function() {}
       });
 
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
-      expect(iframe.eventListeners['load'].length).to.be(0);
+      expect(windowHelper.getWindow().eventListeners["message"].length).to.be(
+        0
+      );
+      expect(iframe.eventListeners["load"].length).to.be(0);
       iframeHandler.init();
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(1);
-      expect(iframe.eventListeners['load'].length).to.be(0);
+      expect(windowHelper.getWindow().eventListeners["message"].length).to.be(
+        1
+      );
+      expect(iframe.eventListeners["load"].length).to.be(0);
     });
 
-    it('should add an event listener, adding it to the window for message type events, when specified', function() {
-      var iframe = stubWindow('message');
+    it("should add an event listener, adding it to the window for message type events, when specified", function() {
+      var iframe = stubWindow("message");
       var iframeHandler = new IframeHandler({
-        eventListenerType: 'message',
+        eventListenerType: "message",
         callback: function() {}
       });
 
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
-      expect(iframe.eventListeners['load'].length).to.be(0);
+      expect(windowHelper.getWindow().eventListeners["message"].length).to.be(
+        0
+      );
+      expect(iframe.eventListeners["load"].length).to.be(0);
       iframeHandler.init();
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(1);
-      expect(iframe.eventListeners['load'].length).to.be(0);
+      expect(windowHelper.getWindow().eventListeners["message"].length).to.be(
+        1
+      );
+      expect(iframe.eventListeners["load"].length).to.be(0);
     });
 
-    it('should add an event listener, adding it to the iframe for load type events', function() {
-      var iframe = stubWindow('message');
+    it("should add an event listener, adding it to the iframe for load type events", function() {
+      var iframe = stubWindow("message");
       var iframeHandler = new IframeHandler({
-        eventListenerType: 'load',
+        eventListenerType: "load",
         callback: function() {}
       });
 
-      expect(iframe.eventListeners['load'].length).to.be(0);
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
+      expect(iframe.eventListeners["load"].length).to.be(0);
+      expect(windowHelper.getWindow().eventListeners["message"].length).to.be(
+        0
+      );
       iframeHandler.init();
-      expect(iframe.eventListeners['load'].length).to.be(1);
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
+      expect(iframe.eventListeners["load"].length).to.be(1);
+      expect(windowHelper.getWindow().eventListeners["message"].length).to.be(
+        0
+      );
     });
 
-    it('should call an event validator for a message event on the window', function(done) {
-      stubWindow('message');
+    it("should call an event validator for a message event on the window", function(done) {
+      stubWindow("message");
       var iframeHandler = new IframeHandler({
-        eventListenerType: 'message',
+        eventListenerType: "message",
         eventValidator: {
           isValid: function(eventData) {
-            expect(eventData.event).to.eql({ id: 'my-id' });
+            expect(eventData.event).to.eql({ id: "my-id" });
             expect(eventData.sourceObject).to.eql(windowHelper.getWindow());
             done();
           }
@@ -197,16 +209,16 @@ describe('helpers iframeHandler', function() {
       });
 
       iframeHandler.init();
-      windowHelper.getWindow().emitEvent('message', { id: 'my-id' });
+      windowHelper.getWindow().emitEvent("message", { id: "my-id" });
     });
 
-    it('should call an event validator for a load event on the Iframe', function(done) {
-      var iframe = stubWindow('load');
+    it("should call an event validator for a load event on the Iframe", function(done) {
+      var iframe = stubWindow("load");
       var iframeHandler = new IframeHandler({
-        eventListenerType: 'load',
+        eventListenerType: "load",
         eventValidator: {
           isValid: function(eventData) {
-            expect(eventData.event).to.eql({ id: 'my-id-2' });
+            expect(eventData.event).to.eql({ id: "my-id-2" });
             expect(eventData.sourceObject).to.eql(iframe);
             done();
           }
@@ -215,15 +227,15 @@ describe('helpers iframeHandler', function() {
       });
 
       iframeHandler.init();
-      iframe.emitEvent('load', { id: 'my-id-2' });
+      iframe.emitEvent("load", { id: "my-id-2" });
     });
 
-    it('should not destroy or callback if an event is not valid', function() {
-      var iframe = stubWindow('message');
+    it("should not destroy or callback if an event is not valid", function() {
+      var iframe = stubWindow("message");
       var destroyCalled = false;
       var callbackCalled = false;
       var iframeHandler = new IframeHandler({
-        eventListenerType: 'message',
+        eventListenerType: "message",
         callback: function() {
           callbackCalled = true;
         },
@@ -241,20 +253,20 @@ describe('helpers iframeHandler', function() {
 
       iframeHandler.init();
 
-      windowHelper.getWindow().emitEvent('message');
+      windowHelper.getWindow().emitEvent("message");
 
       expect(callbackCalled).to.eql(false);
       expect(destroyCalled).to.eql(false);
     });
 
-    it('should destroy and callback with valid data if an event is valid', function(done) {
-      var iframe = stubWindow('message');
+    it("should destroy and callback with valid data if an event is valid", function(done) {
+      var iframe = stubWindow("message");
       var destroyCalled = false;
       var callbackCalled = false;
       var iframeHandler = new IframeHandler({
-        eventListenerType: 'message',
+        eventListenerType: "message",
         callback: function(eventData) {
-          expect(eventData.event).to.eql({ id: 'my-event-5' });
+          expect(eventData.event).to.eql({ id: "my-event-5" });
           callbackCalled = true;
         },
         eventValidator: {
@@ -266,22 +278,24 @@ describe('helpers iframeHandler', function() {
 
       iframeHandler.init();
 
-      windowHelper.getWindow().emitEvent('message', { id: 'my-event-5' });
+      windowHelper.getWindow().emitEvent("message", { id: "my-event-5" });
 
       expect(callbackCalled).to.eql(true);
 
       setTimeout(function() {
         expect(callbackCalled).to.eql(true);
-        expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
+        expect(windowHelper.getWindow().eventListeners["message"].length).to.be(
+          0
+        );
 
         done();
       }, 200);
     });
-    it('default eventValidator should always return true', function() {
-      var iframe = stubWindow('message');
+    it("default eventValidator should always return true", function() {
+      var iframe = stubWindow("message");
       var callbackCalled = false;
       var iframeHandler = new IframeHandler({
-        eventListenerType: 'message',
+        eventListenerType: "message",
         callback: function() {
           callbackCalled = true;
         },
@@ -290,17 +304,17 @@ describe('helpers iframeHandler', function() {
 
       iframeHandler.init();
 
-      windowHelper.getWindow().emitEvent('message', { id: 'my-event-5' });
+      windowHelper.getWindow().emitEvent("message", { id: "my-event-5" });
       expect(callbackCalled).to.eql(true);
     });
 
-    it('should destroy and callback if a timeout occurs', function(done) {
-      var iframe = stubWindow('message');
+    it("should destroy and callback if a timeout occurs", function(done) {
+      var iframe = stubWindow("message");
       var destroyCalled = false;
       var callbackCalled = false;
 
       var iframeHandler = new IframeHandler({
-        eventListenerType: 'message',
+        eventListenerType: "message",
         timeout: 100,
         timeoutCallback: function() {
           callbackCalled = true;
@@ -322,32 +336,32 @@ describe('helpers iframeHandler', function() {
       }, 200);
     });
 
-    it('should throw an exception if a callback is not specified', function(done) {
-      var iframe = stubWindow('message');
+    it("should throw an exception if a callback is not specified", function(done) {
+      var iframe = stubWindow("message");
       try {
         var iframeHandler = new IframeHandler({});
       } catch (e) {
-        expect(e.message).to.eql('options.callback must be a function');
+        expect(e.message).to.eql("options.callback must be a function");
         done();
       }
     });
 
-    it('should throw an exception if an invalid eventListernerType is specified', function(done) {
-      var iframe = stubWindow('message');
+    it("should throw an exception if an invalid eventListernerType is specified", function(done) {
+      var iframe = stubWindow("message");
       try {
         var iframeHandler = new IframeHandler({
-          eventListenerType: 'invalid',
+          eventListenerType: "invalid",
           callback: function() {}
         });
         iframeHandler.init();
       } catch (e) {
-        expect(e.message).to.eql('Unsupported event listener type: invalid');
+        expect(e.message).to.eql("Unsupported event listener type: invalid");
         done();
       }
     });
 
-    it('destroy() should call parentNode.removeChild when available', function(done) {
-      var iframe = stubWindow('message');
+    it("destroy() should call parentNode.removeChild when available", function(done) {
+      var iframe = stubWindow("message");
       iframe.assimilate({
         parentNode: {
           removeChild: function() {
@@ -357,7 +371,7 @@ describe('helpers iframeHandler', function() {
       });
 
       var iframeHandler = new IframeHandler({
-        eventListenerType: 'message',
+        eventListenerType: "message",
         timeout: 1,
         timeoutCallback: function() {},
         callback: function() {}

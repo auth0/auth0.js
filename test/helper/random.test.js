@@ -1,13 +1,13 @@
-import expect from 'expect.js';
-import { stub } from 'sinon';
+import expect from "expect.js";
+import sinon from "sinon";
 
-import windowHelper from '../../src/helper/window';
-import random from '../../src/helper/random';
+import windowHelper from "../../src/helper/window";
+import random from "../../src/helper/random";
 
-describe('helpers random', function() {
-  describe('randomString with crypto', function() {
+describe("helpers random", function() {
+  describe("randomString with crypto", function() {
     before(function() {
-      stub(windowHelper, 'getWindow', function() {
+      sinon.stub(windowHelper, "getWindow").callsFake(function() {
         return {
           crypto: {
             getRandomValues: function() {
@@ -22,15 +22,15 @@ describe('helpers random', function() {
       windowHelper.getWindow.restore();
     });
 
-    it('return the a random string', function() {
+    it("return the a random string", function() {
       var string = random.randomString(10);
-      expect(string).to.eql('ABCDEFGHIJ');
+      expect(string).to.eql("ABCDEFGHIJ");
     });
   });
 
-  describe('randomString with msCrypto', function() {
+  describe("randomString with msCrypto", function() {
     before(function() {
-      stub(windowHelper, 'getWindow', function() {
+      sinon.stub(windowHelper, "getWindow").callsFake(function() {
         return {
           msCrypto: {
             getRandomValues: function() {
@@ -45,15 +45,15 @@ describe('helpers random', function() {
       windowHelper.getWindow.restore();
     });
 
-    it('return the a random string', function() {
+    it("return the a random string", function() {
       var string = random.randomString(10);
-      expect(string).to.eql('ABCDEFGHIJ');
+      expect(string).to.eql("ABCDEFGHIJ");
     });
   });
 
-  describe('randomString without crypto', function() {
+  describe("randomString without crypto", function() {
     before(function() {
-      stub(windowHelper, 'getWindow', function() {
+      sinon.stub(windowHelper, "getWindow").callsFake(function() {
         return {};
       });
     });
@@ -62,7 +62,7 @@ describe('helpers random', function() {
       windowHelper.getWindow.restore();
     });
 
-    it('return the a random string', function() {
+    it("return the a random string", function() {
       var string = random.randomString(10);
       expect(string).to.be(null);
     });
