@@ -63,14 +63,18 @@ RequestObj.prototype.end = function(cb) {
 // ------------------------------------------------ RequestBuilder
 
 function RequestBuilder(options) {
-  this._sendTelemetry = options._sendTelemetry === false ? options._sendTelemetry : true;
+  this._sendTelemetry =
+    options._sendTelemetry === false ? options._sendTelemetry : true;
   this._telemetryInfo = options._telemetryInfo || null;
   this._timesToRetryFailedRequests = options._timesToRetryFailedRequests;
   this.headers = options.headers || {};
   this._universalLoginPage = options.universalLoginPage;
 }
 
-RequestBuilder.prototype.setCommonConfiguration = function(ongoingRequest, options) {
+RequestBuilder.prototype.setCommonConfiguration = function(
+  ongoingRequest,
+  options
+) {
   options = options || {};
 
   if (this._timesToRetryFailedRequests > 0) {
@@ -91,7 +95,10 @@ RequestBuilder.prototype.setCommonConfiguration = function(ongoingRequest, optio
   }
 
   if (this._sendTelemetry) {
-    ongoingRequest = ongoingRequest.set('Auth0-Client', this.getTelemetryData());
+    ongoingRequest = ongoingRequest.set(
+      'Auth0-Client',
+      this.getTelemetryData()
+    );
   }
 
   return ongoingRequest;
@@ -114,11 +121,15 @@ RequestBuilder.prototype.get = function(url, options) {
 };
 
 RequestBuilder.prototype.post = function(url, options) {
-  return new RequestObj(this.setCommonConfiguration(request.post(url), options));
+  return new RequestObj(
+    this.setCommonConfiguration(request.post(url), options)
+  );
 };
 
 RequestBuilder.prototype.patch = function(url, options) {
-  return new RequestObj(this.setCommonConfiguration(request.patch(url), options));
+  return new RequestObj(
+    this.setCommonConfiguration(request.patch(url), options)
+  );
 };
 
 export default RequestBuilder;

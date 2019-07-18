@@ -4,7 +4,10 @@ import Warn from '../helper/warn';
 function Redirect(auth0, options) {
   this.webAuth = auth0;
   this.baseOptions = options;
-  this.crossOriginAuthentication = new CrossOriginAuthentication(auth0, this.baseOptions);
+  this.crossOriginAuthentication = new CrossOriginAuthentication(
+    auth0,
+    this.baseOptions
+  );
 
   this.warn = new Warn({
     disableWarnings: !!options._disableDeprecationWarnings

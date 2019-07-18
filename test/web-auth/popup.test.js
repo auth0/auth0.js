@@ -1,24 +1,24 @@
-import expect from "expect.js";
-import sinon from "sinon";
-import URL from "url";
-import WinChan from "winchan";
+import expect from 'expect.js';
+import sinon from 'sinon';
+import URL from 'url';
+import WinChan from 'winchan';
 
-import RequestMock from "../mock/request-mock";
-import request from "superagent";
+import RequestMock from '../mock/request-mock';
+import request from 'superagent';
 
-import PopupHandler from "../../src/helper/popup-handler";
-import windowHandler from "../../src/helper/window";
-import Storage from "../../src/helper/storage";
-import WebAuth from "../../src/web-auth";
-import CrossOriginAuthentication from "../../src/web-auth/cross-origin-authentication";
-import TransactionManager from "../../src/web-auth/transaction-manager";
+import PopupHandler from '../../src/helper/popup-handler';
+import windowHandler from '../../src/helper/window';
+import Storage from '../../src/helper/storage';
+import WebAuth from '../../src/web-auth';
+import CrossOriginAuthentication from '../../src/web-auth/cross-origin-authentication';
+import TransactionManager from '../../src/web-auth/transaction-manager';
 
-describe("auth0.WebAuth.popup", function() {
+describe('auth0.WebAuth.popup', function() {
   beforeEach(function() {
     sinon
-      .stub(TransactionManager.prototype, "generateTransaction")
+      .stub(TransactionManager.prototype, 'generateTransaction')
       .callsFake(function(appState, state, nonce) {
-        return { state: state || "randomState", nonce: nonce || "randomNonce" };
+        return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
       });
   });
   afterEach(function() {
@@ -26,22 +26,22 @@ describe("auth0.WebAuth.popup", function() {
   });
   before(function() {
     this.auth0 = new WebAuth({
-      domain: "me.auth0.com",
-      clientID: "...",
-      redirectUri: "http://page.com/callback",
-      responseType: "id_token",
+      domain: 'me.auth0.com',
+      clientID: '...',
+      redirectUri: 'http://page.com/callback',
+      responseType: 'id_token',
       _sendTelemetry: false,
-      popupOrigin: "https://baseoptions.popupOrigin.com"
+      popupOrigin: 'https://baseoptions.popupOrigin.com'
     });
   });
 
-  describe("getPopupHandler", function() {
-    it("should return a new instance", function() {
+  describe('getPopupHandler', function() {
+    it('should return a new instance', function() {
       var handler1 = this.auth0.popup.getPopupHandler({});
       var handler2 = this.auth0.popup.getPopupHandler({});
       expect(handler1).to.not.be(handler2);
     });
-    it("should return not a new instance", function() {
+    it('should return not a new instance', function() {
       var handler1 = this.auth0.popup.getPopupHandler({});
       var handler2 = this.auth0.popup.getPopupHandler({
         popupHandler: handler1
@@ -50,25 +50,25 @@ describe("auth0.WebAuth.popup", function() {
     });
   });
 
-  describe("getPopupHandler should preload when requested", function() {
+  describe('getPopupHandler should preload when requested', function() {
     afterEach(function() {
       PopupHandler.prototype.preload.restore();
     });
 
-    it("should call preload", function() {
-      var preloadStub = sinon.stub(PopupHandler.prototype, "preload");
+    it('should call preload', function() {
+      var preloadStub = sinon.stub(PopupHandler.prototype, 'preload');
       this.auth0.popup.getPopupHandler({}, true);
       expect(preloadStub.called).to.be(true);
     });
 
-    it("should not call preload", function() {
-      var preloadStub = sinon.stub(PopupHandler.prototype, "preload");
+    it('should not call preload', function() {
+      var preloadStub = sinon.stub(PopupHandler.prototype, 'preload');
       this.auth0.popup.getPopupHandler({}, false);
       expect(preloadStub.called).to.be(false);
     });
   });
 
-  describe("preload should open the popup", function() {
+  describe('preload should open the popup', function() {
     before(function() {
       global.window = {};
       global.window.screenX = 500;
@@ -77,10 +77,10 @@ describe("auth0.WebAuth.popup", function() {
       global.window.outerHeight = 2000;
 
       this.auth0 = new WebAuth({
-        domain: "me.auth0.com",
-        clientID: "...",
-        redirectUri: "http://page.com/callback",
-        responseType: "id_token",
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'id_token',
         _sendTelemetry: false
       });
     });
@@ -89,12 +89,12 @@ describe("auth0.WebAuth.popup", function() {
       delete global.window;
     });
 
-    it("should open the window", function() {
+    it('should open the window', function() {
       global.window.open = function(url, name, windowFeatures) {
-        expect(url).to.eql("about:blank");
-        expect(name).to.eql("auth0_signup_popup");
+        expect(url).to.eql('about:blank');
+        expect(name).to.eql('auth0_signup_popup');
         expect(windowFeatures).to.eql(
-          "width=500,height=600,left=1250,top=1200"
+          'width=500,height=600,left=1250,top=1200'
         );
 
         return { close: function() {} };
@@ -106,13 +106,13 @@ describe("auth0.WebAuth.popup", function() {
     });
   });
 
-  context("authorize", function() {
+  context('authorize', function() {
     before(function() {
       this.auth0 = new WebAuth({
-        domain: "me.auth0.com",
-        clientID: "...",
-        redirectUri: "http://page.com/callback",
-        responseType: "id_token",
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'id_token',
         _sendTelemetry: false
       });
     });
@@ -121,54 +121,54 @@ describe("auth0.WebAuth.popup", function() {
       PopupHandler.prototype.load.restore();
     });
 
-    it("should default scope to openid", function(done) {
-      sinon.stub(PopupHandler.prototype, "load").callsFake(function(url) {
+    it('should default scope to openid', function(done) {
+      sinon.stub(PopupHandler.prototype, 'load').callsFake(function(url) {
         expect(url).to.be(
-          "https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&state=123&nonce=456&scope=openid"
+          'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&state=123&nonce=456&scope=openid'
         );
         Storage.prototype.setItem.restore();
         TransactionManager.prototype.process.restore();
         done();
       });
-      sinon.stub(Storage.prototype, "setItem").callsFake(function() {});
+      sinon.stub(Storage.prototype, 'setItem').callsFake(function() {});
       sinon
-        .stub(TransactionManager.prototype, "process")
+        .stub(TransactionManager.prototype, 'process')
         .callsFake(function(options) {
           return options;
         });
 
       this.auth0.popup.authorize({
-        connection: "the_connection",
-        state: "123",
-        nonce: "456",
-        scope: "openid"
+        connection: 'the_connection',
+        state: '123',
+        nonce: '456',
+        scope: 'openid'
       });
     });
 
-    it("should open the popup a with the proper parameters", function(done) {
+    it('should open the popup a with the proper parameters', function(done) {
       sinon
-        .stub(PopupHandler.prototype, "load")
+        .stub(PopupHandler.prototype, 'load')
         .callsFake(function(url, relayUrl, options, cb) {
-          expect(relayUrl).to.be("https://me.auth0.com/relay.html");
+          expect(relayUrl).to.be('https://me.auth0.com/relay.html');
           expect(options.popupOptions.height).to.be(300);
           expect(options.popupOptions.width).to.be(250);
-          expect(options.popupOptions).to.not.have.property("extra");
+          expect(options.popupOptions).to.not.have.property('extra');
           cb(null, {
             email_verified: false,
-            email: "me@example.com"
+            email: 'me@example.com'
           });
         });
 
       this.auth0.popup.authorize(
         {
-          connection: "the_connection",
-          state: "123",
-          nonce: "456",
+          connection: 'the_connection',
+          state: '123',
+          nonce: '456',
           owp: true,
           popupOptions: {
             height: 300,
             width: 250,
-            extra: "blacklisted"
+            extra: 'blacklisted'
           }
         },
         function(err, data) {
@@ -177,33 +177,33 @@ describe("auth0.WebAuth.popup", function() {
       );
     });
 
-    it("should open the authorize page in a popup", function(done) {
+    it('should open the authorize page in a popup', function(done) {
       sinon
-        .stub(PopupHandler.prototype, "load")
+        .stub(PopupHandler.prototype, 'load')
         .callsFake(function(url, relayUrl, options, cb) {
           var components = URL.parse(url, true);
-          expect(components.protocol).to.be("https:");
-          expect(components.host).to.be("me.auth0.com");
-          expect(components.pathname).to.be("/authorize");
-          expect(components.query.client_id).to.be("...");
-          expect(components.query.response_type).to.be("id_token");
-          expect(components.query.connection).to.be("the_connection");
-          expect(components.query.nonce).to.be("123");
-          expect(components.query.state).to.be("456");
-          expect(components.query.owp).to.be("true");
-          expect(relayUrl).to.be("https://me.auth0.com/relay.html");
+          expect(components.protocol).to.be('https:');
+          expect(components.host).to.be('me.auth0.com');
+          expect(components.pathname).to.be('/authorize');
+          expect(components.query.client_id).to.be('...');
+          expect(components.query.response_type).to.be('id_token');
+          expect(components.query.connection).to.be('the_connection');
+          expect(components.query.nonce).to.be('123');
+          expect(components.query.state).to.be('456');
+          expect(components.query.owp).to.be('true');
+          expect(relayUrl).to.be('https://me.auth0.com/relay.html');
           expect(options).to.eql({});
           cb(null, {
             email_verified: false,
-            email: "me@example.com"
+            email: 'me@example.com'
           });
         });
 
       this.auth0.popup.authorize(
         {
-          connection: "the_connection",
-          nonce: "123",
-          state: "456",
+          connection: 'the_connection',
+          nonce: '123',
+          state: '456',
           owp: true
         },
         function(err, data) {
@@ -211,7 +211,7 @@ describe("auth0.WebAuth.popup", function() {
           expect(data).to.eql({
             emailVerified: false,
             email_verified: false,
-            email: "me@example.com"
+            email: 'me@example.com'
           });
           done();
         }
@@ -219,13 +219,13 @@ describe("auth0.WebAuth.popup", function() {
     });
   });
 
-  context("login", function() {
+  context('login', function() {
     before(function() {
       this.auth0 = new WebAuth({
-        domain: "me.auth0.com",
-        clientID: "...",
-        redirectUri: "http://page.com/callback",
-        responseType: "id_token",
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'id_token',
         _sendTelemetry: false
       });
     });
@@ -241,41 +241,41 @@ describe("auth0.WebAuth.popup", function() {
         TransactionManager.prototype.process.restore();
       }
     });
-    it("should call CrossOriginAuthentication.login", function(done) {
-      var inputOptions = { foo: "bar", connection: "realm" };
+    it('should call CrossOriginAuthentication.login', function(done) {
+      var inputOptions = { foo: 'bar', connection: 'realm' };
       var expectedOptions = {
-        foo: "bar",
-        realm: "realm",
-        responseType: "id_token",
-        redirectUri: "http://page.com/callback",
+        foo: 'bar',
+        realm: 'realm',
+        responseType: 'id_token',
+        redirectUri: 'http://page.com/callback',
         popup: true
       };
       sinon
-        .stub(CrossOriginAuthentication.prototype, "login")
+        .stub(CrossOriginAuthentication.prototype, 'login')
         .callsFake(function(options, cb) {
           expect(options).to.be.eql(expectedOptions);
-          expect(cb()).to.be("cb");
+          expect(cb()).to.be('cb');
           done();
         });
       sinon
-        .stub(TransactionManager.prototype, "process")
+        .stub(TransactionManager.prototype, 'process')
         .callsFake(function(options) {
           expect(options).to.be.eql(expectedOptions);
           return options;
         });
       this.auth0.popup.loginWithCredentials(inputOptions, function() {
-        return "cb";
+        return 'cb';
       });
     });
   });
 
-  context("passwordlessVerify", function() {
+  context('passwordlessVerify', function() {
     before(function() {
       this.auth0 = new WebAuth({
-        domain: "me.auth0.com",
-        clientID: "...",
-        redirectUri: "http://page.com/callback",
-        responseType: "id_token",
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'id_token',
         _sendTelemetry: false
       });
     });
@@ -284,22 +284,22 @@ describe("auth0.WebAuth.popup", function() {
       request.post.restore();
     });
 
-    it("(phone) should do the redirections in the popup", function(done) {
-      sinon.stub(request, "post").callsFake(function(url) {
+    it('(phone) should do the redirections in the popup', function(done) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect([
-          "https://me.auth0.com/passwordless/verify",
-          "https://me.auth0.com/oauth/ro"
+          'https://me.auth0.com/passwordless/verify',
+          'https://me.auth0.com/oauth/ro'
         ]).to.contain(url);
 
-        if (url === "https://me.auth0.com/passwordless/verify") {
+        if (url === 'https://me.auth0.com/passwordless/verify') {
           return new RequestMock({
             body: {
-              connection: "the_connection",
-              phone_number: "+5491178786555",
-              verification_code: "123"
+              connection: 'the_connection',
+              phone_number: '+5491178786555',
+              verification_code: '123'
             },
             headers: {
-              "Content-Type": "application/json"
+              'Content-Type': 'application/json'
             },
             cb: function(cb) {
               cb(null, {
@@ -309,24 +309,24 @@ describe("auth0.WebAuth.popup", function() {
           });
         }
 
-        if (url === "https://me.auth0.com/oauth/ro") {
+        if (url === 'https://me.auth0.com/oauth/ro') {
           return new RequestMock({
             body: {
-              client_id: "...",
-              grant_type: "password",
-              username: "+5491178786555",
-              password: "123",
-              connection: "the_connection"
+              client_id: '...',
+              grant_type: 'password',
+              username: '+5491178786555',
+              password: '123',
+              connection: 'the_connection'
             },
             headers: {
-              "Content-Type": "application/json"
+              'Content-Type': 'application/json'
             },
             cb: function(cb) {
               cb(null, {
                 body: {
-                  idToken: "id_token.id_token.id_token",
-                  accessToken: "access_token",
-                  tokenType: "bearer"
+                  idToken: 'id_token.id_token.id_token',
+                  accessToken: 'access_token',
+                  tokenType: 'bearer'
                 }
               });
             }
@@ -336,38 +336,38 @@ describe("auth0.WebAuth.popup", function() {
 
       this.auth0.popup.passwordlessVerify(
         {
-          connection: "the_connection",
-          phoneNumber: "+5491178786555",
-          verificationCode: "123"
+          connection: 'the_connection',
+          phoneNumber: '+5491178786555',
+          verificationCode: '123'
         },
         function(err, data) {
           expect(err).to.be(null);
           expect(data).to.eql({
-            idToken: "id_token.id_token.id_token",
-            accessToken: "access_token",
-            tokenType: "bearer"
+            idToken: 'id_token.id_token.id_token',
+            accessToken: 'access_token',
+            tokenType: 'bearer'
           });
           done();
         }
       );
     });
 
-    it("(email) should do the redirections in the popup", function(done) {
-      sinon.stub(request, "post").callsFake(function(url) {
+    it('(email) should do the redirections in the popup', function(done) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect([
-          "https://me.auth0.com/passwordless/verify",
-          "https://me.auth0.com/oauth/ro"
+          'https://me.auth0.com/passwordless/verify',
+          'https://me.auth0.com/oauth/ro'
         ]).to.contain(url);
 
-        if (url === "https://me.auth0.com/passwordless/verify") {
+        if (url === 'https://me.auth0.com/passwordless/verify') {
           return new RequestMock({
             body: {
-              connection: "the_connection",
-              email: "test@example.com",
-              verification_code: "123"
+              connection: 'the_connection',
+              email: 'test@example.com',
+              verification_code: '123'
             },
             headers: {
-              "Content-Type": "application/json"
+              'Content-Type': 'application/json'
             },
             cb: function(cb) {
               cb(null, {
@@ -377,24 +377,24 @@ describe("auth0.WebAuth.popup", function() {
           });
         }
 
-        if (url === "https://me.auth0.com/oauth/ro") {
+        if (url === 'https://me.auth0.com/oauth/ro') {
           return new RequestMock({
             body: {
-              client_id: "...",
-              grant_type: "password",
-              username: "test@example.com",
-              password: "123",
-              connection: "the_connection"
+              client_id: '...',
+              grant_type: 'password',
+              username: 'test@example.com',
+              password: '123',
+              connection: 'the_connection'
             },
             headers: {
-              "Content-Type": "application/json"
+              'Content-Type': 'application/json'
             },
             cb: function(cb) {
               cb(null, {
                 body: {
-                  id_token: "id_token.id_token.id_token",
-                  access_token: "access_token",
-                  token_type: "bearer"
+                  id_token: 'id_token.id_token.id_token',
+                  access_token: 'access_token',
+                  token_type: 'bearer'
                 }
               });
             }
@@ -404,40 +404,40 @@ describe("auth0.WebAuth.popup", function() {
 
       this.auth0.popup.passwordlessVerify(
         {
-          connection: "the_connection",
-          email: "test@example.com",
-          verificationCode: "123"
+          connection: 'the_connection',
+          email: 'test@example.com',
+          verificationCode: '123'
         },
         function(err, data) {
           expect(err).to.be(null);
           expect(data).to.eql({
-            idToken: "id_token.id_token.id_token",
-            accessToken: "access_token",
-            tokenType: "bearer"
+            idToken: 'id_token.id_token.id_token',
+            accessToken: 'access_token',
+            tokenType: 'bearer'
           });
           done();
         }
       );
     });
 
-    it("should propagate the error", function(done) {
+    it('should propagate the error', function(done) {
       var assert_err = {};
       assert_err.response = {};
       assert_err.response.body = {
-        code: "the_error_code",
-        description: "The error description."
+        code: 'the_error_code',
+        description: 'The error description.'
       };
 
-      sinon.stub(request, "post").callsFake(function(url) {
-        expect(url).to.eql("https://me.auth0.com/passwordless/verify");
+      sinon.stub(request, 'post').callsFake(function(url) {
+        expect(url).to.eql('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
-            connection: "the_connection",
-            phone_number: "+5491178786555",
-            verification_code: "123"
+            connection: 'the_connection',
+            phone_number: '+5491178786555',
+            verification_code: '123'
           },
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           cb: function(cb) {
             cb(assert_err);
@@ -447,16 +447,16 @@ describe("auth0.WebAuth.popup", function() {
 
       this.auth0.popup.passwordlessVerify(
         {
-          connection: "the_connection",
-          phoneNumber: "+5491178786555",
-          verificationCode: "123"
+          connection: 'the_connection',
+          phoneNumber: '+5491178786555',
+          verificationCode: '123'
         },
         function(err, data) {
           expect(data).to.be(undefined);
           expect(err).to.eql({
             original: assert_err,
-            code: "the_error_code",
-            description: "The error description."
+            code: 'the_error_code',
+            description: 'The error description.'
           });
           done();
         }
@@ -464,17 +464,17 @@ describe("auth0.WebAuth.popup", function() {
     });
   });
 
-  context("signup and login", function() {
+  context('signup and login', function() {
     before(function() {
       this.auth0 = new WebAuth({
-        domain: "me.auth0.com",
-        clientID: "...",
-        redirectUri: "http://page.com/callback",
-        responseType: "token",
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'token',
         _sendTelemetry: false
       });
 
-      sinon.stub(windowHandler, "getWindow").callsFake(function() {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
         return {
           screenX: 500,
           screenY: 500,
@@ -489,19 +489,19 @@ describe("auth0.WebAuth.popup", function() {
       });
 
       sinon
-        .stub(PopupHandler.prototype, "load")
+        .stub(PopupHandler.prototype, 'load')
         .callsFake(function(url, relayUrl, options, cb) {
-          expect(url).to.be("https://me.auth0.com/sso_dbconnection_popup/...");
-          expect(relayUrl).to.be("https://me.auth0.com/relay.html");
+          expect(url).to.be('https://me.auth0.com/sso_dbconnection_popup/...');
+          expect(relayUrl).to.be('https://me.auth0.com/relay.html');
           expect(options).to.eql({
             params: {
-              clientID: "...",
-              domain: "me.auth0.com",
+              clientID: '...',
+              domain: 'me.auth0.com',
               options: {
-                connection: "the_connection",
-                username: "me@example.com",
-                password: "123456",
-                scope: "openid"
+                connection: 'the_connection',
+                username: 'me@example.com',
+                password: '123456',
+                scope: 'openid'
               }
             }
           });
@@ -528,26 +528,26 @@ describe("auth0.WebAuth.popup", function() {
       PopupHandler.prototype.load.restore();
     });
 
-    it("should call db-connection signup with all the options", function(done) {
-      sinon.stub(request, "post").callsFake(function(url) {
-        expect(url).to.eql("https://me.auth0.com/dbconnections/signup");
+    it('should call db-connection signup with all the options', function(done) {
+      sinon.stub(request, 'post').callsFake(function(url) {
+        expect(url).to.eql('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
           body: {
-            client_id: "...",
-            connection: "the_connection",
-            email: "me@example.com",
-            password: "123456"
+            client_id: '...',
+            connection: 'the_connection',
+            email: 'me@example.com',
+            password: '123456'
           },
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           cb: function(cb) {
             cb(null, {
               body: {
-                _id: "...",
+                _id: '...',
                 email_verified: false,
-                email: "me@example.com"
+                email: 'me@example.com'
               }
             });
           }
@@ -555,23 +555,23 @@ describe("auth0.WebAuth.popup", function() {
       });
 
       var expectedOptions = {
-        email: "me@example.com",
-        password: "123456",
-        scope: "openid",
-        realm: "the_connection",
+        email: 'me@example.com',
+        password: '123456',
+        scope: 'openid',
+        realm: 'the_connection',
         popup: true,
-        responseType: "token",
-        redirectUri: "http://page.com/callback"
+        responseType: 'token',
+        redirectUri: 'http://page.com/callback'
       };
       sinon
-        .stub(TransactionManager.prototype, "process")
+        .stub(TransactionManager.prototype, 'process')
         .callsFake(function(options) {
           delete options.popupHandler;
           expect(options).to.be.eql(expectedOptions);
           return options;
         });
       sinon
-        .stub(CrossOriginAuthentication.prototype, "login")
+        .stub(CrossOriginAuthentication.prototype, 'login')
         .callsFake(function(options, cb) {
           delete options.popupHandler;
           expect(options).to.be.eql(expectedOptions);
@@ -580,10 +580,10 @@ describe("auth0.WebAuth.popup", function() {
 
       this.auth0.popup.signupAndLogin(
         {
-          connection: "the_connection",
-          email: "me@example.com",
-          password: "123456",
-          scope: "openid"
+          connection: 'the_connection',
+          email: 'me@example.com',
+          password: '123456',
+          scope: 'openid'
         },
         function(err, data) {
           done();
@@ -591,27 +591,27 @@ describe("auth0.WebAuth.popup", function() {
       );
     });
 
-    it("should propagate signup errors", function(done) {
-      sinon.stub(request, "post").callsFake(function(url) {
-        expect(url).to.be("https://me.auth0.com/dbconnections/signup");
+    it('should propagate signup errors', function(done) {
+      sinon.stub(request, 'post').callsFake(function(url) {
+        expect(url).to.be('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
           body: {
-            client_id: "...",
-            connection: "the_connection",
-            email: "me@example.com",
-            password: "123456"
+            client_id: '...',
+            connection: 'the_connection',
+            email: 'me@example.com',
+            password: '123456'
           },
           headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
           },
           cb: function(cb) {
             cb({
               response: {
                 statusCode: 400,
                 body: {
-                  code: "user_exists",
-                  description: "The user already exists."
+                  code: 'user_exists',
+                  description: 'The user already exists.'
                 }
               }
             });
@@ -621,10 +621,10 @@ describe("auth0.WebAuth.popup", function() {
 
       this.auth0.popup.signupAndLogin(
         {
-          connection: "the_connection",
-          email: "me@example.com",
-          password: "123456",
-          scope: "openid"
+          connection: 'the_connection',
+          email: 'me@example.com',
+          password: '123456',
+          scope: 'openid'
         },
         function(err, data) {
           expect(data).to.be(undefined);
@@ -633,13 +633,13 @@ describe("auth0.WebAuth.popup", function() {
               response: {
                 statusCode: 400,
                 body: {
-                  code: "user_exists",
-                  description: "The user already exists."
+                  code: 'user_exists',
+                  description: 'The user already exists.'
                 }
               }
             },
-            code: "user_exists",
-            description: "The user already exists.",
+            code: 'user_exists',
+            description: 'The user already exists.',
             statusCode: 400
           });
           done();
@@ -648,9 +648,9 @@ describe("auth0.WebAuth.popup", function() {
     });
   });
 
-  context("callback", function() {
+  context('callback', function() {
     beforeEach(function() {
-      sinon.stub(windowHandler, "getWindow").callsFake(function() {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
         return {
           opener: {}
         };
@@ -668,32 +668,32 @@ describe("auth0.WebAuth.popup", function() {
       }
       windowHandler.getWindow.restore();
     });
-    it("sends parseHash result to the callback when there is no error", function(done) {
-      sinon.stub(this.auth0, "parseHash").callsFake(function(options, cb) {
-        cb(null, { accessToken: "accessToken" });
+    it('sends parseHash result to the callback when there is no error', function(done) {
+      sinon.stub(this.auth0, 'parseHash').callsFake(function(options, cb) {
+        cb(null, { accessToken: 'accessToken' });
       });
-      sinon.stub(WinChan, "onOpen").callsFake(function(onOpenCallback) {
-        onOpenCallback("https://baseoptions.popupOrigin.com", null, function(
+      sinon.stub(WinChan, 'onOpen').callsFake(function(onOpenCallback) {
+        onOpenCallback('https://baseoptions.popupOrigin.com', null, function(
           result
         ) {
-          expect(result).to.be.eql({ accessToken: "accessToken" });
+          expect(result).to.be.eql({ accessToken: 'accessToken' });
           done();
         });
       });
 
       this.auth0.popup.callback();
     });
-    it("sends parseHash result to the callback when there is an error", function(done) {
-      sinon.stub(this.auth0, "parseHash").callsFake(function(options, cb) {
-        cb({ error: "any_error", error_description: "a big error message" });
+    it('sends parseHash result to the callback when there is an error', function(done) {
+      sinon.stub(this.auth0, 'parseHash').callsFake(function(options, cb) {
+        cb({ error: 'any_error', error_description: 'a big error message' });
       });
-      sinon.stub(WinChan, "onOpen").callsFake(function(onOpenCallback) {
-        onOpenCallback("https://baseoptions.popupOrigin.com", null, function(
+      sinon.stub(WinChan, 'onOpen').callsFake(function(onOpenCallback) {
+        onOpenCallback('https://baseoptions.popupOrigin.com', null, function(
           result
         ) {
           expect(result).to.be.eql({
-            error: "any_error",
-            error_description: "a big error message"
+            error: 'any_error',
+            error_description: 'a big error message'
           });
           done();
         });
@@ -701,13 +701,13 @@ describe("auth0.WebAuth.popup", function() {
 
       this.auth0.popup.callback();
     });
-    it("validates origin with baseOptions.popupOrigin", function(done) {
-      sinon.stub(WinChan, "onOpen").callsFake(function(onOpenCallback) {
-        onOpenCallback("https://notBaseOptions.popupOrigin.com", null, function(
+    it('validates origin with baseOptions.popupOrigin', function(done) {
+      sinon.stub(WinChan, 'onOpen').callsFake(function(onOpenCallback) {
+        onOpenCallback('https://notBaseOptions.popupOrigin.com', null, function(
           result
         ) {
           expect(result).to.be.eql({
-            error: "origin_mismatch",
+            error: 'origin_mismatch',
             error_description:
               "The popup's origin (https://notBaseOptions.popupOrigin.com) should match the `popupOrigin` parameter (https://baseoptions.popupOrigin.com)."
           });
@@ -717,13 +717,13 @@ describe("auth0.WebAuth.popup", function() {
 
       this.auth0.popup.callback();
     });
-    it("validates origin with options.popupOrigin", function(done) {
-      sinon.stub(WinChan, "onOpen").callsFake(function(onOpenCallback) {
-        onOpenCallback("https://notOptions.popupOrigin.com", null, function(
+    it('validates origin with options.popupOrigin', function(done) {
+      sinon.stub(WinChan, 'onOpen').callsFake(function(onOpenCallback) {
+        onOpenCallback('https://notOptions.popupOrigin.com', null, function(
           result
         ) {
           expect(result).to.be.eql({
-            error: "origin_mismatch",
+            error: 'origin_mismatch',
             error_description:
               "The popup's origin (https://notOptions.popupOrigin.com) should match the `popupOrigin` parameter (https://options.popupOrigin.com)."
           });
@@ -732,26 +732,26 @@ describe("auth0.WebAuth.popup", function() {
       });
 
       this.auth0.popup.callback({
-        popupOrigin: "https://options.popupOrigin.com"
+        popupOrigin: 'https://options.popupOrigin.com'
       });
     });
-    it("validates origin with windowHelper.getOrigin()", function(done) {
+    it('validates origin with windowHelper.getOrigin()', function(done) {
       var auth0 = new WebAuth({
-        domain: "me.auth0.com",
-        clientID: "...",
-        redirectUri: "http://page.com/callback",
-        responseType: "id_token",
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'id_token',
         _sendTelemetry: false
       });
-      sinon.stub(windowHandler, "getOrigin").callsFake(function() {
-        return "https://window.popupOrigin.com";
+      sinon.stub(windowHandler, 'getOrigin').callsFake(function() {
+        return 'https://window.popupOrigin.com';
       });
-      sinon.stub(WinChan, "onOpen").callsFake(function(onOpenCallback) {
-        onOpenCallback("https://notWindow.popupOrigin.com", null, function(
+      sinon.stub(WinChan, 'onOpen').callsFake(function(onOpenCallback) {
+        onOpenCallback('https://notWindow.popupOrigin.com', null, function(
           result
         ) {
           expect(result).to.be.eql({
-            error: "origin_mismatch",
+            error: 'origin_mismatch',
             error_description:
               "The popup's origin (https://notWindow.popupOrigin.com) should match the `popupOrigin` parameter (https://window.popupOrigin.com)."
           });
@@ -761,33 +761,33 @@ describe("auth0.WebAuth.popup", function() {
 
       auth0.popup.callback();
     });
-    it("handles window.opener being undefined", function(done) {
+    it('handles window.opener being undefined', function(done) {
       windowHandler.getWindow.restore();
       var theWindow = {
         opener: undefined,
         parent: {
           postMessage: function(msg, origin) {
-            expect(msg).to.be.eql({ from: "winchan" });
-            expect(origin).to.be("https://window.popupOrigin.com");
+            expect(msg).to.be.eql({ from: 'winchan' });
+            expect(origin).to.be('https://window.popupOrigin.com');
             done();
           }
         }
       };
-      sinon.stub(windowHandler, "getWindow").callsFake(function() {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
         return theWindow;
       });
-      sinon.stub(windowHandler, "getOrigin").callsFake(function() {
-        return "https://window.popupOrigin.com";
+      sinon.stub(windowHandler, 'getOrigin').callsFake(function() {
+        return 'https://window.popupOrigin.com';
       });
       var auth0 = new WebAuth({
-        domain: "me.auth0.com",
-        clientID: "...",
-        redirectUri: "http://page.com/callback",
-        responseType: "id_token",
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'id_token',
         _sendTelemetry: false
       });
       auth0.popup.callback();
-      theWindow.doPost({ from: "winchan" });
+      theWindow.doPost({ from: 'winchan' });
     });
   });
 });

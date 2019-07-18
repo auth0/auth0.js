@@ -14,14 +14,19 @@ function SilentAuthenticationHandler(options) {
     windowHelper.getWindow().location.protocol +
       '//' +
       windowHelper.getWindow().location.hostname +
-      (windowHelper.getWindow().location.port ? ':' + windowHelper.getWindow().location.port : '');
+      (windowHelper.getWindow().location.port
+        ? ':' + windowHelper.getWindow().location.port
+        : '');
 }
 
 SilentAuthenticationHandler.create = function(options) {
   return new SilentAuthenticationHandler(options);
 };
 
-SilentAuthenticationHandler.prototype.login = function(usePostMessage, callback) {
+SilentAuthenticationHandler.prototype.login = function(
+  usePostMessage,
+  callback
+) {
   this.handler = new IframeHandler({
     auth0: this.auth0,
     url: this.authenticationUrl,
@@ -30,7 +35,10 @@ SilentAuthenticationHandler.prototype.login = function(usePostMessage, callback)
     timeout: this.timeout,
     eventValidator: this.getEventValidator(),
     timeoutCallback: function() {
-      callback(null, '#error=timeout&error_description=Timeout+during+authentication+renew.');
+      callback(
+        null,
+        '#error=timeout&error_description=Timeout+during+authentication+renew.'
+      );
     },
     usePostMessage: usePostMessage || false
   });
@@ -58,11 +66,14 @@ SilentAuthenticationHandler.prototype.getEventValidator = function() {
           }
 
           return (
-            eventData.event.data.type && eventData.event.data.type === _this.postMessageDataType
+            eventData.event.data.type &&
+            eventData.event.data.type === _this.postMessageDataType
           );
 
         case 'load':
-          if (eventData.sourceObject.contentWindow.location.protocol === 'about:') {
+          if (
+            eventData.sourceObject.contentWindow.location.protocol === 'about:'
+          ) {
             // Chrome is automatically loading the about:blank page, we ignore this.
             return false;
           }
@@ -74,12 +85,18 @@ SilentAuthenticationHandler.prototype.getEventValidator = function() {
   };
 };
 
-SilentAuthenticationHandler.prototype.getCallbackHandler = function(callback, usePostMessage) {
+SilentAuthenticationHandler.prototype.getCallbackHandler = function(
+  callback,
+  usePostMessage
+) {
   return function(eventData) {
     var callbackValue;
     if (!usePostMessage) {
       callbackValue = eventData.sourceObject.contentWindow.location.hash;
-    } else if (typeof eventData.event.data === 'object' && eventData.event.data.hash) {
+    } else if (
+      typeof eventData.event.data === 'object' &&
+      eventData.event.data.hash
+    ) {
       callbackValue = eventData.event.data.hash;
     } else {
       callbackValue = eventData.event.data;

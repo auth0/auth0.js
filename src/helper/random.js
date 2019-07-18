@@ -4,9 +4,11 @@ function randomString(length) {
   // eslint-disable-next-line
   var bytes = new Uint8Array(length);
   var result = [];
-  var charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._~';
+  var charset =
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._~';
 
-  var cryptoObj = windowHelper.getWindow().crypto || windowHelper.getWindow().msCrypto;
+  var cryptoObj =
+    windowHelper.getWindow().crypto || windowHelper.getWindow().msCrypto;
   if (!cryptoObj) {
     return null;
   }

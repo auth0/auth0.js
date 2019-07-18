@@ -56,12 +56,23 @@ var until = webdriver.until;
 module.exports = {
   runTests: tests => {
     capabilities.forEach(capability => {
-      var browser = capability.browserName + ' ' + capability.version + ' ' + capability.platform;
+      var browser =
+        capability.browserName +
+        ' ' +
+        capability.version +
+        ' ' +
+        capability.platform;
 
       tests(name => {
         var driver = new webdriver.Builder()
           .withCapabilities(capability)
-          .usingServer('http://' + username + ':' + accessKey + '@ondemand.saucelabs.com:80/wd/hub')
+          .usingServer(
+            'http://' +
+              username +
+              ':' +
+              accessKey +
+              '@ondemand.saucelabs.com:80/wd/hub'
+          )
           .build();
         driver.executeScript('sauce:job-name=' + name);
         return {

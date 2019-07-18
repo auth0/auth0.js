@@ -18,7 +18,10 @@ function Popup(webAuth, options) {
   this.webAuth = webAuth;
 
   this.transactionManager = new TransactionManager(this.baseOptions);
-  this.crossOriginAuthentication = new CrossOriginAuthentication(webAuth, this.baseOptions);
+  this.crossOriginAuthentication = new CrossOriginAuthentication(
+    webAuth,
+    this.baseOptions
+  );
   this.warn = new Warn({
     disableWarnings: !!options._disableDeprecationWarnings
   });
@@ -87,7 +90,10 @@ Popup.prototype.callback = function(options) {
   var _this = this;
   var theWindow = windowHelper.getWindow();
   options = options || {};
-  var originUrl = options.popupOrigin || this.baseOptions.popupOrigin || windowHelper.getOrigin();
+  var originUrl =
+    options.popupOrigin ||
+    this.baseOptions.popupOrigin ||
+    windowHelper.getOrigin();
 
   /*
     in IE 11, there's a bug that makes window.opener return undefined.
@@ -169,7 +175,10 @@ Popup.prototype.authorize = function(options, cb) {
     params,
     { type: 'object', message: 'options parameter is not valid' },
     {
-      responseType: { type: 'string', message: 'responseType option is required' }
+      responseType: {
+        type: 'string',
+        message: 'responseType option is required'
+      }
     }
   );
 
@@ -208,7 +217,12 @@ Popup.prototype.authorize = function(options, cb) {
 
   popup = this.getPopupHandler(options);
 
-  return popup.load(url, relayUrl, popOpts, responseHandler(cb, { keepOriginalCasing: true }));
+  return popup.load(
+    url,
+    relayUrl,
+    popOpts,
+    responseHandler(cb, { keepOriginalCasing: true })
+  );
 };
 
 /**

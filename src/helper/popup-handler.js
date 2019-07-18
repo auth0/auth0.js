@@ -15,8 +15,14 @@ PopupHandler.prototype.calculatePosition = function(options) {
   var height = options.height || 600;
   var _window = windowHandler.getWindow();
 
-  var screenX = typeof _window.screenX !== 'undefined' ? _window.screenX : _window.screenLeft;
-  var screenY = typeof _window.screenY !== 'undefined' ? _window.screenY : _window.screenTop;
+  var screenX =
+    typeof _window.screenX !== 'undefined'
+      ? _window.screenX
+      : _window.screenLeft;
+  var screenY =
+    typeof _window.screenY !== 'undefined'
+      ? _window.screenY
+      : _window.screenTop;
 
   var outerWidth =
     typeof _window.outerWidth !== 'undefined'
@@ -38,7 +44,9 @@ PopupHandler.prototype.preload = function(options) {
   var _this = this;
   var _window = windowHandler.getWindow();
   var popupPosition = this.calculatePosition(options.popupOptions || {});
-  var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
+  var popupOptions = objectHelper
+    .merge(popupPosition)
+    .with(options.popupOptions);
   var url = options.url || 'about:blank';
   var windowFeatures = qs.stringify(popupOptions, {
     encode: false,
@@ -62,7 +70,9 @@ PopupHandler.prototype.preload = function(options) {
 PopupHandler.prototype.load = function(url, relayUrl, options, cb) {
   var _this = this;
   var popupPosition = this.calculatePosition(options.popupOptions || {});
-  var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
+  var popupOptions = objectHelper
+    .merge(popupPosition)
+    .with(options.popupOptions);
 
   var winchanOptions = objectHelper
     .merge({

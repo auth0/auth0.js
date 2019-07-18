@@ -43,7 +43,8 @@ function wrapCallback(cb, options) {
         err = err.err;
       }
 
-      errObj.code = err.code || err.error || err.error_code || err.status || null;
+      errObj.code =
+        err.code || err.error || err.error_code || err.status || null;
       errObj.description =
         err.errorDescription ||
         err.error_description ||
@@ -68,7 +69,10 @@ function wrapCallback(cb, options) {
       return cb(errObj);
     }
 
-    if (data.type && (data.type === 'text/html' || data.type === 'text/plain')) {
+    if (
+      data.type &&
+      (data.type === 'text/html' || data.type === 'text/plain')
+    ) {
       return cb(null, data.text);
     }
 
@@ -78,7 +82,9 @@ function wrapCallback(cb, options) {
 
     return cb(
       null,
-      objectHelper.toCamelCase(data.body || data, [], { keepOriginal: options.keepOriginalCasing })
+      objectHelper.toCamelCase(data.body || data, [], {
+        keepOriginal: options.keepOriginalCasing
+      })
     );
   };
 }
