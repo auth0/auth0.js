@@ -24,8 +24,9 @@
     "node": ">=6.9.0"
   },
   "scripts": {
-    "start": "rollup -c --watch",
-    "build": "rm -rf dist && rm -rf build && rollup -c --prod && cp -rf dist build",
+    "clean": "rm -rf dist && rm -rf build",
+    "start": "npm run clean && rollup -c --watch",
+    "build": "npm run clean && rollup -c --prod && cp -rf dist build",
     "test": "cross-env BABEL_ENV=test mocha --require @babel/register --require jsdom-global/register test/**/*.test.js --exit",
     "test:coverage": "nyc --check-coverage -- npm test",
     "test:integration": "cross-env BABEL_ENV=test mocha-parallel-tests --compilers @babel/register --compilers jsdom-global/register --max-parallel 2 integration/**/*.test.js",
@@ -39,65 +40,66 @@
     "publish:cdn": "ccu --trace",
     "release": "scripts/release.sh",
     "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
-    "precommit": "lint-staged"
+    "precommit": "pretty-quick --staged"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/auth0/auth0.js"
   },
   "dependencies": {
-    "base64-js": "^1.2.0",
+    "base64-js": "^1.3.0",
     "idtoken-verifier": "^1.4.1",
     "js-cookie": "^2.2.0",
-    "qs": "^6.4.0",
+    "qs": "^6.7.0",
     "superagent": "^3.8.3",
-    "url-join": "^4.0.0",
-    "winchan": "^0.2.1"
+    "url-join": "^4.0.1",
+    "winchan": "^0.2.2"
   },
   "devDependencies": {
     "@auth0/component-cdn-uploader": "auth0/component-cdn-uploader#v2.2.2",
-    "@babel/core": "^7.4.5",
-    "@babel/preset-env": "^7.4.5",
-    "@babel/register": "^7.4.4",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/register": "^7.5.5",
     "babel-plugin-istanbul": "^5.1.4",
-    "codecov": "^3.0.2",
-    "cross-env": "^5.1.6",
+    "codecov": "^3.5.0",
+    "cross-env": "^5.2.0",
     "es-check": "^5.0.0",
-    "eslint": "^4.19.1",
+    "eslint": "^6.0.1",
     "eslint-config-auth0-base": "^13.1.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-compat": "^2.3.0",
-    "eslint-plugin-import": "^2.12.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-compat": "^3.3.0",
+    "eslint-plugin-import": "^2.18.0",
     "expect.js": "^0.3.1",
-    "husky": "^0.13.3",
+    "husky": "^3.0.0",
     "istanbul": "^0.4.5",
-    "jsdoc": "3.5.5",
-    "jsdoc-to-markdown": "4.0.1",
+    "jsdoc": "3.6.3",
+    "jsdoc-to-markdown": "5.0.0",
     "jsdom": "^15.1.1",
     "jsdom-global": "^3.0.2",
-    "lint-staged": "^3.4.2",
+    "lint-staged": "^9.2.0",
     "minami": "^1.2.3",
-    "mocha": "^5.2.0",
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi": "^1.0.1",
-    "mocha-parallel-tests": "^2.0.2",
-    "nyc": "^12.0.2",
-    "prettier": "^1.13.5",
-    "proxyquire": "^2.0.1",
-    "rollup": "^0.60.1",
-    "rollup-plugin-commonjs": "^9.1.3",
-    "rollup-plugin-json": "^3.0.0",
+    "mocha": "^6.1.4",
+    "mocha-junit-reporter": "^1.23.1",
+    "mocha-multi": "^1.1.0",
+    "mocha-parallel-tests": "^2.2.1",
+    "nyc": "^14.1.1",
+    "prettier": "^1.18.2",
+    "pretty-quick": "^1.11.1",
+    "proxyquire": "^2.1.1",
+    "rollup": "^1.17.0",
+    "rollup-plugin-commonjs": "^10.0.1",
+    "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-license": "^0.9.0",
-    "rollup-plugin-livereload": "^0.6.0",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-serve": "^0.4.2",
+    "rollup-plugin-livereload": "^1.0.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-serve": "^1.0.1",
     "rollup-plugin-sourcemaps": "^0.4.2",
-    "rollup-plugin-terser": "^1.0.1",
-    "selenium-webdriver": "^3.0.1",
-    "semver": "^5.5.0",
-    "sinon": "^1.17.6",
-    "yargs": "^11.0.0"
+    "rollup-plugin-terser": "^5.1.1",
+    "selenium-webdriver": "^3.6.0",
+    "semver": "^6.2.0",
+    "sinon": "^7.3.2",
+    "yargs": "^13.3.0"
   },
   "ccu": {
     "name": "auth0",
@@ -113,12 +115,5 @@
         ".js"
       ]
     }
-  },
-  "lint-staged": {
-    "{src,test, plugins,integration}/**/*.js": [
-      "npm run lint",
-      "prettier --write --print-width 100 --single-quote",
-      "git add"
-    ]
   }
 }
