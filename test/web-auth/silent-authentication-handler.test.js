@@ -31,7 +31,7 @@ describe('handlers silent-authentication-handler', function() {
 
       sah.login(false, function(arg1, arg2) {
         expect(arg1).to.be(null);
-        expect(arg2).to.be('my-hash-data2');
+        expect(arg2).to.be('my-hash-data');
         done();
       });
 
