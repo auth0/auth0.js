@@ -35,13 +35,14 @@ jobs:
           name: Run Tests
           command: yarn run ci:test
           environment:
-            MOCHA_FILE: ~/junit/test-results.xml
+            MOCHA_FILE: junit/test-results.xml
+          when: always
       - run:
           name: Generate Coverage
           command: yarn run ci:coverage
       - store_artifacts:
           path: dist
       - store_artifacts:
-          path: ~/junit
+          path: junit
       - store_test_results:
-          path: ~/junit
+          path: junit
