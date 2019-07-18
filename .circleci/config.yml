@@ -33,9 +33,9 @@ jobs:
           command: yarn run lint
       - run:
           name: Run Tests
-          command: mkdir ~/junit && yarn run ci:test
+          command: yarn run ci:test
           environment:
-            MOCHA_FILE: ~/junit/test-results.xml
+            MOCHA_FILE: test-results.xml
           when: always
       - run:
           name: Generate Coverage
@@ -43,6 +43,6 @@ jobs:
       - store_artifacts:
           path: dist
       - store_artifacts:
-          path: ~/junit
+          path: test-results.xml
       - store_test_results:
-          path: ~/junit
+          path: test-results.xml
