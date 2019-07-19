@@ -22,21 +22,27 @@ describe('redirect authorize', function() {
         driver.findElement(By.id('upLogin')).click();
         driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
-        driver.findElement(By.id('err')).getText().then(function(value) {
-          console.log('ERR:', value ? value : '-empty-');
-          expect(value).to.equal('');
-        });
-        driver.findElement(By.id('result')).getText().then(function(value) {
-          console.log('RESULT:', value);
-          expect(value).to.not.equal('');
+        driver
+          .findElement(By.id('err'))
+          .getText()
+          .then(function(value) {
+            console.log('ERR:', value ? value : '-empty-');
+            expect(value).to.equal('');
+          });
+        driver
+          .findElement(By.id('result'))
+          .getText()
+          .then(function(value) {
+            console.log('RESULT:', value);
+            expect(value).to.not.equal('');
 
-          var response = JSON.parse(value);
+            var response = JSON.parse(value);
 
-          expect(response.accessToken).to.be.ok();
-          expect(response.idToken).to.not.be.ok();
-          expect(response.tokenType).to.be.ok();
-          expect(response.expiresIn).to.be.ok();
-        });
+            expect(response.accessToken).to.be.ok();
+            expect(response.idToken).to.not.be.ok();
+            expect(response.tokenType).to.be.ok();
+            expect(response.expiresIn).to.be.ok();
+          });
 
         return session.finish();
       });
@@ -74,22 +80,28 @@ describe('redirect authorize', function() {
         driver.findElement(By.id('upLogin')).click();
         driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
-        driver.findElement(By.id('err')).getText().then(function(value) {
-          console.log('ERR:', value ? value : '-empty-');
-          expect(value).to.equal('');
-        });
+        driver
+          .findElement(By.id('err'))
+          .getText()
+          .then(function(value) {
+            console.log('ERR:', value ? value : '-empty-');
+            expect(value).to.equal('');
+          });
 
-        driver.findElement(By.id('result')).getText().then(function(value) {
-          console.log('RESULT:', value);
-          expect(value).to.not.equal('');
+        driver
+          .findElement(By.id('result'))
+          .getText()
+          .then(function(value) {
+            console.log('RESULT:', value);
+            expect(value).to.not.equal('');
 
-          var response = JSON.parse(value);
+            var response = JSON.parse(value);
 
-          expect(response.accessToken).to.be.ok();
-          expect(response.idToken).to.not.be.ok();
-          expect(response.tokenType).to.be.ok();
-          expect(response.expiresIn).to.be.ok();
-        });
+            expect(response.accessToken).to.be.ok();
+            expect(response.idToken).to.not.be.ok();
+            expect(response.tokenType).to.be.ok();
+            expect(response.expiresIn).to.be.ok();
+          });
 
         return session.finish();
       });
@@ -106,22 +118,28 @@ describe('redirect authorize', function() {
         driver.findElement(By.id('upLogin')).click();
         driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
-        driver.findElement(By.id('err')).getText().then(function(value) {
-          console.log('ERR:', value ? value : '-empty-');
-          expect(value).to.equal('');
-        });
+        driver
+          .findElement(By.id('err'))
+          .getText()
+          .then(function(value) {
+            console.log('ERR:', value ? value : '-empty-');
+            expect(value).to.equal('');
+          });
 
-        driver.findElement(By.id('result')).getText().then(function(value) {
-          console.log('RESULT:', value);
-          expect(value).to.not.equal('');
+        driver
+          .findElement(By.id('result'))
+          .getText()
+          .then(function(value) {
+            console.log('RESULT:', value);
+            expect(value).to.not.equal('');
 
-          var response = JSON.parse(value);
+            var response = JSON.parse(value);
 
-          expect(response.accessToken).to.not.be.ok();
-          expect(response.idToken).to.be.ok();
-          expect(response.tokenType).to.not.be.ok();
-          expect(response.expiresIn).to.not.be.ok();
-        });
+            expect(response.accessToken).to.not.be.ok();
+            expect(response.idToken).to.be.ok();
+            expect(response.tokenType).to.not.be.ok();
+            expect(response.expiresIn).to.not.be.ok();
+          });
 
         return session.finish();
       });
@@ -130,7 +148,9 @@ describe('redirect authorize', function() {
         var session = newSession(this.test.title);
         var driver = session.start();
 
-        driver.findElement(By.id('login-response-type')).sendKeys('token id_token');
+        driver
+          .findElement(By.id('login-response-type'))
+          .sendKeys('token id_token');
         driver.findElement(By.className('login-redirect-authorize')).click();
         driver.wait(until.elementLocated(By.id('hlploaded')), 30000);
         driver.findElement(By.id('email')).sendKeys('johnfoo@gmail.com');
@@ -138,22 +158,28 @@ describe('redirect authorize', function() {
         driver.findElement(By.id('upLogin')).click();
         driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
-        driver.findElement(By.id('err')).getText().then(function(value) {
-          console.log('ERR:', value ? value : '-empty-');
-          expect(value).to.equal('');
-        });
+        driver
+          .findElement(By.id('err'))
+          .getText()
+          .then(function(value) {
+            console.log('ERR:', value ? value : '-empty-');
+            expect(value).to.equal('');
+          });
 
-        driver.findElement(By.id('result')).getText().then(function(value) {
-          console.log('RESULT:', value);
-          expect(value).to.not.equal('');
+        driver
+          .findElement(By.id('result'))
+          .getText()
+          .then(function(value) {
+            console.log('RESULT:', value);
+            expect(value).to.not.equal('');
 
-          var response = JSON.parse(value);
+            var response = JSON.parse(value);
 
-          expect(response.accessToken).to.be.ok();
-          expect(response.idToken).to.be.ok();
-          expect(response.tokenType).to.be.ok();
-          expect(response.expiresIn).to.be.ok();
-        });
+            expect(response.accessToken).to.be.ok();
+            expect(response.idToken).to.be.ok();
+            expect(response.tokenType).to.be.ok();
+            expect(response.expiresIn).to.be.ok();
+          });
 
         return session.finish();
       });

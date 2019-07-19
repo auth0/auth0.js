@@ -21,7 +21,11 @@ function objectAssignPolyfill(target) {
     }
 
     var keysArray = Object.keys(Object(nextSource));
-    for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
+    for (
+      var nextIndex = 0, len = keysArray.length;
+      nextIndex < len;
+      nextIndex++
+    ) {
       var nextKey = keysArray[nextIndex];
       var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
       if (desc !== undefined && desc.enumerable) {

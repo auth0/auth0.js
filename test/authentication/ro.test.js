@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import RequestMock from '../mock/request-mock';
 
@@ -26,7 +26,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call the ro endpoint with all the parameters', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/oauth/ro');
         return new RequestMock({
           body: {
@@ -73,7 +73,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should handle ro errors', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/oauth/ro');
         return new RequestMock({
           body: {
@@ -89,7 +89,10 @@ describe('auth0.authentication', function() {
             'Auth0-Client': telemetryInfo
           },
           cb: function(cb) {
-            cb({ error: 'unauthorized', error_description: 'invalid username' });
+            cb({
+              error: 'unauthorized',
+              error_description: 'invalid username'
+            });
           }
         });
       });
@@ -117,7 +120,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call the ro endpoint overriding the parameters', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/oauth/ro');
         return new RequestMock({
           body: {
@@ -164,7 +167,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should exclude parameters not in whitelist', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/oauth/ro');
         return new RequestMock({
           body: {

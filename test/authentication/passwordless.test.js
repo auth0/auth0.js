@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import RequestMock from '../mock/request-mock';
 
@@ -119,7 +119,10 @@ describe('auth0.authentication', function() {
     it('should check that options.type is valid', function() {
       var _this = this;
       expect(function() {
-        _this.auth0.passwordless.verify({ connection: 'bla', verificationCode: 'asdfasd' });
+        _this.auth0.passwordless.verify({
+          connection: 'bla',
+          verificationCode: 'asdfasd'
+        });
       }).to.throwException(function(e) {
         expect(e.message).to.be('phoneNumber option is required');
       });
@@ -180,7 +183,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call passwordless start', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/passwordless/start');
         return new RequestMock({
           body: {
@@ -219,7 +222,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call passwordless start with authParams', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/passwordless/start');
         return new RequestMock({
           body: {
@@ -276,7 +279,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call passwordless verify sms with all the options', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
@@ -310,7 +313,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call passwordless verify email with all the options', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
@@ -344,7 +347,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call passwordless email verify removing extra parameters', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
@@ -380,7 +383,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call passwordless sms verify removing extra parameters', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {

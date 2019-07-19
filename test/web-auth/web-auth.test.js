@@ -1,6 +1,6 @@
 import proxyquire from 'proxyquire';
 import expect from 'expect.js';
-import { stub, spy } from 'sinon';
+import sinon from 'sinon';
 import request from 'superagent';
 import IdTokenVerifier from 'idtoken-verifier';
 
@@ -21,24 +21,30 @@ import WebAuth from '../../src/web-auth';
 
 function restoreAndStubStoredTransaction(expectedState, expectedTransaction) {
   TransactionManager.prototype.getStoredTransaction.restore();
-  stub(TransactionManager.prototype, 'getStoredTransaction', function(state) {
-    if (state !== 'ignore-test-state-check') {
-      expect(state).to.be(expectedState);
-    }
-    return expectedTransaction;
-  });
+  sinon
+    .stub(TransactionManager.prototype, 'getStoredTransaction')
+    .callsFake(function(state) {
+      if (state !== 'ignore-test-state-check') {
+        expect(state).to.be(expectedState);
+      }
+      return expectedTransaction;
+    });
 }
 
 describe('auth0.WebAuth', function() {
   this.timeout(5000);
   beforeEach(function() {
-    stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
-      return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
-    });
-    stub(TransactionManager.prototype, 'getStoredTransaction', function(state) {
-      expect(state).to.be('foo');
-      return { state: 'foo' };
-    });
+    sinon
+      .stub(TransactionManager.prototype, 'generateTransaction')
+      .callsFake(function(appState, state, nonce) {
+        return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
+      });
+    sinon
+      .stub(TransactionManager.prototype, 'getStoredTransaction')
+      .callsFake(function(state) {
+        expect(state).to.be('foo');
+        return { state: 'foo' };
+      });
   });
   afterEach(function() {
     TransactionManager.prototype.generateTransaction.restore();
@@ -93,12 +99,14 @@ describe('auth0.WebAuth', function() {
     });
 
     it('should fail if the nonce is not valid', function(done) {
-      stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
-        cb(
-          null,
-          '#state=foo&access_token=123&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
-        );
-      });
+      sinon
+        .stub(SilentAuthenticationHandler.prototype, 'login')
+        .callsFake(function(usePostMessage, cb) {
+          cb(
+            null,
+            '#state=foo&access_token=123&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
+          );
+        });
 
       var webAuth = new WebAuth({
         domain: 'wptest.auth0.com',
@@ -127,130 +135,143 @@ describe('auth0.WebAuth', function() {
     });
   });
 
-  context('Pass correct postMessageData value to silent-authentication-handler', function() {
-    before(function() {
-      global.window = { origin: 'foobar' };
-    });
+  context(
+    'Pass correct postMessageData value to silent-authentication-handler',
+    function() {
+      before(function() {
+        global.window = { origin: 'foobar' };
+      });
 
-    after(function() {
-      delete global.window;
-    });
+      after(function() {
+        delete global.window;
+      });
 
-    afterEach(function() {
-      SilentAuthenticationHandler.create.restore();
-    });
+      afterEach(function() {
+        SilentAuthenticationHandler.create.restore();
+      });
 
-    it('should pass correct postMessageDataType=false value on to silent authentication handler', function(done) {
-      stub(SilentAuthenticationHandler, 'create', function(options) {
-        expect(options.postMessageDataType).to.be(false);
-        done();
-        return {
-          login: function() {}
+      it('should pass correct postMessageDataType=false value on to silent authentication handler', function(done) {
+        sinon
+          .stub(SilentAuthenticationHandler, 'create')
+          .callsFake(function(options) {
+            expect(options.postMessageDataType).to.be(false);
+            done();
+            return {
+              login: function() {}
+            };
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://page.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'id_token',
+          scope: 'openid name read:blog',
+          audience: 'urn:site:demo:blog',
+          _sendTelemetry: false
+        });
+
+        var options = {
+          nonce: '123',
+          state: '456'
         };
+
+        webAuth.renewAuth(options, function(err, data) {});
       });
 
-      var webAuth = new WebAuth({
-        domain: 'wptest.auth0.com',
-        redirectUri: 'http://page.com/callback',
-        clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
-        responseType: 'id_token',
-        scope: 'openid name read:blog',
-        audience: 'urn:site:demo:blog',
-        _sendTelemetry: false
-      });
+      it('should pass correct postMessageDataType=<value> on to silent authentication handler', function(done) {
+        sinon
+          .stub(SilentAuthenticationHandler, 'create')
+          .callsFake(function(options) {
+            expect(options.postMessageDataType).to.eql(
+              'auth0:silent-authentication'
+            );
+            done();
+            return {
+              login: function() {}
+            };
+          });
 
-      var options = {
-        nonce: '123',
-        state: '456'
-      };
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://page.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'id_token',
+          scope: 'openid name read:blog',
+          audience: 'urn:site:demo:blog',
+          _sendTelemetry: false
+        });
 
-      webAuth.renewAuth(options, function(err, data) {});
-    });
-
-    it('should pass correct postMessageDataType=<value> on to silent authentication handler', function(done) {
-      stub(SilentAuthenticationHandler, 'create', function(options) {
-        expect(options.postMessageDataType).to.eql('auth0:silent-authentication');
-        done();
-        return {
-          login: function() {}
+        var options = {
+          nonce: '123',
+          state: '456',
+          postMessageDataType: 'auth0:silent-authentication'
         };
+
+        webAuth.renewAuth(options, function(err, data) {});
       });
 
-      var webAuth = new WebAuth({
-        domain: 'wptest.auth0.com',
-        redirectUri: 'http://page.com/callback',
-        clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
-        responseType: 'id_token',
-        scope: 'openid name read:blog',
-        audience: 'urn:site:demo:blog',
-        _sendTelemetry: false
-      });
+      it('should set a default postMessageOrigin to the window origin', function(done) {
+        sinon
+          .stub(SilentAuthenticationHandler, 'create')
+          .callsFake(function(options) {
+            expect(options.postMessageOrigin).to.eql('foobar');
+            done();
+            return {
+              login: function() {}
+            };
+          });
 
-      var options = {
-        nonce: '123',
-        state: '456',
-        postMessageDataType: 'auth0:silent-authentication'
-      };
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://page.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'id_token',
+          scope: 'openid name read:blog',
+          audience: 'urn:site:demo:blog',
+          _sendTelemetry: false
+        });
 
-      webAuth.renewAuth(options, function(err, data) {});
-    });
-
-    it('should set a default postMessageOrigin to the window origin', function(done) {
-      stub(SilentAuthenticationHandler, 'create', function(options) {
-        expect(options.postMessageOrigin).to.eql('foobar');
-        done();
-        return {
-          login: function() {}
+        var options = {
+          nonce: '123',
+          state: '456'
         };
+
+        webAuth.renewAuth(options, function(err, data) {});
       });
 
-      var webAuth = new WebAuth({
-        domain: 'wptest.auth0.com',
-        redirectUri: 'http://page.com/callback',
-        clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
-        responseType: 'id_token',
-        scope: 'openid name read:blog',
-        audience: 'urn:site:demo:blog',
-        _sendTelemetry: false
-      });
+      it('should use postMessageOrigin if provided', function(done) {
+        var postMessageOrigin = 'foobar1';
+        sinon
+          .stub(SilentAuthenticationHandler, 'create')
+          .callsFake(function(options) {
+            expect(options.postMessageOrigin).to.eql(postMessageOrigin);
+            done();
+            return {
+              login: function() {}
+            };
+          });
 
-      var options = {
-        nonce: '123',
-        state: '456'
-      };
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://page.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'id_token',
+          scope: 'openid name read:blog',
+          audience: 'urn:site:demo:blog',
+          _sendTelemetry: false
+        });
 
-      webAuth.renewAuth(options, function(err, data) {});
-    });
-
-    it('should use postMessageOrigin if provided', function(done) {
-      var postMessageOrigin = 'foobar1';
-      stub(SilentAuthenticationHandler, 'create', function(options) {
-        expect(options.postMessageOrigin).to.eql(postMessageOrigin);
-        done();
-        return {
-          login: function() {}
+        var options = {
+          nonce: '123',
+          state: '456',
+          postMessageOrigin: postMessageOrigin
         };
+
+        webAuth.renewAuth(options, function(err, data) {});
       });
-
-      var webAuth = new WebAuth({
-        domain: 'wptest.auth0.com',
-        redirectUri: 'http://page.com/callback',
-        clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
-        responseType: 'id_token',
-        scope: 'openid name read:blog',
-        audience: 'urn:site:demo:blog',
-        _sendTelemetry: false
-      });
-
-      var options = {
-        nonce: '123',
-        state: '456',
-        postMessageOrigin: postMessageOrigin
-      };
-
-      webAuth.renewAuth(options, function(err, data) {});
-    });
-  });
+    }
+  );
 
   context('parseHash', function() {
     before(function() {
@@ -268,10 +289,12 @@ describe('auth0.WebAuth', function() {
         state: 'foo',
         appState: null
       });
-      spy(SSODataStorage.prototype, 'set');
-      stub(IdTokenVerifier.prototype, 'validateAccessToken', function(at, alg, atHash, cb) {
-        cb(null);
-      });
+      sinon.spy(SSODataStorage.prototype, 'set');
+      sinon
+        .stub(IdTokenVerifier.prototype, 'validateAccessToken')
+        .callsFake(function(at, alg, atHash, cb) {
+          cb(null);
+        });
     });
     afterEach(function() {
       SSODataStorage.prototype.set.restore();
@@ -309,7 +332,9 @@ describe('auth0.WebAuth', function() {
             scope: null
           });
 
-          expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+          expect(
+            TransactionManager.prototype.getStoredTransaction.calledOnce
+          ).to.be.ok();
 
           done();
         }
@@ -508,13 +533,15 @@ describe('auth0.WebAuth', function() {
           responseType: 'token'
         });
         TransactionManager.prototype.getStoredTransaction.restore();
-        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-          return {
-            nonce: 'asfd',
-            appState: 'the-app-state',
-            state: 'foo'
-          };
-        });
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .callsFake(function() {
+            return {
+              nonce: 'asfd',
+              appState: 'the-app-state',
+              state: 'foo'
+            };
+          });
 
         var data = webAuth.parseHash(
           {
@@ -534,7 +561,9 @@ describe('auth0.WebAuth', function() {
               scope: null
             });
 
-            expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+            expect(
+              TransactionManager.prototype.getStoredTransaction.calledOnce
+            ).to.be.ok();
 
             done();
           }
@@ -550,12 +579,14 @@ describe('auth0.WebAuth', function() {
             __disableExpirationCheck: true
           });
           TransactionManager.prototype.getStoredTransaction.restore();
-          stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-            return {
-              lastUsedConnection: 'lastUsedConnection',
-              state: 'foo'
-            };
-          });
+          sinon
+            .stub(TransactionManager.prototype, 'getStoredTransaction')
+            .callsFake(function() {
+              return {
+                lastUsedConnection: 'lastUsedConnection',
+                state: 'foo'
+              };
+            });
         });
         it('sets ssodata with a connection and without a sub when there is no payload', function(done) {
           var webAuth = new WebAuth({
@@ -576,7 +607,9 @@ describe('auth0.WebAuth', function() {
                 'lastUsedConnection',
                 undefined
               ]);
-              expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+              expect(
+                TransactionManager.prototype.getStoredTransaction.calledOnce
+              ).to.be.ok();
               done();
             }
           ); // eslint-disable-line
@@ -594,7 +627,9 @@ describe('auth0.WebAuth', function() {
                 'lastUsedConnection',
                 'auth0|59fbe11937039b263a8b29a2'
               ]);
-              expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+              expect(
+                TransactionManager.prototype.getStoredTransaction.calledOnce
+              ).to.be.ok();
 
               done();
             }
@@ -641,7 +676,9 @@ describe('auth0.WebAuth', function() {
               scope: 'foo'
             });
 
-            expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+            expect(
+              TransactionManager.prototype.getStoredTransaction.calledOnce
+            ).to.be.ok();
 
             done();
           }
@@ -679,7 +716,9 @@ describe('auth0.WebAuth', function() {
             scope: null
           });
 
-          expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+          expect(
+            TransactionManager.prototype.getStoredTransaction.calledOnce
+          ).to.be.ok();
 
           done();
         });
@@ -695,9 +734,11 @@ describe('auth0.WebAuth', function() {
         });
 
         TransactionManager.prototype.getStoredTransaction.restore();
-        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-          return null;
-        });
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .callsFake(function() {
+            return null;
+          });
 
         var data = webAuth.parseHash(
           {
@@ -728,7 +769,9 @@ describe('auth0.WebAuth', function() {
               scope: null
             });
 
-            expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+            expect(
+              TransactionManager.prototype.getStoredTransaction.calledOnce
+            ).to.be.ok();
 
             done();
           }
@@ -744,9 +787,11 @@ describe('auth0.WebAuth', function() {
           __disableExpirationCheck: true
         });
         TransactionManager.prototype.getStoredTransaction.restore();
-        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-          return null;
-        });
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .callsFake(function() {
+            return null;
+          });
 
         var data = webAuth.parseHash(
           {
@@ -777,7 +822,9 @@ describe('auth0.WebAuth', function() {
               scope: null
             });
 
-            expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+            expect(
+              TransactionManager.prototype.getStoredTransaction.calledOnce
+            ).to.be.ok();
 
             done();
           }
@@ -792,9 +839,11 @@ describe('auth0.WebAuth', function() {
           __disableExpirationCheck: true
         });
         TransactionManager.prototype.getStoredTransaction.restore();
-        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-          return null;
-        });
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .callsFake(function() {
+            return null;
+          });
 
         var data = webAuth.parseHash(
           {
@@ -825,7 +874,9 @@ describe('auth0.WebAuth', function() {
               scope: null
             });
 
-            expect(TransactionManager.prototype.getStoredTransaction.calledOnce).to.be.ok();
+            expect(
+              TransactionManager.prototype.getStoredTransaction.calledOnce
+            ).to.be.ok();
 
             done();
           }
@@ -840,9 +891,11 @@ describe('auth0.WebAuth', function() {
           responseType: 'token'
         });
         TransactionManager.prototype.getStoredTransaction.restore();
-        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-          return null;
-        });
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .callsFake(function() {
+            return null;
+          });
 
         var data = webAuth.parseHash(
           {
@@ -867,9 +920,11 @@ describe('auth0.WebAuth', function() {
           responseType: 'token'
         });
         TransactionManager.prototype.getStoredTransaction.restore();
-        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-          return null;
-        });
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .callsFake(function() {
+            return null;
+          });
 
         var data = webAuth.parseHash(
           {
@@ -894,11 +949,13 @@ describe('auth0.WebAuth', function() {
           responseType: 'token'
         });
         TransactionManager.prototype.getStoredTransaction.restore();
-        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-          return {
-            state: 'not-123'
-          };
-        });
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .callsFake(function() {
+            return {
+              state: 'not-123'
+            };
+          });
 
         var data = webAuth.parseHash(
           {
@@ -923,11 +980,13 @@ describe('auth0.WebAuth', function() {
           responseType: 'token'
         });
         TransactionManager.prototype.getStoredTransaction.restore();
-        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-          return {
-            state: 'not-123'
-          };
-        });
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .callsFake(function() {
+            return {
+              state: 'not-123'
+            };
+          });
 
         var data = webAuth.parseHash(
           {
@@ -952,11 +1011,13 @@ describe('auth0.WebAuth', function() {
           responseType: 'token'
         });
         TransactionManager.prototype.getStoredTransaction.restore();
-        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-          return {
-            state: 'not-123'
-          };
-        });
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .callsFake(function() {
+            return {
+              state: 'not-123'
+            };
+          });
 
         var data = webAuth.parseHash(
           {
@@ -990,7 +1051,8 @@ describe('auth0.WebAuth', function() {
           function(err, data) {
             expect(err).to.eql({
               error: 'invalid_token',
-              errorDescription: 'Audience gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt is not valid.' // eslint-disable-line
+              errorDescription:
+                'Audience gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt is not valid.' // eslint-disable-line
             });
             done();
           }
@@ -1050,7 +1112,8 @@ describe('auth0.WebAuth', function() {
 
         webAuth.parseHash(
           {
-            hash: '#error=the_error_code&error_description=the_error_description&state=some_state'
+            hash:
+              '#error=the_error_code&error_description=the_error_description&state=some_state'
           },
           function(err, data) {
             expect(err).to.eql({
@@ -1065,9 +1128,11 @@ describe('auth0.WebAuth', function() {
 
       it('should return default error if it is not a validation error', function(done) {
         var expectedError = { error: 'some_error' };
-        stub(WebAuth.prototype, 'validateToken', function(token, nonce, callback) {
-          return callback(expectedError);
-        });
+        sinon
+          .stub(WebAuth.prototype, 'validateToken')
+          .callsFake(function(token, nonce, callback) {
+            return callback(expectedError);
+          });
         var webAuth = new WebAuth({
           domain: 'mdocs_2.auth0.com',
           redirectUri: 'http://example.com/callback',
@@ -1077,7 +1142,8 @@ describe('auth0.WebAuth', function() {
 
         var data = webAuth.parseHash(
           {
-            hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
+            hash:
+              '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
           },
           function(err, data) {
             expect(err).to.be.eql(expectedError);
@@ -1092,9 +1158,11 @@ describe('auth0.WebAuth', function() {
           }
         });
         it('does not validate when there is no responseType set', function(done) {
-          stub(WebAuth.prototype, 'validateAuthenticationResponse', function() {
-            done();
-          });
+          sinon
+            .stub(WebAuth.prototype, 'validateAuthenticationResponse')
+            .callsFake(function() {
+              done();
+            });
           var webAuth = new WebAuth({
             domain: 'mdocs_2.auth0.com',
             redirectUri: 'http://example.com/callback',
@@ -1102,7 +1170,8 @@ describe('auth0.WebAuth', function() {
           });
 
           webAuth.parseHash({
-            hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
+            hash:
+              '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
           });
         });
         it('when baseoptions.response_type includes token but parsedHash has no access_token', function(done) {
@@ -1120,7 +1189,8 @@ describe('auth0.WebAuth', function() {
 
           var data = webAuth.parseHash(
             {
-              hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
+              hash:
+                '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
             },
             function(err, data) {
               expect(err).to.be.eql(expectedError);
@@ -1143,7 +1213,8 @@ describe('auth0.WebAuth', function() {
 
           var data = webAuth.parseHash(
             {
-              hash: '#state=foo&token_type=Bearer&access_token=0as98da09s8d_not_a_token'
+              hash:
+                '#state=foo&token_type=Bearer&access_token=0as98da09s8d_not_a_token'
             },
             function(err, data) {
               expect(err).to.be.eql(expectedError);
@@ -1165,7 +1236,8 @@ describe('auth0.WebAuth', function() {
 
           var data = webAuth.parseHash(
             {
-              hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token',
+              hash:
+                '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token',
               responseType: 'code token'
             },
             function(err, data) {
@@ -1188,7 +1260,8 @@ describe('auth0.WebAuth', function() {
 
           var data = webAuth.parseHash(
             {
-              hash: '#state=foo&token_type=Bearer&access_token=0as98da09s8d_not_a_token',
+              hash:
+                '#state=foo&token_type=Bearer&access_token=0as98da09s8d_not_a_token',
               responseType: 'code id_token'
             },
             function(err, data) {
@@ -1218,10 +1291,12 @@ describe('auth0.WebAuth', function() {
         }
       });
       it('should use result from /userinfo as idTokenPayload', function(done) {
-        stub(this.webAuth.client, 'userInfo', function(accessToken, cb) {
-          expect(accessToken).to.be('VjubIMBmpgQ2W2');
-          cb(null, { from: 'userinfo' });
-        });
+        sinon
+          .stub(this.webAuth.client, 'userInfo')
+          .callsFake(function(accessToken, cb) {
+            expect(accessToken).to.be('VjubIMBmpgQ2W2');
+            cb(null, { from: 'userinfo' });
+          });
 
         this.webAuth.parseHash(
           {
@@ -1249,12 +1324,14 @@ describe('auth0.WebAuth', function() {
       });
       it('should not throw an error when the payload.nonce is undefined and transactionNonce is null', function(done) {
         TransactionManager.prototype.getStoredTransaction.restore();
-        stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-          return {
-            nonce: null,
-            state: 'foo'
-          };
-        });
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .callsFake(function() {
+            return {
+              nonce: null,
+              state: 'foo'
+            };
+          });
         var webAuth = new WebAuth({
           domain: 'auth0-tests-lock.auth0.com',
           redirectUri: 'http://example.com/callback',
@@ -1262,13 +1339,17 @@ describe('auth0.WebAuth', function() {
           responseType: 'id_token',
           __disableExpirationCheck: true
         });
-        stub(webAuth.client, 'userInfo', function(accessToken, cb) {
-          expect(accessToken).to.be('VjubIMBmpgQ2W2');
-          cb(null, { from: 'userinfo' });
-        });
-        stub(IdTokenVerifier.prototype, 'verify', function(_, __, cb) {
-          cb({ error: true });
-        });
+        sinon
+          .stub(webAuth.client, 'userInfo')
+          .callsFake(function(accessToken, cb) {
+            expect(accessToken).to.be('VjubIMBmpgQ2W2');
+            cb(null, { from: 'userinfo' });
+          });
+        sinon
+          .stub(IdTokenVerifier.prototype, 'verify')
+          .callsFake(function(_, __, cb) {
+            cb({ error: true });
+          });
 
         //nonce: undefined
         webAuth.parseHash(
@@ -1302,9 +1383,11 @@ describe('auth0.WebAuth', function() {
           responseType: 'id_token',
           __disableExpirationCheck: true
         });
-        stub(IdTokenVerifier.prototype, 'verify', function(_, __, cb) {
-          cb({ error: true });
-        });
+        sinon
+          .stub(IdTokenVerifier.prototype, 'verify')
+          .callsFake(function(_, __, cb) {
+            cb({ error: true });
+          });
 
         //nonce: the-nonce
         webAuth.parseHash(
@@ -1330,9 +1413,11 @@ describe('auth0.WebAuth', function() {
           responseType: 'id_token',
           __disableExpirationCheck: true
         });
-        stub(IdTokenVerifier.prototype, 'verify', function(_, __, cb) {
-          cb({ error: true });
-        });
+        sinon
+          .stub(IdTokenVerifier.prototype, 'verify')
+          .callsFake(function(_, __, cb) {
+            cb({ error: true });
+          });
 
         //nonce: the-nonce
         webAuth.parseHash(
@@ -1357,9 +1442,11 @@ describe('auth0.WebAuth', function() {
           responseType: 'id_token',
           __disableExpirationCheck: true
         });
-        stub(webAuth.client, 'userInfo', function(accessToken, cb) {
-          cb({ any: 'error' });
-        });
+        sinon
+          .stub(webAuth.client, 'userInfo')
+          .callsFake(function(accessToken, cb) {
+            cb({ any: 'error' });
+          });
 
         webAuth.parseHash(
           {
@@ -1378,9 +1465,11 @@ describe('auth0.WebAuth', function() {
         );
       });
       it('should throw original userinfo error when /userinfo call has an error', function(done) {
-        stub(this.webAuth.client, 'userInfo', function(accessToken, cb) {
-          cb({ any: 'error' });
-        });
+        sinon
+          .stub(this.webAuth.client, 'userInfo')
+          .callsFake(function(accessToken, cb) {
+            cb({ any: 'error' });
+          });
 
         this.webAuth.parseHash(
           {
@@ -1410,12 +1499,14 @@ describe('auth0.WebAuth', function() {
     });
 
     it('should pass the correct authorize url', function(done) {
-      stub(SilentAuthenticationHandler.prototype, 'login', function() {
-        expect(this.authenticationUrl).to.be(
-          'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&scope=openid%20name%20read%3Ablog&audience=urn%3Asite%3Ademo%3Ablog&nonce=123&state=456&response_mode=fragment&prompt=none'
-        );
-        done();
-      });
+      sinon
+        .stub(SilentAuthenticationHandler.prototype, 'login')
+        .callsFake(function() {
+          expect(this.authenticationUrl).to.be(
+            'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&scope=openid%20name%20read%3Ablog&audience=urn%3Asite%3Ademo%3Ablog&nonce=123&state=456&response_mode=fragment&prompt=none'
+          );
+          done();
+        });
 
       var webAuth = new WebAuth({
         domain: 'me.auth0.com',
@@ -1436,10 +1527,12 @@ describe('auth0.WebAuth', function() {
     });
 
     it('should pass the correct timeout', function(done) {
-      stub(SilentAuthenticationHandler.prototype, 'login', function() {
-        expect(this.timeout).to.be(5000);
-        done();
-      });
+      sinon
+        .stub(SilentAuthenticationHandler.prototype, 'login')
+        .callsFake(function() {
+          expect(this.timeout).to.be(5000);
+          done();
+        });
 
       var webAuth = new WebAuth({
         domain: 'me.auth0.com',
@@ -1476,7 +1569,7 @@ describe('auth0.WebAuth', function() {
         responseType: 'token',
         _sendTelemetry: false
       });
-      stub(windowHelper, 'redirect', function(url) {
+      sinon.stub(windowHelper, 'redirect').callsFake(function(url) {
         expect(url).to.be(
           'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=foobar&state=randomState&scope=openid%20profile%20email'
         );
@@ -1518,19 +1611,23 @@ describe('auth0.WebAuth', function() {
     });
 
     it('should validate the token', function(done) {
-      stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
-        cb(
-          null,
-          '#state=foo&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
-        );
-      });
+      sinon
+        .stub(SilentAuthenticationHandler.prototype, 'login')
+        .callsFake(function(usePostMessage, cb) {
+          cb(
+            null,
+            '#state=foo&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
+          );
+        });
       TransactionManager.prototype.getStoredTransaction.restore();
-      stub(TransactionManager.prototype, 'getStoredTransaction', function() {
-        return {
-          nonce: 'asfd',
-          state: 'foo'
-        };
-      });
+      sinon
+        .stub(TransactionManager.prototype, 'getStoredTransaction')
+        .callsFake(function() {
+          return {
+            nonce: 'asfd',
+            state: 'foo'
+          };
+        });
 
       var webAuth = new WebAuth({
         domain: 'wptest.auth0.com',
@@ -1580,9 +1677,11 @@ describe('auth0.WebAuth', function() {
         delete global.window;
       });
       it('when login returns an object', function(done) {
-        stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
-          cb(null, { accessToken: '123' });
-        });
+        sinon
+          .stub(SilentAuthenticationHandler.prototype, 'login')
+          .callsFake(function(usePostMessage, cb) {
+            cb(null, { accessToken: '123' });
+          });
 
         var webAuth = new WebAuth({
           domain: 'mdocs.auth0.com',
@@ -1605,9 +1704,14 @@ describe('auth0.WebAuth', function() {
         });
       });
       it('when login returns a string', function(done) {
-        stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
-          cb(null, '#state=foo&access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1');
-        });
+        sinon
+          .stub(SilentAuthenticationHandler.prototype, 'login')
+          .callsFake(function(usePostMessage, cb) {
+            cb(
+              null,
+              '#state=foo&access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1'
+            );
+          });
 
         var webAuth = new WebAuth({
           domain: 'mdocs.auth0.com',
@@ -1640,12 +1744,14 @@ describe('auth0.WebAuth', function() {
     });
 
     it('should validate the token and fail with invalid audience error', function(done) {
-      stub(SilentAuthenticationHandler.prototype, 'login', function(usePostMessage, cb) {
-        cb(
-          null,
-          '#state=foo&access_token=123&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
-        );
-      });
+      sinon
+        .stub(SilentAuthenticationHandler.prototype, 'login')
+        .callsFake(function(usePostMessage, cb) {
+          cb(
+            null,
+            '#state=foo&access_token=123&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA'
+          );
+        });
 
       var webAuth = new WebAuth({
         domain: 'wptest.auth0.com',
@@ -1665,7 +1771,8 @@ describe('auth0.WebAuth', function() {
         expect(data).to.be(undefined);
         expect(err).to.eql({
           error: 'invalid_token',
-          errorDescription: 'Audience gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt is not valid.'
+          errorDescription:
+            'Audience gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt is not valid.'
         });
         done();
       });
@@ -1688,7 +1795,7 @@ describe('auth0.WebAuth', function() {
     });
 
     it('should call db-connection changePassword with all the options', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/dbconnections/change_password');
         return new RequestMock({
           body: {
@@ -1718,7 +1825,7 @@ describe('auth0.WebAuth', function() {
     });
 
     it('should call db-connection changePassword should ignore password option', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/dbconnections/change_password');
         return new RequestMock({
           body: {
@@ -1770,8 +1877,10 @@ describe('auth0.WebAuth', function() {
       }
     });
     it('should call `transactionManager.process` with merged params', function() {
-      stub(this.auth0.client.passwordless, 'start', function() {});
-      spy(TransactionManager.prototype, 'process');
+      sinon
+        .stub(this.auth0.client.passwordless, 'start')
+        .callsFake(function() {});
+      sinon.spy(TransactionManager.prototype, 'process');
       var expectedOptions = {
         responseType: 'code',
         redirectUri: 'http://page.com/callback',
@@ -1802,8 +1911,10 @@ describe('auth0.WebAuth', function() {
           from: 'transactionManager'
         }
       };
-      var mockVerify = stub(this.auth0.client.passwordless, 'start', function() {});
-      stub(TransactionManager.prototype, 'process', function() {
+      var mockVerify = sinon
+        .stub(this.auth0.client.passwordless, 'start')
+        .callsFake(function() {});
+      sinon.stub(TransactionManager.prototype, 'process').callsFake(function() {
         return expectedOptions.authParams;
       });
 
@@ -1815,7 +1926,7 @@ describe('auth0.WebAuth', function() {
     });
 
     it('should call passwordless start sms with all the options', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/passwordless/start');
         return new RequestMock({
           body: {
@@ -1840,7 +1951,7 @@ describe('auth0.WebAuth', function() {
         });
       });
 
-      stub(TransactionManager.prototype, 'process', function() {
+      sinon.stub(TransactionManager.prototype, 'process').callsFake(function() {
         return { from: 'tm' };
       });
 
@@ -1859,7 +1970,7 @@ describe('auth0.WebAuth', function() {
     });
 
     it('should call passwordless start email with all the options', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/passwordless/start');
         return new RequestMock({
           body: {
@@ -1884,7 +1995,7 @@ describe('auth0.WebAuth', function() {
         });
       });
 
-      stub(TransactionManager.prototype, 'process', function() {
+      sinon.stub(TransactionManager.prototype, 'process').callsFake(function() {
         return { from: 'tm' };
       });
 
@@ -1915,7 +2026,7 @@ describe('auth0.WebAuth', function() {
     });
     context('when outside of the universal login page', function() {
       beforeEach(function() {
-        stub(windowHelper, 'getWindow', function() {
+        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
           return {
             location: {
               host: 'other-domain.auth0.com'
@@ -1945,11 +2056,13 @@ describe('auth0.WebAuth', function() {
           state: 'randomState',
           nonce: 'randomNonce'
         };
-        stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
-          expect(options).to.be.eql(expectedOptions);
-          expect(cb()).to.be('cb');
-          done();
-        });
+        sinon
+          .stub(CrossOriginAuthentication.prototype, 'login')
+          .callsFake(function(options, cb) {
+            expect(options).to.be.eql(expectedOptions);
+            expect(cb()).to.be('cb');
+            done();
+          });
 
         this.auth0.passwordlessLogin(
           {
@@ -1974,11 +2087,13 @@ describe('auth0.WebAuth', function() {
           state: 'randomState',
           nonce: 'randomNonce'
         };
-        stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
-          expect(options).to.be.eql(expectedOptions);
-          expect(cb()).to.be('cb');
-          done();
-        });
+        sinon
+          .stub(CrossOriginAuthentication.prototype, 'login')
+          .callsFake(function(options, cb) {
+            expect(options).to.be.eql(expectedOptions);
+            expect(cb()).to.be('cb');
+            done();
+          });
 
         this.auth0.passwordlessLogin(
           {
@@ -1994,7 +2109,7 @@ describe('auth0.WebAuth', function() {
     });
     context('when inside of the universal login page', function() {
       beforeEach(function() {
-        stub(windowHelper, 'getWindow', function() {
+        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
           return {
             location: {
               host: 'me.auth0.com'
@@ -2017,11 +2132,13 @@ describe('auth0.WebAuth', function() {
           state: 'randomState',
           nonce: 'randomNonce'
         };
-        stub(this.auth0, 'passwordlessVerify', function(options, cb) {
-          expect(options).to.be.eql(expectedOptions);
-          expect(cb()).to.be('cb');
-          done();
-        });
+        sinon
+          .stub(this.auth0, 'passwordlessVerify')
+          .callsFake(function(options, cb) {
+            expect(options).to.be.eql(expectedOptions);
+            expect(cb()).to.be('cb');
+            done();
+          });
 
         this.auth0.passwordlessLogin(
           {
@@ -2045,11 +2162,13 @@ describe('auth0.WebAuth', function() {
           state: 'randomState',
           nonce: 'randomNonce'
         };
-        stub(this.auth0, 'passwordlessVerify', function(options, cb) {
-          expect(options).to.be.eql(expectedOptions);
-          expect(cb()).to.be('cb');
-          done();
-        });
+        sinon
+          .stub(this.auth0, 'passwordlessVerify')
+          .callsFake(function(options, cb) {
+            expect(options).to.be.eql(expectedOptions);
+            expect(cb()).to.be('cb');
+            done();
+          });
 
         this.auth0.passwordlessLogin(
           {
@@ -2087,15 +2206,19 @@ describe('auth0.WebAuth', function() {
         responseType: undefined,
         _sendTelemetry: false
       });
-      stub(this.auth0.client.passwordless, 'verify', function() {});
-      spy(TransactionManager.prototype, 'process');
+      sinon
+        .stub(this.auth0.client.passwordless, 'verify')
+        .callsFake(function() {});
+      sinon.spy(TransactionManager.prototype, 'process');
       expect(() => this.auth0.passwordlessVerify({})).to.throwError(
         /responseType option is required/
       );
     });
     it('should call `transactionManager.process` with merged params', function() {
-      stub(this.auth0.client.passwordless, 'verify', function() {});
-      spy(TransactionManager.prototype, 'process');
+      sinon
+        .stub(this.auth0.client.passwordless, 'verify')
+        .callsFake(function() {});
+      sinon.spy(TransactionManager.prototype, 'process');
       var expectedOptions = {
         clientID: '...',
         responseType: 'code',
@@ -2124,8 +2247,10 @@ describe('auth0.WebAuth', function() {
       var expectedOptions = {
         from: 'transactionManager'
       };
-      var mockVerify = stub(this.auth0.client.passwordless, 'verify', function() {});
-      stub(TransactionManager.prototype, 'process', function() {
+      var mockVerify = sinon
+        .stub(this.auth0.client.passwordless, 'verify')
+        .callsFake(function() {});
+      sinon.stub(TransactionManager.prototype, 'process').callsFake(function() {
         return expectedOptions;
       });
 
@@ -2137,10 +2262,14 @@ describe('auth0.WebAuth', function() {
     });
     it('should call callback with error', function(done) {
       var expectedError = new Error('some error');
-      stub(this.auth0.client.passwordless, 'verify', function(params, cb) {
-        cb(expectedError);
-      });
-      stub(TransactionManager.prototype, 'process', function() {});
+      sinon
+        .stub(this.auth0.client.passwordless, 'verify')
+        .callsFake(function(params, cb) {
+          cb(expectedError);
+        });
+      sinon
+        .stub(TransactionManager.prototype, 'process')
+        .callsFake(function() {});
 
       this.auth0.passwordlessVerify({}, function(err, data) {
         expect(err).to.be.eql(expectedError);
@@ -2150,14 +2279,20 @@ describe('auth0.WebAuth', function() {
     it('should windowHelper.redirect on success', function(done) {
       var expectedUrl = 'https://verify-url.example.com';
 
-      stub(this.auth0.client.passwordless, 'buildVerifyUrl', function() {
-        return expectedUrl;
-      });
-      stub(this.auth0.client.passwordless, 'verify', function(params, cb) {
-        cb(null);
-      });
-      stub(TransactionManager.prototype, 'process', function() {});
-      stub(windowHelper, 'redirect', function(url) {
+      sinon
+        .stub(this.auth0.client.passwordless, 'buildVerifyUrl')
+        .callsFake(function() {
+          return expectedUrl;
+        });
+      sinon
+        .stub(this.auth0.client.passwordless, 'verify')
+        .callsFake(function(params, cb) {
+          cb(null);
+        });
+      sinon
+        .stub(TransactionManager.prototype, 'process')
+        .callsFake(function() {});
+      sinon.stub(windowHelper, 'redirect').callsFake(function(url) {
         expect(url).to.be(expectedUrl);
         done();
       });
@@ -2185,7 +2320,7 @@ describe('auth0.WebAuth', function() {
     });
 
     it('should call db-connection signup with all the options', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         if (url === 'https://me.auth0.com/oauth/token') {
           return new RequestMock({
             body: {
@@ -2251,7 +2386,7 @@ describe('auth0.WebAuth', function() {
     });
 
     it('should propagate signup errors', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
@@ -2319,7 +2454,7 @@ describe('auth0.WebAuth', function() {
         });
       });
       beforeEach(function() {
-        stub(windowHelper, 'getWindow', function() {
+        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
           return {
             location: {
               host: 'other-domain.auth0.com'
@@ -2341,11 +2476,13 @@ describe('auth0.WebAuth', function() {
           foo: 'bar',
           state: 'randomState'
         };
-        stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
-          expect(options).to.be.eql(expectedOptions);
-          expect(cb()).to.be('cb');
-          done();
-        });
+        sinon
+          .stub(CrossOriginAuthentication.prototype, 'login')
+          .callsFake(function(options, cb) {
+            expect(options).to.be.eql(expectedOptions);
+            expect(cb()).to.be('cb');
+            done();
+          });
         this.auth0.login(expectedOptions, function() {
           return 'cb';
         });
@@ -2362,7 +2499,7 @@ describe('auth0.WebAuth', function() {
         });
       });
       beforeEach(function() {
-        stub(windowHelper, 'getWindow', function() {
+        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
           return {
             location: {
               host: 'me.auth0.com'
@@ -2381,11 +2518,13 @@ describe('auth0.WebAuth', function() {
           state: 'randomState',
           connection: 'bar'
         };
-        stub(HostedPages.prototype, 'login', function(options, cb) {
-          expect(options).to.be.eql(expectedOptions);
-          expect(cb()).to.be('cb');
-          done();
-        });
+        sinon
+          .stub(HostedPages.prototype, 'login')
+          .callsFake(function(options, cb) {
+            expect(options).to.be.eql(expectedOptions);
+            expect(cb()).to.be('cb');
+            done();
+          });
         this.auth0.login({ realm: 'bar' }, function() {
           return 'cb';
         });
@@ -2408,11 +2547,15 @@ describe('auth0.WebAuth', function() {
       CrossOriginAuthentication.prototype.callback.restore();
     });
     it('should call callback with deprecated method `crossOriginAuthenticationCallback`', function(done) {
-      stub(CrossOriginAuthentication.prototype, 'callback', done);
+      sinon
+        .stub(CrossOriginAuthentication.prototype, 'callback')
+        .callsFake(done);
       this.auth0.crossOriginAuthenticationCallback();
     });
     it('should call callback', function(done) {
-      stub(CrossOriginAuthentication.prototype, 'callback', done);
+      sinon
+        .stub(CrossOriginAuthentication.prototype, 'callback')
+        .callsFake(done);
       this.auth0.crossOriginVerification();
     });
   });
@@ -2426,14 +2569,18 @@ describe('auth0.WebAuth', function() {
         responseType: 'token',
         _sendTelemetry: false
       });
-      stub(TransactionManager.prototype, 'process', function(params) {
-        return Object.assign({}, params, { from: 'transaction-manager' });
-      });
-      stub(TransactionManager.prototype, 'clearTransaction', function() {});
-      stub(windowHelper, 'getOrigin', function() {
+      sinon
+        .stub(TransactionManager.prototype, 'process')
+        .callsFake(function(params) {
+          return Object.assign({}, params, { from: 'transaction-manager' });
+        });
+      sinon
+        .stub(TransactionManager.prototype, 'clearTransaction')
+        .callsFake(function() {});
+      sinon.stub(windowHelper, 'getOrigin').callsFake(function() {
         return 'https://test-origin.com';
       });
-      stub(objectHelper, 'getOriginFromUrl', function() {
+      sinon.stub(objectHelper, 'getOriginFromUrl').callsFake(function() {
         return 'https://test-origin.com';
       });
     });
@@ -2473,10 +2620,10 @@ describe('auth0.WebAuth', function() {
     });
     it('does not throw an origin_mismatch error if redirectUri is empty', function() {
       objectHelper.getOriginFromUrl.restore();
-      stub(objectHelper, 'getOriginFromUrl', function() {
+      sinon.stub(objectHelper, 'getOriginFromUrl').callsFake(function() {
         return undefined;
       });
-      stub(IframeHandler.prototype, 'init', function() {});
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {});
 
       this.auth0.checkSession({}, function(err) {
         expect(err).to.be.eql(undefined);
@@ -2484,7 +2631,7 @@ describe('auth0.WebAuth', function() {
     });
     it('throws an error if there is an origin mismatch between current window and redirectUri', function() {
       objectHelper.getOriginFromUrl.restore();
-      stub(objectHelper, 'getOriginFromUrl', function() {
+      sinon.stub(objectHelper, 'getOriginFromUrl').callsFake(function() {
         return 'some-other-origin';
       });
       this.auth0.checkSession({}, function(err) {
@@ -2504,7 +2651,7 @@ describe('auth0.WebAuth', function() {
       });
     });
     it('inits IframeHandler with correct params', function(done) {
-      stub(IframeHandler.prototype, 'init', function() {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         expect(this.url).to.be(
           'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&from=transaction-manager&response_mode=web_message&prompt=none'
         );
@@ -2516,7 +2663,7 @@ describe('auth0.WebAuth', function() {
     });
     it('uses custom timeout when provided', function(done) {
       var timeout = 1;
-      stub(IframeHandler.prototype, 'init', function() {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         expect(this.timeout).to.be(timeout);
         done();
       });
@@ -2528,34 +2675,46 @@ describe('auth0.WebAuth', function() {
       );
     });
     it('eventValidator validates the event data type is `authorization_response` and the state matches the transaction state', function(done) {
-      stub(IframeHandler.prototype, 'init', function() {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         var getEvent = function(type, state) {
-          return { event: { data: { type: type, response: { state: state } } } };
+          return {
+            event: { data: { type: type, response: { state: state } } }
+          };
         };
-        expect(this.eventValidator.isValid(getEvent('wrong', 'wrong'))).to.be(false);
-        expect(this.eventValidator.isValid(getEvent('authorization_response', 'wrong'))).to.be(
+        expect(this.eventValidator.isValid(getEvent('wrong', 'wrong'))).to.be(
           false
         );
-        expect(this.eventValidator.isValid(getEvent('wrong', '123'))).to.be(false);
-        expect(this.eventValidator.isValid(getEvent('authorization_response', '123'))).to.be(true);
+        expect(
+          this.eventValidator.isValid(
+            getEvent('authorization_response', 'wrong')
+          )
+        ).to.be(false);
+        expect(this.eventValidator.isValid(getEvent('wrong', '123'))).to.be(
+          false
+        );
+        expect(
+          this.eventValidator.isValid(getEvent('authorization_response', '123'))
+        ).to.be(true);
         done();
       });
       this.auth0.checkSession({ state: '123' }, function(err, data) {});
     });
     it('timeoutCallback calls callback with error response', function(done) {
-      stub(IframeHandler.prototype, 'init', function() {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         this.timeoutCallback();
       });
       this.auth0.checkSession({ state: 'foobar' }, function(err, data) {
         expect(err).to.be.eql({
           original: {
             error: 'timeout',
-            error_description: 'Timeout during executing web_message communication'
+            error_description:
+              'Timeout during executing web_message communication'
           },
           code: 'timeout',
           description: 'Timeout during executing web_message communication',
           error: 'timeout',
-          error_description: 'Timeout during executing web_message communication'
+          error_description:
+            'Timeout during executing web_message communication'
         });
         done();
       });
@@ -2566,7 +2725,7 @@ describe('auth0.WebAuth', function() {
         error_description: 'error description',
         somethingElse: 'foobar'
       };
-      stub(IframeHandler.prototype, 'init', function() {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         this.callback({ event: { data: { response: errorResponse } } });
       });
       this.auth0.checkSession({}, function(err, data) {
@@ -2589,22 +2748,24 @@ describe('auth0.WebAuth', function() {
         error_description: 'error description',
         state: 'foobar'
       };
-      stub(IframeHandler.prototype, 'init', function() {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         this.callback({ event: { data: { response: errorResponse } } });
       });
       this.auth0.checkSession({}, function(err, data) {
-        expect(TransactionManager.prototype.clearTransaction.firstCall.args[0]).to.be(
-          errorResponse.state
-        );
+        expect(
+          TransactionManager.prototype.clearTransaction.firstCall.args[0]
+        ).to.be(errorResponse.state);
         done();
       });
     });
     it('callback clears transaction on timeout', function(done) {
-      stub(IframeHandler.prototype, 'init', function() {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         this.timeoutCallback();
       });
       this.auth0.checkSession({ state: 'foobar' }, function(err, data) {
-        expect(TransactionManager.prototype.clearTransaction.firstCall.args[0]).to.be('foobar');
+        expect(
+          TransactionManager.prototype.clearTransaction.firstCall.args[0]
+        ).to.be('foobar');
         done();
       });
     });
@@ -2612,10 +2773,10 @@ describe('auth0.WebAuth', function() {
       var errorResponse = {
         error: 'consent_required'
       };
-      stub(IframeHandler.prototype, 'init', function() {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         this.callback({ event: { data: { response: errorResponse } } });
       });
-      stub(windowHelper, 'getWindow', function() {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {
           location: {
             hostname: 'localhost'
@@ -2623,7 +2784,7 @@ describe('auth0.WebAuth', function() {
         };
       });
       var warnings = [];
-      stub(Warn.prototype, 'warning', function(e) {
+      sinon.stub(Warn.prototype, 'warning').callsFake(function(e) {
         warnings.push(e);
       });
       this.auth0.checkSession({}, function() {
@@ -2635,21 +2796,23 @@ describe('auth0.WebAuth', function() {
     });
     it('callback handles success response', function(done) {
       var response = { access_token: 'foobar' };
-      stub(WebAuth.prototype, 'validateAuthenticationResponse', function(options, parsedHash, cb) {
-        expect(options).to.be.eql({
-          clientID: '...',
-          responseType: 'token',
-          redirectUri: 'http://page.com/callback',
-          from: 'transaction-manager',
-          responseMode: 'web_message',
-          prompt: 'none'
+      sinon
+        .stub(WebAuth.prototype, 'validateAuthenticationResponse')
+        .callsFake(function(options, parsedHash, cb) {
+          expect(options).to.be.eql({
+            clientID: '...',
+            responseType: 'token',
+            redirectUri: 'http://page.com/callback',
+            from: 'transaction-manager',
+            responseMode: 'web_message',
+            prompt: 'none'
+          });
+          expect(parsedHash).to.be.eql(response);
+          cb(null, {
+            accessToken: response.access_token
+          });
         });
-        expect(parsedHash).to.be.eql(response);
-        cb(null, {
-          accessToken: response.access_token
-        });
-      });
-      stub(IframeHandler.prototype, 'init', function() {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         this.callback({ event: { data: { response: response } } });
       });
       this.auth0.checkSession({}, function(err, data) {
@@ -2665,18 +2828,23 @@ describe('auth0.WebAuth', function() {
           email_verified: false
         }
       };
-      stub(WebAuth.prototype, 'validateAuthenticationResponse', function(options, parsedHash, cb) {
-        cb(null, {
-          accessToken: response.access_token,
-          idTokenPayload: response.idTokenPayload
+      sinon
+        .stub(WebAuth.prototype, 'validateAuthenticationResponse')
+        .callsFake(function(options, parsedHash, cb) {
+          cb(null, {
+            accessToken: response.access_token,
+            idTokenPayload: response.idTokenPayload
+          });
         });
-      });
-      stub(IframeHandler.prototype, 'init', function() {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         this.callback({ event: { data: { response: response } } });
       });
       this.auth0.checkSession({}, function(err, data) {
         expect(err).to.be(null);
-        expect(data).to.be.eql({ accessToken: 'foobar', idTokenPayload: response.idTokenPayload });
+        expect(data).to.be.eql({
+          accessToken: 'foobar',
+          idTokenPayload: response.idTokenPayload
+        });
         done();
       });
     });

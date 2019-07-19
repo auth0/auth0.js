@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub, spy } from 'sinon';
+import sinon from 'sinon';
 
 import windowHandler from '../../src/helper/window';
 import StorageHandler from '../../src/helper/storage/handler';
@@ -19,7 +19,7 @@ MockLocalStorage.prototype.setItem = function() {
 
 describe('helpers storage handler', function() {
   beforeEach(function() {
-    stub(windowHandler, 'getWindow', function(message) {
+    sinon.stub(windowHandler, 'getWindow').callsFake(function(message) {
       return {
         localStorage: new MockLocalStorage()
       };
@@ -43,11 +43,11 @@ describe('helpers storage handler', function() {
     beforeEach(function() {
       windowHandler.getWindow.restore();
 
-      setItemSpy = spy();
-      getItemStub = stub().returns('test');
-      removeItemSpy = spy();
+      setItemSpy = sinon.spy();
+      getItemStub = sinon.stub().returns('test');
+      removeItemSpy = sinon.spy();
 
-      stub(windowHandler, 'getWindow', function() {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
         return {
           localStorage: {
             setItem: setItemSpy,
@@ -80,14 +80,14 @@ describe('helpers storage handler', function() {
   describe('should use cookie storage', function() {
     it('when __tryLocalStorageFirst is true but localStorage is not available', function() {
       windowHandler.getWindow.restore();
-      stub(windowHandler, 'getWindow', function(message) {});
+      sinon.stub(windowHandler, 'getWindow').callsFake(function(message) {});
 
       var handler = new StorageHandler({ __tryLocalStorageFirst: true });
       expect(handler.storage).to.be.a(CookieStorage);
     });
     it('when localstorage throws an error', function() {
       windowHandler.getWindow.restore();
-      stub(windowHandler, 'getWindow', function(message) {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function(message) {
         return {
           get localStorage() {
             throw new Error('asdasd');
@@ -99,7 +99,7 @@ describe('helpers storage handler', function() {
       expect(handler.storage).to.be.a(CookieStorage);
     });
     it('when localstorage fails with getItem', function() {
-      spy(CookieStorage.prototype, 'getItem');
+      sinon.spy(CookieStorage.prototype, 'getItem');
 
       var handler = new StorageHandler({ __tryLocalStorageFirst: true });
 
@@ -107,12 +107,14 @@ describe('helpers storage handler', function() {
       handler.getItem('pepe');
 
       expect(handler.storage).to.be.a(CookieStorage);
-      expect(CookieStorage.prototype.getItem.firstCall.args).to.be.eql(['pepe']);
+      expect(CookieStorage.prototype.getItem.firstCall.args).to.be.eql([
+        'pepe'
+      ]);
 
       CookieStorage.prototype.getItem.restore();
     });
     it('when localstorage fails with setItem', function() {
-      spy(CookieStorage.prototype, 'setItem');
+      sinon.spy(CookieStorage.prototype, 'setItem');
 
       var handler = new StorageHandler({ __tryLocalStorageFirst: true });
 
@@ -129,7 +131,7 @@ describe('helpers storage handler', function() {
       CookieStorage.prototype.setItem.restore();
     });
     it('when localstorage fails with removeItem', function() {
-      spy(CookieStorage.prototype, 'removeItem');
+      sinon.spy(CookieStorage.prototype, 'removeItem');
 
       var handler = new StorageHandler({ __tryLocalStorageFirst: true });
 
@@ -137,7 +139,9 @@ describe('helpers storage handler', function() {
       handler.removeItem('some');
 
       expect(handler.storage).to.be.a(CookieStorage);
-      expect(CookieStorage.prototype.removeItem.firstCall.args).to.be.eql(['some']);
+      expect(CookieStorage.prototype.removeItem.firstCall.args).to.be.eql([
+        'some'
+      ]);
 
       CookieStorage.prototype.removeItem.restore();
     });

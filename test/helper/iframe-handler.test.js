@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import windowHelper from '../../src/helper/window';
 import IframeHandler from '../../src/helper/iframe-handler';
@@ -96,7 +96,7 @@ function stubWindow(eventType, data) {
     }
   });
 
-  stub(windowHelper, 'getWindow', function() {
+  sinon.stub(windowHelper, 'getWindow').callsFake(function() {
     return fauxWindow;
   });
 
@@ -147,10 +147,14 @@ describe('helpers iframeHandler', function() {
         callback: function() {}
       });
 
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
+      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(
+        0
+      );
       expect(iframe.eventListeners['load'].length).to.be(0);
       iframeHandler.init();
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(1);
+      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(
+        1
+      );
       expect(iframe.eventListeners['load'].length).to.be(0);
     });
 
@@ -161,10 +165,14 @@ describe('helpers iframeHandler', function() {
         callback: function() {}
       });
 
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
+      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(
+        0
+      );
       expect(iframe.eventListeners['load'].length).to.be(0);
       iframeHandler.init();
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(1);
+      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(
+        1
+      );
       expect(iframe.eventListeners['load'].length).to.be(0);
     });
 
@@ -176,10 +184,14 @@ describe('helpers iframeHandler', function() {
       });
 
       expect(iframe.eventListeners['load'].length).to.be(0);
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
+      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(
+        0
+      );
       iframeHandler.init();
       expect(iframe.eventListeners['load'].length).to.be(1);
-      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
+      expect(windowHelper.getWindow().eventListeners['message'].length).to.be(
+        0
+      );
     });
 
     it('should call an event validator for a message event on the window', function(done) {
@@ -272,7 +284,9 @@ describe('helpers iframeHandler', function() {
 
       setTimeout(function() {
         expect(callbackCalled).to.eql(true);
-        expect(windowHelper.getWindow().eventListeners['message'].length).to.be(0);
+        expect(windowHelper.getWindow().eventListeners['message'].length).to.be(
+          0
+        );
 
         done();
       }, 200);

@@ -1,6 +1,6 @@
 import expect from 'expect.js';
 
-import { stub, spy } from 'sinon';
+import sinon from 'sinon';
 
 import RequestMock from '../mock/request-mock';
 
@@ -17,9 +17,9 @@ var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 describe('auth0.authentication', function() {
   before(function() {
     this.webAuthSpy = {
-      checkSession: spy(),
+      checkSession: sinon.spy(),
       _universalLogin: {
-        getSSOData: spy()
+        getSSOData: sinon.spy()
       }
     };
   });
@@ -50,7 +50,9 @@ describe('auth0.authentication', function() {
 
     it('should check that clientID is set', function() {
       expect(function() {
-        var auth0 = new Authentication(this.webAuthSpy, { domain: 'me.auth0.com' });
+        var auth0 = new Authentication(this.webAuthSpy, {
+          domain: 'me.auth0.com'
+        });
       }).to.throwException(function(e) {
         expect(e.message).to.be('clientID option is required');
       });
@@ -76,9 +78,14 @@ describe('auth0.authentication', function() {
       });
     });
 
-    ['username', 'popupOptions', 'domain', 'tenant', 'timeout', 'appState'].forEach(function(
-      param
-    ) {
+    [
+      'username',
+      'popupOptions',
+      'domain',
+      'tenant',
+      'timeout',
+      'appState'
+    ].forEach(function(param) {
       it('should remove parameter: ' + param, function() {
         var options = {};
         options[param] = 'foobar';
@@ -281,7 +288,7 @@ describe('auth0.authentication', function() {
           responseType: 'code',
           _sendTelemetry: false
         });
-        stub(Storage.prototype, 'getItem', function(key) {
+        sinon.stub(Storage.prototype, 'getItem').callsFake(function(key) {
           expect(key).to.be('auth0.ssodata');
           return JSON.stringify({
             lastUsedConnection: 'lastUsedConnection',
@@ -294,7 +301,7 @@ describe('auth0.authentication', function() {
         Storage.prototype.getItem.restore();
       });
       beforeEach(function() {
-        stub(windowHelper, 'getWindow', function() {
+        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
           return { location: { host: 'other-domain.auth0.com' } };
         });
       });
@@ -426,7 +433,7 @@ describe('auth0.authentication', function() {
         });
       });
       beforeEach(function() {
-        stub(windowHelper, 'getWindow', function() {
+        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
           return { location: { host: 'me.auth0.com' } };
         });
       });
@@ -435,10 +442,9 @@ describe('auth0.authentication', function() {
       });
       it('calls webauth._universalLogin.getSSOData with same params', function() {
         this.auth0.getSSOData('withActiveDirectories', 'cb');
-        expect(this.webAuthSpy._universalLogin.getSSOData.lastCall.args).to.be.eql([
-          'withActiveDirectories',
-          'cb'
-        ]);
+        expect(
+          this.webAuthSpy._universalLogin.getSSOData.lastCall.args
+        ).to.be.eql(['withActiveDirectories', 'cb']);
       });
     });
   });
@@ -459,7 +465,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call userinfo with the access token', function(done) {
-      stub(request, 'get', function(url) {
+      sinon.stub(request, 'get').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/userinfo');
         return new RequestMock({
           headers: {
@@ -508,7 +514,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call delegation with all the options', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/delegation');
         return new RequestMock({
           body: {
@@ -567,7 +573,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call oauthToken with all the options', function(done) {
-      stub(this.auth0, 'oauthToken', function(options, cb) {
+      sinon.stub(this.auth0, 'oauthToken').callsFake(function(options, cb) {
         expect(options).to.eql({
           username: 'someUsername',
           password: '123456',
@@ -588,7 +594,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should call oauthToken with all the options', function(done) {
-      stub(this.auth0, 'oauthToken', function(options, cb) {
+      sinon.stub(this.auth0, 'oauthToken').callsFake(function(options, cb) {
         expect(options).to.eql({
           username: 'someUsername',
           password: '123456',
@@ -627,7 +633,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should allow to login', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/oauth/token');
         return new RequestMock({
           body: {
@@ -686,7 +692,7 @@ describe('auth0.authentication', function() {
     });
 
     it('should return the user country code', function(done) {
-      stub(request, 'get', function(url) {
+      sinon.stub(request, 'get').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/user/geoloc/country');
         return new RequestMock({
           headers: {

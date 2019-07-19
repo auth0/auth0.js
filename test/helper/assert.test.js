@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import assert from '../../src/helper/assert';
 
@@ -19,7 +19,7 @@ describe('helpers assert', function() {
 
   describe('isArray polyfill', function() {
     beforeEach(function() {
-      stub(assert, 'supportsIsArray', function(message) {
+      sinon.stub(assert, 'supportsIsArray').callsFake(function(message) {
         return false;
       });
     });

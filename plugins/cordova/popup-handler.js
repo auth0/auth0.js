@@ -78,8 +78,14 @@ PopupHandler.prototype.errorHandler = function(event, cb) {
 };
 
 PopupHandler.prototype.unhook = function() {
-  this._current_popup.removeEventListener('loaderror', this.transientErrorHandler);
-  this._current_popup.removeEventListener('loadstart', this.transientStartHandler);
+  this._current_popup.removeEventListener(
+    'loaderror',
+    this.transientErrorHandler
+  );
+  this._current_popup.removeEventListener(
+    'loadstart',
+    this.transientStartHandler
+  );
   this._current_popup.removeEventListener('exit', this.transientExitHandler);
 };
 
@@ -105,7 +111,11 @@ PopupHandler.prototype.startHandler = function(event, cb) {
     return;
   }
 
-  var callbackUrl = urljoin('https:', this.webAuth.baseOptions.domain, '/mobile');
+  var callbackUrl = urljoin(
+    'https:',
+    this.webAuth.baseOptions.domain,
+    '/mobile'
+  );
 
   if (event.url && !(event.url.indexOf(callbackUrl + '#') === 0)) {
     return;

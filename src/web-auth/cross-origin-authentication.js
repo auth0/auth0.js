@@ -29,7 +29,11 @@ function getFragment(name) {
 }
 
 function createKey(origin, coId) {
-  return ['co/verifier', encodeURIComponent(origin), encodeURIComponent(coId)].join('/');
+  return [
+    'co/verifier',
+    encodeURIComponent(origin),
+    encodeURIComponent(coId)
+  ].join('/');
 }
 
 /**
@@ -86,12 +90,19 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
         return responseHandler(cb, { forceLegacyError: true })(errorObject);
       }
       var popupMode = options.popup === true;
-      options = objectHelper.blacklist(options, ['password', 'credentialType', 'otp', 'popup']);
+      options = objectHelper.blacklist(options, [
+        'password',
+        'credentialType',
+        'otp',
+        'popup'
+      ]);
       var authorizeOptions = objectHelper
         .merge(options)
         .with({ loginTicket: data.body.login_ticket });
       var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
-      _this.storage.setItem(key, data.body.co_verifier, { expires: times.MINUTES_15 });
+      _this.storage.setItem(key, data.body.co_verifier, {
+        expires: times.MINUTES_15
+      });
       if (popupMode) {
         _this.webMessageHandler.run(
           authorizeOptions,

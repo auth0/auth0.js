@@ -1,6 +1,6 @@
 import CookieLibrary from 'js-cookie';
 import expect from 'expect.js';
-import { stub, spy } from 'sinon';
+import sinon from 'sinon';
 
 import CookieStorage from '../../src/helper/storage/cookie';
 var cookieStorage = new CookieStorage();
@@ -9,15 +9,15 @@ const VALUE = 'bar';
 
 describe('storage.cookies', function() {
   beforeEach(function() {
-    stub(CookieLibrary, 'get', function(key) {
+    sinon.stub(CookieLibrary, 'get').callsFake(function(key) {
       expect(key).to.be(KEY);
       return VALUE;
     });
-    stub(CookieLibrary, 'set', function(key, value) {
+    sinon.stub(CookieLibrary, 'set').callsFake(function(key, value) {
       expect(key).to.be(KEY);
       expect(value).to.be(VALUE);
     });
-    stub(CookieLibrary, 'remove', function(key) {
+    sinon.stub(CookieLibrary, 'remove').callsFake(function(key) {
       expect(key).to.be(KEY);
     });
   });
@@ -41,7 +41,11 @@ describe('storage.cookies', function() {
   describe('setItem', function() {
     it('calls Cookie.set with default values', function() {
       cookieStorage.setItem(KEY, VALUE);
-      expect(CookieLibrary.set.firstCall.args).to.be.eql(['foo', 'bar', { expires: 1 }]);
+      expect(CookieLibrary.set.firstCall.args).to.be.eql([
+        'foo',
+        'bar',
+        { expires: 1 }
+      ]);
     });
     it('calls Cookie.set with custom values', function() {
       cookieStorage.setItem(KEY, VALUE, { expires: 2, test: true });

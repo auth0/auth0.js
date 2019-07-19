@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import windowHelper from '../../src/helper/window';
 import random from '../../src/helper/random';
@@ -7,7 +7,7 @@ import random from '../../src/helper/random';
 describe('helpers random', function() {
   describe('randomString with crypto', function() {
     before(function() {
-      stub(windowHelper, 'getWindow', function() {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {
           crypto: {
             getRandomValues: function() {
@@ -30,7 +30,7 @@ describe('helpers random', function() {
 
   describe('randomString with msCrypto', function() {
     before(function() {
-      stub(windowHelper, 'getWindow', function() {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {
           msCrypto: {
             getRandomValues: function() {
@@ -53,7 +53,7 @@ describe('helpers random', function() {
 
   describe('randomString without crypto', function() {
     before(function() {
-      stub(windowHelper, 'getWindow', function() {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {};
       });
     });

@@ -45,7 +45,9 @@ function HostedPages(client, options) {
  */
 HostedPages.prototype.login = function(options, cb) {
   if (windowHelper.getWindow().location.host !== this.baseOptions.domain) {
-    throw new Error('This method is meant to be used only inside the Universal Login Page.');
+    throw new Error(
+      'This method is meant to be used only inside the Universal Login Page.'
+    );
   }
   var usernamePassword;
 
@@ -69,7 +71,10 @@ HostedPages.prototype.login = function(options, cb) {
     params,
     { type: 'object', message: 'options parameter is not valid' },
     {
-      responseType: { type: 'string', message: 'responseType option is required' }
+      responseType: {
+        type: 'string',
+        message: 'responseType option is required'
+      }
     }
   );
 

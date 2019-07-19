@@ -1,6 +1,6 @@
 import expect from 'expect.js';
 
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import Warn from '../../src/helper/warn';
 
@@ -10,7 +10,7 @@ describe('helpers warn', function() {
   });
 
   it('should show a warning in the console', function() {
-    stub(console, 'warn', function(message) {
+    sinon.stub(console, 'warn').callsFake(function(message) {
       expect(message).to.be('the message');
     });
 
@@ -19,7 +19,7 @@ describe('helpers warn', function() {
   });
 
   it('should not show a warning in the console', function() {
-    stub(console, 'warn', function(message) {
+    sinon.stub(console, 'warn').callsFake(function(message) {
       throw Error('warn was called');
     });
 

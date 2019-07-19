@@ -6,19 +6,25 @@
     <script src="//cdn.auth0.com/js/auth0/development/auth0.min.js"></script>
   </head>
   <body class="container">
-
     <input id="login-username" value="" />
     <input id="login-password" type="password" value="" />
     <input id="login-scope" value="" />
     <input id="login-response-type" value="" />
-    <input type="button" class="login-redirect-usernamepassword" value="redirect usernamepassword" />
-    <input type="button" class="login-redirect-authorize" value="redirect authorize" />
+    <input
+      type="button"
+      class="login-redirect-usernamepassword"
+      value="redirect usernamepassword"
+    />
+    <input
+      type="button"
+      class="login-redirect-authorize"
+      value="redirect authorize"
+    />
 
     <div id="err"></div>
     <div id="result"></div>
 
     <script type="text/javascript">
-
       var webAuth = new auth0.WebAuth({
         domain: 'auth0-tests-auth0js.auth0.com',
         redirectUri: window.location.href,
@@ -26,21 +32,24 @@
         leeway: 30
       });
 
-      $('.login-redirect-usernamepassword').click(function (e) {
+      $('.login-redirect-usernamepassword').click(function(e) {
         e.preventDefault();
 
-        webAuth.redirect.loginWithCredentials({
-          connection: 'tests',
-          username: $('#login-username').val(),
-          password: $('#login-password').val(),
-          scope: $('#login-scope').val(),
-          responseType: $('#login-response-type').val()
-        }, function (err) {
-          $('#err').html(JSON.stringify(err));
-        });
+        webAuth.redirect.loginWithCredentials(
+          {
+            connection: 'tests',
+            username: $('#login-username').val(),
+            password: $('#login-password').val(),
+            scope: $('#login-scope').val(),
+            responseType: $('#login-response-type').val()
+          },
+          function(err) {
+            $('#err').html(JSON.stringify(err));
+          }
+        );
       });
 
-      $('.login-redirect-authorize').click(function (e) {
+      $('.login-redirect-authorize').click(function(e) {
         e.preventDefault();
 
         webAuth.authorize({
@@ -49,7 +58,7 @@
         });
       });
 
-      webAuth.parseHash(function (err, result) {
+      webAuth.parseHash(function(err, result) {
         if (err) {
           $('#err').html(JSON.stringify(err));
           $(document.body).append($('<div id="parsed"></div>'));
@@ -61,7 +70,7 @@
         }
       });
 
-      $( document ).ready(function() {
+      $(document).ready(function() {
         $(document.body).append($('<div id="loaded"></div>'));
       });
     </script>

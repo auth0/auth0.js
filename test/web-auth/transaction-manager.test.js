@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub, spy } from 'sinon';
+import sinon from 'sinon';
 
 import TransactionManager from '../../src/web-auth/transaction-manager';
 import random from '../../src/helper/random';
@@ -9,7 +9,7 @@ import * as times from '../../src/helper/times';
 
 context('TransactionManager', function() {
   beforeEach(function() {
-    stub(windowHelper, 'getWindow', function() {
+    sinon.stub(windowHelper, 'getWindow').callsFake(function() {
       return { location: { host: 'myapp.com' } };
     });
     this.tm = new TransactionManager({ domain: 'myapp.auth0.com' });
@@ -19,18 +19,15 @@ context('TransactionManager', function() {
   });
   context('process', function() {
     beforeEach(function() {
-      stub(TransactionManager.prototype, 'generateTransaction', function(
-        appState,
-        state,
-        nonce,
-        lastUsedConnection
-      ) {
-        return {
-          state: state || 'randomState',
-          nonce: nonce || 'randomNonce',
-          lastUsedConnection: lastUsedConnection
-        };
-      });
+      sinon
+        .stub(TransactionManager.prototype, 'generateTransaction')
+        .callsFake(function(appState, state, nonce, lastUsedConnection) {
+          return {
+            state: state || 'randomState',
+            nonce: nonce || 'randomNonce',
+            lastUsedConnection: lastUsedConnection
+          };
+        });
     });
     afterEach(function() {
       TransactionManager.prototype.generateTransaction.restore();
@@ -49,21 +46,25 @@ context('TransactionManager', function() {
     });
     it('generates a nonce when responseType contains id_token and a nonce is not provided', function() {
       TransactionManager.prototype.generateTransaction.restore();
-      stub(TransactionManager.prototype, 'generateTransaction', function(
-        appState,
-        state,
-        nonce,
-        lastUsedConnection,
-        generateNonce
-      ) {
-        expect(generateNonce).to.be(true);
-        return {
-          state: state || 'randomState',
-          nonce: nonce || 'randomNonce',
-          lastUsedConnection: lastUsedConnection
-        };
-      });
-      expect(this.tm.process({ responseType: 'code id_token', state: 'some-state' })).to.be.eql({
+      sinon
+        .stub(TransactionManager.prototype, 'generateTransaction')
+        .callsFake(function(
+          appState,
+          state,
+          nonce,
+          lastUsedConnection,
+          generateNonce
+        ) {
+          expect(generateNonce).to.be(true);
+          return {
+            state: state || 'randomState',
+            nonce: nonce || 'randomNonce',
+            lastUsedConnection: lastUsedConnection
+          };
+        });
+      expect(
+        this.tm.process({ responseType: 'code id_token', state: 'some-state' })
+      ).to.be.eql({
         responseType: 'code id_token',
         state: 'some-state',
         nonce: 'randomNonce'
@@ -71,7 +72,11 @@ context('TransactionManager', function() {
     });
     it('returns same object when there is a state and a nonce', function() {
       expect(
-        this.tm.process({ responseType: 'code id_token', state: 'some-state', nonce: 'some-nonce' })
+        this.tm.process({
+          responseType: 'code id_token',
+          state: 'some-state',
+          nonce: 'some-nonce'
+        })
       ).to.be.eql({
         responseType: 'code id_token',
         state: 'some-state',
@@ -81,10 +86,10 @@ context('TransactionManager', function() {
   });
   context('generateTransaction', function() {
     beforeEach(function() {
-      stub(random, 'randomString', function() {
+      sinon.stub(random, 'randomString').callsFake(function() {
         return 'randomString';
       });
-      stub(Storage.prototype, 'setItem');
+      sinon.stub(Storage.prototype, 'setItem');
     });
     afterEach(function() {
       random.randomString.restore();
@@ -93,7 +98,7 @@ context('TransactionManager', function() {
     context('when inside the hosted login page', function() {
       beforeEach(function() {
         windowHelper.getWindow.restore();
-        stub(windowHelper, 'getWindow', function() {
+        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
           return { location: { host: 'auth.myapp.com' } };
         });
         this.tm = new TransactionManager({ domain: 'auth.myapp.com' });
@@ -105,23 +110,42 @@ context('TransactionManager', function() {
           'providedNonce',
           null
         );
-        expect(result).to.be.eql({ state: 'providedState', nonce: 'providedNonce' });
+        expect(result).to.be.eql({
+          state: 'providedState',
+          nonce: 'providedNonce'
+        });
       });
       it('uses random state/nonce when they are not provided', function() {
         var result = this.tm.generateTransaction(null, null, null, null, true);
-        expect(result).to.be.eql({ state: 'randomString', nonce: 'randomString' });
+        expect(result).to.be.eql({
+          state: 'randomString',
+          nonce: 'randomString'
+        });
       });
       it('does not store transaction', function() {
-        this.tm.generateTransaction('appState', 'providedState', 'providedNonce', null);
+        this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null
+        );
         expect(Storage.prototype.setItem.calledOnce).to.be(false);
       });
     });
     context('when outside the hosted login page', function() {
       it('always stores random state', function() {
-        var result = this.tm.generateTransaction('appState', null, null, null, false);
+        var result = this.tm.generateTransaction(
+          'appState',
+          null,
+          null,
+          null,
+          false
+        );
         expect(result).to.be.eql({ state: 'randomString', nonce: null });
         expect(Storage.prototype.setItem.calledOnce).to.be(true);
-        expect(Storage.prototype.setItem.lastCall.args[0]).to.be('com.auth0.auth.randomString');
+        expect(Storage.prototype.setItem.lastCall.args[0]).to.be(
+          'com.auth0.auth.randomString'
+        );
         expect(Storage.prototype.setItem.lastCall.args[1]).to.be.eql({
           nonce: null,
           appState: 'appState',
@@ -130,10 +154,21 @@ context('TransactionManager', function() {
         });
       });
       it('only stores random nonce when generateNonce is true', function() {
-        var result = this.tm.generateTransaction('appState', null, null, null, true);
-        expect(result).to.be.eql({ state: 'randomString', nonce: 'randomString' });
+        var result = this.tm.generateTransaction(
+          'appState',
+          null,
+          null,
+          null,
+          true
+        );
+        expect(result).to.be.eql({
+          state: 'randomString',
+          nonce: 'randomString'
+        });
         expect(Storage.prototype.setItem.calledOnce).to.be(true);
-        expect(Storage.prototype.setItem.lastCall.args[0]).to.be('com.auth0.auth.randomString');
+        expect(Storage.prototype.setItem.lastCall.args[0]).to.be(
+          'com.auth0.auth.randomString'
+        );
         expect(Storage.prototype.setItem.lastCall.args[1]).to.be.eql({
           nonce: 'randomString',
           appState: 'appState',
@@ -148,9 +183,14 @@ context('TransactionManager', function() {
           'providedNonce',
           null
         );
-        expect(result).to.be.eql({ state: 'providedState', nonce: 'providedNonce' });
+        expect(result).to.be.eql({
+          state: 'providedState',
+          nonce: 'providedNonce'
+        });
         expect(Storage.prototype.setItem.calledOnce).to.be(true);
-        expect(Storage.prototype.setItem.lastCall.args[0]).to.be('com.auth0.auth.providedState');
+        expect(Storage.prototype.setItem.lastCall.args[0]).to.be(
+          'com.auth0.auth.providedState'
+        );
         expect(Storage.prototype.setItem.lastCall.args[1]).to.be.eql({
           nonce: 'providedNonce',
           appState: 'appState',
@@ -165,9 +205,14 @@ context('TransactionManager', function() {
           'providedNonce',
           'lastUsedConnection'
         );
-        expect(result).to.be.eql({ state: 'providedState', nonce: 'providedNonce' });
+        expect(result).to.be.eql({
+          state: 'providedState',
+          nonce: 'providedNonce'
+        });
         expect(Storage.prototype.setItem.calledOnce).to.be(true);
-        expect(Storage.prototype.setItem.lastCall.args[0]).to.be('com.auth0.auth.providedState');
+        expect(Storage.prototype.setItem.lastCall.args[0]).to.be(
+          'com.auth0.auth.providedState'
+        );
         expect(Storage.prototype.setItem.lastCall.args[1]).to.be.eql({
           nonce: 'providedNonce',
           appState: 'appState',
@@ -176,20 +221,29 @@ context('TransactionManager', function() {
         });
       });
       it('stores state with expires option equal to 30 mins', function() {
-        this.tm.generateTransaction('appState', 'providedState', 'providedNonce', null);
+        this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null
+        );
         expect(Storage.prototype.setItem.calledOnce).to.be(true);
-        expect(typeof Storage.prototype.setItem.lastCall.args[2]).to.be('object');
-        expect(Storage.prototype.setItem.lastCall.args[2]).to.be.eql({ expires: times.MINUTES_30 });
+        expect(typeof Storage.prototype.setItem.lastCall.args[2]).to.be(
+          'object'
+        );
+        expect(Storage.prototype.setItem.lastCall.args[2]).to.be.eql({
+          expires: times.MINUTES_30
+        });
       });
     });
   });
   context('getStoredTransaction', function() {
     beforeEach(function() {
-      stub(Storage.prototype, 'getItem', function(state) {
+      sinon.stub(Storage.prototype, 'getItem').callsFake(function(state) {
         expect(state).to.be('com.auth0.auth.providedState');
         return { from: 'storage' };
       });
-      spy(TransactionManager.prototype, 'clearTransaction');
+      sinon.spy(TransactionManager.prototype, 'clearTransaction');
     });
     afterEach(function() {
       Storage.prototype.getItem.restore();
@@ -201,14 +255,14 @@ context('TransactionManager', function() {
     });
     it('removes data from storage', function() {
       this.tm.getStoredTransaction('providedState');
-      expect(TransactionManager.prototype.clearTransaction.firstCall.args[0]).to.be(
-        'providedState'
-      );
+      expect(
+        TransactionManager.prototype.clearTransaction.firstCall.args[0]
+      ).to.be('providedState');
     });
   });
   context('clearTransaction', function() {
     beforeEach(function() {
-      stub(Storage.prototype, 'removeItem');
+      sinon.stub(Storage.prototype, 'removeItem');
     });
     afterEach(function() {
       Storage.prototype.removeItem.restore();
@@ -216,7 +270,9 @@ context('TransactionManager', function() {
     it('removes data from storage', function() {
       this.tm.clearTransaction('providedState');
       expect(Storage.prototype.removeItem.calledOnce).to.be(true);
-      expect(Storage.prototype.removeItem.lastCall.args[0]).to.be('com.auth0.auth.providedState');
+      expect(Storage.prototype.removeItem.lastCall.args[0]).to.be(
+        'com.auth0.auth.providedState'
+      );
     });
   });
 });

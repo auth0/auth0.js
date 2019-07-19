@@ -35,10 +35,16 @@ function Management(options) {
 
   this.baseOptions = options;
 
-  this.baseOptions.headers = { Authorization: 'Bearer ' + this.baseOptions.token };
+  this.baseOptions.headers = {
+    Authorization: 'Bearer ' + this.baseOptions.token
+  };
 
   this.request = new RequestBuilder(this.baseOptions);
-  this.baseOptions.rootUrl = urljoin('https://' + this.baseOptions.domain, 'api', 'v2');
+  this.baseOptions.rootUrl = urljoin(
+    'https://' + this.baseOptions.domain,
+    'api',
+    'v2'
+  );
 }
 
 /**
@@ -58,7 +64,10 @@ function Management(options) {
 Management.prototype.getUser = function(userId, cb) {
   var url;
 
-  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
+  assert.check(userId, {
+    type: 'string',
+    message: 'userId parameter is not valid'
+  });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   url = urljoin(this.baseOptions.rootUrl, 'users', userId);
@@ -79,8 +88,14 @@ Management.prototype.getUser = function(userId, cb) {
 Management.prototype.patchUserMetadata = function(userId, userMetadata, cb) {
   var url;
 
-  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
-  assert.check(userMetadata, { type: 'object', message: 'userMetadata parameter is not valid' });
+  assert.check(userId, {
+    type: 'string',
+    message: 'userId parameter is not valid'
+  });
+  assert.check(userMetadata, {
+    type: 'object',
+    message: 'userMetadata parameter is not valid'
+  });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   url = urljoin(this.baseOptions.rootUrl, 'users', userId);
@@ -103,8 +118,14 @@ Management.prototype.patchUserMetadata = function(userId, userMetadata, cb) {
 Management.prototype.patchUserAttributes = function(userId, user, cb) {
   var url;
 
-  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
-  assert.check(user, { type: 'object', message: 'user parameter is not valid' });
+  assert.check(userId, {
+    type: 'string',
+    message: 'userId parameter is not valid'
+  });
+  assert.check(user, {
+    type: 'object',
+    message: 'user parameter is not valid'
+  });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   url = urljoin(this.baseOptions.rootUrl, 'users', userId);
@@ -127,7 +148,10 @@ Management.prototype.patchUserAttributes = function(userId, user, cb) {
 Management.prototype.linkUser = function(userId, secondaryUserToken, cb) {
   var url;
   /* eslint-disable */
-  assert.check(userId, { type: 'string', message: 'userId parameter is not valid' });
+  assert.check(userId, {
+    type: 'string',
+    message: 'userId parameter is not valid'
+  });
   assert.check(secondaryUserToken, {
     type: 'string',
     message: 'secondaryUserToken parameter is not valid'

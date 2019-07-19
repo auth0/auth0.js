@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub, spy } from 'sinon';
+import sinon from 'sinon';
 
 import StorageHandler from '../../src/helper/storage/handler';
 import Storage from '../../src/helper/storage';
@@ -11,7 +11,7 @@ describe('helpers storage', function() {
   });
   describe('setItem', function() {
     beforeEach(function() {
-      spy(StorageHandler.prototype, 'setItem');
+      sinon.spy(StorageHandler.prototype, 'setItem');
     });
     afterEach(function() {
       StorageHandler.prototype.setItem.restore();
@@ -38,7 +38,7 @@ describe('helpers storage', function() {
       StorageHandler.prototype.getItem.restore();
     });
     it('should call getItem and return string when value is a string', function() {
-      stub(StorageHandler.prototype, 'getItem', function(key) {
+      sinon.stub(StorageHandler.prototype, 'getItem').callsFake(function(key) {
         expect(key).to.be('data');
         return 'the-value';
       });
@@ -46,7 +46,7 @@ describe('helpers storage', function() {
       expect(theValue).to.be('the-value');
     });
     it('should call getItem and return an object when value is a JSON string', function() {
-      stub(StorageHandler.prototype, 'getItem', function(key) {
+      sinon.stub(StorageHandler.prototype, 'getItem').callsFake(function(key) {
         expect(key).to.be('data');
         return JSON.stringify({ theObject: true });
       });
@@ -54,7 +54,7 @@ describe('helpers storage', function() {
       expect(theObject).to.be.eql({ theObject: true });
     });
     it('should call getItem and return undefined when value is undefined', function() {
-      stub(StorageHandler.prototype, 'getItem', function(key) {
+      sinon.stub(StorageHandler.prototype, 'getItem').callsFake(function(key) {
         expect(key).to.be('data');
         return undefined;
       });
@@ -62,7 +62,7 @@ describe('helpers storage', function() {
       expect(nothing).to.be(undefined);
     });
     it('should call getItem and return null when value is null', function() {
-      stub(StorageHandler.prototype, 'getItem', function(key) {
+      sinon.stub(StorageHandler.prototype, 'getItem').callsFake(function(key) {
         expect(key).to.be('data');
         return null;
       });
@@ -72,14 +72,16 @@ describe('helpers storage', function() {
   });
   describe('removeItem', () => {
     beforeEach(function() {
-      spy(StorageHandler.prototype, 'removeItem');
+      sinon.spy(StorageHandler.prototype, 'removeItem');
     });
     afterEach(function() {
       StorageHandler.prototype.removeItem.restore();
     });
     it('should call removeItem', function() {
       storage.removeItem('data');
-      expect(StorageHandler.prototype.removeItem.firstCall.args).to.be.eql(['data']);
+      expect(StorageHandler.prototype.removeItem.firstCall.args).to.be.eql([
+        'data'
+      ]);
     });
   });
 });

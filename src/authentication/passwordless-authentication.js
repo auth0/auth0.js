@@ -20,7 +20,10 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function(options) {
     { type: 'object', message: 'options parameter is not valid' },
     {
       connection: { type: 'string', message: 'connection option is required' },
-      verificationCode: { type: 'string', message: 'verificationCode option is required' },
+      verificationCode: {
+        type: 'string',
+        message: 'verificationCode option is required'
+      },
       phoneNumber: {
         optional: false,
         type: 'string',
@@ -66,7 +69,12 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function(options) {
 
   qString = qs.stringify(params);
 
-  return urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify_redirect', '?' + qString);
+  return urljoin(
+    this.baseOptions.rootUrl,
+    'passwordless',
+    'verify_redirect',
+    '?' + qString
+  );
 };
 
 PasswordlessAuthentication.prototype.start = function(options, cb) {
@@ -101,7 +109,11 @@ PasswordlessAuthentication.prototype.start = function(options, cb) {
           return o.send === 'link' || !o.phoneNumber;
         }
       },
-      authParams: { optional: true, type: 'object', message: 'authParams option is required' }
+      authParams: {
+        optional: true,
+        type: 'object',
+        message: 'authParams option is required'
+      }
     }
   );
   /* eslint-enable */
@@ -111,7 +123,12 @@ PasswordlessAuthentication.prototype.start = function(options, cb) {
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'start');
 
   body = objectHelper
-    .merge(this.baseOptions, ['clientID', 'responseType', 'redirectUri', 'scope'])
+    .merge(this.baseOptions, [
+      'clientID',
+      'responseType',
+      'redirectUri',
+      'scope'
+    ])
     .with(options);
 
   if (body.scope) {
@@ -151,7 +168,10 @@ PasswordlessAuthentication.prototype.verify = function(options, cb) {
     { type: 'object', message: 'options parameter is not valid' },
     {
       connection: { type: 'string', message: 'connection option is required' },
-      verificationCode: { type: 'string', message: 'verificationCode option is required' },
+      verificationCode: {
+        type: 'string',
+        message: 'verificationCode option is required'
+      },
       phoneNumber: {
         optional: false,
         type: 'string',

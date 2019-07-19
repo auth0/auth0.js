@@ -43,10 +43,16 @@ IframeHandler.prototype.init = function() {
       this.eventSourceObject = this.iframe;
       break;
     default:
-      throw new Error('Unsupported event listener type: ' + this.eventListenerType);
+      throw new Error(
+        'Unsupported event listener type: ' + this.eventListenerType
+      );
   }
 
-  this.eventSourceObject.addEventListener(this.eventListenerType, this.proxyEventListener, false);
+  this.eventSourceObject.addEventListener(
+    this.eventListenerType,
+    this.proxyEventListener,
+    false
+  );
 
   _window.document.body.appendChild(this.iframe);
 

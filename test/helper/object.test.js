@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import objectAssign from '../../src/helper/object-assign';
 import objectHelper from '../../src/helper/object';
@@ -131,7 +131,7 @@ describe('helpers', function() {
     });
 
     it('shold merge objects attributes with polyfill', function() {
-      stub(objectAssign, 'get', function() {
+      sinon.stub(objectAssign, 'get').callsFake(function() {
         return objectAssign.objectAssignPolyfill;
       });
 
@@ -246,7 +246,9 @@ describe('helpers', function() {
         attrC: 'attribute_C'
       };
 
-      var newObject = objectHelper.merge(object1, ['attr1', 'attr2']).with(object2);
+      var newObject = objectHelper
+        .merge(object1, ['attr1', 'attr2'])
+        .with(object2);
 
       expect(newObject).to.eql({
         attr1: 'attribute_1',
@@ -282,7 +284,9 @@ describe('helpers', function() {
         attrC: 'attribute_C'
       };
 
-      var newObject = objectHelper.merge(object1).with(object2, ['attrA', 'attrC']);
+      var newObject = objectHelper
+        .merge(object1)
+        .with(object2, ['attrA', 'attrC']);
 
       expect(newObject).to.eql({
         attr1: 'attribute_1',
@@ -514,7 +518,9 @@ describe('helpers', function() {
         }
       };
 
-      var newObject = objectHelper.toCamelCase(object, [], { keepOriginal: true });
+      var newObject = objectHelper.toCamelCase(object, [], {
+        keepOriginal: true
+      });
 
       expect(newObject).to.eql({
         attrName1: 'attribute_1',
@@ -549,8 +555,12 @@ describe('helpers', function() {
     it('do not change a property if it already exists in the object', function() {
       var object = { attrName1: 'attr1', attr_name_1: 'attr_1' };
       var object2 = { attr_name_1: 'attr_1', attrName1: 'attr1' };
-      var newObject = objectHelper.toCamelCase(object, [], { keepOriginal: true });
-      var newObject2 = objectHelper.toCamelCase(object2, [], { keepOriginal: true });
+      var newObject = objectHelper.toCamelCase(object, [], {
+        keepOriginal: true
+      });
+      var newObject2 = objectHelper.toCamelCase(object2, [], {
+        keepOriginal: true
+      });
       expect(newObject).to.eql({ attrName1: 'attr1', attr_name_1: 'attr_1' });
       expect(newObject2).to.eql({ attr_name_1: 'attr_1', attrName1: 'attr1' });
     });
@@ -567,7 +577,9 @@ describe('helpers', function() {
     });
     it('should use add the `port` when available', function() {
       var url = 'https://localhost:3000/example';
-      expect(objectHelper.getOriginFromUrl(url)).to.be('https://localhost:3000');
+      expect(objectHelper.getOriginFromUrl(url)).to.be(
+        'https://localhost:3000'
+      );
     });
   });
   describe('getLocationFromUrl', function() {

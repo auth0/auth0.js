@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import WebAuth from '../../src/web-auth';
 import SilentAuthenticationHandler from '../../src/web-auth/silent-authentication-handler';
@@ -24,7 +24,7 @@ describe('handlers silent-authentication-handler', function() {
       delete global.window;
     });
     it('should return correct value for usePostMessage=false', function(done) {
-      stub(IframeHandler.prototype, 'init', function() {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         iframeHandler.callback = this.callback;
       });
       var sah = new SilentAuthenticationHandler({});
@@ -41,7 +41,7 @@ describe('handlers silent-authentication-handler', function() {
     });
     context('should return correct value for usePostMessage=true', function() {
       it('when the event payload is an object with a `hash` property', function(done) {
-        stub(IframeHandler.prototype, 'init', function() {
+        sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
           iframeHandler.callback = this.callback;
         });
         var sah = new SilentAuthenticationHandler({});
@@ -55,7 +55,7 @@ describe('handlers silent-authentication-handler', function() {
         eventEmitter.emitEvent({ event: { data: { hash: 'my-hash-data-2' } } });
       });
       it('when the event payload is an object (parsed hash)', function(done) {
-        stub(IframeHandler.prototype, 'init', function() {
+        sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
           iframeHandler.callback = this.callback;
         });
         var sah = new SilentAuthenticationHandler({});
@@ -69,7 +69,7 @@ describe('handlers silent-authentication-handler', function() {
         eventEmitter.emitEvent({ event: { data: { foo: 'bar' } } });
       });
       it('when the event payload is a string', function(done) {
-        stub(IframeHandler.prototype, 'init', function() {
+        sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
           iframeHandler.callback = this.callback;
         });
         var sah = new SilentAuthenticationHandler({});
@@ -322,7 +322,9 @@ describe('handlers silent-authentication-handler', function() {
     });
 
     it('sets postMessageOrigin from fallback (with port)', function() {
-      global.window = { location: { protocol: 'https:', hostname: 'unit-test', port: 1234 } };
+      global.window = {
+        location: { protocol: 'https:', hostname: 'unit-test', port: 1234 }
+      };
 
       var sah = new SilentAuthenticationHandler({});
 
@@ -330,7 +332,9 @@ describe('handlers silent-authentication-handler', function() {
     });
 
     it('sets postMessageOrigin from fallback (without port)', function() {
-      global.window = { location: { protocol: 'https:', hostname: 'unit-test' } };
+      global.window = {
+        location: { protocol: 'https:', hostname: 'unit-test' }
+      };
 
       var sah = new SilentAuthenticationHandler({});
 

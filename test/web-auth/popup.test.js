@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub, spy } from 'sinon';
+import sinon from 'sinon';
 import URL from 'url';
 import WinChan from 'winchan';
 
@@ -15,9 +15,11 @@ import TransactionManager from '../../src/web-auth/transaction-manager';
 
 describe('auth0.WebAuth.popup', function() {
   beforeEach(function() {
-    stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
-      return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
-    });
+    sinon
+      .stub(TransactionManager.prototype, 'generateTransaction')
+      .callsFake(function(appState, state, nonce) {
+        return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
+      });
   });
   afterEach(function() {
     TransactionManager.prototype.generateTransaction.restore();
@@ -41,7 +43,9 @@ describe('auth0.WebAuth.popup', function() {
     });
     it('should return not a new instance', function() {
       var handler1 = this.auth0.popup.getPopupHandler({});
-      var handler2 = this.auth0.popup.getPopupHandler({ popupHandler: handler1 });
+      var handler2 = this.auth0.popup.getPopupHandler({
+        popupHandler: handler1
+      });
       expect(handler1).to.be(handler2);
     });
   });
@@ -52,13 +56,13 @@ describe('auth0.WebAuth.popup', function() {
     });
 
     it('should call preload', function() {
-      var preloadStub = stub(PopupHandler.prototype, 'preload');
+      var preloadStub = sinon.stub(PopupHandler.prototype, 'preload');
       this.auth0.popup.getPopupHandler({}, true);
       expect(preloadStub.called).to.be(true);
     });
 
     it('should not call preload', function() {
-      var preloadStub = stub(PopupHandler.prototype, 'preload');
+      var preloadStub = sinon.stub(PopupHandler.prototype, 'preload');
       this.auth0.popup.getPopupHandler({}, false);
       expect(preloadStub.called).to.be(false);
     });
@@ -89,7 +93,9 @@ describe('auth0.WebAuth.popup', function() {
       global.window.open = function(url, name, windowFeatures) {
         expect(url).to.eql('about:blank');
         expect(name).to.eql('auth0_signup_popup');
-        expect(windowFeatures).to.eql('width=500,height=600,left=1250,top=1200');
+        expect(windowFeatures).to.eql(
+          'width=500,height=600,left=1250,top=1200'
+        );
 
         return { close: function() {} };
       };
@@ -116,7 +122,7 @@ describe('auth0.WebAuth.popup', function() {
     });
 
     it('should default scope to openid', function(done) {
-      stub(PopupHandler.prototype, 'load', function(url) {
+      sinon.stub(PopupHandler.prototype, 'load').callsFake(function(url) {
         expect(url).to.be(
           'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&state=123&nonce=456&scope=openid'
         );
@@ -124,10 +130,12 @@ describe('auth0.WebAuth.popup', function() {
         TransactionManager.prototype.process.restore();
         done();
       });
-      stub(Storage.prototype, 'setItem', function() {});
-      stub(TransactionManager.prototype, 'process', function(options) {
-        return options;
-      });
+      sinon.stub(Storage.prototype, 'setItem').callsFake(function() {});
+      sinon
+        .stub(TransactionManager.prototype, 'process')
+        .callsFake(function(options) {
+          return options;
+        });
 
       this.auth0.popup.authorize({
         connection: 'the_connection',
@@ -138,16 +146,18 @@ describe('auth0.WebAuth.popup', function() {
     });
 
     it('should open the popup a with the proper parameters', function(done) {
-      stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
-        expect(relayUrl).to.be('https://me.auth0.com/relay.html');
-        expect(options.popupOptions.height).to.be(300);
-        expect(options.popupOptions.width).to.be(250);
-        expect(options.popupOptions).to.not.have.property('extra');
-        cb(null, {
-          email_verified: false,
-          email: 'me@example.com'
+      sinon
+        .stub(PopupHandler.prototype, 'load')
+        .callsFake(function(url, relayUrl, options, cb) {
+          expect(relayUrl).to.be('https://me.auth0.com/relay.html');
+          expect(options.popupOptions.height).to.be(300);
+          expect(options.popupOptions.width).to.be(250);
+          expect(options.popupOptions).to.not.have.property('extra');
+          cb(null, {
+            email_verified: false,
+            email: 'me@example.com'
+          });
         });
-      });
 
       this.auth0.popup.authorize(
         {
@@ -168,24 +178,26 @@ describe('auth0.WebAuth.popup', function() {
     });
 
     it('should open the authorize page in a popup', function(done) {
-      stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
-        var components = URL.parse(url, true);
-        expect(components.protocol).to.be('https:');
-        expect(components.host).to.be('me.auth0.com');
-        expect(components.pathname).to.be('/authorize');
-        expect(components.query.client_id).to.be('...');
-        expect(components.query.response_type).to.be('id_token');
-        expect(components.query.connection).to.be('the_connection');
-        expect(components.query.nonce).to.be('123');
-        expect(components.query.state).to.be('456');
-        expect(components.query.owp).to.be('true');
-        expect(relayUrl).to.be('https://me.auth0.com/relay.html');
-        expect(options).to.eql({});
-        cb(null, {
-          email_verified: false,
-          email: 'me@example.com'
+      sinon
+        .stub(PopupHandler.prototype, 'load')
+        .callsFake(function(url, relayUrl, options, cb) {
+          var components = URL.parse(url, true);
+          expect(components.protocol).to.be('https:');
+          expect(components.host).to.be('me.auth0.com');
+          expect(components.pathname).to.be('/authorize');
+          expect(components.query.client_id).to.be('...');
+          expect(components.query.response_type).to.be('id_token');
+          expect(components.query.connection).to.be('the_connection');
+          expect(components.query.nonce).to.be('123');
+          expect(components.query.state).to.be('456');
+          expect(components.query.owp).to.be('true');
+          expect(relayUrl).to.be('https://me.auth0.com/relay.html');
+          expect(options).to.eql({});
+          cb(null, {
+            email_verified: false,
+            email: 'me@example.com'
+          });
         });
-      });
 
       this.auth0.popup.authorize(
         {
@@ -238,15 +250,19 @@ describe('auth0.WebAuth.popup', function() {
         redirectUri: 'http://page.com/callback',
         popup: true
       };
-      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
-        expect(options).to.be.eql(expectedOptions);
-        expect(cb()).to.be('cb');
-        done();
-      });
-      stub(TransactionManager.prototype, 'process', function(options) {
-        expect(options).to.be.eql(expectedOptions);
-        return options;
-      });
+      sinon
+        .stub(CrossOriginAuthentication.prototype, 'login')
+        .callsFake(function(options, cb) {
+          expect(options).to.be.eql(expectedOptions);
+          expect(cb()).to.be('cb');
+          done();
+        });
+      sinon
+        .stub(TransactionManager.prototype, 'process')
+        .callsFake(function(options) {
+          expect(options).to.be.eql(expectedOptions);
+          return options;
+        });
       this.auth0.popup.loginWithCredentials(inputOptions, function() {
         return 'cb';
       });
@@ -269,7 +285,7 @@ describe('auth0.WebAuth.popup', function() {
     });
 
     it('(phone) should do the redirections in the popup', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect([
           'https://me.auth0.com/passwordless/verify',
           'https://me.auth0.com/oauth/ro'
@@ -337,7 +353,7 @@ describe('auth0.WebAuth.popup', function() {
     });
 
     it('(email) should do the redirections in the popup', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect([
           'https://me.auth0.com/passwordless/verify',
           'https://me.auth0.com/oauth/ro'
@@ -412,7 +428,7 @@ describe('auth0.WebAuth.popup', function() {
         description: 'The error description.'
       };
 
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.eql('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
@@ -458,7 +474,7 @@ describe('auth0.WebAuth.popup', function() {
         _sendTelemetry: false
       });
 
-      stub(windowHandler, 'getWindow', function() {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
         return {
           screenX: 500,
           screenY: 500,
@@ -472,24 +488,26 @@ describe('auth0.WebAuth.popup', function() {
         };
       });
 
-      stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
-        expect(url).to.be('https://me.auth0.com/sso_dbconnection_popup/...');
-        expect(relayUrl).to.be('https://me.auth0.com/relay.html');
-        expect(options).to.eql({
-          params: {
-            clientID: '...',
-            domain: 'me.auth0.com',
-            options: {
-              connection: 'the_connection',
-              username: 'me@example.com',
-              password: '123456',
-              scope: 'openid'
+      sinon
+        .stub(PopupHandler.prototype, 'load')
+        .callsFake(function(url, relayUrl, options, cb) {
+          expect(url).to.be('https://me.auth0.com/sso_dbconnection_popup/...');
+          expect(relayUrl).to.be('https://me.auth0.com/relay.html');
+          expect(options).to.eql({
+            params: {
+              clientID: '...',
+              domain: 'me.auth0.com',
+              options: {
+                connection: 'the_connection',
+                username: 'me@example.com',
+                password: '123456',
+                scope: 'openid'
+              }
             }
-          }
-        });
+          });
 
-        cb();
-      });
+          cb();
+        });
     });
 
     afterEach(function() {
@@ -511,7 +529,7 @@ describe('auth0.WebAuth.popup', function() {
     });
 
     it('should call db-connection signup with all the options', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.eql('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
@@ -545,16 +563,20 @@ describe('auth0.WebAuth.popup', function() {
         responseType: 'token',
         redirectUri: 'http://page.com/callback'
       };
-      stub(TransactionManager.prototype, 'process', function(options) {
-        delete options.popupHandler;
-        expect(options).to.be.eql(expectedOptions);
-        return options;
-      });
-      stub(CrossOriginAuthentication.prototype, 'login', function(options, cb) {
-        delete options.popupHandler;
-        expect(options).to.be.eql(expectedOptions);
-        cb();
-      });
+      sinon
+        .stub(TransactionManager.prototype, 'process')
+        .callsFake(function(options) {
+          delete options.popupHandler;
+          expect(options).to.be.eql(expectedOptions);
+          return options;
+        });
+      sinon
+        .stub(CrossOriginAuthentication.prototype, 'login')
+        .callsFake(function(options, cb) {
+          delete options.popupHandler;
+          expect(options).to.be.eql(expectedOptions);
+          cb();
+        });
 
       this.auth0.popup.signupAndLogin(
         {
@@ -570,7 +592,7 @@ describe('auth0.WebAuth.popup', function() {
     });
 
     it('should propagate signup errors', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
@@ -628,7 +650,7 @@ describe('auth0.WebAuth.popup', function() {
 
   context('callback', function() {
     beforeEach(function() {
-      stub(windowHandler, 'getWindow', function() {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
         return {
           opener: {}
         };
@@ -647,11 +669,13 @@ describe('auth0.WebAuth.popup', function() {
       windowHandler.getWindow.restore();
     });
     it('sends parseHash result to the callback when there is no error', function(done) {
-      stub(this.auth0, 'parseHash', function(options, cb) {
+      sinon.stub(this.auth0, 'parseHash').callsFake(function(options, cb) {
         cb(null, { accessToken: 'accessToken' });
       });
-      stub(WinChan, 'onOpen', function(onOpenCallback) {
-        onOpenCallback('https://baseoptions.popupOrigin.com', null, function(result) {
+      sinon.stub(WinChan, 'onOpen').callsFake(function(onOpenCallback) {
+        onOpenCallback('https://baseoptions.popupOrigin.com', null, function(
+          result
+        ) {
           expect(result).to.be.eql({ accessToken: 'accessToken' });
           done();
         });
@@ -660,11 +684,13 @@ describe('auth0.WebAuth.popup', function() {
       this.auth0.popup.callback();
     });
     it('sends parseHash result to the callback when there is an error', function(done) {
-      stub(this.auth0, 'parseHash', function(options, cb) {
+      sinon.stub(this.auth0, 'parseHash').callsFake(function(options, cb) {
         cb({ error: 'any_error', error_description: 'a big error message' });
       });
-      stub(WinChan, 'onOpen', function(onOpenCallback) {
-        onOpenCallback('https://baseoptions.popupOrigin.com', null, function(result) {
+      sinon.stub(WinChan, 'onOpen').callsFake(function(onOpenCallback) {
+        onOpenCallback('https://baseoptions.popupOrigin.com', null, function(
+          result
+        ) {
           expect(result).to.be.eql({
             error: 'any_error',
             error_description: 'a big error message'
@@ -676,8 +702,10 @@ describe('auth0.WebAuth.popup', function() {
       this.auth0.popup.callback();
     });
     it('validates origin with baseOptions.popupOrigin', function(done) {
-      stub(WinChan, 'onOpen', function(onOpenCallback) {
-        onOpenCallback('https://notBaseOptions.popupOrigin.com', null, function(result) {
+      sinon.stub(WinChan, 'onOpen').callsFake(function(onOpenCallback) {
+        onOpenCallback('https://notBaseOptions.popupOrigin.com', null, function(
+          result
+        ) {
           expect(result).to.be.eql({
             error: 'origin_mismatch',
             error_description:
@@ -690,8 +718,10 @@ describe('auth0.WebAuth.popup', function() {
       this.auth0.popup.callback();
     });
     it('validates origin with options.popupOrigin', function(done) {
-      stub(WinChan, 'onOpen', function(onOpenCallback) {
-        onOpenCallback('https://notOptions.popupOrigin.com', null, function(result) {
+      sinon.stub(WinChan, 'onOpen').callsFake(function(onOpenCallback) {
+        onOpenCallback('https://notOptions.popupOrigin.com', null, function(
+          result
+        ) {
           expect(result).to.be.eql({
             error: 'origin_mismatch',
             error_description:
@@ -701,7 +731,9 @@ describe('auth0.WebAuth.popup', function() {
         });
       });
 
-      this.auth0.popup.callback({ popupOrigin: 'https://options.popupOrigin.com' });
+      this.auth0.popup.callback({
+        popupOrigin: 'https://options.popupOrigin.com'
+      });
     });
     it('validates origin with windowHelper.getOrigin()', function(done) {
       var auth0 = new WebAuth({
@@ -711,11 +743,13 @@ describe('auth0.WebAuth.popup', function() {
         responseType: 'id_token',
         _sendTelemetry: false
       });
-      stub(windowHandler, 'getOrigin', function() {
+      sinon.stub(windowHandler, 'getOrigin').callsFake(function() {
         return 'https://window.popupOrigin.com';
       });
-      stub(WinChan, 'onOpen', function(onOpenCallback) {
-        onOpenCallback('https://notWindow.popupOrigin.com', null, function(result) {
+      sinon.stub(WinChan, 'onOpen').callsFake(function(onOpenCallback) {
+        onOpenCallback('https://notWindow.popupOrigin.com', null, function(
+          result
+        ) {
           expect(result).to.be.eql({
             error: 'origin_mismatch',
             error_description:
@@ -739,10 +773,10 @@ describe('auth0.WebAuth.popup', function() {
           }
         }
       };
-      stub(windowHandler, 'getWindow', function() {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
         return theWindow;
       });
-      stub(windowHandler, 'getOrigin', function() {
+      sinon.stub(windowHandler, 'getOrigin').callsFake(function() {
         return 'https://window.popupOrigin.com';
       });
       var auth0 = new WebAuth({

@@ -1,6 +1,6 @@
 import expect from 'expect.js';
 
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import RequestMock from '../mock/request-mock';
 
@@ -75,7 +75,7 @@ describe('auth0.Management', function() {
     });
 
     it('should fetch the user from the api', function(done) {
-      stub(request, 'get', function(url) {
+      sinon.stub(request, 'get').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/api/v2/users/auth0|123');
         return new RequestMock({
           headers: {
@@ -152,7 +152,7 @@ describe('auth0.Management', function() {
     });
 
     it('should fetch the user from the api', function(done) {
-      stub(request, 'patch', function(url) {
+      sinon.stub(request, 'patch').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/api/v2/users/auth0|123');
         return new RequestMock({
           body: {
@@ -174,7 +174,10 @@ describe('auth0.Management', function() {
         });
       });
 
-      this.auth0.patchUserMetadata('auth0|123', { role: 'admin' }, function(err, user) {
+      this.auth0.patchUserMetadata('auth0|123', { role: 'admin' }, function(
+        err,
+        user
+      ) {
         expect(err).to.be(null);
         expect(user).to.eql({
           user_id: 'auth0|123',
@@ -234,7 +237,7 @@ describe('auth0.Management', function() {
     });
 
     it('should fetch the user from the api', function(done) {
-      stub(request, 'patch', function(url) {
+      sinon.stub(request, 'patch').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/api/v2/users/auth0|123');
         return new RequestMock({
           body: {
@@ -256,15 +259,19 @@ describe('auth0.Management', function() {
         });
       });
 
-      this.auth0.patchUserAttributes('auth0|123', { name: 'test name' }, function(err, user) {
-        expect(err).to.be(null);
-        expect(user).to.eql({
-          user_id: 'auth0|123',
-          email: 'me@example.com',
-          name: 'test name'
-        });
-        done();
-      });
+      this.auth0.patchUserAttributes(
+        'auth0|123',
+        { name: 'test name' },
+        function(err, user) {
+          expect(err).to.be(null);
+          expect(user).to.eql({
+            user_id: 'auth0|123',
+            email: 'me@example.com',
+            name: 'test name'
+          });
+          done();
+        }
+      );
     });
   });
 
@@ -316,8 +323,10 @@ describe('auth0.Management', function() {
     });
 
     it('should fetch the user from the api', function(done) {
-      stub(request, 'post', function(url) {
-        expect(url).to.be('https://me.auth0.com/api/v2/users/twitter|191919191919191/identities');
+      sinon.stub(request, 'post').callsFake(function(url) {
+        expect(url).to.be(
+          'https://me.auth0.com/api/v2/users/twitter|191919191919191/identities'
+        );
         return new RequestMock({
           body: {
             link_with: 'the_second_token'
@@ -352,29 +361,33 @@ describe('auth0.Management', function() {
         });
       });
 
-      this.auth0.linkUser('twitter|191919191919191', 'the_second_token', function(err, user) {
-        expect(err).to.be(null);
-        expect(user).to.eql([
-          {
-            connection: 'twitter',
-            user_id: '191919191919191',
-            provider: 'twitter',
-            profile_data: {
-              email: '',
-              email_verified: false,
-              name: '',
-              username: 'johndoe',
-              given_name: '',
-              phone_number: '',
-              phone_verified: false,
-              family_name: ''
-            },
-            is_social: false,
-            access_token: ''
-          }
-        ]);
-        done();
-      });
+      this.auth0.linkUser(
+        'twitter|191919191919191',
+        'the_second_token',
+        function(err, user) {
+          expect(err).to.be(null);
+          expect(user).to.eql([
+            {
+              connection: 'twitter',
+              user_id: '191919191919191',
+              provider: 'twitter',
+              profile_data: {
+                email: '',
+                email_verified: false,
+                name: '',
+                username: 'johndoe',
+                given_name: '',
+                phone_number: '',
+                phone_verified: false,
+                family_name: ''
+              },
+              is_social: false,
+              access_token: ''
+            }
+          ]);
+          done();
+        }
+      );
     });
   });
 });

@@ -43,11 +43,27 @@ function Authentication(auth0, options) {
     {
       domain: { type: 'string', message: 'domain option is required' },
       clientID: { type: 'string', message: 'clientID option is required' },
-      responseType: { optional: true, type: 'string', message: 'responseType is not valid' },
-      responseMode: { optional: true, type: 'string', message: 'responseMode is not valid' },
-      redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
+      responseType: {
+        optional: true,
+        type: 'string',
+        message: 'responseType is not valid'
+      },
+      responseMode: {
+        optional: true,
+        type: 'string',
+        message: 'responseMode is not valid'
+      },
+      redirectUri: {
+        optional: true,
+        type: 'string',
+        message: 'redirectUri is not valid'
+      },
       scope: { optional: true, type: 'string', message: 'scope is not valid' },
-      audience: { optional: true, type: 'string', message: 'audience is not valid' },
+      audience: {
+        optional: true,
+        type: 'string',
+        message: 'audience is not valid'
+      },
       _disableDeprecationWarnings: {
         optional: true,
         type: 'boolean',
@@ -69,13 +85,18 @@ function Authentication(auth0, options) {
 
   this.baseOptions = options;
   this.baseOptions._sendTelemetry =
-    this.baseOptions._sendTelemetry === false ? this.baseOptions._sendTelemetry : true;
+    this.baseOptions._sendTelemetry === false
+      ? this.baseOptions._sendTelemetry
+      : true;
 
   this.baseOptions.rootUrl = 'https://' + this.baseOptions.domain;
 
   this.request = new RequestBuilder(this.baseOptions);
 
-  this.passwordless = new PasswordlessAuthentication(this.request, this.baseOptions);
+  this.passwordless = new PasswordlessAuthentication(
+    this.request,
+    this.baseOptions
+  );
   this.dbConnection = new DBConnection(this.request, this.baseOptions);
 
   this.warn = new Warn({
@@ -104,7 +125,10 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
   var params;
   var qString;
 
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' });
+  assert.check(options, {
+    type: 'object',
+    message: 'options parameter is not valid'
+  });
 
   params = objectHelper
     .merge(this.baseOptions, [
@@ -123,17 +147,35 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
     { type: 'object', message: 'options parameter is not valid' },
     {
       clientID: { type: 'string', message: 'clientID option is required' },
-      redirectUri: { optional: true, type: 'string', message: 'redirectUri option is required' },
-      responseType: { type: 'string', message: 'responseType option is required' },
+      redirectUri: {
+        optional: true,
+        type: 'string',
+        message: 'redirectUri option is required'
+      },
+      responseType: {
+        type: 'string',
+        message: 'responseType option is required'
+      },
       nonce: {
         type: 'string',
         message: 'nonce option is required',
         condition: function(o) {
-          return o.responseType.indexOf('code') === -1 && o.responseType.indexOf('id_token') !== -1;
+          return (
+            o.responseType.indexOf('code') === -1 &&
+            o.responseType.indexOf('id_token') !== -1
+          );
         }
       },
-      scope: { optional: true, type: 'string', message: 'scope option is required' },
-      audience: { optional: true, type: 'string', message: 'audience option is required' }
+      scope: {
+        optional: true,
+        type: 'string',
+        message: 'scope option is required'
+      },
+      audience: {
+        optional: true,
+        type: 'string',
+        message: 'audience option is required'
+      }
     }
   );
   /* eslint-enable */
@@ -187,7 +229,9 @@ Authentication.prototype.buildLogoutUrl = function(options) {
     message: 'options parameter is not valid'
   });
 
-  params = objectHelper.merge(this.baseOptions, ['clientID']).with(options || {});
+  params = objectHelper
+    .merge(this.baseOptions, ['clientID'])
+    .with(options || {});
 
   // eslint-disable-next-line
   if (this.baseOptions._sendTelemetry) {
@@ -248,8 +292,16 @@ Authentication.prototype.loginWithDefaultDirectory = function(options, cb) {
     {
       username: { type: 'string', message: 'username option is required' },
       password: { type: 'string', message: 'password option is required' },
-      scope: { optional: true, type: 'string', message: 'scope option is required' },
-      audience: { optional: true, type: 'string', message: 'audience option is required' }
+      scope: {
+        optional: true,
+        type: 'string',
+        message: 'scope option is required'
+      },
+      audience: {
+        optional: true,
+        type: 'string',
+        message: 'audience option is required'
+      }
     }
   );
 
@@ -279,8 +331,16 @@ Authentication.prototype.login = function(options, cb) {
       username: { type: 'string', message: 'username option is required' },
       password: { type: 'string', message: 'password option is required' },
       realm: { type: 'string', message: 'realm option is required' },
-      scope: { optional: true, type: 'string', message: 'scope option is required' },
-      audience: { optional: true, type: 'string', message: 'audience option is required' }
+      scope: {
+        optional: true,
+        type: 'string',
+        message: 'scope option is required'
+      },
+      audience: {
+        optional: true,
+        type: 'string',
+        message: 'audience option is required'
+      }
     }
   );
 
@@ -299,12 +359,17 @@ Authentication.prototype.oauthToken = function(options, cb) {
   var url;
   var body;
 
-  assert.check(options, { type: 'object', message: 'options parameter is not valid' });
+  assert.check(options, {
+    type: 'object',
+    message: 'options parameter is not valid'
+  });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   url = urljoin(this.baseOptions.rootUrl, 'oauth', 'token');
 
-  body = objectHelper.merge(this.baseOptions, ['clientID', 'scope', 'audience']).with(options);
+  body = objectHelper
+    .merge(this.baseOptions, ['clientID', 'scope', 'audience'])
+    .with(options);
 
   assert.check(
     body,
@@ -312,8 +377,16 @@ Authentication.prototype.oauthToken = function(options, cb) {
     {
       clientID: { type: 'string', message: 'clientID option is required' },
       grantType: { type: 'string', message: 'grantType option is required' },
-      scope: { optional: true, type: 'string', message: 'scope option is required' },
-      audience: { optional: true, type: 'string', message: 'audience option is required' }
+      scope: {
+        optional: true,
+        type: 'string',
+        message: 'scope option is required'
+      },
+      audience: {
+        optional: true,
+        type: 'string',
+        message: 'audience option is required'
+      }
     }
   );
 
@@ -353,7 +426,11 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
       username: { type: 'string', message: 'username option is required' },
       password: { type: 'string', message: 'password option is required' },
       connection: { type: 'string', message: 'connection option is required' },
-      scope: { optional: true, type: 'string', message: 'scope option is required' }
+      scope: {
+        optional: true,
+        type: 'string',
+        message: 'scope option is required'
+      }
     }
   );
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
@@ -386,7 +463,8 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
   if (!this.auth0) {
     this.auth0 = new WebAuth(this.baseOptions);
   }
-  var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
+  var isHostedLoginPage =
+    windowHelper.getWindow().location.host === this.baseOptions.domain;
   if (isHostedLoginPage) {
     return this.auth0._universalLogin.getSSOData(withActiveDirectories, cb);
   }
@@ -426,7 +504,8 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
           name: ssodataInformation.lastUsedConnection
         },
         lastUsedUserID: result.idTokenPayload.sub,
-        lastUsedUsername: result.idTokenPayload.email || result.idTokenPayload.name,
+        lastUsedUsername:
+          result.idTokenPayload.email || result.idTokenPayload.name,
         lastUsedClientID: clientId,
         sessionClients: [clientId],
         sso: true
@@ -452,7 +531,10 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
 Authentication.prototype.userInfo = function(accessToken, cb) {
   var url;
 
-  assert.check(accessToken, { type: 'string', message: 'accessToken parameter is not valid' });
+  assert.check(accessToken, {
+    type: 'string',
+    message: 'accessToken parameter is not valid'
+  });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   url = urljoin(this.baseOptions.rootUrl, 'userinfo');

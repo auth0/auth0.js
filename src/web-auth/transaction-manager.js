@@ -18,7 +18,8 @@ TransactionManager.prototype.process = function(options) {
     throw new Error('responseType is required');
   }
   var lastUsedConnection = options.realm || options.connection;
-  var responseTypeIncludesIdToken = options.responseType.indexOf('id_token') !== -1;
+  var responseTypeIncludesIdToken =
+    options.responseType.indexOf('id_token') !== -1;
 
   var transaction = this.generateTransaction(
     options.appState,
@@ -47,7 +48,8 @@ TransactionManager.prototype.generateTransaction = function(
 ) {
   state = state || random.randomString(this.keyLength);
   nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
-  var isHostedLoginPage = windowHelper.getWindow().location.host === this.options.domain;
+  var isHostedLoginPage =
+    windowHelper.getWindow().location.host === this.options.domain;
   if (!isHostedLoginPage) {
     this.storage.setItem(
       this.namespace + state,

@@ -40,14 +40,42 @@ function WebAuth(options) {
     {
       domain: { type: 'string', message: 'domain option is required' },
       clientID: { type: 'string', message: 'clientID option is required' },
-      responseType: { optional: true, type: 'string', message: 'responseType is not valid' },
-      responseMode: { optional: true, type: 'string', message: 'responseMode is not valid' },
-      redirectUri: { optional: true, type: 'string', message: 'redirectUri is not valid' },
+      responseType: {
+        optional: true,
+        type: 'string',
+        message: 'responseType is not valid'
+      },
+      responseMode: {
+        optional: true,
+        type: 'string',
+        message: 'responseMode is not valid'
+      },
+      redirectUri: {
+        optional: true,
+        type: 'string',
+        message: 'redirectUri is not valid'
+      },
       scope: { optional: true, type: 'string', message: 'scope is not valid' },
-      audience: { optional: true, type: 'string', message: 'audience is not valid' },
-      popupOrigin: { optional: true, type: 'string', message: 'popupOrigin is not valid' },
-      leeway: { optional: true, type: 'number', message: 'leeway is not valid' },
-      plugins: { optional: true, type: 'array', message: 'plugins is not valid' },
+      audience: {
+        optional: true,
+        type: 'string',
+        message: 'audience is not valid'
+      },
+      popupOrigin: {
+        optional: true,
+        type: 'string',
+        message: 'popupOrigin is not valid'
+      },
+      leeway: {
+        optional: true,
+        type: 'number',
+        message: 'leeway is not valid'
+      },
+      plugins: {
+        optional: true,
+        type: 'array',
+        message: 'plugins is not valid'
+      },
       _disableDeprecationWarnings: {
         optional: true,
         type: 'boolean',
@@ -76,23 +104,36 @@ function WebAuth(options) {
       options.overrides,
       { type: 'object', message: 'overrides option is not valid' },
       {
-        __tenant: { optional: true, type: 'string', message: '__tenant option is required' },
+        __tenant: {
+          optional: true,
+          type: 'string',
+          message: '__tenant option is required'
+        },
         __token_issuer: {
           optional: true,
           type: 'string',
           message: '__token_issuer option is required'
         },
-        __jwks_uri: { optional: true, type: 'string', message: '__jwks_uri is required' }
+        __jwks_uri: {
+          optional: true,
+          type: 'string',
+          message: '__jwks_uri is required'
+        }
       }
     );
   }
   /* eslint-enable */
 
   this.baseOptions = options;
-  this.baseOptions.plugins = new PluginHandler(this, this.baseOptions.plugins || []);
+  this.baseOptions.plugins = new PluginHandler(
+    this,
+    this.baseOptions.plugins || []
+  );
 
   this.baseOptions._sendTelemetry =
-    this.baseOptions._sendTelemetry === false ? this.baseOptions._sendTelemetry : true;
+    this.baseOptions._sendTelemetry === false
+      ? this.baseOptions._sendTelemetry
+      : true;
 
   this.baseOptions._timesToRetryFailedRequests = options._timesToRetryFailedRequests
     ? parseInt(options._timesToRetryFailedRequests, 0)
@@ -106,14 +147,18 @@ function WebAuth(options) {
     (this.baseOptions.overrides && this.baseOptions.overrides.__token_issuer) ||
     'https://' + this.baseOptions.domain + '/';
 
-  this.baseOptions.jwksURI = this.baseOptions.overrides && this.baseOptions.overrides.__jwks_uri;
+  this.baseOptions.jwksURI =
+    this.baseOptions.overrides && this.baseOptions.overrides.__jwks_uri;
 
   this.transactionManager = new TransactionManager(this.baseOptions);
 
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this, this.baseOptions);
   this.popup = new Popup(this, this.baseOptions);
-  this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
+  this.crossOriginAuthentication = new CrossOriginAuthentication(
+    this,
+    this.baseOptions
+  );
   this.webMessageHandler = new WebMessageHandler(this);
   this._universalLogin = new HostedPages(this, this.baseOptions);
   this.ssodataStorage = new SSODataStorage(this.baseOptions);
@@ -150,7 +195,8 @@ WebAuth.prototype.parseHash = function(options, cb) {
 
   var _window = windowHelper.getWindow();
 
-  var hashStr = options.hash === undefined ? _window.location.hash : options.hash;
+  var hashStr =
+    options.hash === undefined ? _window.location.hash : options.hash;
   hashStr = hashStr.replace(/^#?\/?/, '');
 
   parsedQs = qs.parse(hashStr);
@@ -172,7 +218,11 @@ WebAuth.prototype.parseHash = function(options, cb) {
   ) {
     return cb(null, null);
   }
-  var responseTypes = (this.baseOptions.responseType || options.responseType || '').split(' ');
+  var responseTypes = (
+    this.baseOptions.responseType ||
+    options.responseType ||
+    ''
+  ).split(' ');
   if (
     responseTypes.length > 0 &&
     responseTypes.indexOf('token') !== -1 &&
@@ -218,16 +268,22 @@ WebAuth.prototype.parseHash = function(options, cb) {
  * @param {Object} parsedHash an object that represents the parsed hash
  * @param {authorizeCallback} cb
  */
-WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash, cb) {
+WebAuth.prototype.validateAuthenticationResponse = function(
+  options,
+  parsedHash,
+  cb
+) {
   var _this = this;
   options.__enableIdPInitiatedLogin =
     options.__enableIdPInitiatedLogin || options.__enableImpersonation;
   var state = parsedHash.state;
   var transaction = this.transactionManager.getStoredTransaction(state);
-  var transactionState = options.state || (transaction && transaction.state) || null;
+  var transactionState =
+    options.state || (transaction && transaction.state) || null;
 
   var transactionStateMatchesState = transactionState === state;
-  var shouldBypassStateChecking = !state && !transactionState && options.__enableIdPInitiatedLogin;
+  var shouldBypassStateChecking =
+    !state && !transactionState && options.__enableIdPInitiatedLogin;
 
   if (!shouldBypassStateChecking && !transactionStateMatchesState) {
     return cb({
@@ -235,7 +291,8 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
       errorDescription: '`state` does not match.'
     });
   }
-  var transactionNonce = options.nonce || (transaction && transaction.nonce) || null;
+  var transactionNonce =
+    options.nonce || (transaction && transaction.nonce) || null;
 
   var appState = options.state || (transaction && transaction.appState) || null;
 
@@ -309,7 +366,10 @@ WebAuth.prototype.validateAuthenticationResponse = function(options, parsedHash,
       return callback(noAccessTokenError);
     }
     // if the alg is HS256, use the /userinfo endpoint to build the payload
-    return _this.client.userInfo(parsedHash.access_token, function(errUserInfo, profile) {
+    return _this.client.userInfo(parsedHash.access_token, function(
+      errUserInfo,
+      profile
+    ) {
       // if the /userinfo request fails, use the validationError instead
       if (errUserInfo) {
         return callback(errUserInfo);
@@ -392,7 +452,8 @@ WebAuth.prototype.renewAuth = function(options, cb) {
   var handler;
   var usePostMessage = !!options.usePostMessage;
   var postMessageDataType = options.postMessageDataType || false;
-  var postMessageOrigin = options.postMessageOrigin || windowHelper.getWindow().origin;
+  var postMessageOrigin =
+    options.postMessageOrigin || windowHelper.getWindow().origin;
   var timeout = options.timeout;
   var _this = this;
 
@@ -414,7 +475,10 @@ WebAuth.prototype.renewAuth = function(options, cb) {
   params.responseMode = params.responseMode || 'fragment';
   params = this.transactionManager.process(params);
 
-  assert.check(params, { type: 'object', message: 'options parameter is not valid' });
+  assert.check(params, {
+    type: 'object',
+    message: 'options parameter is not valid'
+  });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   params.prompt = 'none';
@@ -472,7 +536,10 @@ WebAuth.prototype.checkSession = function(options, cb) {
     .with(options);
 
   if (params.responseType === 'code') {
-    return cb({ error: 'error', error_description: "responseType can't be `code`" });
+    return cb({
+      error: 'error',
+      error_description: "responseType can't be `code`"
+    });
   }
 
   if (!options.nonce) {
@@ -480,13 +547,23 @@ WebAuth.prototype.checkSession = function(options, cb) {
   }
 
   if (!params.redirectUri) {
-    return cb({ error: 'error', error_description: "redirectUri can't be empty" });
+    return cb({
+      error: 'error',
+      error_description: "redirectUri can't be empty"
+    });
   }
 
-  assert.check(params, { type: 'object', message: 'options parameter is not valid' });
+  assert.check(params, {
+    type: 'object',
+    message: 'options parameter is not valid'
+  });
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
-  params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType']);
+  params = objectHelper.blacklist(params, [
+    'usePostMessage',
+    'tenant',
+    'postMessageDataType'
+  ]);
   this.webMessageHandler.run(
     params,
     responseHandler(cb, { forceLegacyError: true, ignoreCasing: true })
@@ -590,7 +667,10 @@ WebAuth.prototype.authorize = function(options) {
     params,
     { type: 'object', message: 'options parameter is not valid' },
     {
-      responseType: { type: 'string', message: 'responseType option is required' }
+      responseType: {
+        type: 'string',
+        message: 'responseType option is required'
+      }
     }
   );
 
@@ -669,7 +749,8 @@ WebAuth.prototype.login = function(options, cb) {
     .with(options);
   params = this.transactionManager.process(params);
 
-  var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
+  var isHostedLoginPage =
+    windowHelper.getWindow().location.host === this.baseOptions.domain;
   if (isHostedLoginPage) {
     params.connection = params.realm;
     delete params.realm;
@@ -707,7 +788,8 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
     .with(options);
   params = this.transactionManager.process(params);
 
-  var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
+  var isHostedLoginPage =
+    windowHelper.getWindow().location.host === this.baseOptions.domain;
   if (isHostedLoginPage) {
     this.passwordlessVerify(params, cb);
   } else {
@@ -718,7 +800,12 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
         username: params.email || params.phoneNumber,
         otp: params.verificationCode
       },
-      objectHelper.blacklist(params, ['connection', 'email', 'phoneNumber', 'verificationCode'])
+      objectHelper.blacklist(params, [
+        'connection',
+        'email',
+        'phoneNumber',
+        'verificationCode'
+      ])
     );
     this.crossOriginAuthentication.login(crossOriginOptions, cb);
   }
@@ -795,7 +882,10 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
     params,
     { type: 'object', message: 'options parameter is not valid' },
     {
-      responseType: { type: 'string', message: 'responseType option is required' }
+      responseType: {
+        type: 'string',
+        message: 'responseType option is required'
+      }
     }
   );
 
@@ -804,7 +894,9 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
     if (err) {
       return cb(err);
     }
-    return windowHelper.redirect(_this.client.passwordless.buildVerifyUrl(params));
+    return windowHelper.redirect(
+      _this.client.passwordless.buildVerifyUrl(params)
+    );
   });
 };
 

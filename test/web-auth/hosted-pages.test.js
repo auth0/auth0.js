@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 import request from 'superagent';
 
 import RequestMock from '../mock/request-mock';
@@ -9,20 +9,24 @@ import WebAuth from '../../src/web-auth';
 import TransactionManager from '../../src/web-auth/transaction-manager';
 import RequestBuilder from '../../src/helper/request-builder';
 
-var telemetryInfo = new RequestBuilder({ universalLoginPage: true }).getTelemetryData();
+var telemetryInfo = new RequestBuilder({
+  universalLoginPage: true
+}).getTelemetryData();
 
 describe('auth0.WebAuth._universalLogin', function() {
   beforeEach(function() {
-    stub(TransactionManager.prototype, 'process', function(params) {
-      return params;
-    });
+    sinon
+      .stub(TransactionManager.prototype, 'process')
+      .callsFake(function(params) {
+        return params;
+      });
   });
   afterEach(function() {
     TransactionManager.prototype.process.restore();
   });
   context('login', function() {
     beforeEach(function() {
-      stub(windowHelper, 'getWindow', function() {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {
           location: {
             host: 'me.auth0.com'
@@ -61,11 +65,13 @@ describe('auth0.WebAuth._universalLogin', function() {
           password: '1234',
           scope: 'openid'
         });
-      }).throwError('This method is meant to be used only inside the Universal Login Page.');
+      }).throwError(
+        'This method is meant to be used only inside the Universal Login Page.'
+      );
     });
 
     it('should authenticate the user, render the callback form and submit it', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/usernamepassword/login');
         return new RequestMock({
           body: {
@@ -91,7 +97,7 @@ describe('auth0.WebAuth._universalLogin', function() {
         });
       });
 
-      stub(windowHelper, 'getDocument', function() {
+      sinon.stub(windowHelper, 'getDocument').callsFake(function() {
         return {
           createElement: function() {
             return {};
@@ -133,7 +139,7 @@ describe('auth0.WebAuth._universalLogin', function() {
       );
     });
     it('should use transactionManager.process', function(done) {
-      stub(request, 'post', function() {
+      sinon.stub(request, 'post').callsFake(function() {
         expect(TransactionManager.prototype.process.calledOnce).to.be(true);
         done();
       });
@@ -153,7 +159,7 @@ describe('auth0.WebAuth._universalLogin', function() {
       });
     });
     it('should propagate the error', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/usernamepassword/login');
         return new RequestMock({
           body: {
@@ -222,7 +228,7 @@ describe('auth0.WebAuth._universalLogin', function() {
         responseType: 'token',
         _sendTelemetry: false
       });
-      stub(windowHelper, 'getWindow', function() {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {
           location: {
             host: 'me.auth0.com'
@@ -245,7 +251,7 @@ describe('auth0.WebAuth._universalLogin', function() {
     });
 
     it('should call db-connection signup with all the options', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         if (url === 'https://me.auth0.com/usernamepassword/login') {
           return new RequestMock({
             body: {
@@ -331,7 +337,7 @@ describe('auth0.WebAuth._universalLogin', function() {
     });
 
     it('should propagate signup errors', function(done) {
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
@@ -403,7 +409,7 @@ describe('auth0.WebAuth._universalLogin', function() {
     });
 
     it('should call /user/ssodata with no options', function(done) {
-      stub(request, 'get', function(url) {
+      sinon.stub(request, 'get').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/user/ssodata');
         return new RequestMock({
           headers: {},
@@ -426,8 +432,10 @@ describe('auth0.WebAuth._universalLogin', function() {
       });
     });
     it('should call /user/ssodata with all the AD options', function(done) {
-      stub(request, 'get', function(url) {
-        expect(url).to.be('https://me.auth0.com/user/ssodata?ldaps=1&client_id=...');
+      sinon.stub(request, 'get').callsFake(function(url) {
+        expect(url).to.be(
+          'https://me.auth0.com/user/ssodata?ldaps=1&client_id=...'
+        );
         return new RequestMock({
           headers: {},
           cb: function(cb) {

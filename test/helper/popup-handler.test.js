@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 import WinChan from 'winchan';
 
 import PopupHandler from '../../src/helper/popup-handler';
@@ -78,7 +78,7 @@ describe('helpers popupHandler', function() {
 
   describe('should open the popup', function() {
     it('with the correct parametrs', function(done) {
-      stub(WinChan, 'open', function(options, cb) {
+      sinon.stub(WinChan, 'open').callsFake(function(options, cb) {
         expect(options).to.eql({
           url: 'url',
           relay_url: 'relayUrl',
@@ -98,7 +98,10 @@ describe('helpers popupHandler', function() {
 
       var handler = new PopupHandler();
 
-      handler.load('url', 'relayUrl', { params: { opt: 'value' } }, function(err, data) {
+      handler.load('url', 'relayUrl', { params: { opt: 'value' } }, function(
+        err,
+        data
+      ) {
         expect(err).to.be(null);
         expect(data).to.eql({ data2: 'value2' });
       });
@@ -110,7 +113,9 @@ describe('helpers popupHandler', function() {
       global.window.open = function(url, name, windowFeatures) {
         expect(url).to.eql('about:blank');
         expect(name).to.eql('auth0_signup_popup');
-        expect(windowFeatures).to.eql('width=500,height=600,left=1250,top=1200');
+        expect(windowFeatures).to.eql(
+          'width=500,height=600,left=1250,top=1200'
+        );
 
         return {
           close: function() {
@@ -133,7 +138,9 @@ describe('helpers popupHandler', function() {
         expect(url).to.eql('about:blank');
         expect(counter).to.eql(1);
         expect(name).to.eql('auth0_signup_popup');
-        expect(windowFeatures).to.eql('width=500,height=600,left=1250,top=1200');
+        expect(windowFeatures).to.eql(
+          'width=500,height=600,left=1250,top=1200'
+        );
 
         return {
           close: function() {
@@ -162,7 +169,7 @@ describe('helpers popupHandler', function() {
         done();
       };
 
-      stub(WinChan, 'open', function(_, cb) {
+      sinon.stub(WinChan, 'open').callsFake(function(_, cb) {
         const err = new Error('An error');
         err.name = 'SyntaxError';
         cb(err, null);

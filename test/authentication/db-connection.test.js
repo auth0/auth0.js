@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import RequestMock from '../mock/request-mock';
 import request from 'superagent';
@@ -58,7 +58,11 @@ describe('auth0.authentication', function() {
     it('should check that cb is valid', function() {
       var _this = this;
       expect(function() {
-        _this.auth0.dbConnection.signup({ connection: 'bla', email: 'blabla', password: '123456' });
+        _this.auth0.dbConnection.signup({
+          connection: 'bla',
+          email: 'blabla',
+          password: '123456'
+        });
       }).to.throwException(function(e) {
         expect(e.message).to.be('cb parameter is not valid');
       });
@@ -70,7 +74,7 @@ describe('auth0.authentication', function() {
       });
 
       it('should send metadata on signup', function(done) {
-        stub(request, 'post', function(url) {
+        sinon.stub(request, 'post').callsFake(function(url) {
           expect(url).to.be('https://me.auth0.com/dbconnections/signup');
           expect;
           return new RequestMock({
@@ -119,7 +123,7 @@ describe('auth0.authentication', function() {
       });
 
       it('should send metadata on signup when using camel case', function(done) {
-        stub(request, 'post', function(url) {
+        sinon.stub(request, 'post').callsFake(function(url) {
           expect(url).to.be('https://me.auth0.com/dbconnections/signup');
           expect;
           return new RequestMock({

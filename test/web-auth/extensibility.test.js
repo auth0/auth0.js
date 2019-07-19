@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import PopupHandler from '../../src/helper/popup-handler';
 import MockAuth0Plugin from '../mock/mock-auth0-plugin';
@@ -85,9 +85,14 @@ describe('auth0.WebAuth extensibility', function() {
         ],
         _sendTelemetry: false
       });
-      stub(TransactionManager.prototype, 'generateTransaction', function(appState, state, nonce) {
-        return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
-      });
+      sinon
+        .stub(TransactionManager.prototype, 'generateTransaction')
+        .callsFake(function(appState, state, nonce) {
+          return {
+            state: state || 'randomState',
+            nonce: nonce || 'randomNonce'
+          };
+        });
     });
 
     after(function() {
@@ -96,19 +101,24 @@ describe('auth0.WebAuth extensibility', function() {
     });
 
     it('should change the content of the params', function(done) {
-      stub(PopupHandler.prototype, 'load', function(url, relayUrl, options, cb) {
-        expect(url).to.be(
-          'https://test.auth0.com/authorize?client_id=...&response_type=code&owp=true&scope=openid&redirect_uri=http%3A%2F%2Fcustom-url.com&state=randomState'
-        );
-        expect(relayUrl).to.be('https://test.auth0.com/relay.html');
-        expect(options).to.eql({});
-        cb(null, {
-          email_verified: false,
-          email: 'me@example.com'
+      sinon
+        .stub(PopupHandler.prototype, 'load')
+        .callsFake(function(url, relayUrl, options, cb) {
+          expect(url).to.be(
+            'https://test.auth0.com/authorize?client_id=...&response_type=code&owp=true&scope=openid&redirect_uri=http%3A%2F%2Fcustom-url.com&state=randomState'
+          );
+          expect(relayUrl).to.be('https://test.auth0.com/relay.html');
+          expect(options).to.eql({});
+          cb(null, {
+            email_verified: false,
+            email: 'me@example.com'
+          });
         });
-      });
 
-      this.webAuth.popup.authorize({ owp: true, scope: 'openid' }, function(err, data) {
+      this.webAuth.popup.authorize({ owp: true, scope: 'openid' }, function(
+        err,
+        data
+      ) {
         expect(err).to.be(null);
         expect(data).to.eql({
           email_verified: false,

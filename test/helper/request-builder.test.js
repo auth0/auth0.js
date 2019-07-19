@@ -1,5 +1,5 @@
 import expect from 'expect.js';
-import { stub } from 'sinon';
+import sinon from 'sinon';
 
 import request from 'superagent';
 
@@ -14,7 +14,9 @@ var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 describe('helpers requestBuilder', function() {
   describe('getTelemetryData', function() {
     it('should encode telemetry', function() {
-      var rb = new RequestBuilder({ _telemetryInfo: { foo: 'bar', env: { other: 'key' } } });
+      var rb = new RequestBuilder({
+        _telemetryInfo: { foo: 'bar', env: { other: 'key' } }
+      });
       var telemetry = rb.getTelemetryData();
       const expectedTelemetry = {
         foo: 'bar',
@@ -24,8 +26,12 @@ describe('helpers requestBuilder', function() {
         }
       };
 
-      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql(expectedTelemetry);
-      expect(telemetry).to.be(base64url.encode(JSON.stringify(expectedTelemetry)));
+      expect(JSON.parse(base64url.decode(telemetry))).to.be.eql(
+        expectedTelemetry
+      );
+      expect(telemetry).to.be(
+        base64url.encode(JSON.stringify(expectedTelemetry))
+      );
     });
     it('should use default telemetry', function() {
       var rb = new RequestBuilder({ _telemetryInfo: null });
@@ -36,7 +42,10 @@ describe('helpers requestBuilder', function() {
       });
     });
     it('should use ulp telemetry when `universalLoginPage` is true', function() {
-      var rb = new RequestBuilder({ _telemetryInfo: null, universalLoginPage: true });
+      var rb = new RequestBuilder({
+        _telemetryInfo: null,
+        universalLoginPage: true
+      });
       var telemetry = rb.getTelemetryData();
       expect(JSON.parse(base64url.decode(telemetry))).to.be.eql({
         name: 'auth0.js-ulp',
@@ -46,7 +55,7 @@ describe('helpers requestBuilder', function() {
   });
   describe('with noHeaders:false', function() {
     before(function() {
-      stub(request, 'get', function(url) {
+      sinon.stub(request, 'get').callsFake(function(url) {
         expect(url).to.be('https://test.com');
         return new RequestMock(
           {
@@ -68,7 +77,7 @@ describe('helpers requestBuilder', function() {
         );
       });
 
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://test.com');
         return new RequestMock(
           {
@@ -94,7 +103,7 @@ describe('helpers requestBuilder', function() {
         );
       });
 
-      stub(request, 'patch', function(url) {
+      sinon.stub(request, 'patch').callsFake(function(url) {
         expect(url).to.be('https://test.com');
         return new RequestMock(
           {
@@ -157,9 +166,11 @@ describe('helpers requestBuilder', function() {
 
     it('should post stuff', function() {
       var req = new RequestBuilder({});
-      var trimUserDetailsStub = stub(objectHelper, 'trimUserDetails', function(obj) {
-        return obj;
-      });
+      var trimUserDetailsStub = sinon
+        .stub(objectHelper, 'trimUserDetails')
+        .callsFake(function(obj) {
+          return obj;
+        });
       var handler = req
         .post('https://test.com')
         .send({
@@ -209,7 +220,7 @@ describe('helpers requestBuilder', function() {
 
   describe('with noHeaders:true', function() {
     before(function() {
-      stub(request, 'get', function(url) {
+      sinon.stub(request, 'get').callsFake(function(url) {
         expect(url).to.be('https://test.com');
         return new RequestMock(
           {
@@ -228,7 +239,7 @@ describe('helpers requestBuilder', function() {
         );
       });
 
-      stub(request, 'post', function(url) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://test.com');
         return new RequestMock(
           {
@@ -251,7 +262,7 @@ describe('helpers requestBuilder', function() {
         );
       });
 
-      stub(request, 'patch', function(url) {
+      sinon.stub(request, 'patch').callsFake(function(url) {
         expect(url).to.be('https://test.com');
         return new RequestMock(
           {
@@ -308,9 +319,11 @@ describe('helpers requestBuilder', function() {
 
     it('should post stuff', function() {
       var req = new RequestBuilder({});
-      var trimUserDetailsStub = stub(objectHelper, 'trimUserDetails', function(obj) {
-        return obj;
-      });
+      var trimUserDetailsStub = sinon
+        .stub(objectHelper, 'trimUserDetails')
+        .callsFake(function(obj) {
+          return obj;
+        });
       var handler = req
         .post('https://test.com', { noHeaders: true })
         .send({
