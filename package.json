@@ -97,7 +97,7 @@
     "selenium-webdriver": "^3.0.1",
     "semver": "^5.5.0",
     "sinon": "^1.17.6",
-    "yargs": "^11.0.0"
+    "yargs": "^13.3.0"
   },
   "ccu": {
     "name": "auth0",
