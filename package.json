@@ -81,7 +81,7 @@
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi": "^1.0.1",
     "mocha-parallel-tests": "^2.0.2",
-    "nyc": "^12.0.2",
+    "nyc": "^14.1.1",
     "prettier": "^1.13.5",
     "proxyquire": "^2.0.1",
     "rollup": "^0.60.1",
