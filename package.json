@@ -96,7 +96,7 @@
     "rollup-plugin-terser": "^1.0.1",
     "selenium-webdriver": "^3.0.1",
     "semver": "^5.5.0",
-    "sinon": "^1.17.6",
+    "sinon": "^7.3.2",
     "yargs": "^11.0.0"
   },
   "ccu": {
