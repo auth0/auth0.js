@@ -1,5 +1,9 @@
 ## [v9.11.3](https://github.com/auth0/auth0.js/tree/v9.11.3) (2019-07-23)
 
+**Fixed**
+
+Use cdn-uploader from NPM.
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.11.2...v9.11.3)
 
 ## [v9.11.2](https://github.com/auth0/auth0.js/tree/v9.11.2) (2019-07-15)
