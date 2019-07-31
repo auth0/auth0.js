@@ -261,6 +261,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
  * @param {Number} [result.expiresIn] number of seconds until the access token expires
  * @param {String} [result.idToken] token that identifies the user
  * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all Auth0 Applications can request them or the resource server might not allow them.
+ * @param {Object} [result.appState] values that you receive back on the authentication response
  */
 
 /**
