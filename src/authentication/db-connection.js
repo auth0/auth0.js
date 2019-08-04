@@ -24,6 +24,7 @@ function DBConnection(request, options) {
  * @param {Object} options
  * @param {String} options.email user email address
  * @param {String} options.password user password
+ * @param {String} [options.username] user desired username. Required if you use a database connection and you have enabled `Requires Username`
  * @param {String} options.connection name of the connection where the user will be created
  * @param {Object} [options.userMetadata] additional signup attributes used for creating the user. Will be stored in `user_metadata`
  * @param {signUpCallback} cb
