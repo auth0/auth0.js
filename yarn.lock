@@ -5663,10 +5663,10 @@ rollup-plugin-json@^4.0.0:
   dependencies:
     rollup-pluginutils "^2.5.0"
 
-rollup-plugin-license@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-license/-/rollup-plugin-license-0.10.0.tgz#2060e31938cfbb3ce7db0a74a4dee57946d5a7fb"
-  integrity sha512-DjoT3eQbTfTbRn1iobWjXZjDGpSGLQRXUNgxiIg5HZ4WvH4Z9eX4dR40k/Y2uHO/MJAebYh0QaZiyqHQyYHSJg==
+rollup-plugin-license@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-license/-/rollup-plugin-license-0.11.0.tgz#51a5ae68bb05ebf182c87ef205af002d2e3bf42f"
+  integrity sha512-0HcvWhCSJ6G5SQg8BOdLS/ic/51hz2XIUHb1fR8z/kqbbCpJUAZcZoq2EXIghfyccvtOak7rRxlh9VA4i6/lHA==
   dependencies:
     commenting "1.1.0"
     lodash "4.17.15"
