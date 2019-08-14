@@ -232,7 +232,7 @@ describe('auth0.authentication', function() {
             send: 'code',
             authParams: {
               scope: 'openid email',
-              redirect_uri: 'http://page.com/callback',
+              redirect_uri: 'http://page.com/othercallback',
               response_type: 'code'
             }
           },
@@ -252,7 +252,10 @@ describe('auth0.authentication', function() {
           connection: 'the_connection',
           email: 'me@example.com',
           send: 'code',
-          scope: 'openid email'
+          scope: 'openid email',
+          authParams: {
+            redirectUri: 'http://page.com/othercallback'
+          }
         },
         function(err, data) {
           expect(err).to.be(null);
