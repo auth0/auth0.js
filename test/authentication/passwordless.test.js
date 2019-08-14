@@ -233,7 +233,8 @@ describe('auth0.authentication', function() {
             authParams: {
               scope: 'openid email',
               redirect_uri: 'http://page.com/othercallback',
-              response_type: 'code'
+              response_type: 'token',
+              protocol: 'wsfed'
             }
           },
           headers: {
@@ -252,9 +253,11 @@ describe('auth0.authentication', function() {
           connection: 'the_connection',
           email: 'me@example.com',
           send: 'code',
-          scope: 'openid email',
           authParams: {
-            redirectUri: 'http://page.com/othercallback'
+            redirectUri: 'http://page.com/othercallback',
+            protocol: 'wsfed',
+            responseType: 'token',
+            scope: 'openid email'
           }
         },
         function(err, data) {
