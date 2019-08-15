@@ -174,7 +174,8 @@ describe('auth0.authentication', function() {
         clientID: '...',
         redirectUri: 'http://page.com/callback',
         responseType: 'code',
-        _sendTelemetry: false
+        _sendTelemetry: false,
+        scope: ''
       });
     });
 
@@ -222,6 +223,14 @@ describe('auth0.authentication', function() {
     });
 
     it('should call passwordless start with authParams', function(done) {
+      var auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'will be overridden',
+        responseType: 'code',
+        _sendTelemetry: false,
+        scope: 'will be overridden'
+      });
       sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/passwordless/start');
         return new RequestMock({
