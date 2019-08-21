@@ -2859,18 +2859,7 @@ glob@7.1.3:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@^5.0.15:
-  version "5.0.15"
-  resolved "https://registry.yarnpkg.com/glob/-/glob-5.0.15.tgz#1bc936b9e02f4a603fcc222ecf7633d30b8b93b1"
-  integrity sha1-G8k2ueAvSmA/zCIuz3Yz0wuLk7E=
-  dependencies:
-    inflight "^1.0.4"
-    inherits "2"
-    minimatch "2 || 3"
-    once "^1.3.0"
-    path-is-absolute "^1.0.0"
-
-glob@^7.1.2, glob@^7.1.3:
+glob@7.1.4, glob@^7.1.2, glob@^7.1.3:
   version "7.1.4"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.4.tgz#aa608a2f6c577ad357e1ae5a5c26d9a8d1969255"
   integrity sha512-hkLPepehmnKk41pUGm3sYxoFs/umurYfYJCerbXEyFIWcAzvpipAgVkBqqT9RBKMGjnq6kMuyYwha6csxbiM1A==
@@ -2879,6 +2868,17 @@ glob@^7.1.2, glob@^7.1.3:
     inflight "^1.0.4"
     inherits "2"
     minimatch "^3.0.4"
+    once "^1.3.0"
+    path-is-absolute "^1.0.0"
+
+glob@^5.0.15:
+  version "5.0.15"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-5.0.15.tgz#1bc936b9e02f4a603fcc222ecf7633d30b8b93b1"
+  integrity sha1-G8k2ueAvSmA/zCIuz3Yz0wuLk7E=
+  dependencies:
+    inflight "^1.0.4"
+    inherits "2"
+    minimatch "2 || 3"
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
@@ -5669,12 +5669,13 @@ rollup-plugin-json@^4.0.0:
   dependencies:
     rollup-pluginutils "^2.5.0"
 
-rollup-plugin-license@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-license/-/rollup-plugin-license-0.11.0.tgz#51a5ae68bb05ebf182c87ef205af002d2e3bf42f"
-  integrity sha512-0HcvWhCSJ6G5SQg8BOdLS/ic/51hz2XIUHb1fR8z/kqbbCpJUAZcZoq2EXIghfyccvtOak7rRxlh9VA4i6/lHA==
+rollup-plugin-license@^0.12.1:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-license/-/rollup-plugin-license-0.12.1.tgz#7e74b76f1167ab10a3f86870c97c0762b86187a6"
+  integrity sha512-zT8UO+Tc+DAVQHM5qeX4jnuHzTtDUYJ/8AHzUgVgqYrx5Wj5kHlvoZNaQqg7hOQbjSuHuJFlQGZmxxSQq2WMqA==
   dependencies:
     commenting "1.1.0"
+    glob "7.1.4"
     lodash "4.17.15"
     magic-string "0.25.3"
     mkdirp "0.5.1"
