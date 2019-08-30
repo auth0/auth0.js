@@ -4403,9 +4403,9 @@ mocha-junit-reporter@^1.23.1:
     xml "^1.0.0"
 
 mocha-parallel-tests@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/mocha-parallel-tests/-/mocha-parallel-tests-2.2.1.tgz#616b316c9f20c956a6ce18cd38d45e7db3045b99"
-  integrity sha512-9t0NtQ2V/KrNKaUj08RVZp0dqJxeRMTGvC7JA5Daw/LA8GOP+4P7NxRgU0e2sM0JRWYxSakXtpE+MEVGX1ifuw==
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/mocha-parallel-tests/-/mocha-parallel-tests-2.2.2.tgz#4a45dcf77961def902eb8fec387268c0431e61ea"
+  integrity sha512-TeakNjchBtm18EHi14keQPdHHwgXGIuDowh9BeelfImvZ36n2l1HRAs61PJWPinzG6HV34myUc3pYZCbysyOCw==
   dependencies:
     circular-json "^0.5.9"
     debug "^4.1.1"
