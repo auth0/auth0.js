@@ -589,7 +589,7 @@ WebAuth.prototype.changePassword = function(options, cb) {
  *
  * @method passwordlessStart
  * @param {Object} options
- * @param {String} options.send what will be sent via email which could be `link` or `code`. For SMS `code` is the only one valud
+ * @param {String} options.send what will be sent via email which could be `link` or `code`. For SMS `code` is the only one valid
  * @param {String} [options.phoneNumber] phone number where to send the `code`. This parameter is mutually exclusive with `email`
  * @param {String} [options.email] email where to send the `code` or `link`. This parameter is mutually exclusive with `phoneNumber`
  * @param {String} options.connection name of the passwordless connection
