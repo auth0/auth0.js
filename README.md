@@ -198,15 +198,15 @@ If you need help migrating to v8, please refer to the [v8 Migration Guide](https
 
 ## Develop
 
-Run `npm start` to point your browser to [`https://localhost:3000/`](https://localhost:3000/) to verify the example page works.
+Run `yarn start` to point your browser to [`https://localhost:3000/`](https://localhost:3000/) to verify the example page works.
 
-Run `npm run test` to run the test suite.
+Run `yarn test` to run the test suite.
 
-Run `npm run test:watch` to run the test suite while you work.
+Run `yarn test:watch` to run the test suite while you work.
 
-Run `npm run test:coverage` to run the test suite with coverage report.
+Run `yarn test:coverage` to run the test suite with coverage report.
 
-Run `npm run lint` to run the linter and check code styles.
+Run `yarn lint` to run the linter and check code styles.
 
 ## Issue Reporting
 
