@@ -212,7 +212,7 @@ Run `yarn test:coverage` to run the test suite with coverage report.
 
 Run `yarn lint` to run the linter and check code styles.
 
-Run `yarn test:es-check:es5 && yarn test:es-check:es2015:module` to check for JS incompatibility.
+Run `yarn install && yarn build && yarn test:es-check:es5 && yarn test:es-check:es2015:module` to check for JS incompatibility.
 
 See [.circleci/config.yml](.circleci/config.yml) for additional checks that might be run as part of
 [circleci integration tests](https://circleci.com/).
