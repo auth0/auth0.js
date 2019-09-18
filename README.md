@@ -168,7 +168,7 @@ var auth0 = new auth0.Authentication({
 
 ## auth0.Management
 
-Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an access_token with the `https://YOUR_DOMAIN.auth0.com/api/v2/` audience to make this work. For more information, read [the user management section of the Auth0.js documentation](https://auth0.com/docs/libraries/auth0js/v9#user-management).
+Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an `access_token` with the `https://YOUR_DOMAIN.auth0.com/api/v2/` audience to make this work. For more information, read [the user management section of the Auth0.js documentation](https://auth0.com/docs/libraries/auth0js/v9#user-management).
 
 ### Initialize
 
