@@ -198,15 +198,24 @@ If you need help migrating to v8, please refer to the [v8 Migration Guide](https
 
 ## Develop
 
+Run `yarn install` to set up the environment.
+
 Run `yarn start` to point your browser to [`https://localhost:3000/`](https://localhost:3000/) to verify the example page works.
 
 Run `yarn test` to run the test suite.
+
+Run `yarn ci:test` to run the tests that ci runs.
 
 Run `yarn test:watch` to run the test suite while you work.
 
 Run `yarn test:coverage` to run the test suite with coverage report.
 
 Run `yarn lint` to run the linter and check code styles.
+
+Run `yarn test:es-check:es5 && yarn test:es-check:es2015:module` to check for JS incompatibility.
+
+See [.circleci/config.yml](.circleci/config.yml) for additional checks that might be run as part of
+[circleci integration tests](https://circleci.com/).
 
 ## Issue Reporting
 
