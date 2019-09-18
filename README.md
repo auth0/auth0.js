@@ -198,7 +198,7 @@ If you need help migrating to v8, please refer to the [v8 Migration Guide](https
 
 ## Develop
 
-Run `npm start` and point your browser to [`https://localhost:3000/example`](https://localhost:3000/example) to run the example page.
+Run `npm start` to point your browser to [`https://localhost:3000/`](https://localhost:3000/) to verify the example page works.
 
 Run `npm run test` to run the test suite.
 
