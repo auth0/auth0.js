@@ -159,16 +159,16 @@ var auth0 = new auth0.Authentication({
 
 ### API
 
-- **buildAuthorizeUrl(options)**: Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#database-ad-ldap-passive-
-- **buildLogoutUrl(options)**: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. https://auth0.com/docs/api/authentication#logout
-- **loginWithDefaultDirectory(options, cb)**: Makes a call to the `oauth/token` endpoint with `password` grant type. https://auth0.com/docs/api-auth/grant/password
+- **buildAuthorizeUrl(options)**: Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction. [https://auth0.com/docs/api/authentication#database-ad-ldap-passive-](https://auth0.com/docs/api/authentication#database-ad-ldap-passive-)
+- **buildLogoutUrl(options)**: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. [https://auth0.com/docs/api/authentication#logout](https://auth0.com/docs/api/authentication#logout)
+- **loginWithDefaultDirectory(options, cb)**: Makes a call to the `oauth/token` endpoint with `password` grant type. [https://auth0.com/docs/api-auth/grant/password](https://auth0.com/docs/api-auth/grant/password)
 - **login(options, cb)**: Makes a call to the `oauth/token` endpoint with `https://auth0.com/oauth/grant-type/password-realm` grant type.
 - **oauthToken(options, cb)**: Makes a call to the `oauth/token` endpoint.
 - **userInfo(token, cb)**: Makes a call to the `/userinfo` endpoint and returns the user profile.
 
 ## auth0.Management
 
-Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an access_token with the `https://YOUR_DOMAIN.auth0.com/api/v2/` audience to make this work. For more information, read [the user management section of the Auth0.js documentation](https://auth0.com/docs/libraries/auth0js/v9#user-management).
+Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an `access_token` with the `https://YOUR_DOMAIN.auth0.com/api/v2/` audience to make this work. For more information, read [the user management section of the Auth0.js documentation](https://auth0.com/docs/libraries/auth0js/v9#user-management).
 
 ### Initialize
 
@@ -181,10 +181,10 @@ var auth0 = new auth0.Management({
 
 ### API
 
-- **getUser(userId, cb)**: Returns the user profile. https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
-- **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metadata. It will patch the user metadata with the attributes sent. https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
-- **patchUserAttributes(userId, user, cb)**: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
-- **linkUser(userId, secondaryUserToken, cb)**: Link two users. https://auth0.com/docs/api/management/v2#!/Users/post_identities
+- **getUser(userId, cb)**: Returns the user profile. [https://auth0.com/docs/api/management/v2#!/Users/get\_users\_by\_id](https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id)
+- **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metadata. It will patch the user metadata with the attributes sent. [https://auth0.com/docs/api/management/v2#!/Users/patch\_users\_by\_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
+- **patchUserAttributes(userId, user, cb)**: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to [https://auth0.com/docs/api/management/v2#!/Users/patch\_users\_by\_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
+- **linkUser(userId, secondaryUserToken, cb)**: Link two users. [https://auth0.com/docs/api/management/v2#!/Users/post\_identities](https://auth0.com/docs/api/management/v2#!/Users/post_identities)
 
 ## Documentation
 
@@ -198,15 +198,24 @@ If you need help migrating to v8, please refer to the [v8 Migration Guide](https
 
 ## Develop
 
-Run `npm start` and point your browser to [`https://localhost:3000/example`](https://localhost:3000/example) to run the example page.
+Run `yarn install` to set up the environment.
 
-Run `npm run test` to run the test suite.
+Run `yarn start` to point your browser to [`https://localhost:3000/`](https://localhost:3000/) to verify the example page works.
 
-Run `npm run test:watch` to run the test suite while you work.
+Run `yarn test` to run the test suite.
 
-Run `npm run test:coverage` to run the test suite with coverage report.
+Run `yarn ci:test` to run the tests that ci runs.
 
-Run `npm run lint` to run the linter and check code styles.
+Run `yarn test:watch` to run the test suite while you work.
+
+Run `yarn test:coverage` to run the test suite with coverage report.
+
+Run `yarn lint` to run the linter and check code styles.
+
+Run `yarn install && yarn build && yarn test:es-check:es5 && yarn test:es-check:es2015:module` to check for JS incompatibility.
+
+See [.circleci/config.yml](.circleci/config.yml) for additional checks that might be run as part of
+[circleci integration tests](https://circleci.com/).
 
 ## Issue Reporting
 
