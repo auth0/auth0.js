@@ -48,7 +48,7 @@
     "idtoken-verifier": "^1.4.1",
     "js-cookie": "^2.2.0",
     "qs": "^6.7.0",
-    "superagent": "^3.8.3",
+    "superagent": "^5.0.0",
     "url-join": "^4.0.1",
     "winchan": "^0.2.2"
   },
