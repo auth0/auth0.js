@@ -133,10 +133,11 @@ HostedPages.prototype.getSSOData = function(withActiveDirectories, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'user', 'ssodata', params);
 
+  var handler = responseHandler(cb);
   return this.request
     .get(url, { noHeaders: true })
     .withCredentials()
-    .end(responseHandler(cb));
+    .then(handler.then, handler.catch);
 };
 
 export default HostedPages;

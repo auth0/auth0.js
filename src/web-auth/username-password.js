@@ -37,10 +37,11 @@ UsernamePassword.prototype.login = function(options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
+  var handler = responseHandler(cb);
   return this.request
     .post(url)
     .send(body)
-    .end(responseHandler(cb));
+    .then(handler.then, handler.catch);
 };
 
 UsernamePassword.prototype.callback = function(formHtml) {

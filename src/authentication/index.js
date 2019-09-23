@@ -394,10 +394,11 @@ Authentication.prototype.oauthToken = function(options, cb) {
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
   body = parametersWhitelist.oauthTokenParams(this.warn, body);
 
+  var handler = responseHandler(cb);
   return this.request
     .post(url)
     .send(body)
-    .end(responseHandler(cb));
+    .then(handler.then, handler.catch);
 };
 
 /**
@@ -446,10 +447,11 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
 
   body.grant_type = body.grant_type || 'password';
 
+  var handler = responseHandler(cb);
   return this.request
     .post(url)
     .send(body)
-    .end(responseHandler(cb));
+    .then(handler.then, handler.catch);
 };
 
 /**
@@ -540,10 +542,11 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'userinfo');
 
+  var handler = responseHandler(cb, { ignoreCasing: true })
   return this.request
     .get(url)
     .set('Authorization', 'Bearer ' + accessToken)
-    .end(responseHandler(cb, { ignoreCasing: true }));
+    .then(handler.then, handler.catch);
 };
 
 /**
@@ -587,10 +590,11 @@ Authentication.prototype.delegation = function(options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
+  var handler = responseHandler(cb);
   return this.request
     .post(url)
     .send(body)
-    .end(responseHandler(cb));
+    .then(handler.then, handler.catch);
 };
 
 /**
@@ -607,7 +611,8 @@ Authentication.prototype.getUserCountry = function(cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'user', 'geoloc', 'country');
 
-  return this.request.get(url).end(responseHandler(cb));
+  var handler = responseHandler(cb);
+  return this.request.get(url).then(handler.then, handler.catch);
 };
 
 export default Authentication;

@@ -92,6 +92,9 @@ PopupHandler.prototype.load = function(url, relayUrl, options, cb) {
       return;
     }
     _this._current_popup = null;
+    if (err) {
+      cb.catch(err);
+    }
     return cb(err, data);
   });
 

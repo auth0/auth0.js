@@ -7,7 +7,7 @@ import PluginHandler from '../helper/plugins';
 import windowHelper from '../helper/window';
 import objectHelper from '../helper/object';
 import SSODataStorage from '../helper/ssodata';
-import responseHandler from '../helper/response-handler';
+import responseHandler from '../helper/response-handler-old';
 import TransactionManager from './transaction-manager';
 import Authentication from '../authentication';
 import Redirect from './redirect';

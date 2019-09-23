@@ -152,10 +152,11 @@ PasswordlessAuthentication.prototype.start = function(options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client', 'authParams']);
 
+  var handler = responseHandler(cb);
   return this.request
     .post(url)
     .send(body)
-    .end(responseHandler(cb));
+    .then(handler.then, handler.catch);
 };
 
 PasswordlessAuthentication.prototype.verify = function(options, cb) {
@@ -205,10 +206,11 @@ PasswordlessAuthentication.prototype.verify = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'verify');
 
+  var handler = responseHandler(cb);
   return this.request
     .post(url)
     .send(cleanOption)
-    .end(responseHandler(cb));
+    .then(handler.then, handler.catch);
 };
 
 export default PasswordlessAuthentication;

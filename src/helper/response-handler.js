@@ -5,25 +5,34 @@ function wrapCallback(cb, options) {
   options = options || {};
   options.ignoreCasing = options.ignoreCasing ? options.ignoreCasing : false;
 
-  return function(err, data) {
-    var errObj;
+  return {
+    then: function(data) {
+      if (!data) {
+        return cb(error.buildResponse('generic_error', 'Something went wrong'));
+      }
+      if (
+        data.type &&
+        (data.type === 'text/html' || data.type === 'text/plain')
+      ) {
+        return cb(null, data.text);
+      }
 
-    if (!err && !data) {
-      return cb(error.buildResponse('generic_error', 'Something went wrong'));
-    }
+      if (options.ignoreCasing) {
+        return cb(null, data.body || data);
+      }
 
-    if (!err && data.err) {
-      err = data.err;
-      data = null;
-    }
-
-    if (!err && data.error) {
-      err = data;
-      data = null;
-    }
-
-    if (err) {
-      errObj = {
+      return cb(
+        null,
+        objectHelper.toCamelCase(data.body || data, [], {
+          keepOriginal: options.keepOriginalCasing
+        })
+      );
+    },
+    catch: function (err) {
+      if (!err) {
+        return cb(error.buildResponse('generic_error', 'Something went wrong'));
+      }
+      var errObj = {
         original: err
       };
 
@@ -68,24 +77,6 @@ function wrapCallback(cb, options) {
 
       return cb(errObj);
     }
-
-    if (
-      data.type &&
-      (data.type === 'text/html' || data.type === 'text/plain')
-    ) {
-      return cb(null, data.text);
-    }
-
-    if (options.ignoreCasing) {
-      return cb(null, data.body || data);
-    }
-
-    return cb(
-      null,
-      objectHelper.toCamelCase(data.body || data, [], {
-        keepOriginal: options.keepOriginalCasing
-      })
-    );
   };
 }
 

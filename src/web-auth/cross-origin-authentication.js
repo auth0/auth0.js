@@ -4,7 +4,7 @@ import windowHelper from '../helper/window';
 import objectHelper from '../helper/object';
 import RequestBuilder from '../helper/request-builder';
 import WebMessageHandler from './web-message-handler';
-import responseHandler from '../helper/response-handler';
+import responseHandler from '../helper/response-handler-old';
 import Storage from '../helper/storage';
 import * as times from '../helper/times';
 
@@ -81,14 +81,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
     .post(url)
     .withCredentials()
     .send(authenticateBody)
-    .end(function(err, data) {
-      if (err) {
-        var errorObject = (err.response && err.response.body) || {
-          error: 'request_error',
-          error_description: JSON.stringify(err)
-        };
-        return responseHandler(cb, { forceLegacyError: true })(errorObject);
-      }
+    .then(function(data) {
       var popupMode = options.popup === true;
       options = objectHelper.blacklist(options, [
         'password',
@@ -111,6 +104,13 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       } else {
         _this.webAuth.authorize(authorizeOptions);
       }
+    },
+    function(err) {
+      var errorObject = (err.response && err.response.body) || {
+        error: 'request_error',
+        error_description: JSON.stringify(err)
+      };
+      return responseHandler(cb, { forceLegacyError: true })(errorObject);
     });
 };
 

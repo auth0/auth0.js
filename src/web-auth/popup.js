@@ -3,7 +3,7 @@ import WinChan from 'winchan';
 
 import urlHelper from '../helper/url';
 import assert from '../helper/assert';
-import responseHandler from '../helper/response-handler';
+import responseHandler from '../helper/response-handler-old';
 import PopupHandler from '../helper/popup-handler';
 import objectHelper from '../helper/object';
 import windowHelper from '../helper/window';

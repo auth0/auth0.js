@@ -64,10 +64,11 @@ DBConnection.prototype.signup = function(options, cb) {
     body.user_metadata = metadata;
   }
 
+  var handler = responseHandler(cb);
   return this.request
     .post(url)
     .send(body)
-    .end(responseHandler(cb));
+    .then(handler.then, handler.catch);
 };
 
 /**
@@ -107,10 +108,11 @@ DBConnection.prototype.changePassword = function(options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
+  var handler = responseHandler(cb);
   return this.request
     .post(url)
     .send(body)
-    .end(responseHandler(cb));
+    .then(handler.then, handler.catch);
 };
 
 export default DBConnection;

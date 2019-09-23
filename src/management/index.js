@@ -72,7 +72,8 @@ Management.prototype.getUser = function(userId, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'users', userId);
 
-  return this.request.get(url).end(responseHandler(cb, { ignoreCasing: true }));
+  var handler = responseHandler(cb, { ignoreCasing: true });
+  return this.request.get(url).then(handler.then, handler.catch);
 };
 
 /**
@@ -100,10 +101,11 @@ Management.prototype.patchUserMetadata = function(userId, userMetadata, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'users', userId);
 
+  var handler = responseHandler(cb, { ignoreCasing: true });
   return this.request
     .patch(url)
     .send({ user_metadata: userMetadata })
-    .end(responseHandler(cb, { ignoreCasing: true }));
+    .then(handler.then, handler.catch);
 };
 
 /**
@@ -130,10 +132,11 @@ Management.prototype.patchUserAttributes = function(userId, user, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'users', userId);
 
+  var handler = responseHandler(cb, { ignoreCasing: true });
   return this.request
     .patch(url)
     .send(user)
-    .end(responseHandler(cb, { ignoreCasing: true }));
+    .then(handler.then, handler.catch);
 };
 
 /**
@@ -161,10 +164,11 @@ Management.prototype.linkUser = function(userId, secondaryUserToken, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'users', userId, 'identities');
 
+  var handler = responseHandler(cb, { ignoreCasing: true });
   return this.request
     .post(url)
     .send({ link_with: secondaryUserToken })
-    .end(responseHandler(cb, { ignoreCasing: true }));
+    .then(handler.then, handler.catch);
 };
 
 export default Management;
