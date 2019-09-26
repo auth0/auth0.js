@@ -473,7 +473,7 @@ describe('auth0.authentication', function() {
             Authorization: 'Bearer abcd1234'
           },
           cb: function(cb) {
-            cb(null, {
+            cb({
               body: {
                 user_id: '...',
                 provider: 'auth0',
@@ -527,7 +527,7 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json'
           },
           cb: function(cb) {
-            cb(null, {
+            cb({
               body: {
                 token_type: 'Bearer',
                 expires_in: 36000,
@@ -646,7 +646,7 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json'
           },
           cb: function(cb) {
-            cb(null, {
+            cb({
               body: {
                 token_type: 'Bearer',
                 expires_in: 36000,
@@ -699,7 +699,7 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json'
           },
           cb: function(cb) {
-            cb(null, {
+            cb({
               body: {
                 country_code: 'AR'
               }
