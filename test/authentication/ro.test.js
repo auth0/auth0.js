@@ -41,8 +41,8 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 id_token: 'id_token.id_token.id_token',
                 access_token: 'access_token',
@@ -88,8 +88,8 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
-            cb({
+          catch: function(cb) {
+            cb(null, {
               error: 'unauthorized',
               error_description: 'invalid username'
             });
@@ -135,8 +135,8 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 id_token: 'id_token.id_token.id_token',
                 access_token: 'access_token',
@@ -181,8 +181,8 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 id_token: 'id_token.id_token.id_token',
                 access_token: 'access_token',

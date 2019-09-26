@@ -5,8 +5,12 @@ function wrapCallback(cb, options) {
   options = options || {};
   options.ignoreCasing = options.ignoreCasing ? options.ignoreCasing : false;
 
-  return {
-    then: function(data) {
+  var pair = {
+    then: function(arg, args) {
+      if (args !== undefined) {
+        return pair.catch(args);
+      }
+      var data = arg;
       if (!data) {
         return cb(error.buildResponse('generic_error', 'Something went wrong'));
       }
@@ -78,6 +82,8 @@ function wrapCallback(cb, options) {
       return cb(errObj);
     }
   };
+
+  return pair;
 }
 
 export default wrapCallback;

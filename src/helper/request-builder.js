@@ -55,8 +55,8 @@ RequestObj.prototype.withCredentials = function() {
   return this;
 };
 
-RequestObj.prototype.then = function(cb) {
-  this.request = this.request.then(cb, cb);
+RequestObj.prototype.then = function(cb, err) {
+  this.request = this.request.then(cb, err);
   return new RequestWrapper(this.request);
 };
 

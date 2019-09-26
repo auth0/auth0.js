@@ -29,7 +29,18 @@ RequestMock.prototype.withCredentials = function() {
 
 RequestMock.prototype.then = function(cb) {
   expect(this.options.headers).to.eql({});
-  this.options.cb(cb);
+  if (this.options.catch) {
+    this.options.catch(cb);
+  } else {
+    this.options.then(cb);
+  }
+  return this;
+};
+
+RequestMock.prototype.catch = function(cb) {
+  console.trace();
+  expect(this.options.headers).to.eql({});
+  this.options.catch(cb);
   return this;
 };
 
