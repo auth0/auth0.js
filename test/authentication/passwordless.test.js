@@ -200,7 +200,7 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json'
           },
           cb: function(cb) {
-            cb(null, {
+            cb({
               body: {}
             });
           }
@@ -240,7 +240,7 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json'
           },
           cb: function(cb) {
-            cb(null, {
+            cb({
               body: {}
             });
           }
@@ -291,7 +291,7 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json'
           },
           cb: function(cb) {
-            cb(null, {
+            cb({
               body: {}
             });
           }
@@ -325,7 +325,7 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json'
           },
           cb: function(cb) {
-            cb(null, {
+            cb({
               body: {}
             });
           }
@@ -359,7 +359,7 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json'
           },
           cb: function(cb) {
-            cb(null, {
+            cb({
               body: {}
             });
           }
@@ -395,7 +395,7 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json'
           },
           cb: function(cb) {
-            cb(null, {
+            cb({
               body: {}
             });
           }
