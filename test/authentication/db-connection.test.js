@@ -92,7 +92,7 @@ describe('auth0.authentication', function() {
               'Content-Type': 'application/json',
               'Auth0-Client': telemetryInfo
             },
-            cb: function(cb) {
+            then: function(cb) {
               cb({
                 body: {
                   email: 'the email'
@@ -142,7 +142,7 @@ describe('auth0.authentication', function() {
               'Content-Type': 'application/json',
               'Auth0-Client': telemetryInfo
             },
-            cb: function(cb) {
+            then: function(cb) {
               cb({
                 body: {
                   email: 'the email'

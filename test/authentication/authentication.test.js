@@ -472,7 +472,7 @@ describe('auth0.authentication', function() {
             'Content-Type': 'application/json',
             Authorization: 'Bearer abcd1234'
           },
-          cb: function(cb) {
+          then: function(cb) {
             cb({
               body: {
                 user_id: '...',
@@ -526,7 +526,7 @@ describe('auth0.authentication', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          then: function(cb) {
             cb({
               body: {
                 token_type: 'Bearer',
@@ -645,7 +645,7 @@ describe('auth0.authentication', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          then: function(cb) {
             cb({
               body: {
                 token_type: 'Bearer',
@@ -698,7 +698,7 @@ describe('auth0.authentication', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          then: function(cb) {
             cb({
               body: {
                 country_code: 'AR'
