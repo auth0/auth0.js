@@ -141,7 +141,7 @@ describe('helpers requestBuilder', function() {
       var handler = req
         .get('https://test.com')
         .withCredentials()
-        .end(function(err, data) {});
+        .then(function(data) {});
 
       expect(handler.getMethod()).to.eql('GET');
       expect(handler.getUrl()).to.eql('https://test.com');
@@ -159,7 +159,7 @@ describe('helpers requestBuilder', function() {
       var handler = req
         .get('https://test.com')
         .withCredentials()
-        .end(function(err, data) {});
+        .then(function(data) {});
 
       expect(handler.request.willRetry).to.eql(retryTimes);
     });
@@ -177,7 +177,7 @@ describe('helpers requestBuilder', function() {
           attr1: 'attribute 1',
           attr2: 'attribute 2'
         })
-        .end(function(err, data) {});
+        .then(function(data) {});
 
       expect(trimUserDetailsStub).to.be.called;
       trimUserDetailsStub.restore();
@@ -201,7 +201,7 @@ describe('helpers requestBuilder', function() {
           attr1: 'attribute 1',
           attr2: 'attribute 2'
         })
-        .end(function(err, data) {});
+        .then(function(data) {});
 
       expect(handler.getMethod()).to.eql('PATCH');
       expect(handler.getUrl()).to.eql('https://test.com');
@@ -297,7 +297,7 @@ describe('helpers requestBuilder', function() {
       var handler = req
         .get('https://test.com', { noHeaders: true })
         .withCredentials()
-        .end(function(err, data) {});
+        .then(function(data) {});
 
       expect(handler.getMethod()).to.eql('GET');
       expect(handler.getUrl()).to.eql('https://test.com');
@@ -312,7 +312,7 @@ describe('helpers requestBuilder', function() {
       var handler = req
         .get('https://test.com', { noHeaders: true })
         .withCredentials()
-        .end(function(err, data) {});
+        .then(function(data) {});
 
       expect(handler.request.willRetry).to.eql(retryTimes);
     });
@@ -330,7 +330,7 @@ describe('helpers requestBuilder', function() {
           attr1: 'attribute 1',
           attr2: 'attribute 2'
         })
-        .end(function(err, data) {});
+        .then(function(data) {});
 
       expect(trimUserDetailsStub).to.be.called;
       trimUserDetailsStub.restore();
@@ -351,7 +351,7 @@ describe('helpers requestBuilder', function() {
           attr1: 'attribute 1',
           attr2: 'attribute 2'
         })
-        .end(function(err, data) {});
+        .then(function(data) {});
 
       expect(handler.getMethod()).to.eql('PATCH');
       expect(handler.getUrl()).to.eql('https://test.com');
