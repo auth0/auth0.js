@@ -50,8 +50,8 @@ describe('auth0.WebAuth.redirect', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 email_verified: false,
                 email: 'me@example.com'
@@ -157,8 +157,8 @@ describe('auth0.WebAuth.redirect', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 _id: '...',
                 email_verified: false,
@@ -200,7 +200,7 @@ describe('auth0.WebAuth.redirect', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          then: function(cb) {
             cb({
               response: {
                 statusCode: 400,
@@ -279,8 +279,8 @@ describe('auth0.WebAuth.redirect', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {}
             });
           }
@@ -333,8 +333,8 @@ describe('auth0.WebAuth.redirect', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {}
             });
           }
@@ -378,7 +378,7 @@ describe('auth0.WebAuth.redirect', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          then: function(cb) {
             cb({
               error: 'some_error_code',
               error_description: 'Some error description'

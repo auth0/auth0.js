@@ -52,8 +52,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 login_ticket: 'a_login_ticket',
                 co_verifier: 'co_verifier',
@@ -87,8 +87,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 login_ticket: 'a_login_ticket',
                 co_verifier: 'co_verifier',
@@ -122,8 +122,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 login_ticket: 'a_login_ticket',
                 co_verifier: 'co_verifier',
@@ -168,8 +168,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 login_ticket: 'a_login_ticket',
                 co_verifier: 'co_verifier',
@@ -223,8 +223,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 login_ticket: 'a_login_ticket',
                 co_verifier: 'co_verifier',
@@ -260,8 +260,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 login_ticket: 'a_login_ticket',
                 co_verifier: 'co_verifier',
@@ -296,8 +296,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 login_ticket: 'a_login_ticket',
                 co_verifier: 'co_verifier',
@@ -335,8 +335,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
               headers: {
                 'Content-Type': 'application/json'
               },
-              cb: function(cb) {
-                cb({
+              catch: function(cb) {
+                cb(null, {
                   response: {
                     body: {
                       error: 'any_error',
@@ -383,7 +383,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
               headers: {
                 'Content-Type': 'application/json'
               },
-              cb: function(cb) {
+              then: function(cb) {
                 cb({ some: 'error' });
               }
             });

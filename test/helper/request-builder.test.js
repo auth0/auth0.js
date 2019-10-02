@@ -63,8 +63,8 @@ describe('helpers requestBuilder', function() {
               'Content-Type': 'application/json',
               'Auth0-Client': telemetryInfo
             },
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {
                   user_id: 'auth0|123',
                   email: 'me@example.com'
@@ -89,8 +89,8 @@ describe('helpers requestBuilder', function() {
               'Content-Type': 'application/json',
               'Auth0-Client': telemetryInfo
             },
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {
                   user_id: 'auth0|123',
                   email: 'me@example.com'
@@ -115,8 +115,8 @@ describe('helpers requestBuilder', function() {
               'Content-Type': 'application/json',
               'Auth0-Client': telemetryInfo
             },
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {
                   user_id: 'auth0|123',
                   email: 'me@example.com'
@@ -225,8 +225,8 @@ describe('helpers requestBuilder', function() {
         return new RequestMock(
           {
             headers: {},
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {
                   user_id: 'auth0|123',
                   email: 'me@example.com'
@@ -248,8 +248,8 @@ describe('helpers requestBuilder', function() {
               attr2: 'attribute 2'
             },
             headers: {},
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {
                   user_id: 'auth0|123',
                   email: 'me@example.com'
@@ -271,8 +271,8 @@ describe('helpers requestBuilder', function() {
               attr2: 'attribute 2'
             },
             headers: {},
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {
                   user_id: 'auth0|123',
                   email: 'me@example.com'

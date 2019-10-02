@@ -88,8 +88,8 @@ describe('auth0.WebAuth._universalLogin', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               text: 'the_form_html',
               type: 'text/html'
             });
@@ -176,7 +176,7 @@ describe('auth0.WebAuth._universalLogin', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
+          then: function(cb) {
             cb({
               name: 'ValidationError',
               code: 'invalid_user_password',
@@ -267,7 +267,7 @@ describe('auth0.WebAuth._universalLogin', function() {
             headers: {
               'Content-Type': 'application/json'
             },
-            cb: function(cb) {
+            then: function(cb) {
               cb({
                 response: {
                   body: {
@@ -291,8 +291,8 @@ describe('auth0.WebAuth._universalLogin', function() {
             headers: {
               'Content-Type': 'application/json'
             },
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {
                   _id: '...',
                   email_verified: false,
@@ -350,7 +350,7 @@ describe('auth0.WebAuth._universalLogin', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          then: function(cb) {
             cb({
               response: {
                 statusCode: 400,
@@ -413,8 +413,8 @@ describe('auth0.WebAuth._universalLogin', function() {
         expect(url).to.be('https://me.auth0.com/user/ssodata');
         return new RequestMock({
           headers: {},
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 sso: false
               }
@@ -438,8 +438,8 @@ describe('auth0.WebAuth._universalLogin', function() {
         );
         return new RequestMock({
           headers: {},
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 sso: false
               }

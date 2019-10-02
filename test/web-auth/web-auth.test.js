@@ -1295,7 +1295,7 @@ describe('auth0.WebAuth', function() {
           .stub(this.webAuth.client, 'userInfo')
           .callsFake(function(accessToken, cb) {
             expect(accessToken).to.be('VjubIMBmpgQ2W2');
-            cb(null, { from: 'userinfo' });
+            cb({ from: 'userinfo' });
           });
 
         this.webAuth.parseHash(
@@ -1343,7 +1343,7 @@ describe('auth0.WebAuth', function() {
           .stub(webAuth.client, 'userInfo')
           .callsFake(function(accessToken, cb) {
             expect(accessToken).to.be('VjubIMBmpgQ2W2');
-            cb(null, { from: 'userinfo' });
+            cb({ from: 'userinfo' });
           });
         sinon
           .stub(IdTokenVerifier.prototype, 'verify')
@@ -1680,7 +1680,7 @@ describe('auth0.WebAuth', function() {
         sinon
           .stub(SilentAuthenticationHandler.prototype, 'login')
           .callsFake(function(usePostMessage, cb) {
-            cb(null, { accessToken: '123' });
+            cb({ accessToken: '123' });
           });
 
         var webAuth = new WebAuth({
@@ -1806,8 +1806,8 @@ describe('auth0.WebAuth', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {});
+          then: function(cb) {
+            cb({});
           }
         });
       });
@@ -1836,8 +1836,8 @@ describe('auth0.WebAuth', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {});
+          then: function(cb) {
+            cb({});
           }
         });
       });
@@ -1943,8 +1943,8 @@ describe('auth0.WebAuth', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {}
             });
           }
@@ -1987,8 +1987,8 @@ describe('auth0.WebAuth', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {}
             });
           }
@@ -2334,8 +2334,8 @@ describe('auth0.WebAuth', function() {
             headers: {
               'Content-Type': 'application/json'
             },
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {
                   token_type: 'Bearer',
                   expires_in: 36000,
@@ -2357,8 +2357,8 @@ describe('auth0.WebAuth', function() {
             headers: {
               'Content-Type': 'application/json'
             },
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {
                   _id: '...',
                   email_verified: false,
@@ -2399,7 +2399,7 @@ describe('auth0.WebAuth', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          then: function(cb) {
             cb({
               response: {
                 statusCode: 400,
@@ -2808,7 +2808,7 @@ describe('auth0.WebAuth', function() {
             prompt: 'none'
           });
           expect(parsedHash).to.be.eql(response);
-          cb(null, {
+          cb({
             accessToken: response.access_token
           });
         });
@@ -2831,7 +2831,7 @@ describe('auth0.WebAuth', function() {
       sinon
         .stub(WebAuth.prototype, 'validateAuthenticationResponse')
         .callsFake(function(options, parsedHash, cb) {
-          cb(null, {
+          cb({
             accessToken: response.access_token,
             idTokenPayload: response.idTokenPayload
           });

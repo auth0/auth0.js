@@ -153,7 +153,7 @@ describe('auth0.WebAuth.popup', function() {
           expect(options.popupOptions.height).to.be(300);
           expect(options.popupOptions.width).to.be(250);
           expect(options.popupOptions).to.not.have.property('extra');
-          cb(null, {
+          cb({
             email_verified: false,
             email: 'me@example.com'
           });
@@ -193,7 +193,7 @@ describe('auth0.WebAuth.popup', function() {
           expect(components.query.owp).to.be('true');
           expect(relayUrl).to.be('https://me.auth0.com/relay.html');
           expect(options).to.eql({});
-          cb(null, {
+          cb({
             email_verified: false,
             email: 'me@example.com'
           });
@@ -301,8 +301,8 @@ describe('auth0.WebAuth.popup', function() {
             headers: {
               'Content-Type': 'application/json'
             },
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {}
               });
             }
@@ -321,8 +321,8 @@ describe('auth0.WebAuth.popup', function() {
             headers: {
               'Content-Type': 'application/json'
             },
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {
                   idToken: 'id_token.id_token.id_token',
                   accessToken: 'access_token',
@@ -369,8 +369,8 @@ describe('auth0.WebAuth.popup', function() {
             headers: {
               'Content-Type': 'application/json'
             },
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {}
               });
             }
@@ -389,8 +389,8 @@ describe('auth0.WebAuth.popup', function() {
             headers: {
               'Content-Type': 'application/json'
             },
-            cb: function(cb) {
-              cb(null, {
+            then: function(cb) {
+              cb({
                 body: {
                   id_token: 'id_token.id_token.id_token',
                   access_token: 'access_token',
@@ -439,7 +439,7 @@ describe('auth0.WebAuth.popup', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          then: function(cb) {
             cb(assert_err);
           }
         });
@@ -542,8 +542,8 @@ describe('auth0.WebAuth.popup', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
-            cb(null, {
+          then: function(cb) {
+            cb({
               body: {
                 _id: '...',
                 email_verified: false,
@@ -605,7 +605,7 @@ describe('auth0.WebAuth.popup', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          then: function(cb) {
             cb({
               response: {
                 statusCode: 400,
@@ -670,7 +670,7 @@ describe('auth0.WebAuth.popup', function() {
     });
     it('sends parseHash result to the callback when there is no error', function(done) {
       sinon.stub(this.auth0, 'parseHash').callsFake(function(options, cb) {
-        cb(null, { accessToken: 'accessToken' });
+        cb({ accessToken: 'accessToken' });
       });
       sinon.stub(WinChan, 'onOpen').callsFake(function(onOpenCallback) {
         onOpenCallback('https://baseoptions.popupOrigin.com', null, function(

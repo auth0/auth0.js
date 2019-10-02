@@ -109,7 +109,7 @@ describe('auth0.WebAuth extensibility', function() {
           );
           expect(relayUrl).to.be('https://test.auth0.com/relay.html');
           expect(options).to.eql({});
-          cb(null, {
+          cb({
             email_verified: false,
             email: 'me@example.com'
           });
