@@ -80,7 +80,9 @@ describe('helpers storage handler', function() {
   describe('should use cookie storage', function() {
     it('when __tryLocalStorageFirst is true but localStorage is not available', function() {
       windowHandler.getWindow.restore();
-      sinon.stub(windowHandler, 'getWindow').callsFake(function(message) {});
+      sinon.stub(windowHandler, 'getWindow').callsFake(function(message) {
+        return {};
+      });
 
       var handler = new StorageHandler({ __tryLocalStorageFirst: true });
       expect(handler.storage).to.be.a(CookieStorage);
