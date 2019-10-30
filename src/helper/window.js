@@ -23,9 +23,18 @@ function getOrigin() {
   return origin;
 }
 
+function isUniversalLoginPage(domain) {
+  const currentHost = getWindow().location.host;
+  return (
+    currentHost === domain ||
+    currentHost === domain.replace('auth0.com', 'auth0.cloud')
+  );
+}
+
 export default {
   redirect: redirect,
   getDocument: getDocument,
   getWindow: getWindow,
-  getOrigin: getOrigin
+  getOrigin: getOrigin,
+  isUniversalLoginPage: isUniversalLoginPage
 };

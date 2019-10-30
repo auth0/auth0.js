@@ -26,11 +26,14 @@ describe('auth0.WebAuth._universalLogin', function() {
   });
   context('login', function() {
     beforeEach(function() {
+      sinon
+        .stub(windowHelper, 'isUniversalLoginPage')
+        .callsFake(function(domain) {
+          expect(domain).to.be('me.auth0.com');
+          return true;
+        });
       sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {
-          location: {
-            host: 'me.auth0.com'
-          },
           crypto: {
             getRandomValues: function() {
               return [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
@@ -41,6 +44,7 @@ describe('auth0.WebAuth._universalLogin', function() {
     });
     afterEach(function() {
       windowHelper.getWindow.restore();
+      windowHelper.isUniversalLoginPage.restore();
       if (request.post.restore) {
         request.post.restore();
       }
@@ -55,7 +59,13 @@ describe('auth0.WebAuth._universalLogin', function() {
         clientID: '0HP71GSd6PuoRY',
         responseType: 'token'
       };
-
+      windowHelper.isUniversalLoginPage.restore();
+      sinon
+        .stub(windowHelper, 'isUniversalLoginPage')
+        .callsFake(function(domain) {
+          expect(domain).to.be(configuration.domain);
+          return false;
+        });
       var auth0 = new WebAuth(configuration);
 
       expect(function() {
@@ -228,11 +238,9 @@ describe('auth0.WebAuth._universalLogin', function() {
         responseType: 'token',
         _sendTelemetry: false
       });
+
       sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {
-          location: {
-            host: 'me.auth0.com'
-          },
           crypto: {
             getRandomValues: function() {
               return [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
@@ -241,8 +249,17 @@ describe('auth0.WebAuth._universalLogin', function() {
         };
       });
     });
+    beforeEach(() => {
+      sinon
+        .stub(windowHelper, 'isUniversalLoginPage')
+        .callsFake(function(domain) {
+          expect(domain).to.be('me.auth0.com');
+          return true;
+        });
+    });
 
     afterEach(function() {
+      windowHelper.isUniversalLoginPage.restore();
       request.post.restore();
     });
 

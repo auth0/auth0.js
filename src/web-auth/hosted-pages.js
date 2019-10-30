@@ -44,7 +44,7 @@ function HostedPages(client, options) {
  * @param {credentialsCallback} cb
  */
 HostedPages.prototype.login = function(options, cb) {
-  if (windowHelper.getWindow().location.host !== this.baseOptions.domain) {
+  if (!windowHelper.isUniversalLoginPage(this.baseOptions.domain)) {
     throw new Error(
       'This method is meant to be used only inside the Universal Login Page.'
     );

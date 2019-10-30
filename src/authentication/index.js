@@ -464,9 +464,8 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
   if (!this.auth0) {
     this.auth0 = new WebAuth(this.baseOptions);
   }
-  var isHostedLoginPage =
-    windowHelper.getWindow().location.host === this.baseOptions.domain;
-  if (isHostedLoginPage) {
+
+  if (windowHelper.isUniversalLoginPage(this.baseOptions.domain)) {
     return this.auth0._universalLogin.getSSOData(withActiveDirectories, cb);
   }
   if (typeof withActiveDirectories === 'function') {

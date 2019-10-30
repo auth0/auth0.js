@@ -48,9 +48,8 @@ TransactionManager.prototype.generateTransaction = function(
 ) {
   state = state || random.randomString(this.keyLength);
   nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
-  var isHostedLoginPage =
-    windowHelper.getWindow().location.host === this.options.domain;
-  if (!isHostedLoginPage) {
+
+  if (!windowHelper.isUniversalLoginPage(this.options.domain)) {
     this.storage.setItem(
       this.namespace + state,
       {

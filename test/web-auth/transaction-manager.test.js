@@ -9,13 +9,16 @@ import * as times from '../../src/helper/times';
 
 context('TransactionManager', function() {
   beforeEach(function() {
-    sinon.stub(windowHelper, 'getWindow').callsFake(function() {
-      return { location: { host: 'myapp.com' } };
-    });
+    sinon
+      .stub(windowHelper, 'isUniversalLoginPage')
+      .callsFake(function(domain) {
+        expect(domain).to.be('myapp.auth0.com');
+        return false;
+      });
     this.tm = new TransactionManager({ domain: 'myapp.auth0.com' });
   });
   afterEach(function() {
-    windowHelper.getWindow.restore();
+    windowHelper.isUniversalLoginPage.restore();
   });
   context('process', function() {
     beforeEach(function() {
@@ -97,10 +100,13 @@ context('TransactionManager', function() {
     });
     context('when inside the hosted login page', function() {
       beforeEach(function() {
-        windowHelper.getWindow.restore();
-        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
-          return { location: { host: 'auth.myapp.com' } };
-        });
+        windowHelper.isUniversalLoginPage.restore();
+        sinon
+          .stub(windowHelper, 'isUniversalLoginPage')
+          .callsFake(function(domain) {
+            expect(domain).to.be('auth.myapp.com');
+            return true;
+          });
         this.tm = new TransactionManager({ domain: 'auth.myapp.com' });
       });
       it('uses nonce/state when provided', function() {

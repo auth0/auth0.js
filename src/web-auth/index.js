@@ -750,9 +750,7 @@ WebAuth.prototype.login = function(options, cb) {
     .with(options);
   params = this.transactionManager.process(params);
 
-  var isHostedLoginPage =
-    windowHelper.getWindow().location.host === this.baseOptions.domain;
-  if (isHostedLoginPage) {
+  if (windowHelper.isUniversalLoginPage(this.baseOptions.domain)) {
     params.connection = params.realm;
     delete params.realm;
     this._universalLogin.login(params, cb);
@@ -789,9 +787,7 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
     .with(options);
   params = this.transactionManager.process(params);
 
-  var isHostedLoginPage =
-    windowHelper.getWindow().location.host === this.baseOptions.domain;
-  if (isHostedLoginPage) {
+  if (windowHelper.isUniversalLoginPage(this.baseOptions.domain)) {
     this.passwordlessVerify(params, cb);
   } else {
     var crossOriginOptions = objectHelper.extend(

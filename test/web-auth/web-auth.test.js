@@ -2026,17 +2026,16 @@ describe('auth0.WebAuth', function() {
     });
     context('when outside of the universal login page', function() {
       beforeEach(function() {
-        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
-          return {
-            location: {
-              host: 'other-domain.auth0.com'
-            }
-          };
-        });
+        sinon
+          .stub(windowHelper, 'isUniversalLoginPage')
+          .callsFake(function(domain) {
+            expect(domain).to.be('me.auth0.com');
+            return false;
+          });
       });
 
       afterEach(function() {
-        windowHelper.getWindow.restore();
+        windowHelper.isUniversalLoginPage.restore();
         if (CrossOriginAuthentication.prototype.login.restore) {
           CrossOriginAuthentication.prototype.login.restore();
         }
@@ -2109,17 +2108,16 @@ describe('auth0.WebAuth', function() {
     });
     context('when inside of the universal login page', function() {
       beforeEach(function() {
-        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
-          return {
-            location: {
-              host: 'me.auth0.com'
-            }
-          };
-        });
+        sinon
+          .stub(windowHelper, 'isUniversalLoginPage')
+          .callsFake(function(domain) {
+            expect(domain).to.be('me.auth0.com');
+            return true;
+          });
       });
 
       afterEach(function() {
-        windowHelper.getWindow.restore();
+        windowHelper.isUniversalLoginPage.restore();
       });
       it('should call `webauth.passwordlessVerify` with phoneNumber', function(done) {
         var expectedOptions = {
@@ -2454,17 +2452,16 @@ describe('auth0.WebAuth', function() {
         });
       });
       beforeEach(function() {
-        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
-          return {
-            location: {
-              host: 'other-domain.auth0.com'
-            }
-          };
-        });
+        sinon
+          .stub(windowHelper, 'isUniversalLoginPage')
+          .callsFake(function(domain) {
+            expect(domain).to.be('me.auth0.com');
+            return false;
+          });
       });
 
       afterEach(function() {
-        windowHelper.getWindow.restore();
+        windowHelper.isUniversalLoginPage.restore();
         CrossOriginAuthentication.prototype.login.restore();
       });
 
@@ -2499,16 +2496,15 @@ describe('auth0.WebAuth', function() {
         });
       });
       beforeEach(function() {
-        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
-          return {
-            location: {
-              host: 'me.auth0.com'
-            }
-          };
-        });
+        sinon
+          .stub(windowHelper, 'isUniversalLoginPage')
+          .callsFake(function(domain) {
+            expect(domain).to.be('me.auth0.com');
+            return true;
+          });
       });
       afterEach(function() {
-        windowHelper.getWindow.restore();
+        windowHelper.isUniversalLoginPage.restore();
       });
       it('calls _hostedPages.login mapping the connection parameter', function(done) {
         var expectedOptions = {

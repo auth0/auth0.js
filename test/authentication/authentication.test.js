@@ -301,12 +301,15 @@ describe('auth0.authentication', function() {
         Storage.prototype.getItem.restore();
       });
       beforeEach(function() {
-        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
-          return { location: { host: 'other-domain.auth0.com' } };
-        });
+        sinon
+          .stub(windowHelper, 'isUniversalLoginPage')
+          .callsFake(function(domain) {
+            expect(domain).to.be('me.auth0.com');
+            return false;
+          });
       });
       afterEach(function() {
-        windowHelper.getWindow.restore();
+        windowHelper.isUniversalLoginPage.restore();
       });
       it('fails if callback is not a function', function() {
         var _this = this;
@@ -433,12 +436,15 @@ describe('auth0.authentication', function() {
         });
       });
       beforeEach(function() {
-        sinon.stub(windowHelper, 'getWindow').callsFake(function() {
-          return { location: { host: 'me.auth0.com' } };
-        });
+        sinon
+          .stub(windowHelper, 'isUniversalLoginPage')
+          .callsFake(function(domain) {
+            expect(domain).to.be('me.auth0.com');
+            return true;
+          });
       });
       afterEach(function() {
-        windowHelper.getWindow.restore();
+        windowHelper.isUniversalLoginPage.restore();
       });
       it('calls webauth._universalLogin.getSSOData with same params', function() {
         this.auth0.getSSOData('withActiveDirectories', 'cb');
