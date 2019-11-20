@@ -76,6 +76,11 @@ function WebAuth(options) {
         type: 'array',
         message: 'plugins is not valid'
       },
+      maxAge: {
+        optional: true,
+        type: 'number',
+        message: 'maxAge is not valid'
+      },
       _disableDeprecationWarnings: {
         optional: true,
         type: 'boolean',
@@ -414,7 +419,8 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
     jwksURI: this.baseOptions.jwksURI,
     audience: this.baseOptions.clientID,
     leeway: this.baseOptions.leeway || 0,
-    __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
+    __disableExpirationCheck: this.baseOptions.__disableExpirationCheck,
+    maxAge: this.baseOptions.maxAge
   });
 
   verifier.verify(token, nonce, function(err, payload) {

@@ -70,6 +70,7 @@ describe('auth0.WebAuth', function() {
         audience: 'urn:site:demo:blog',
         _sendTelemetry: false,
         _timesToRetryFailedRequests: 2,
+        maxAge: 83764,
         overrides: {
           __tenant: 'tenant1',
           __token_issuer: 'issuer1',
@@ -80,6 +81,7 @@ describe('auth0.WebAuth', function() {
       expect(webAuth.baseOptions.tenant).to.be('tenant1');
       expect(webAuth.baseOptions.token_issuer).to.be('issuer1');
       expect(webAuth.baseOptions.jwksURI).to.be('jwks_uri');
+      expect(webAuth.baseOptions.maxAge).to.be(83764);
     });
   });
 
