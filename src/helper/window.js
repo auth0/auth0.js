@@ -27,7 +27,7 @@ function isUniversalLoginPage(domain) {
   const currentHost = getWindow().location.host;
   return (
     currentHost === domain ||
-    currentHost === domain.replace('auth0.com', 'auth0.cloud')
+    currentHost === domain.replace('auth0.com', 'auth0users.com')
   );
 }
 
