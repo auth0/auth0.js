@@ -44,7 +44,7 @@ describe('helpers window', function() {
       expect(windowHelper.isUniversalLoginPage('brucke.auth0.com')).to.be(true);
     });
     it('returns true when current host === auth0 tenant specific domain', function() {
-      global.window = { location: { host: 'brucke.auth0.cloud' } };
+      global.window = { location: { host: 'brucke.auth0users.com' } };
       expect(windowHelper.isUniversalLoginPage('brucke.auth0.com')).to.be(true);
     });
     it('returns true when using a custom domain', function() {
