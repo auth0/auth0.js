@@ -231,6 +231,7 @@ describe('auth0.authentication', function() {
         _sendTelemetry: false,
         scope: 'will be overridden'
       });
+
       sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/passwordless/start');
         return new RequestMock({
@@ -257,7 +258,7 @@ describe('auth0.authentication', function() {
         });
       });
 
-      this.auth0.passwordless.start(
+      auth0.passwordless.start(
         {
           connection: 'the_connection',
           email: 'me@example.com',
