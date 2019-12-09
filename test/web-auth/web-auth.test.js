@@ -1300,6 +1300,7 @@ describe('auth0.WebAuth', function() {
           IdTokenVerifier.prototype.verify.restore();
         }
       });
+
       it('should use result from /userinfo as idTokenPayload', function(done) {
         sinon
           .stub(this.webAuth.client, 'userInfo')
@@ -1332,6 +1333,7 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
+
       it('should not throw an error when the payload.nonce is undefined and transactionNonce is null', function(done) {
         TransactionManager.prototype.getStoredTransaction.restore();
         sinon
@@ -1408,7 +1410,8 @@ describe('auth0.WebAuth', function() {
           function(err, data) {
             expect(err).to.be.eql({
               error: 'invalid_token',
-              errorDescription: 'Nonce does not match.'
+              errorDescription:
+                'Nonce (nonce) claim value mismatch in the ID token; expected "asfd", found "the-nonce"'
             });
             done();
           }

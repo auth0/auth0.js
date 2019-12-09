@@ -348,24 +348,37 @@ WebAuth.prototype.validateAuthenticationResponse = function(
         }
       );
     }
+
     if (
       validationError.error !== 'invalid_token' ||
-      validationError.errorDescription === 'Nonce does not match.'
+      (validationError.errorDescription &&
+        validationError.errorDescription.indexOf(
+          'Nonce (nonce) claim value mismatch in the ID token'
+        ) > -1)
     ) {
       return callback(validationError);
     }
+
     // if it's an invalid_token error, decode the token
     var decodedToken = new IdTokenVerifier().decode(parsedHash.id_token);
+
     // if the alg is not HS256, return the raw error
     if (decodedToken.header.alg !== 'HS256') {
       return callback(validationError);
     }
+
     if ((decodedToken.payload.nonce || null) !== transactionNonce) {
       return callback({
         error: 'invalid_token',
-        errorDescription: 'Nonce does not match.'
+        errorDescription:
+          'Nonce (nonce) claim value mismatch in the ID token; expected "' +
+          transactionNonce +
+          '", found "' +
+          decodedToken.payload.nonce +
+          '"'
       });
     }
+
     if (!parsedHash.access_token) {
       var noAccessTokenError = {
         error: 'invalid_token',
@@ -374,6 +387,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(
       };
       return callback(noAccessTokenError);
     }
+
     // if the alg is HS256, use the /userinfo endpoint to build the payload
     return _this.client.userInfo(parsedHash.access_token, function(
       errUserInfo,
