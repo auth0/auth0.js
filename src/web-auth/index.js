@@ -17,6 +17,10 @@ import CrossOriginAuthentication from './cross-origin-authentication';
 import WebMessageHandler from './web-message-handler';
 import HostedPages from './hosted-pages';
 
+function defaultClock() {
+  return new Date();
+}
+
 /**
  * Handles all the browser's AuthN/AuthZ flows
  * @constructor
@@ -419,8 +423,8 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
     jwksURI: this.baseOptions.jwksURI,
     audience: this.baseOptions.clientID,
     leeway: this.baseOptions.leeway || 0,
-    __disableExpirationCheck: this.baseOptions.__disableExpirationCheck,
-    maxAge: this.baseOptions.maxAge
+    maxAge: this.baseOptions.maxAge,
+    __clock: this.baseOptions.__clock || defaultClock
   });
 
   verifier.verify(token, nonce, function(err, payload) {
