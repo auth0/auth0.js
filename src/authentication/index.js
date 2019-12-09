@@ -547,6 +547,28 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
 };
 
 /**
+ * Makes a call to the `/usernamepassword/challenge` endpoint
+ * and returns the challenge (captcha) if necessary.
+ *
+ * @method getChallenge
+ * @param {callback} cb
+ */
+Authentication.prototype.getChallenge = function(cb) {
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  if (!this.baseOptions.state) {
+    return cb();
+  }
+
+  var url = urljoin(this.baseOptions.rootUrl, 'usernamepassword', 'challenge');
+
+  return this.request
+    .post(url)
+    .send({ state: this.baseOptions.state })
+    .end(responseHandler(cb, { ignoreCasing: true }));
+};
+
+/**
  * @callback delegationCallback
  * @param {Error} [err] error returned by Auth0 with the reason why the delegation failed
  * @param {Object} [result] result of the delegation request. The payload depends on what ai type was used

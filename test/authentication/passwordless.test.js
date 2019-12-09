@@ -174,7 +174,8 @@ describe('auth0.authentication', function() {
         clientID: '...',
         redirectUri: 'http://page.com/callback',
         responseType: 'code',
-        _sendTelemetry: false
+        _sendTelemetry: false,
+        scope: ''
       });
     });
 
@@ -222,6 +223,15 @@ describe('auth0.authentication', function() {
     });
 
     it('should call passwordless start with authParams', function(done) {
+      var auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'will be overridden',
+        responseType: 'code',
+        _sendTelemetry: false,
+        scope: 'will be overridden'
+      });
+
       sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/passwordless/start');
         return new RequestMock({
@@ -232,8 +242,9 @@ describe('auth0.authentication', function() {
             send: 'code',
             authParams: {
               scope: 'openid email',
-              redirect_uri: 'http://page.com/callback',
-              response_type: 'code'
+              redirect_uri: 'http://page.com/othercallback',
+              response_type: 'token',
+              protocol: 'wsfed'
             }
           },
           headers: {
@@ -247,12 +258,17 @@ describe('auth0.authentication', function() {
         });
       });
 
-      this.auth0.passwordless.start(
+      auth0.passwordless.start(
         {
           connection: 'the_connection',
           email: 'me@example.com',
           send: 'code',
-          scope: 'openid email'
+          authParams: {
+            redirectUri: 'http://page.com/othercallback',
+            protocol: 'wsfed',
+            responseType: 'token',
+            scope: 'openid email'
+          }
         },
         function(err, data) {
           expect(err).to.be(null);

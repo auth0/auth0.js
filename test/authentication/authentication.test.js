@@ -10,7 +10,6 @@ import RequestBuilder from '../../src/helper/request-builder';
 import windowHelper from '../../src/helper/window';
 import Storage from '../../src/helper/storage';
 import Authentication from '../../src/authentication';
-import WebAuth from '../../src/web-auth';
 
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 
@@ -23,6 +22,7 @@ describe('auth0.authentication', function() {
       }
     };
   });
+
   describe('initialization', function() {
     it('should use first argument as options when only one argument is used', function() {
       var auth0 = new Authentication({ domain: 'foo', clientID: 'cid' });
@@ -614,6 +614,96 @@ describe('auth0.authentication', function() {
           done();
         }
       );
+    });
+  });
+
+  context('challenge', function() {
+    context('when the client does not have state', function() {
+      before(function() {
+        this.auth0 = new Authentication(this.webAuthSpy, {
+          domain: 'me.auth0.com',
+          clientID: '...',
+          redirectUri: 'http://page.com/callback',
+          responseType: 'code',
+          _sendTelemetry: false
+        });
+      });
+
+      it('should return nothing', function(done) {
+        this.auth0.getChallenge((err, challenge) => {
+          expect(err).to.not.be.ok();
+          expect(challenge).to.not.be.ok();
+          done();
+        });
+      });
+    });
+
+    context('when the client has state', function() {
+      before(function() {
+        this.auth0 = new Authentication(this.webAuthSpy, {
+          domain: 'me.auth0.com',
+          clientID: '...',
+          redirectUri: 'http://page.com/callback',
+          responseType: 'code',
+          _sendTelemetry: false,
+          state: '123abc'
+        });
+      });
+
+      afterEach(function() {
+        request.post.restore();
+      });
+
+      it('should post state and returns the image/type', function(done) {
+        sinon.stub(request, 'post').callsFake(function(url) {
+          expect(url).to.be('https://me.auth0.com/usernamepassword/challenge');
+          return new RequestMock({
+            body: {
+              state: '123abc'
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            cb: function(cb) {
+              cb(null, {
+                body: {
+                  image: 'svg+yadayada',
+                  type: 'code'
+                }
+              });
+            }
+          });
+        });
+
+        this.auth0.getChallenge((err, challenge) => {
+          expect(err).to.not.be.ok();
+          expect(challenge.image).to.be('svg+yadayada');
+          expect(challenge.type).to.be('code');
+          done();
+        });
+      });
+
+      it('should return the error if network fails', function(done) {
+        sinon.stub(request, 'post').callsFake(function(url) {
+          expect(url).to.be('https://me.auth0.com/usernamepassword/challenge');
+          return new RequestMock({
+            body: {
+              state: '123abc'
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            cb: function(cb) {
+              cb(new Error('error error error'));
+            }
+          });
+        });
+
+        this.auth0.getChallenge((err, challenge) => {
+          expect(err.original.message).to.equal('error error error');
+          done();
+        });
+      });
     });
   });
 

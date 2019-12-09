@@ -133,17 +133,19 @@ PasswordlessAuthentication.prototype.start = function(options, cb) {
 
   if (body.scope) {
     body.authParams = body.authParams || {};
-    body.authParams.scope = body.scope;
+    body.authParams.scope = body.authParams.scope || body.scope;
   }
 
   if (body.redirectUri) {
     body.authParams = body.authParams || {};
-    body.authParams.redirect_uri = body.redirectUri;
+    body.authParams.redirect_uri =
+      body.authParams.redirectUri || body.redirectUri;
   }
 
   if (body.responseType) {
     body.authParams = body.authParams || {};
-    body.authParams.response_type = body.responseType;
+    body.authParams.response_type =
+      body.authParams.responseType || body.responseType;
   }
 
   delete body.redirectUri;
