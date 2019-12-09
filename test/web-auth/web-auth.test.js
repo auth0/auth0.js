@@ -1288,10 +1288,10 @@ describe('auth0.WebAuth', function() {
           domain: 'auth0-tests-lock.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'token id_token',
-          __disableExpirationCheck: true
+          responseType: 'token id_token'
         });
       });
+
       afterEach(function() {
         if (this.webAuth.client.userInfo.restore) {
           this.webAuth.client.userInfo.restore();
@@ -1348,15 +1348,16 @@ describe('auth0.WebAuth', function() {
           domain: 'auth0-tests-lock.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'id_token',
-          __disableExpirationCheck: true
+          responseType: 'id_token'
         });
+
         sinon
           .stub(webAuth.client, 'userInfo')
           .callsFake(function(accessToken, cb) {
             expect(accessToken).to.be('VjubIMBmpgQ2W2');
             cb(null, { from: 'userinfo' });
           });
+
         sinon
           .stub(IdTokenVerifier.prototype, 'verify')
           .callsFake(function(_, __, cb) {
@@ -1387,13 +1388,13 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
+
       it('should still throw an error with an invalid nonce', function(done) {
         var webAuth = new WebAuth({
           domain: 'auth0-tests-lock.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'id_token',
-          __disableExpirationCheck: true
+          responseType: 'id_token'
         });
         sinon
           .stub(IdTokenVerifier.prototype, 'verify')
@@ -1423,8 +1424,7 @@ describe('auth0.WebAuth', function() {
           domain: 'auth0-tests-lock.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'id_token',
-          __disableExpirationCheck: true
+          responseType: 'id_token'
         });
         sinon
           .stub(IdTokenVerifier.prototype, 'verify')
@@ -1452,8 +1452,7 @@ describe('auth0.WebAuth', function() {
           domain: 'auth0-tests-lock.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'id_token',
-          __disableExpirationCheck: true
+          responseType: 'id_token'
         });
         sinon
           .stub(webAuth.client, 'userInfo')
@@ -2876,8 +2875,7 @@ describe('auth0.WebAuth', function() {
         domain: 'brucke.auth0.com',
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
-        responseType: 'token id_token',
-        __disableExpirationCheck: true
+        responseType: 'token id_token'
       });
 
       webAuth.validateToken('token', 'nonce', function() {});
@@ -2895,7 +2893,6 @@ describe('auth0.WebAuth', function() {
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
         responseType: 'token id_token',
-        __disableExpirationCheck: true,
         overrides: {
           __jwks_uri: 'jwks_uri'
         }
