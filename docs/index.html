@@ -111,6 +111,12 @@
       <li class="nav-item">
         <span class="nav-item-type type-function">F</span
         ><span class="nav-item-name"
+          ><a href="global.html#getChallenge">getChallenge</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
           ><a href="global.html#getSSOData">getSSOData</a></span
         >
       </li>
@@ -306,7 +312,7 @@
           <pre
             class="prettyprint source lang-html"
           ><code>&lt;!-- Latest patch release -->
-&lt;script src=&quot;https://cdn.auth0.com/js/auth0/9.11.3/auth0.min.js&quot;>&lt;/script>
+&lt;script src=&quot;https://cdn.auth0.com/js/auth0/9.12.0/auth0.min.js&quot;>&lt;/script>
 </code></pre>
           <p>From <a href="https://npmjs.org">npm</a>:</p>
           <pre class="prettyprint source lang-sh"><code>npm install auth0-js
@@ -525,18 +531,25 @@
               <strong>buildAuthorizeUrl(options)</strong>: Builds and returns
               the <code>/authorize</code> url in order to initialize a new
               authN/authZ transaction.
-              https://auth0.com/docs/api/authentication#database-ad-ldap-passive-
+              <a
+                href="https://auth0.com/docs/api/authentication#database-ad-ldap-passive-"
+                >https://auth0.com/docs/api/authentication#database-ad-ldap-passive-</a
+              >
             </li>
             <li>
               <strong>buildLogoutUrl(options)</strong>: Builds and returns the
               Logout url in order to initialize a new authN/authZ transaction.
-              https://auth0.com/docs/api/authentication#logout
+              <a href="https://auth0.com/docs/api/authentication#logout"
+                >https://auth0.com/docs/api/authentication#logout</a
+              >
             </li>
             <li>
               <strong>loginWithDefaultDirectory(options, cb)</strong>: Makes a
               call to the <code>oauth/token</code> endpoint with
               <code>password</code> grant type.
-              https://auth0.com/docs/api-auth/grant/password
+              <a href="https://auth0.com/docs/api-auth/grant/password"
+                >https://auth0.com/docs/api-auth/grant/password</a
+              >
             </li>
             <li>
               <strong>login(options, cb)</strong>: Makes a call to the
@@ -557,7 +570,7 @@
           <p>
             Provides an API Client for the Auth0 Management API (only methods
             meant to be used from the client with the user token). You should
-            use an access_token with the
+            use an <code>access_token</code> with the
             <code>https://YOUR_DOMAIN.auth0.com/api/v2/</code> audience to make
             this work. For more information, read
             <a
@@ -577,24 +590,36 @@
           <ul>
             <li>
               <strong>getUser(userId, cb)</strong>: Returns the user profile.
-              https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
+              <a
+                href="https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id"
+                >https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id</a
+              >
             </li>
             <li>
               <strong>patchUserMetadata(userId, userMetadata, cb)</strong>:
               Updates the user metadata. It will patch the user metadata with
               the attributes sent.
-              https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
+              <a
+                href="https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id"
+                >https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id</a
+              >
             </li>
             <li>
               <strong>patchUserAttributes(userId, user, cb)</strong>: Updates
               the user attributes. It will patch the root attributes that the
               server allows it. To check what attributes can be patched, go to
-              https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id
+              <a
+                href="https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id"
+                >https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id</a
+              >
             </li>
             <li>
               <strong>linkUser(userId, secondaryUserToken, cb)</strong>: Link
               two users.
-              https://auth0.com/docs/api/management/v2#!/Users/post_identities
+              <a
+                href="https://auth0.com/docs/api/management/v2#!/Users/post_identities"
+                >https://auth0.com/docs/api/management/v2#!/Users/post_identities</a
+              >
             </li>
           </ul>
           <h2>Documentation</h2>
@@ -618,25 +643,40 @@
             >.
           </p>
           <h2>Develop</h2>
+          <p>Run <code>yarn install</code> to set up the environment.</p>
           <p>
-            Run <code>npm start</code> and point your browser to
-            <a href="https://localhost:3000/example"
-              ><code>https://localhost:3000/example</code></a
+            Run <code>yarn start</code> to point your browser to
+            <a href="https://localhost:3000/"
+              ><code>https://localhost:3000/</code></a
             >
-            to run the example page.
+            to verify the example page works.
           </p>
-          <p>Run <code>npm run test</code> to run the test suite.</p>
+          <p>Run <code>yarn test</code> to run the test suite.</p>
+          <p>Run <code>yarn ci:test</code> to run the tests that ci runs.</p>
           <p>
-            Run <code>npm run test:watch</code> to run the test suite while you
+            Run <code>yarn test:watch</code> to run the test suite while you
             work.
           </p>
           <p>
-            Run <code>npm run test:coverage</code> to run the test suite with
+            Run <code>yarn test:coverage</code> to run the test suite with
             coverage report.
           </p>
           <p>
-            Run <code>npm run lint</code> to run the linter and check code
-            styles.
+            Run <code>yarn lint</code> to run the linter and check code styles.
+          </p>
+          <p>
+            Run
+            <code
+              >yarn install &amp;&amp; yarn build &amp;&amp; yarn
+              test:es-check:es5 &amp;&amp; yarn
+              test:es-check:es2015:module</code
+            >
+            to check for JS incompatibility.
+          </p>
+          <p>
+            See <a href=".circleci/config.yml">.circleci/config.yml</a> for
+            additional checks that might be run as part of
+            <a href="https://circleci.com/">circleci integration tests</a>.
           </p>
           <h2>Issue Reporting</h2>
           <p>
@@ -668,8 +708,8 @@
 
     <footer>
       Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
-      Tue Jul 23 2019 10:46:01 GMT-0300 (Brasilia Standard Time) using the
-      Minami theme.
+      Wed Dec 11 2019 10:33:27 GMT+0000 (Greenwich Mean Time) using the Minami
+      theme.
     </footer>
 
     <script>
