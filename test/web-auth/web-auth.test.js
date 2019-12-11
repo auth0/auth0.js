@@ -70,6 +70,7 @@ describe('auth0.WebAuth', function() {
         audience: 'urn:site:demo:blog',
         _sendTelemetry: false,
         _timesToRetryFailedRequests: 2,
+        maxAge: 83764,
         overrides: {
           __tenant: 'tenant1',
           __token_issuer: 'issuer1',
@@ -80,6 +81,7 @@ describe('auth0.WebAuth', function() {
       expect(webAuth.baseOptions.tenant).to.be('tenant1');
       expect(webAuth.baseOptions.token_issuer).to.be('issuer1');
       expect(webAuth.baseOptions.jwksURI).to.be('jwks_uri');
+      expect(webAuth.baseOptions.maxAge).to.be(83764);
     });
   });
 
@@ -126,7 +128,7 @@ describe('auth0.WebAuth', function() {
       webAuth.renewAuth(options, function(err, data) {
         expect(err).to.eql({
           error: 'invalid_token',
-          errorDescription: 'Nonce does not match.'
+          errorDescription: `Nonce (nonce) claim value mismatch in the ID token; expected "thenonce", found "asfd"`
         });
         expect(data).to.be(undefined);
         SilentAuthenticationHandler.prototype.login.restore();
@@ -314,7 +316,7 @@ describe('auth0.WebAuth', function() {
         responseType: 'token'
       });
 
-      var data = webAuth.parseHash(
+      webAuth.parseHash(
         {
           hash:
             '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
@@ -346,10 +348,12 @@ describe('auth0.WebAuth', function() {
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
         responseType: 'id_token',
-        __disableExpirationCheck: true
+        __clock: function() {
+          return new Date(1521045300000);
+        }
       });
 
-      var data = webAuth.parseHash(
+      webAuth.parseHash(
         {
           hash:
             '#state=foo&token_type=Bearer&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJuaWNrbmFtZSI6ImpvaG5mb28iLCJuYW1lIjoiam9obmZvb0BnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvMzhmYTAwMjQyM2JkOGM5NDFjNmVkMDU4OGI2MGZmZWQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZqby5wbmciLCJ1cGRhdGVkX2F0IjoiMjAxOC0wMy0xNFQxNjozNDo1Ni40MjNaIiwiZW1haWwiOiJqb2huZm9vQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9icnVja2UuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVhMjA1NGZmNDUxNTc3MTFiZTgxODJmNCIsImF1ZCI6Ims1dTNvMmZpQUE4WHdlWEVFWDYwNEtDd0Nqemp0TVU2IiwiaWF0IjoxNTIxMDQ1Mjk2LCJleHAiOjE1MjEwODEyOTYsImF0X2hhc2giOiJjZHVrb2FVc3dNOWJvX3l6cmdWY3J3Iiwibm9uY2UiOiJsRkNuSTguY3JSVGRIZmRvNWsuek1YZlIzMTg1NmdLeiJ9.U4_F5Zw6xYVoHGiiem1wjz7i9eRaSOrt-L1e6hlu3wmqA-oNuVqf1tEYD9u0z5AbXXbQSr491A3VvUbLKjws13XETcljhaqigZ9q4HBpmzPlrUGmPreBLVQgGOaq5NVAViFTvORxYCMFLlc-SE6QI6xWF0AhFpoW7-hkOcOzXWAXqhkMgwAfjJ9aeOzSBgblmtx4duyNESBRefd3XPQrakWjGIqH3dFdc-lDFbY76eSLYfBi4AH-yim4egzB6LYOC-e2huZcHdmRAmEQaKZ7D7COBiGsgAPVGyjZtqfSQ2CRwNrAbxDwi8BqlLhQePOs6d3hqV-3OPLfdE6dUFh2DQ',
@@ -399,10 +403,10 @@ describe('auth0.WebAuth', function() {
         redirectUri: 'http://example.com/callback',
         clientID: 'BWDP9XS89CJq1w6Nzq7iFOHsTh6ChS2b',
         responseType: 'id_token',
-        __disableExpirationCheck: true
+        __clock: () => new Date(1521760350000)
       });
 
-      var data = webAuth.parseHash(
+      webAuth.parseHash(
         {
           hash:
             '#state=foo&token_type=Bearer&access_token=AiU65szv2vyh2xpom8Dqbkdwok4RRZkx&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJlbWFpbCI6ImpvaG5mb29AZ21haWwuY29tIiwidXNlcm5hbWUiOiJqb2huZm9vIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJ1c2VyX2lkIjoiYXV0aDB8NWEyMDU0ZmY0NTE1NzcxMWJlODE4MmY0IiwiY2xpZW50SUQiOiJCV0RQOVhTODlDSnExdzZOenE3aUZPSHNUaDZDaFMyYiIsInBpY3R1cmUiOiJodHRwczovL3MuZ3JhdmF0YXIuY29tL2F2YXRhci8zOGZhMDAyNDIzYmQ4Yzk0MWM2ZWQwNTg4YjYwZmZlZD9zPTQ4MCZyPXBnJmQ9aHR0cHMlM0ElMkYlMkZjZG4uYXV0aDAuY29tJTJGYXZhdGFycyUyRmpvLnBuZyIsIm5pY2tuYW1lIjoiam9obmZvbyIsImlkZW50aXRpZXMiOlt7InVzZXJfaWQiOiI1YTIwNTRmZjQ1MTU3NzExYmU4MTgyZjQiLCJwcm92aWRlciI6ImF1dGgwIiwiY29ubmVjdGlvbiI6ImFjbWUiLCJpc1NvY2lhbCI6ZmFsc2V9XSwidXBkYXRlZF9hdCI6IjIwMTgtMDMtMjJUMjM6MTI6MDIuNTc1WiIsImNyZWF0ZWRfYXQiOiIyMDE3LTExLTMwVDE4OjU5OjExLjM2OFoiLCJuYW1lIjoiam9obmZvb0BnbWFpbC5jb20iLCJpc3MiOiJodHRwczovL2JydWNrZS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWEyMDU0ZmY0NTE1NzcxMWJlODE4MmY0IiwiYXVkIjoiQldEUDlYUzg5Q0pxMXc2TnpxN2lGT0hzVGg2Q2hTMmIiLCJpYXQiOjE1MjE3NjAzMjIsImV4cCI6MTUyMTc5NjMyMn0.b1afXXSurcVvg71-9w0ABhxLfP5FCdSEPPDYqD8pj2yJXxdVbyK3kdd-caldW330FKwpJlibIbcT4Mz1EpkM_M4P7OyNb1_dJbEgXFoIyqshI4YyIOC0Hn95GPE4uBZMR4GH6O32Scw3KQl9M_pQOZrQySLvU-XNs0Ko99soZbivoc-HTLEXiHDEk9mmnQOBcz44XayMieLP5WQ3c-dDShpFw-Y-8QaaQr1WI1ailh_UdJeJq6SUdn4ItTPUWf7uhmDcWQPJyWh6MyHWBoL4iWh4ZEliVG8Js8J00higeoqP7rsrymb_Hvz5f801mzpro72zfar_tVMp144mH8A65g'
@@ -456,10 +460,10 @@ describe('auth0.WebAuth', function() {
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
         responseType: 'token id_token',
-        __disableExpirationCheck: true
+        __clock: () => new Date(1521662700000)
       });
 
-      var data = webAuth.parseHash(
+      webAuth.parseHash(
         {
           hash:
             '#state=foo&token_type=Bearer&access_token=L11oiFDHj3zmZid1AnsEuggXcMfjqe0X&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJuaWNrbmFtZSI6ImpvaG5mb28iLCJuYW1lIjoiam9obmZvb0BnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvMzhmYTAwMjQyM2JkOGM5NDFjNmVkMDU4OGI2MGZmZWQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZqby5wbmciLCJ1cGRhdGVkX2F0IjoiMjAxOC0wMy0yMVQyMDowNDo0Mi40OTNaIiwiZW1haWwiOiJqb2huZm9vQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9icnVja2UuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVhMjA1NGZmNDUxNTc3MTFiZTgxODJmNCIsImF1ZCI6Ims1dTNvMmZpQUE4WHdlWEVFWDYwNEtDd0Nqemp0TVU2IiwiaWF0IjoxNTIxNjYyNjgyLCJleHAiOjE1MjE2OTg2ODIsImF0X2hhc2giOiJKS2NaM3hTQ2NGVEE5NkxuQ3lJX0FRIiwibm9uY2UiOiJLdlhoc1VIc2VJSEl5emF1X2JVflJHQ2t1RUFDTE5HaiJ9.UbiWFikCkoX-m22mFnXJhKMY8M9BGMDJqZZ5J-iUAQwOmD-33-zX-AjSbD6zL6sOJoKJratJLtLa90tE3sDeokI9c8GE_JonfeF95knVPAx99tD5eCIJabV8HN_K1rfcgI_ed9v8RKQD9_dRkwUMHgXyceWeijnA9k8jG-pe1iXAtnn386G5s6fj-do8SUvC2MFWNmD5VhkW-CyEg_Chui8BoOSM9d7liMZRQkgKA2aGl5t2qqvOu0ZNJwaWoeQ5T0R-h2Yk6Om_alFKyLdZXsZY2LRYQdbk4nEgxY59241HPZGHYOTJN5uLlbcxKyouTyM7Gt4dE76wyRh9kBr47A',
@@ -504,11 +508,11 @@ describe('auth0.WebAuth', function() {
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
         responseType: 'token id_token',
-        __disableExpirationCheck: true
+        __clock: () => new Date(1521045300000)
       });
       IdTokenVerifier.prototype.validateAccessToken.restore();
 
-      var data = webAuth.parseHash(
+      webAuth.parseHash(
         {
           hash:
             '#state=foo&token_type=Bearer&access_token=YTvJcYrrZYHUXLZK5leLnfmD5ZIA_EA&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJuaWNrbmFtZSI6ImpvaG5mb28iLCJuYW1lIjoiam9obmZvb0BnbWFpbC5jb20iLCJwaWN0dXJlIjoiaHR0cHM6Ly9zLmdyYXZhdGFyLmNvbS9hdmF0YXIvMzhmYTAwMjQyM2JkOGM5NDFjNmVkMDU4OGI2MGZmZWQ_cz00ODAmcj1wZyZkPWh0dHBzJTNBJTJGJTJGY2RuLmF1dGgwLmNvbSUyRmF2YXRhcnMlMkZqby5wbmciLCJ1cGRhdGVkX2F0IjoiMjAxOC0wMy0xNFQxNjozNDo1Ni40MjNaIiwiZW1haWwiOiJqb2huZm9vQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9icnVja2UuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDVhMjA1NGZmNDUxNTc3MTFiZTgxODJmNCIsImF1ZCI6Ims1dTNvMmZpQUE4WHdlWEVFWDYwNEtDd0Nqemp0TVU2IiwiaWF0IjoxNTIxMDQ1Mjk2LCJleHAiOjE1MjEwODEyOTYsImF0X2hhc2giOiJjZHVrb2FVc3dNOWJvX3l6cmdWY3J3Iiwibm9uY2UiOiJsRkNuSTguY3JSVGRIZmRvNWsuek1YZlIzMTg1NmdLeiJ9.U4_F5Zw6xYVoHGiiem1wjz7i9eRaSOrt-L1e6hlu3wmqA-oNuVqf1tEYD9u0z5AbXXbQSr491A3VvUbLKjws13XETcljhaqigZ9q4HBpmzPlrUGmPreBLVQgGOaq5NVAViFTvORxYCMFLlc-SE6QI6xWF0AhFpoW7-hkOcOzXWAXqhkMgwAfjJ9aeOzSBgblmtx4duyNESBRefd3XPQrakWjGIqH3dFdc-lDFbY76eSLYfBi4AH-yim4egzB6LYOC-e2huZcHdmRAmEQaKZ7D7COBiGsgAPVGyjZtqfSQ2CRwNrAbxDwi8BqlLhQePOs6d3hqV-3OPLfdE6dUFh2DQ',
@@ -543,7 +547,7 @@ describe('auth0.WebAuth', function() {
             };
           });
 
-        var data = webAuth.parseHash(
+        webAuth.parseHash(
           {
             hash:
               '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
@@ -576,7 +580,7 @@ describe('auth0.WebAuth', function() {
             redirectUri: 'http://example.com/callback',
             clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
             responseType: 'token id_token',
-            __disableExpirationCheck: true
+            __clock: () => new Date(1511551800000)
           });
           TransactionManager.prototype.getStoredTransaction.restore();
           sinon
@@ -593,15 +597,17 @@ describe('auth0.WebAuth', function() {
             domain: 'brucke.auth0.com',
             redirectUri: 'http://example.com/callback',
             clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
-            responseType: 'token',
-            __disableExpirationCheck: true
+            responseType: 'token'
           });
-          var data = webAuth.parseHash(
+
+          webAuth.parseHash(
             {
               hash:
                 '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
             },
-            function() {
+            function(err) {
+              if (err) return done(err);
+
               expect(SSODataStorage.prototype.set.calledOnce).to.be.ok();
               expect(SSODataStorage.prototype.set.firstCall.args).to.be.eql([
                 'lastUsedConnection',
@@ -615,13 +621,15 @@ describe('auth0.WebAuth', function() {
           ); // eslint-disable-line
         });
         it('sets ssodata with a connection and a sub when there is a payload', function(done) {
-          var data = this.webAuth.parseHash(
+          this.webAuth.parseHash(
             {
               hash:
                 '#state=foo&access_token=VjubIMBmpgQ2W2&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6Ik5FVkJOVU5CT1RneFJrRTVOa1F6UXpjNE9UQkVNRUZGUkRRNU4wUTJRamswUmtRMU1qRkdNUSJ9.eyJpc3MiOiJodHRwczovL2JydWNrZS5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTlmYmUxMTkzNzAzOWIyNjNhOGIyOWEyIiwiYXVkIjoiazV1M28yZmlBQThYd2VYRUVYNjA0S0N3Q2p6anRNVTYiLCJpYXQiOjE1MTE1NTE3ODMsImV4cCI6MTUxMTU4Nzc4MywiYXRfaGFzaCI6IkxGTDMxMlRXWDFGc1VNay00R2gxYWciLCJub25jZSI6IndFT2U3LUxDOG5sMUF1SHA3bnVjRl81TE1WUFZrTUJZIn0.fUJhEIPded3aO4iDrbniwGnAEZHX66Mjl7yCgIxSSCXlgrHlOATvbMi7XGQXNfPjGCivySoalMCS3MikvMGBFPFguChyJZ3myswT6US33hZSTycUYODvWSz8j7PeEpJrHdF4nAO4NvbC4JjogG92Xg2zx0KCZtoLK9datZiWEWHVUEVEXZCwceyowxQ4J5dqDzzLm9_V9qBsUYJtINqMM6jhHazk7OQUFZlE35R3l-Lps2oofqxZf11X7g0bgxo5ykSSr_KDvj9Hx0flk_u-eTTD2XVGMWe1TreJm1KMMuD01PicU1JGsJRA0hqE6Fd943OAEAIM6feMximK22rrHg',
               nonce: 'wEOe7-LC8nl1AuHp7nucF_5LMVPVkMBY'
             },
-            function() {
+            function(err) {
+              if (err) return done(err);
+
               expect(SSODataStorage.prototype.set.calledOnce).to.be.ok();
               expect(SSODataStorage.prototype.set.firstCall.args).to.be.eql([
                 'lastUsedConnection',
@@ -645,10 +653,10 @@ describe('auth0.WebAuth', function() {
           redirectUri: 'http://example.com/callback',
           clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
           responseType: 'token',
-          __disableExpirationCheck: true
+          __clock: () => new Date(1482933050000)
         });
 
-        var data = webAuth.parseHash(
+        webAuth.parseHash(
           {
             nonce: 'asfd',
             hash:
@@ -691,10 +699,10 @@ describe('auth0.WebAuth', function() {
           redirectUri: 'http://example.com/callback',
           clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
           responseType: 'token',
-          __disableExpirationCheck: true
+          __clock: () => new Date(1482933050000)
         });
 
-        var data = webAuth.parseHash({ nonce: 'asfd' }, function(err, data) {
+        webAuth.parseHash({ nonce: 'asfd' }, function(err, data) {
           expect(err).to.be(null);
           expect(data).to.eql({
             accessToken: 'asldkfjahsdlkfjhasd',
@@ -730,17 +738,18 @@ describe('auth0.WebAuth', function() {
           redirectUri: 'http://example.com/callback',
           clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
           responseType: 'token',
-          __disableExpirationCheck: true
+          __clock: () => new Date(1482933050000)
         });
 
         TransactionManager.prototype.getStoredTransaction.restore();
+
         sinon
           .stub(TransactionManager.prototype, 'getStoredTransaction')
           .callsFake(function() {
             return null;
           });
 
-        var data = webAuth.parseHash(
+        webAuth.parseHash(
           {
             nonce: 'asfd',
             state: '123',
@@ -784,7 +793,7 @@ describe('auth0.WebAuth', function() {
           redirectUri: 'http://example.com/callback',
           clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
           responseType: 'token',
-          __disableExpirationCheck: true
+          __clock: () => new Date(1482933050000)
         });
         TransactionManager.prototype.getStoredTransaction.restore();
         sinon
@@ -793,7 +802,7 @@ describe('auth0.WebAuth', function() {
             return null;
           });
 
-        var data = webAuth.parseHash(
+        webAuth.parseHash(
           {
             nonce: 'asfd',
             hash:
@@ -836,7 +845,7 @@ describe('auth0.WebAuth', function() {
           redirectUri: 'http://example.com/callback',
           clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
           responseType: 'token',
-          __disableExpirationCheck: true
+          __clock: () => new Date(1482933050000)
         });
         TransactionManager.prototype.getStoredTransaction.restore();
         sinon
@@ -897,7 +906,7 @@ describe('auth0.WebAuth', function() {
             return null;
           });
 
-        var data = webAuth.parseHash(
+        webAuth.parseHash(
           {
             hash:
               '#access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
@@ -1019,7 +1028,7 @@ describe('auth0.WebAuth', function() {
             };
           });
 
-        var data = webAuth.parseHash(
+        webAuth.parseHash(
           {
             hash:
               '#state=123&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas',
@@ -1043,7 +1052,7 @@ describe('auth0.WebAuth', function() {
           responseType: 'token'
         });
 
-        var data = webAuth.parseHash(
+        webAuth.parseHash(
           {
             hash:
               '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
@@ -1052,7 +1061,7 @@ describe('auth0.WebAuth', function() {
             expect(err).to.eql({
               error: 'invalid_token',
               errorDescription:
-                'Audience gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt is not valid.' // eslint-disable-line
+                'Audience (aud) claim mismatch in the ID token; expected "0HP71GSd6PuoRYJ3p" but found "gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt"' // eslint-disable-line
             });
             done();
           }
@@ -1067,7 +1076,7 @@ describe('auth0.WebAuth', function() {
           responseType: 'token'
         });
 
-        var data = webAuth.parseHash(
+        webAuth.parseHash(
           {
             hash:
               '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0.PPoh-pITcZ8qbF5l5rMZwXiwk5efbESuqZ0IfMUcamB6jdgLwTxq-HpOT_x5q6-sO1PBHchpSo1WHeDYMlRrOFd9bh741sUuBuXdPQZ3Zb0i2sNOAC2RFB1E11mZn7uNvVPGdPTg-Y5xppz30GSXoOJLbeBszfrVDCmPhpHKGGMPL1N6HV-3EEF77L34YNAi2JQ-b70nFK_dnYmmv0cYTGUxtGTHkl64UEDLi3u7bV-kbGky3iOOCzXKzDDY6BBKpCRTc2KlbrkO2A2PuDn27WVv1QCNEFHvJN7HxiDDzXOsaUmjrQ3sfrHhzD7S9BcCRkekRfD9g95SKD5J0Fj8NA&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
@@ -1075,7 +1084,8 @@ describe('auth0.WebAuth', function() {
           function(err, data) {
             expect(err).to.eql({
               error: 'invalid_token',
-              errorDescription: 'Issuer https://wptest.auth0.com/ is not valid.' // eslint-disable-line
+              errorDescription:
+                'Issuer (iss) claim mismatch in the ID token, expected "https://wptest_2.auth0.com/", found "https://wptest.auth0.com/"' // eslint-disable-line
             });
             done();
           }
@@ -1278,10 +1288,10 @@ describe('auth0.WebAuth', function() {
           domain: 'auth0-tests-lock.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'token id_token',
-          __disableExpirationCheck: true
+          responseType: 'token id_token'
         });
       });
+
       afterEach(function() {
         if (this.webAuth.client.userInfo.restore) {
           this.webAuth.client.userInfo.restore();
@@ -1290,6 +1300,7 @@ describe('auth0.WebAuth', function() {
           IdTokenVerifier.prototype.verify.restore();
         }
       });
+
       it('should use result from /userinfo as idTokenPayload', function(done) {
         sinon
           .stub(this.webAuth.client, 'userInfo')
@@ -1322,6 +1333,7 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
+
       it('should not throw an error when the payload.nonce is undefined and transactionNonce is null', function(done) {
         TransactionManager.prototype.getStoredTransaction.restore();
         sinon
@@ -1336,15 +1348,16 @@ describe('auth0.WebAuth', function() {
           domain: 'auth0-tests-lock.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'id_token',
-          __disableExpirationCheck: true
+          responseType: 'id_token'
         });
+
         sinon
           .stub(webAuth.client, 'userInfo')
           .callsFake(function(accessToken, cb) {
             expect(accessToken).to.be('VjubIMBmpgQ2W2');
             cb(null, { from: 'userinfo' });
           });
+
         sinon
           .stub(IdTokenVerifier.prototype, 'verify')
           .callsFake(function(_, __, cb) {
@@ -1375,13 +1388,13 @@ describe('auth0.WebAuth', function() {
           }
         );
       });
+
       it('should still throw an error with an invalid nonce', function(done) {
         var webAuth = new WebAuth({
           domain: 'auth0-tests-lock.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'id_token',
-          __disableExpirationCheck: true
+          responseType: 'id_token'
         });
         sinon
           .stub(IdTokenVerifier.prototype, 'verify')
@@ -1398,7 +1411,8 @@ describe('auth0.WebAuth', function() {
           function(err, data) {
             expect(err).to.be.eql({
               error: 'invalid_token',
-              errorDescription: 'Nonce does not match.'
+              errorDescription:
+                'Nonce (nonce) claim value mismatch in the ID token; expected "asfd", found "the-nonce"'
             });
             done();
           }
@@ -1410,8 +1424,7 @@ describe('auth0.WebAuth', function() {
           domain: 'auth0-tests-lock.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'id_token',
-          __disableExpirationCheck: true
+          responseType: 'id_token'
         });
         sinon
           .stub(IdTokenVerifier.prototype, 'verify')
@@ -1439,8 +1452,7 @@ describe('auth0.WebAuth', function() {
           domain: 'auth0-tests-lock.auth0.com',
           redirectUri: 'http://example.com/callback',
           clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'id_token',
-          __disableExpirationCheck: true
+          responseType: 'id_token'
         });
         sinon
           .stub(webAuth.client, 'userInfo')
@@ -1637,7 +1649,7 @@ describe('auth0.WebAuth', function() {
         scope: 'openid name read:blog',
         audience: 'urn:site:demo:blog',
         _sendTelemetry: false,
-        __disableExpirationCheck: true
+        __clock: () => new Date(1482933050000)
       });
 
       var options = {
@@ -1772,7 +1784,7 @@ describe('auth0.WebAuth', function() {
         expect(err).to.eql({
           error: 'invalid_token',
           errorDescription:
-            'Audience gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt is not valid.'
+            'Audience (aud) claim mismatch in the ID token; expected "..." but found "gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt"'
         });
         done();
       });
@@ -2863,8 +2875,7 @@ describe('auth0.WebAuth', function() {
         domain: 'brucke.auth0.com',
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
-        responseType: 'token id_token',
-        __disableExpirationCheck: true
+        responseType: 'token id_token'
       });
 
       webAuth.validateToken('token', 'nonce', function() {});
@@ -2882,7 +2893,6 @@ describe('auth0.WebAuth', function() {
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
         responseType: 'token id_token',
-        __disableExpirationCheck: true,
         overrides: {
           __jwks_uri: 'jwks_uri'
         }

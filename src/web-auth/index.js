@@ -17,6 +17,10 @@ import CrossOriginAuthentication from './cross-origin-authentication';
 import WebMessageHandler from './web-message-handler';
 import HostedPages from './hosted-pages';
 
+function defaultClock() {
+  return new Date();
+}
+
 /**
  * Handles all the browser's AuthN/AuthZ flows
  * @constructor
@@ -75,6 +79,11 @@ function WebAuth(options) {
         optional: true,
         type: 'array',
         message: 'plugins is not valid'
+      },
+      maxAge: {
+        optional: true,
+        type: 'number',
+        message: 'maxAge is not valid'
       },
       _disableDeprecationWarnings: {
         optional: true,
@@ -339,24 +348,37 @@ WebAuth.prototype.validateAuthenticationResponse = function(
         }
       );
     }
+
     if (
       validationError.error !== 'invalid_token' ||
-      validationError.errorDescription === 'Nonce does not match.'
+      (validationError.errorDescription &&
+        validationError.errorDescription.indexOf(
+          'Nonce (nonce) claim value mismatch in the ID token'
+        ) > -1)
     ) {
       return callback(validationError);
     }
+
     // if it's an invalid_token error, decode the token
     var decodedToken = new IdTokenVerifier().decode(parsedHash.id_token);
+
     // if the alg is not HS256, return the raw error
     if (decodedToken.header.alg !== 'HS256') {
       return callback(validationError);
     }
+
     if ((decodedToken.payload.nonce || null) !== transactionNonce) {
       return callback({
         error: 'invalid_token',
-        errorDescription: 'Nonce does not match.'
+        errorDescription:
+          'Nonce (nonce) claim value mismatch in the ID token; expected "' +
+          transactionNonce +
+          '", found "' +
+          decodedToken.payload.nonce +
+          '"'
       });
     }
+
     if (!parsedHash.access_token) {
       var noAccessTokenError = {
         error: 'invalid_token',
@@ -365,6 +387,7 @@ WebAuth.prototype.validateAuthenticationResponse = function(
       };
       return callback(noAccessTokenError);
     }
+
     // if the alg is HS256, use the /userinfo endpoint to build the payload
     return _this.client.userInfo(parsedHash.access_token, function(
       errUserInfo,
@@ -414,7 +437,8 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
     jwksURI: this.baseOptions.jwksURI,
     audience: this.baseOptions.clientID,
     leeway: this.baseOptions.leeway || 0,
-    __disableExpirationCheck: this.baseOptions.__disableExpirationCheck
+    maxAge: this.baseOptions.maxAge,
+    __clock: this.baseOptions.__clock || defaultClock
   });
 
   verifier.verify(token, nonce, function(err, payload) {

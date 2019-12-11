@@ -120,7 +120,7 @@ describe('auth0.plugins.cordova', function() {
         domain: 'wptest.auth0.com',
         clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
         responseType: 'token',
-        __disableExpirationCheck: true
+        __clock: () => new Date(1482933050000)
       });
       var plugin = new CordovaPlugin();
       plugin.setWebAuth(webAuth);
@@ -159,6 +159,8 @@ describe('auth0.plugins.cordova', function() {
         '',
         { nonce: 'asfd' },
         function(err, result) {
+          if (err) return done(err);
+
           expect(err).to.be(null);
           expect(result).to.eql({
             accessToken: 'asldkfjahsdlkfjhasd',
@@ -180,7 +182,7 @@ describe('auth0.plugins.cordova', function() {
             scope: null
           });
           expect(_this.events).to.eql({});
-          done();
+          done(err);
         }
       );
 
