@@ -31,7 +31,7 @@ From CDN:
 
 ```html
 <!-- Latest patch release -->
-<script src="https://cdn.auth0.com/js/auth0/9.11.3/auth0.min.js"></script>
+<script src="https://cdn.auth0.com/js/auth0/9.12.0/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org):
@@ -181,10 +181,10 @@ var auth0 = new auth0.Management({
 
 ### API
 
-- **getUser(userId, cb)**: Returns the user profile. [https://auth0.com/docs/api/management/v2#!/Users/get\_users\_by\_id](https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id)
-- **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metadata. It will patch the user metadata with the attributes sent. [https://auth0.com/docs/api/management/v2#!/Users/patch\_users\_by\_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
-- **patchUserAttributes(userId, user, cb)**: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to [https://auth0.com/docs/api/management/v2#!/Users/patch\_users\_by\_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
-- **linkUser(userId, secondaryUserToken, cb)**: Link two users. [https://auth0.com/docs/api/management/v2#!/Users/post\_identities](https://auth0.com/docs/api/management/v2#!/Users/post_identities)
+- **getUser(userId, cb)**: Returns the user profile. [https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id)
+- **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metadata. It will patch the user metadata with the attributes sent. [https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
+- **patchUserAttributes(userId, user, cb)**: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to [https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
+- **linkUser(userId, secondaryUserToken, cb)**: Link two users. [https://auth0.com/docs/api/management/v2#!/Users/post_identities](https://auth0.com/docs/api/management/v2#!/Users/post_identities)
 
 ## Documentation
 

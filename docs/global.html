@@ -111,6 +111,12 @@
       <li class="nav-item">
         <span class="nav-item-type type-function">F</span
         ><span class="nav-item-name"
+          ><a href="global.html#getChallenge">getChallenge</a></span
+        >
+      </li>
+      <li class="nav-item">
+        <span class="nav-item-type type-function">F</span
+        ><span class="nav-item-name"
           ><a href="global.html#getSSOData">getSSOData</a></span
         >
       </li>
@@ -285,7 +291,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line634">line 634</a>
+                    <a href="web-auth_index.js.html#line658">line 658</a>
                   </li>
                 </ul>
               </dd>
@@ -496,6 +502,23 @@
                             <p>
                               identifier of the resource server who will consume
                               the access token issued after Auth
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>appState</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>Object</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              any values that you want back on the
+                              authentication response
                             </p>
                           </td>
                         </tr>
@@ -1363,8 +1386,12 @@
               <dd class="tag-source">
                 <ul class="dummy">
                   <li>
-                    <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line573">line 573</a>
+                    <a href="authentication_db-connection.js.html"
+                      >authentication/db-connection.js</a
+                    >,
+                    <a href="authentication_db-connection.js.html#line78"
+                      >line 78</a
+                    >
                   </li>
                 </ul>
               </dd>
@@ -1488,12 +1515,8 @@
               <dd class="tag-source">
                 <ul class="dummy">
                   <li>
-                    <a href="authentication_db-connection.js.html"
-                      >authentication/db-connection.js</a
-                    >,
-                    <a href="authentication_db-connection.js.html#line77"
-                      >line 77</a
-                    >
+                    <a href="web-auth_index.js.html">web-auth/index.js</a>,
+                    <a href="web-auth_index.js.html#line597">line 597</a>
                   </li>
                 </ul>
               </dd>
@@ -1619,7 +1642,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line510">line 510</a>
+                    <a href="web-auth_index.js.html#line534">line 534</a>
                   </li>
                 </ul>
               </dd>
@@ -1840,7 +1863,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line814">line 814</a>
+                    <a href="web-auth_index.js.html#line839">line 839</a>
                   </li>
                 </ul>
               </dd>
@@ -1869,7 +1892,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line824">line 824</a>
+                    <a href="web-auth_index.js.html#line849">line 849</a>
                   </li>
                 </ul>
               </dd>
@@ -1899,7 +1922,7 @@
                     <a href="authentication_index.js.html"
                       >authentication/index.js</a
                     >,
-                    <a href="authentication_index.js.html#line554">line 554</a>
+                    <a href="authentication_index.js.html#line577">line 577</a>
                   </li>
                 </ul>
               </dd>
@@ -2109,6 +2132,67 @@
           </div>
 
           <div class="section-method">
+            <h4 class="name" id="getChallenge">
+              <span class="type-signature"></span>getChallenge<span
+                class="signature"
+                >(cb)</span
+              ><span class="type-signature"></span>
+            </h4>
+
+            <div class="description">
+              <p>
+                Makes a call to the
+                <code>/usernamepassword/challenge</code> endpoint and returns
+                the challenge (captcha) if necessary.
+              </p>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="authentication_index.js.html"
+                      >authentication/index.js</a
+                    >,
+                    <a href="authentication_index.js.html#line549">line 549</a>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>cb</code></td>
+
+                  <td class="type">
+                    <span class="param-type"
+                      ><code
+                        ><a href="global.html#callback">callback</a></code
+                      ></span
+                    >
+                  </td>
+
+                  <td class="description last"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section-method">
             <h4 class="name" id="getSSOData">
               <span class="type-signature"></span>getSSOData<span
                 class="signature"
@@ -2133,7 +2217,7 @@
                     <a href="authentication_index.js.html"
                       >authentication/index.js</a
                     >,
-                    <a href="authentication_index.js.html#line454">line 454</a>
+                    <a href="authentication_index.js.html#line455">line 455</a>
                   </li>
                 </ul>
               </dd>
@@ -2372,7 +2456,7 @@
                     <a href="authentication_index.js.html"
                       >authentication/index.js</a
                     >,
-                    <a href="authentication_index.js.html#line313">line 313</a>
+                    <a href="authentication_index.js.html#line314">line 314</a>
                   </li>
                 </ul>
               </dd>
@@ -2728,206 +2812,6 @@
 
             <div class="description">
               <p>
-                Logs the user in with username and password using the correct
-                flow based on where it's called from:
-              </p>
-              <ul>
-                <li>
-                  If you're calling this method from the Universal Login Page,
-                  it will use the usernamepassword/login endpoint
-                </li>
-                <li>
-                  If you're calling this method outside the Universal Login
-                  Page, it will use the cross origin authentication
-                  (/co/authenticate) flow You can use either
-                  <code>username</code> or <code>email</code> to identify the
-                  user, but <code>username</code> will take precedence over
-                  <code>email</code>. After the redirect to
-                  <code>redirectUri</code>, use
-                  <a href="global.html#parseHash"><code>parseHash</code></a> to
-                  retrieve the authentication data.
-                  <strong
-                    >Notice that when using the cross origin authentication
-                    flow, some browsers might not be able to successfully
-                    authenticate if 3rd party cookies are disabled.
-                    <a href="https://auth0.com/docs/cross-origin-authentication"
-                      >See here for more information.</a
-                    >.</strong
-                  >
-                </li>
-              </ul>
-            </div>
-
-            <dl class="details">
-              <dt class="tag-source">Source:</dt>
-              <dd class="tag-source">
-                <ul class="dummy">
-                  <li>
-                    <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line719">line 719</a>
-                  </li>
-                </ul>
-              </dd>
-
-              <dt class="tag-see">See:</dt>
-              <dd class="tag-see">
-                <ul>
-                  <li>
-                    <p>
-                      Requires
-                      <a href="https://auth0.com/docs/api-auth/grant/implicit"
-                        ><code>Implicit</code> grant</a
-                      >. For more information, read
-                      <a
-                        href="https://auth0.com/docs/clients/client-grant-types"
-                        >https://auth0.com/docs/clients/client-grant-types</a
-                      >.
-                    </p>
-                  </li>
-                </ul>
-              </dd>
-            </dl>
-
-            <h5>Parameters:</h5>
-
-            <table class="params">
-              <thead>
-                <tr>
-                  <th>Name</th>
-
-                  <th>Type</th>
-
-                  <th class="last">Description</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr>
-                  <td class="name"><code>options</code></td>
-
-                  <td class="type">
-                    <span class="param-type"><code>Object</code></span>
-                  </td>
-
-                  <td class="description last">
-                    <p>
-                      options used in the
-                      <a href="global.html#authorize"><code>authorize</code></a>
-                      call after the login_ticket is acquired
-                    </p>
-
-                    <table class="params">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-
-                          <th>Type</th>
-
-                          <th>Attributes</th>
-
-                          <th class="last">Description</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <tr>
-                          <td class="name"><code>username</code></td>
-
-                          <td class="type">
-                            <span class="param-type"><code>String</code></span>
-                          </td>
-
-                          <td class="attributes">&lt;optional><br /></td>
-
-                          <td class="description last">
-                            <p>Username (mutually exclusive with email)</p>
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td class="name"><code>email</code></td>
-
-                          <td class="type">
-                            <span class="param-type"><code>String</code></span>
-                          </td>
-
-                          <td class="attributes">&lt;optional><br /></td>
-
-                          <td class="description last">
-                            <p>Email (mutually exclusive with username)</p>
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td class="name"><code>password</code></td>
-
-                          <td class="type">
-                            <span class="param-type"><code>String</code></span>
-                          </td>
-
-                          <td class="attributes"></td>
-
-                          <td class="description last">
-                            <p>Password</p>
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td class="name"><code>realm</code></td>
-
-                          <td class="type">
-                            <span class="param-type"><code>String</code></span>
-                          </td>
-
-                          <td class="attributes">&lt;optional><br /></td>
-
-                          <td class="description last">
-                            <p>
-                              Realm used to authenticate the user, it can be a
-                              realm name or a database connection name
-                            </p>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="name"><code>cb</code></td>
-
-                  <td class="type">
-                    <span class="param-type"
-                      ><code
-                        ><a href="global.html#crossOriginLoginCallback"
-                          >crossOriginLoginCallback</a
-                        ></code
-                      ></span
-                    >
-                  </td>
-
-                  <td class="description last">
-                    <p>
-                      Callback function called only when an authentication
-                      error, like invalid username or password, occurs. For
-                      other types of errors, there will be a redirect to the
-                      <code>redirectUri</code>.
-                    </p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="section-method">
-            <h4 class="name" id="login">
-              <span class="type-signature"></span>login<span class="signature"
-                >(options, cb)</span
-              ><span class="type-signature"></span>
-            </h4>
-
-            <div class="description">
-              <p>
                 Performs authentication with username/email and password with a
                 database connection
               </p>
@@ -3077,6 +2961,206 @@
                   </td>
 
                   <td class="description last"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section-method">
+            <h4 class="name" id="login">
+              <span class="type-signature"></span>login<span class="signature"
+                >(options, cb)</span
+              ><span class="type-signature"></span>
+            </h4>
+
+            <div class="description">
+              <p>
+                Logs the user in with username and password using the correct
+                flow based on where it's called from:
+              </p>
+              <ul>
+                <li>
+                  If you're calling this method from the Universal Login Page,
+                  it will use the usernamepassword/login endpoint
+                </li>
+                <li>
+                  If you're calling this method outside the Universal Login
+                  Page, it will use the cross origin authentication
+                  (/co/authenticate) flow You can use either
+                  <code>username</code> or <code>email</code> to identify the
+                  user, but <code>username</code> will take precedence over
+                  <code>email</code>. After the redirect to
+                  <code>redirectUri</code>, use
+                  <a href="global.html#parseHash"><code>parseHash</code></a> to
+                  retrieve the authentication data.
+                  <strong
+                    >Notice that when using the cross origin authentication
+                    flow, some browsers might not be able to successfully
+                    authenticate if 3rd party cookies are disabled.
+                    <a href="https://auth0.com/docs/cross-origin-authentication"
+                      >See here for more information.</a
+                    >.</strong
+                  >
+                </li>
+              </ul>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="web-auth_index.js.html">web-auth/index.js</a>,
+                    <a href="web-auth_index.js.html#line744">line 744</a>
+                  </li>
+                </ul>
+              </dd>
+
+              <dt class="tag-see">See:</dt>
+              <dd class="tag-see">
+                <ul>
+                  <li>
+                    <p>
+                      Requires
+                      <a href="https://auth0.com/docs/api-auth/grant/implicit"
+                        ><code>Implicit</code> grant</a
+                      >. For more information, read
+                      <a
+                        href="https://auth0.com/docs/clients/client-grant-types"
+                        >https://auth0.com/docs/clients/client-grant-types</a
+                      >.
+                    </p>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>options</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <p>
+                      options used in the
+                      <a href="global.html#authorize"><code>authorize</code></a>
+                      call after the login_ticket is acquired
+                    </p>
+
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th>Attributes</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>username</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>Username (mutually exclusive with email)</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>email</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>Email (mutually exclusive with username)</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>password</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes"></td>
+
+                          <td class="description last">
+                            <p>Password</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>realm</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              Realm used to authenticate the user, it can be a
+                              realm name or a database connection name
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="name"><code>cb</code></td>
+
+                  <td class="type">
+                    <span class="param-type"
+                      ><code
+                        ><a href="global.html#crossOriginLoginCallback"
+                          >crossOriginLoginCallback</a
+                        ></code
+                      ></span
+                    >
+                  </td>
+
+                  <td class="description last">
+                    <p>
+                      Callback function called only when an authentication
+                      error, like invalid username or password, occurs. For
+                      other types of errors, there will be a redirect to the
+                      <code>redirectUri</code>.
+                    </p>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -3449,7 +3533,7 @@
                     <a href="authentication_index.js.html"
                       >authentication/index.js</a
                     >,
-                    <a href="authentication_index.js.html#line276">line 276</a>
+                    <a href="authentication_index.js.html#line277">line 277</a>
                   </li>
                 </ul>
               </dd>
@@ -3632,7 +3716,7 @@
                     <a href="authentication_index.js.html"
                       >authentication/index.js</a
                     >,
-                    <a href="authentication_index.js.html#line402">line 402</a>
+                    <a href="authentication_index.js.html#line403">line 403</a>
                   </li>
                 </ul>
               </dd>
@@ -3818,7 +3902,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line833">line 833</a>
+                    <a href="web-auth_index.js.html#line858">line 858</a>
                   </li>
                 </ul>
               </dd>
@@ -3966,7 +4050,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line167">line 167</a>
+                    <a href="web-auth_index.js.html#line176">line 176</a>
                   </li>
                 </ul>
               </dd>
@@ -4139,7 +4223,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line763">line 763</a>
+                    <a href="web-auth_index.js.html#line788">line 788</a>
                   </li>
                 </ul>
               </dd>
@@ -4294,7 +4378,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line587">line 587</a>
+                    <a href="web-auth_index.js.html#line611">line 611</a>
                   </li>
                 </ul>
               </dd>
@@ -4361,7 +4445,7 @@
                             <p>
                               what will be sent via email which could be
                               <code>link</code> or <code>code</code>. For SMS
-                              <code>code</code> is the only one valud
+                              <code>code</code> is the only one valid
                             </p>
                           </td>
                         </tr>
@@ -4470,8 +4554,8 @@
               <dd class="tag-source">
                 <ul class="dummy">
                   <li>
-                    <a href="web-auth_popup.js.html">web-auth/popup.js</a>,
-                    <a href="web-auth_popup.js.html#line252">line 252</a>
+                    <a href="web-auth_index.js.html">web-auth/index.js</a>,
+                    <a href="web-auth_index.js.html#line877">line 877</a>
                   </li>
                 </ul>
               </dd>
@@ -4608,8 +4692,8 @@
               <dd class="tag-source">
                 <ul class="dummy">
                   <li>
-                    <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line852">line 852</a>
+                    <a href="web-auth_popup.js.html">web-auth/popup.js</a>,
+                    <a href="web-auth_popup.js.html#line252">line 252</a>
                   </li>
                 </ul>
               </dd>
@@ -4999,7 +5083,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line429">line 429</a>
+                    <a href="web-auth_index.js.html#line453">line 453</a>
                   </li>
                 </ul>
               </dd>
@@ -5419,6 +5503,24 @@
                         </tr>
 
                         <tr>
+                          <td class="name"><code>username</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              user desired username. Required if you use a
+                              database connection and you have enabled
+                              <code>Requires Username</code>
+                            </p>
+                          </td>
+                        </tr>
+
+                        <tr>
                           <td class="name"><code>connection</code></td>
 
                           <td class="type">
@@ -5492,7 +5594,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line619">line 619</a>
+                    <a href="web-auth_index.js.html#line643">line 643</a>
                   </li>
                 </ul>
               </dd>
@@ -5627,7 +5729,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line683">line 683</a>
+                    <a href="web-auth_index.js.html#line708">line 708</a>
                   </li>
                 </ul>
               </dd>
@@ -5735,6 +5837,131 @@
                       ><code
                         ><a href="global.html#tokenCallback"
                           >tokenCallback</a
+                        ></code
+                      ></span
+                    >
+                  </td>
+
+                  <td class="description last"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section-method">
+            <h4 class="name" id="signupAndLogin">
+              <span class="type-signature"></span>signupAndLogin<span
+                class="signature"
+                >(options, cb)</span
+              ><span class="type-signature"></span>
+            </h4>
+
+            <div class="description">
+              <p>
+                Signs up a new user and automatically logs the user in after the
+                signup.
+              </p>
+            </div>
+
+            <dl class="details">
+              <dt class="tag-source">Source:</dt>
+              <dd class="tag-source">
+                <ul class="dummy">
+                  <li>
+                    <a href="web-auth_hosted-pages.js.html"
+                      >web-auth/hosted-pages.js</a
+                    >,
+                    <a href="web-auth_hosted-pages.js.html#line90">line 90</a>
+                  </li>
+                </ul>
+              </dd>
+            </dl>
+
+            <h5>Parameters:</h5>
+
+            <table class="params">
+              <thead>
+                <tr>
+                  <th>Name</th>
+
+                  <th>Type</th>
+
+                  <th class="last">Description</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td class="name"><code>options</code></td>
+
+                  <td class="type">
+                    <span class="param-type"><code>Object</code></span>
+                  </td>
+
+                  <td class="description last">
+                    <table class="params">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+
+                          <th>Type</th>
+
+                          <th class="last">Description</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td class="name"><code>email</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>user email address</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>password</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>user password</p>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td class="name"><code>connection</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>String</code></span>
+                          </td>
+
+                          <td class="description last">
+                            <p>
+                              name of the connection where the user will be
+                              created
+                            </p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="name"><code>cb</code></td>
+
+                  <td class="type">
+                    <span class="param-type"
+                      ><code
+                        ><a href="global.html#credentialsCallback"
+                          >credentialsCallback</a
                         ></code
                       ></span
                     >
@@ -6001,131 +6228,6 @@
           </div>
 
           <div class="section-method">
-            <h4 class="name" id="signupAndLogin">
-              <span class="type-signature"></span>signupAndLogin<span
-                class="signature"
-                >(options, cb)</span
-              ><span class="type-signature"></span>
-            </h4>
-
-            <div class="description">
-              <p>
-                Signs up a new user and automatically logs the user in after the
-                signup.
-              </p>
-            </div>
-
-            <dl class="details">
-              <dt class="tag-source">Source:</dt>
-              <dd class="tag-source">
-                <ul class="dummy">
-                  <li>
-                    <a href="web-auth_hosted-pages.js.html"
-                      >web-auth/hosted-pages.js</a
-                    >,
-                    <a href="web-auth_hosted-pages.js.html#line90">line 90</a>
-                  </li>
-                </ul>
-              </dd>
-            </dl>
-
-            <h5>Parameters:</h5>
-
-            <table class="params">
-              <thead>
-                <tr>
-                  <th>Name</th>
-
-                  <th>Type</th>
-
-                  <th class="last">Description</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr>
-                  <td class="name"><code>options</code></td>
-
-                  <td class="type">
-                    <span class="param-type"><code>Object</code></span>
-                  </td>
-
-                  <td class="description last">
-                    <table class="params">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-
-                          <th>Type</th>
-
-                          <th class="last">Description</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <tr>
-                          <td class="name"><code>email</code></td>
-
-                          <td class="type">
-                            <span class="param-type"><code>String</code></span>
-                          </td>
-
-                          <td class="description last">
-                            <p>user email address</p>
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td class="name"><code>password</code></td>
-
-                          <td class="type">
-                            <span class="param-type"><code>String</code></span>
-                          </td>
-
-                          <td class="description last">
-                            <p>user password</p>
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td class="name"><code>connection</code></td>
-
-                          <td class="type">
-                            <span class="param-type"><code>String</code></span>
-                          </td>
-
-                          <td class="description last">
-                            <p>
-                              name of the connection where the user will be
-                              created
-                            </p>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="name"><code>cb</code></td>
-
-                  <td class="type">
-                    <span class="param-type"
-                      ><code
-                        ><a href="global.html#credentialsCallback"
-                          >credentialsCallback</a
-                        ></code
-                      ></span
-                    >
-                  </td>
-
-                  <td class="description last"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="section-method">
             <h4 class="name" id="userInfo">
               <span class="type-signature"></span>userInfo<span
                 class="signature"
@@ -6148,7 +6250,7 @@
                     <a href="authentication_index.js.html"
                       >authentication/index.js</a
                     >,
-                    <a href="authentication_index.js.html#line523">line 523</a>
+                    <a href="authentication_index.js.html#line524">line 524</a>
                   </li>
                 </ul>
               </dd>
@@ -6246,7 +6348,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line253">line 253</a>
+                    <a href="web-auth_index.js.html#line262">line 262</a>
                   </li>
                 </ul>
               </dd>
@@ -6537,6 +6639,23 @@
                             </p>
                           </td>
                         </tr>
+
+                        <tr>
+                          <td class="name"><code>appState</code></td>
+
+                          <td class="type">
+                            <span class="param-type"><code>Object</code></span>
+                          </td>
+
+                          <td class="attributes">&lt;optional><br /></td>
+
+                          <td class="description last">
+                            <p>
+                              values that you receive back on the authentication
+                              response
+                            </p>
+                          </td>
+                        </tr>
                       </tbody>
                     </table>
                   </td>
@@ -6561,8 +6680,8 @@
                     <a href="authentication_db-connection.js.html"
                       >authentication/db-connection.js</a
                     >,
-                    <a href="authentication_db-connection.js.html#line72"
-                      >line 72</a
+                    <a href="authentication_db-connection.js.html#line73"
+                      >line 73</a
                     >
                   </li>
                 </ul>
@@ -6759,7 +6878,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line714">line 714</a>
+                    <a href="web-auth_index.js.html#line739">line 739</a>
                   </li>
                 </ul>
               </dd>
@@ -6820,7 +6939,7 @@
                     <a href="authentication_index.js.html"
                       >authentication/index.js</a
                     >,
-                    <a href="authentication_index.js.html#line548">line 548</a>
+                    <a href="authentication_index.js.html#line571">line 571</a>
                   </li>
                 </ul>
               </dd>
@@ -7013,7 +7132,7 @@
                     <a href="authentication_index.js.html"
                       >authentication/index.js</a
                     >,
-                    <a href="authentication_index.js.html#line266">line 266</a>
+                    <a href="authentication_index.js.html#line267">line 267</a>
                   </li>
                 </ul>
               </dd>
@@ -7241,7 +7360,7 @@
                     <a href="authentication_index.js.html"
                       >authentication/index.js</a
                     >,
-                    <a href="authentication_index.js.html#line517">line 517</a>
+                    <a href="authentication_index.js.html#line518">line 518</a>
                   </li>
                 </ul>
               </dd>
@@ -7311,7 +7430,7 @@
                 <ul class="dummy">
                   <li>
                     <a href="web-auth_index.js.html">web-auth/index.js</a>,
-                    <a href="web-auth_index.js.html#line396">line 396</a>
+                    <a href="web-auth_index.js.html#line419">line 419</a>
                   </li>
                 </ul>
               </dd>
@@ -7371,8 +7490,8 @@
 
     <footer>
       Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
-      Tue Jul 23 2019 10:46:01 GMT-0300 (Brasilia Standard Time) using the
-      Minami theme.
+      Wed Dec 11 2019 10:33:27 GMT+0000 (Greenwich Mean Time) using the Minami
+      theme.
     </footer>
 
     <script>

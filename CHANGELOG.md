@@ -1,3 +1,22 @@
+## [v9.12.0](https://github.com/auth0/auth0.js/tree/v9.12.0) (2019-12-11)
+
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.11.3...v9.12.0)
+
+**Added**
+
+- [CAUTH-239] Add getChallenge method [\#1057](https://github.com/auth0/auth0.js/pull/1057) ([jfromaniello](https://github.com/jfromaniello))
+
+**Fixed**
+
+- Fixed passwordless params priority [\#1058](https://github.com/auth0/auth0.js/pull/1058) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- Bugfix for WebExtension [\#1054](https://github.com/auth0/auth0.js/pull/1054) ([STK913](https://github.com/STK913))
+- Readme develop [\#1043](https://github.com/auth0/auth0.js/pull/1043) ([jsoref](https://github.com/jsoref))
+- Fixed typo [\#1039](https://github.com/auth0/auth0.js/pull/1039) ([Nyholm](https://github.com/Nyholm))
+
+**Security**
+
+- [SDK-974] Improved OIDC compliance [\#1059](https://github.com/auth0/auth0.js/pull/1059) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v9.11.3](https://github.com/auth0/auth0.js/tree/v9.11.3) (2019-07-23)
 
 **Fixed**
