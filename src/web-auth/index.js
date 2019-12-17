@@ -436,7 +436,7 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
     issuer: this.baseOptions.token_issuer,
     jwksURI: this.baseOptions.jwksURI,
     audience: this.baseOptions.clientID,
-    leeway: this.baseOptions.leeway || 0,
+    leeway: this.baseOptions.leeway || 60,
     maxAge: this.baseOptions.maxAge,
     __clock: this.baseOptions.__clock || defaultClock
   });
