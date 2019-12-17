@@ -1,3 +1,11 @@
+## [v9.12.1](https://github.com/auth0/auth0.js/tree/v9.12.1) (2019-12-17)
+
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.12.0...v9.12.1)
+
+**Fixed**
+
+- Set the default token validation leeway to 60 sec [\#1062](https://github.com/auth0/auth0.js/pull/1062) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v9.12.0](https://github.com/auth0/auth0.js/tree/v9.12.0) (2019-12-11)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.11.3...v9.12.0)
