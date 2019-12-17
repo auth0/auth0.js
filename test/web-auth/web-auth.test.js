@@ -2863,6 +2863,47 @@ describe('auth0.WebAuth', function() {
   });
 
   context('validateToken', function() {
+    it('should send through a default leeway', function(done) {
+      var idTokenVerifierMock = function(opts) {
+        expect(opts.leeway).to.be(60);
+        done();
+      };
+
+      var { default: ProxiedWebAuth } = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token'
+      });
+
+      webAuth.validateToken('token', 'nonce', function() {});
+    });
+
+    it('should accept a specified leeway', function(done) {
+      var idTokenVerifierMock = function(opts) {
+        expect(opts.leeway).to.be(25);
+        done();
+      };
+
+      var { default: ProxiedWebAuth } = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token',
+        leeway: 25
+      });
+
+      webAuth.validateToken('token', 'nonce', function() {});
+    });
+
     it('should use undefined jwksURI, allowing it to be overwritten later', function(done) {
       var idTokenVerifierMock = function(opts) {
         expect(opts.jwksURI).to.be(undefined);
@@ -2880,6 +2921,7 @@ describe('auth0.WebAuth', function() {
 
       webAuth.validateToken('token', 'nonce', function() {});
     });
+
     it('should use correct jwksURI when overriden', function(done) {
       var idTokenVerifierMock = function(opts) {
         expect(opts.jwksURI).to.be('jwks_uri');
