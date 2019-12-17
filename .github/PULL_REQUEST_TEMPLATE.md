@@ -19,16 +19,13 @@ Please include relevant links supporting this change such as a:
 
 ### Testing
 
-Please describe how this can be tested by reviewers. Be specific about anything not tested and reasons why. If this library has unit and/or integration testing, tests should be added for new functionality and existing tests should complete without errors. 
+Please describe how this can be tested by reviewers. Be specific about anything not tested and reasons why. If this library has unit and/or integration testing, tests should be added for new functionality and existing tests should complete without errors.
 
-[ ] This change adds unit test coverage
-
-[ ] This change adds integration test coverage
+- [ ] This change adds unit test coverage
+- [ ] This change adds integration test coverage
 
 ### Checklist
 
-[ ] I have read the [Auth0 general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md)
-
-[ ] I have read the [Auth0 Code of Conduct](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md)
-
-[ ] All tests and linters described in the [Develop section](https://github.com/auth0/auth0.js#develop) run without errors
+- [ ] I have read the [Auth0 general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md)
+- [ ] I have read the [Auth0 Code of Conduct](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md)
+- [ ] All tests and linters described in the [Develop section](https://github.com/auth0/auth0.js#develop) run without errors
