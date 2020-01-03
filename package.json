@@ -39,6 +39,14 @@
     "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
     "precommit": "pretty-quick --staged"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "npm run lint"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/auth0/auth0.js"
