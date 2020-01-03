@@ -32,6 +32,8 @@ function defaultClock() {
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {Number} [options.maxAge] the allowable elapsed time in seconds since the last time user was authenticated. By default there's no limit
+ * @param {Number} [options.leeway] the clock-skew or leeway value in seconds to use in the ID Token verification. Defaults to 60 seconds
  * @param {Array} [options.plugins]
  * @param {Number} [options._timesToRetryFailedRequests] Number of times to retry a failed request, according to {@link https://github.com/visionmedia/superagent/blob/master/lib/request-base.js}
  * @see {@link https://auth0.com/docs/api/authentication}
