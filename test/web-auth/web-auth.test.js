@@ -348,7 +348,7 @@ describe('auth0.WebAuth', function() {
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
         responseType: 'id_token',
-        __clock: function() {
+        clock: function() {
           return new Date(1521045300000);
         }
       });
@@ -403,7 +403,7 @@ describe('auth0.WebAuth', function() {
         redirectUri: 'http://example.com/callback',
         clientID: 'BWDP9XS89CJq1w6Nzq7iFOHsTh6ChS2b',
         responseType: 'id_token',
-        __clock: () => new Date(1521760350000)
+        clock: () => new Date(1521760350000)
       });
 
       webAuth.parseHash(
@@ -460,7 +460,7 @@ describe('auth0.WebAuth', function() {
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
         responseType: 'token id_token',
-        __clock: () => new Date(1521662700000)
+        clock: () => new Date(1521662700000)
       });
 
       webAuth.parseHash(
@@ -508,7 +508,7 @@ describe('auth0.WebAuth', function() {
         redirectUri: 'http://example.com/callback',
         clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
         responseType: 'token id_token',
-        __clock: () => new Date(1521045300000)
+        clock: () => new Date(1521045300000)
       });
       IdTokenVerifier.prototype.validateAccessToken.restore();
 
@@ -580,7 +580,7 @@ describe('auth0.WebAuth', function() {
             redirectUri: 'http://example.com/callback',
             clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
             responseType: 'token id_token',
-            __clock: () => new Date(1511551800000)
+            clock: () => new Date(1511551800000)
           });
           TransactionManager.prototype.getStoredTransaction.restore();
           sinon
@@ -653,7 +653,7 @@ describe('auth0.WebAuth', function() {
           redirectUri: 'http://example.com/callback',
           clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
           responseType: 'token',
-          __clock: () => new Date(1482933050000)
+          clock: () => new Date(1482933050000)
         });
 
         webAuth.parseHash(
@@ -699,7 +699,7 @@ describe('auth0.WebAuth', function() {
           redirectUri: 'http://example.com/callback',
           clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
           responseType: 'token',
-          __clock: () => new Date(1482933050000)
+          clock: () => new Date(1482933050000)
         });
 
         webAuth.parseHash({ nonce: 'asfd' }, function(err, data) {
@@ -738,7 +738,7 @@ describe('auth0.WebAuth', function() {
           redirectUri: 'http://example.com/callback',
           clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
           responseType: 'token',
-          __clock: () => new Date(1482933050000)
+          clock: () => new Date(1482933050000)
         });
 
         TransactionManager.prototype.getStoredTransaction.restore();
@@ -793,7 +793,7 @@ describe('auth0.WebAuth', function() {
           redirectUri: 'http://example.com/callback',
           clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
           responseType: 'token',
-          __clock: () => new Date(1482933050000)
+          clock: () => new Date(1482933050000)
         });
         TransactionManager.prototype.getStoredTransaction.restore();
         sinon
@@ -845,7 +845,7 @@ describe('auth0.WebAuth', function() {
           redirectUri: 'http://example.com/callback',
           clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
           responseType: 'token',
-          __clock: () => new Date(1482933050000)
+          clock: () => new Date(1482933050000)
         });
         TransactionManager.prototype.getStoredTransaction.restore();
         sinon
@@ -1649,7 +1649,7 @@ describe('auth0.WebAuth', function() {
         scope: 'openid name read:blog',
         audience: 'urn:site:demo:blog',
         _sendTelemetry: false,
-        __clock: () => new Date(1482933050000)
+        clock: () => new Date(1482933050000)
       });
 
       var options = {

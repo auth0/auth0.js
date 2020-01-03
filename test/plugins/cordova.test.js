@@ -120,7 +120,7 @@ describe('auth0.plugins.cordova', function() {
         domain: 'wptest.auth0.com',
         clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
         responseType: 'token',
-        __clock: () => new Date(1482933050000)
+        clock: () => new Date(1482933050000)
       });
       var plugin = new CordovaPlugin();
       plugin.setWebAuth(webAuth);

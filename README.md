@@ -67,6 +67,8 @@ Parameters:
 - **\_disableDeprecationWarnings {OPTIONAL, boolean}**: Indicates if deprecation warnings should be output to the browser console, defaults to `false`.
 - **maxAge {OPTIONAL, number}**: Used during token validation. Specifies the maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. If the elapsed time is greater than this value, the token is considered invalid and the user must be re-authenticated.
 
+- **clock {OPTIONAL, function}**: Used during token validation. Specifies the function to get time for comparation purposes, defaults to `new Date()`.
+
 ### API
 
 - **authorize(options)**: Redirects to the `/authorize` endpoint to start an authentication/authorization transaction.
