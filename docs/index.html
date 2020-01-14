@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Home - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
@@ -10,434 +10,115 @@
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link
-      type="text/css"
-      rel="stylesheet"
-      href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
-    />
-    <link
-      type="text/css"
-      rel="stylesheet"
-      href="styles/prettify-tomorrow.css"
-    />
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css" />
-  </head>
-  <body>
-    <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-    <label for="nav-trigger" class="navicon-button x">
-      <div class="navicon"></div>
-    </label>
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
 
-    <label for="nav-trigger" class="overlay"></label>
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
 
-    <nav>
-      <li class="nav-link nav-home-link"><a href="index.html">Home</a></li>
-      <li class="nav-heading">Classes</li>
-      <li class="nav-heading">
-        <span class="nav-item-type type-class">C</span
-        ><span class="nav-item-name"
-          ><a href="Authentication.html">Authentication</a></span
-        >
-      </li>
-      <li class="nav-heading">
-        <span class="nav-item-type type-class">C</span
-        ><span class="nav-item-name"
-          ><a href="Management.html">Management</a></span
-        >
-      </li>
-      <li class="nav-heading">
-        <span class="nav-item-type type-class">C</span
-        ><span class="nav-item-name"><a href="WebAuth.html">WebAuth</a></span>
-      </li>
-      <li class="nav-heading"><a href="global.html">Globals</a></li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#authorize">authorize</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#buildAuthorizeUrl">buildAuthorizeUrl</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#buildLogoutUrl">buildLogoutUrl</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#callback">callback</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#changePassword">changePassword</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#checkSession">checkSession</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#crossOriginAuthenticationCallback"
-            >crossOriginAuthenticationCallback</a
-          ></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#crossOriginVerification"
-            >crossOriginVerification</a
-          ></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#delegation">delegation</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#getChallenge">getChallenge</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#getSSOData">getSSOData</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#getUser">getUser</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#linkUser">linkUser</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#login">login</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#loginWithCredentials"
-            >loginWithCredentials</a
-          ></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#loginWithDefaultDirectory"
-            >loginWithDefaultDirectory</a
-          ></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#loginWithResourceOwner"
-            >loginWithResourceOwner</a
-          ></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#logout">logout</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#parseHash">parseHash</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#passwordlessLogin">passwordlessLogin</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#passwordlessStart">passwordlessStart</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#passwordlessVerify">passwordlessVerify</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#patchUserAttributes"
-            >patchUserAttributes</a
-          ></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#patchUserMetadata">patchUserMetadata</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#preload">preload</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#renewAuth">renewAuth</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#signup">signup</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#signupAndAuthorize">signupAndAuthorize</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#signupAndLogin">signupAndLogin</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#userInfo">userInfo</a></span
-        >
-      </li>
-      <li class="nav-item">
-        <span class="nav-item-type type-function">F</span
-        ><span class="nav-item-name"
-          ><a href="global.html#validateAuthenticationResponse"
-            >validateAuthenticationResponse</a
-          ></span
-        >
-      </li>
-    </nav>
+<label for="nav-trigger" class="overlay"></label>
 
-    <div id="main">
-      <section class="readme">
-        <article>
-          <p>
-            <img
-              src="https://cdn.auth0.com/resources/oss-source-large-2x.png"
-              alt=""
-            />
-          </p>
-          <h1>auth0.js</h1>
-          <p>
-            <a href="https://circleci.com/gh/auth0/auth0.js"
-              ><img
-                src="https://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&amp;style=flat-square"
-                alt="Build Status"
-            /></a>
-            <a href="https://npmjs.org/package/auth0-js"
-              ><img
-                src="https://img.shields.io/npm/v/auth0-js.svg?style=flat-square"
-                alt="NPM version"
-            /></a>
-            <a href="https://codecov.io/github/auth0/auth0.js?branch=master"
-              ><img
-                src="https://img.shields.io/codecov/c/github/auth0/auth0.js/master.svg?style=flat-square"
-                alt="Coverage"
-            /></a>
-            <a href="#license"
-              ><img
-                src="https://img.shields.io/npm/l/auth0-js.svg?style=flat-square"
-                alt="License"
-            /></a>
-            <a href="https://npmjs.org/package/auth0-js"
-              ><img
-                src="https://img.shields.io/npm/dm/auth0-js.svg?style=flat-square"
-                alt="Downloads"
-            /></a>
-          </p>
-          <p>Client Side Javascript toolkit for Auth0 API.</p>
-          <p>
-            If you want to read the full API documentation of auth0.js, see
-            <a href="https://auth0.github.io/auth0.js/index.html">here</a>.
-          </p>
-          <h2>Index</h2>
-          <ol>
-            <li><a href="#install">Install</a></li>
-            <li><a href="#auth0webauth">auth0.WebAuth</a></li>
-            <li><a href="#auth0authentication">auth0.Authentication</a></li>
-            <li><a href="#auth0management">auth0.Management</a></li>
-            <li><a href="#documentation">Documentation</a></li>
-            <li><a href="#migration">Migration</a></li>
-            <li><a href="#develop">Develop</a></li>
-            <li><a href="#issue-reporting">Issue Reporting</a></li>
-            <li><a href="#author">Author</a></li>
-            <li><a href="#license">License</a></li>
-          </ol>
-          <h2>Install</h2>
-          <p>From CDN:</p>
-          <pre
-            class="prettyprint source lang-html"
-          ><code>&lt;!-- Latest patch release -->
-&lt;script src=&quot;https://cdn.auth0.com/js/auth0/9.12.1/auth0.min.js&quot;>&lt;/script>
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Authentication.html">Authentication</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Management.html">Management</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="WebAuth.html">WebAuth</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authorize">authorize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#buildAuthorizeUrl">buildAuthorizeUrl</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#buildLogoutUrl">buildLogoutUrl</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#callback">callback</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#changePassword">changePassword</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#checkSession">checkSession</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#crossOriginAuthenticationCallback">crossOriginAuthenticationCallback</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#crossOriginVerification">crossOriginVerification</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#delegation">delegation</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getChallenge">getChallenge</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getSSOData">getSSOData</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getUser">getUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#linkUser">linkUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#login">login</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#loginWithCredentials">loginWithCredentials</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#loginWithDefaultDirectory">loginWithDefaultDirectory</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#loginWithResourceOwner">loginWithResourceOwner</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#logout">logout</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#parseHash">parseHash</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#passwordlessLogin">passwordlessLogin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#passwordlessStart">passwordlessStart</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#passwordlessVerify">passwordlessVerify</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#patchUserAttributes">patchUserAttributes</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#patchUserMetadata">patchUserMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#preload">preload</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#renewAuth">renewAuth</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#signup">signup</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#signupAndAuthorize">signupAndAuthorize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#signupAndLogin">signupAndLogin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#userInfo">userInfo</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#validateAuthenticationResponse">validateAuthenticationResponse</a></span></li>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><p><img src="https://cdn.auth0.com/resources/oss-source-large-2x.png" alt=""></p>
+<h1>auth0.js</h1>
+<p><a href="https://circleci.com/gh/auth0/auth0.js"><img src="https://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&amp;style=flat-square" alt="Build Status"></a>
+<a href="https://npmjs.org/package/auth0-js"><img src="https://img.shields.io/npm/v/auth0-js.svg?style=flat-square" alt="NPM version"></a>
+<a href="https://codecov.io/github/auth0/auth0.js?branch=master"><img src="https://img.shields.io/codecov/c/github/auth0/auth0.js/master.svg?style=flat-square" alt="Coverage"></a>
+<a href="#license"><img src="https://img.shields.io/npm/l/auth0-js.svg?style=flat-square" alt="License"></a>
+<a href="https://npmjs.org/package/auth0-js"><img src="https://img.shields.io/npm/dm/auth0-js.svg?style=flat-square" alt="Downloads"></a></p>
+<p>Client Side Javascript toolkit for Auth0 API.</p>
+<p>If you want to read the full API documentation of auth0.js, see <a href="https://auth0.github.io/auth0.js/index.html">here</a>.</p>
+<h2>Index</h2>
+<ol>
+<li><a href="#install">Install</a></li>
+<li><a href="#auth0webauth">auth0.WebAuth</a></li>
+<li><a href="#auth0authentication">auth0.Authentication</a></li>
+<li><a href="#auth0management">auth0.Management</a></li>
+<li><a href="#documentation">Documentation</a></li>
+<li><a href="#migration">Migration</a></li>
+<li><a href="#develop">Develop</a></li>
+<li><a href="#issue-reporting">Issue Reporting</a></li>
+<li><a href="#author">Author</a></li>
+<li><a href="#license">License</a></li>
+</ol>
+<h2>Install</h2>
+<p>From CDN:</p>
+<pre class="prettyprint source lang-html"><code>&lt;!-- Latest patch release -->
+&lt;script src=&quot;https://cdn.auth0.com/js/auth0/9.12.2/auth0.min.js&quot;>&lt;/script>
 </code></pre>
-          <p>From <a href="https://npmjs.org">npm</a>:</p>
-          <pre class="prettyprint source lang-sh"><code>npm install auth0-js
+<p>From <a href="https://npmjs.org">npm</a>:</p>
+<pre class="prettyprint source lang-sh"><code>npm install auth0-js
 </code></pre>
-          <p>
-            After installing the <code>auth0-js</code> module, you'll need
-            bundle it up along with all of its dependencies.
-          </p>
-          <h2>auth0.WebAuth</h2>
-          <p>Provides support for all the authentication flows.</p>
-          <h3>Initialize</h3>
-          <pre
-            class="prettyprint source lang-js"
-          ><code>var auth0 = new auth0.WebAuth({
+<p>After installing the <code>auth0-js</code> module, you'll need bundle it up along with all of its dependencies.</p>
+<h2>auth0.WebAuth</h2>
+<p>Provides support for all the authentication flows.</p>
+<h3>Initialize</h3>
+<pre class="prettyprint source lang-js"><code>var auth0 = new auth0.WebAuth({
   domain: '{YOUR_AUTH0_DOMAIN}',
   clientID: '{YOUR_AUTH0_CLIENT_ID}'
 });
 </code></pre>
-          <p>Parameters:</p>
-          <ul>
-            <li>
-              <strong>domain {REQUIRED, string}</strong>: Your Auth0 account
-              domain such as <code>'example.auth0.com'</code> or
-              <code>'example.eu.auth0.com'</code>.
-            </li>
-            <li>
-              <strong>clientID {REQUIRED, string}</strong>: The Client ID found
-              on your Application settings page.
-            </li>
-            <li>
-              <strong>redirectUri {OPTIONAL, string}</strong>: The URL where
-              Auth0 will call back to with the result of a successful or failed
-              authentication. It must be whitelisted in the &quot;Allowed
-              Callback URLs&quot; in your Auth0 Application's settings.
-            </li>
-            <li>
-              <strong>scope {OPTIONAL, string}</strong>: The default scope used
-              for all authorization requests.
-            </li>
-            <li>
-              <strong>audience {OPTIONAL, string}</strong>: The default
-              audience, used if requesting access to an API.
-            </li>
-            <li>
-              <strong>responseType {OPTIONAL, string}</strong>: Response type
-              for all authentication requests. It can be any space separated
-              list of the values <code>code</code>, <code>token</code>,
-              <code>id_token</code>.
-              <strong
-                >If you don't provide a global <code>responseType</code>, you
-                will have to provide a <code>responseType</code> for each method
-                that you use</strong
-              >.
-            </li>
-            <li>
-              <strong>responseMode {OPTIONAL, string}</strong>: The default
-              responseMode used, defaults to <code>'fragment'</code>. The
-              <code>parseHash</code> method can be used to parse authentication
-              responses using fragment response mode. Supported values are
-              <code>query</code>, <code>fragment</code> and
-              <code>form_post</code>. The <code>query</code> value is only
-              supported when <code>responseType</code> is <code>code</code>.
-            </li>
-            <li>
-              <strong>_disableDeprecationWarnings {OPTIONAL, boolean}</strong>:
-              Indicates if deprecation warnings should be output to the browser
-              console, defaults to <code>false</code>.
-            </li>
-            <li>
-              <strong>maxAge {OPTIONAL, number}</strong>: Used during token
-              validation. Specifies the maximum elapsed time in seconds since
-              the last time the user was actively authenticated by the
-              authorization server. If the elapsed time is greater than this
-              value, the token is considered invalid and the user must be
-              re-authenticated.
-            </li>
-            <li>
-              <strong>leeway {OPTIONAL, number}</strong>: Used during token
-              validation. Specifies the number of seconds to account for clock
-              skew when validating time-based claims such as
-              <code>iat</code> and <code>exp</code>. The default is 60 seconds.
-            </li>
-          </ul>
-          <h3>API</h3>
-          <ul>
-            <li>
-              <strong>authorize(options)</strong>: Redirects to the
-              <code>/authorize</code> endpoint to start an
-              authentication/authorization transaction. Auth0 will call back to
-              your application with the results at the specified
-              <code>redirectUri</code>.
-              <strong
-                >The default scope for this method is
-                <code>openid profile email</code></strong
-              >.
-            </li>
-          </ul>
-          <pre class="prettyprint source lang-js"><code>auth0.authorize({
+<p>Parameters:</p>
+<ul>
+<li><strong>domain {REQUIRED, string}</strong>: Your Auth0 account domain such as <code>'example.auth0.com'</code> or <code>'example.eu.auth0.com'</code>.</li>
+<li><strong>clientID {REQUIRED, string}</strong>: The Client ID found on your Application settings page.</li>
+<li><strong>redirectUri {OPTIONAL, string}</strong>: The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be whitelisted in the &quot;Allowed Callback URLs&quot; in your Auth0 Application's settings.</li>
+<li><strong>scope {OPTIONAL, string}</strong>: The default scope used for all authorization requests.</li>
+<li><strong>audience {OPTIONAL, string}</strong>: The default audience, used if requesting access to an API.</li>
+<li><strong>responseType {OPTIONAL, string}</strong>: Response type for all authentication requests. It can be any space separated list of the values <code>code</code>, <code>token</code>, <code>id_token</code>. <strong>If you don't provide a global <code>responseType</code>, you will have to provide a <code>responseType</code> for each method that you use</strong>.</li>
+<li><strong>responseMode {OPTIONAL, string}</strong>: The default responseMode used, defaults to <code>'fragment'</code>. The <code>parseHash</code> method can be used to parse authentication responses using fragment response mode. Supported values are <code>query</code>, <code>fragment</code> and <code>form_post</code>. The <code>query</code> value is only supported when <code>responseType</code> is <code>code</code>.</li>
+<li><strong>_disableDeprecationWarnings {OPTIONAL, boolean}</strong>: Indicates if deprecation warnings should be output to the browser console, defaults to <code>false</code>.</li>
+<li><strong>maxAge {OPTIONAL, number}</strong>: Used during token validation. Specifies the maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. If the elapsed time is greater than this value, the token is considered invalid and the user must be re-authenticated.</li>
+<li><strong>leeway {OPTIONAL, number}</strong>: Used during ID token validation. Specifies the number of seconds to account for clock skew when validating time-based claims such as <code>iat</code> and <code>exp</code>. The default is 60 seconds.</li>
+</ul>
+<h3>API</h3>
+<ul>
+<li><strong>authorize(options)</strong>: Redirects to the <code>/authorize</code> endpoint to start an authentication/authorization transaction.
+Auth0 will call back to your application with the results at the specified <code>redirectUri</code>. <strong>The default scope for this method is <code>openid profile email</code></strong>.</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>auth0.authorize({
   audience: 'https://mystore.com/api/v2',
   scope: 'read:order write:order',
   responseType: 'token',
   redirectUri: 'https://example.com/auth/callback'
 });
 </code></pre>
-          <ul>
-            <li>
-              <strong>parseHash(options, callback)</strong>: Parses a URL hash
-              fragment to extract the result of an Auth0 authentication
-              response.
-            </li>
-          </ul>
-          <blockquote>
-            <p>
-              This method requires that your tokens are signed with
-              <strong>RS256</strong>. Please check our
-              <a
-                href="https://auth0.com/docs/libraries/auth0js/v8/migration-guide#switching-from-hs256-to-rs256"
-                >Migration Guide</a
-              >
-              for more information.
-            </p>
-          </blockquote>
-          <pre
-            class="prettyprint source lang-js"
-          ><code>auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
+<ul>
+<li><strong>parseHash(options, callback)</strong>: Parses a URL hash fragment to extract the result of an Auth0 authentication response.</li>
+</ul>
+<blockquote>
+<p>This method requires that your tokens are signed with <strong>RS256</strong>. Please check our <a href="https://auth0.com/docs/libraries/auth0js/v8/migration-guide#switching-from-hs256-to-rs256">Migration Guide</a> for more information.</p>
+</blockquote>
+<pre class="prettyprint source lang-js"><code>auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
   if (err) {
     return console.log(err);
   }
@@ -453,20 +134,11 @@
   });
 });
 </code></pre>
-          <ul>
-            <li>
-              <strong>checkSession(options, callback)</strong>: Allows you to
-              acquire a new token from Auth0 for a user who already has an SSO
-              session established against Auth0 for your domain. If the user is
-              not authenticated, the authentication result will be empty and
-              you'll receive an error like this:
-              <code>{error: 'login_required'}</code>.The method accepts any
-              valid OAuth2 parameters that would normally be sent to
-              <code>/authorize</code>. Everything happens inside an iframe, so
-              it will not reload your application or redirect away from it.
-            </li>
-          </ul>
-          <pre class="prettyprint source lang-js"><code>auth0.checkSession(
+<ul>
+<li><strong>checkSession(options, callback)</strong>: Allows you to acquire a new token from Auth0 for a user who already has an SSO session established against Auth0 for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: <code>{error: 'login_required'}</code>.The method accepts any valid OAuth2 parameters that would normally be sent to <code>/authorize</code>.
+Everything happens inside an iframe, so it will not reload your application or redirect away from it.</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>auth0.checkSession(
   {
     audience: 'https://mystore.com/api/v2',
     scope: 'read:order write:order'
@@ -476,43 +148,18 @@
   }
 );
 </code></pre>
-          <p>
-            The contents of <code>authResult</code> are identical to those
-            returned by <code>parseHash()</code>.
-          </p>
-          <blockquote>
-            <p>
-              <strong>Important:</strong> If you're not using the hosted login
-              page to do social logins, you have to use your own
-              <a href="https://manage.auth0.com/#/connections/social"
-                >social connection keys</a
-              >. If you use Auth0's dev keys, you'll always get
-              <code>login_required</code> as an error when calling
-              <code>checkSession</code>.
-            </p>
-          </blockquote>
-          <blockquote>
-            <p>
-              <strong>Important:</strong> Because there is no redirect in this
-              method, <code>responseType: 'code'</code> is not supported and
-              will throw an error.
-            </p>
-          </blockquote>
-          <p>
-            Remember to add the URL where the authorization request originates
-            from to the Allowed Web Origins list of your Auth0 Application in
-            the <a href="https://manage.auth0.com/">Dashboard</a> under your
-            Applications's <strong>Settings</strong>.
-          </p>
-          <ul>
-            <li>
-              <strong>client.login(options, callback)</strong>: Authenticates a
-              user with username and password in a realm using
-              <code>/oauth/token</code>. This will not initialize a SSO session
-              at Auth0, hence can not be used along with silent authentication.
-            </li>
-          </ul>
-          <pre class="prettyprint source lang-js"><code>auth0.client.login(
+<p>The contents of <code>authResult</code> are identical to those returned by <code>parseHash()</code>.</p>
+<blockquote>
+<p><strong>Important:</strong> If you're not using the hosted login page to do social logins, you have to use your own <a href="https://manage.auth0.com/#/connections/social">social connection keys</a>. If you use Auth0's dev keys, you'll always get <code>login_required</code> as an error when calling <code>checkSession</code>.</p>
+</blockquote>
+<blockquote>
+<p><strong>Important:</strong> Because there is no redirect in this method, <code>responseType: 'code'</code> is not supported and will throw an error.</p>
+</blockquote>
+<p>Remember to add the URL where the authorization request originates from to the Allowed Web Origins list of your Auth0 Application in the <a href="https://manage.auth0.com/">Dashboard</a> under your Applications's <strong>Settings</strong>.</p>
+<ul>
+<li><strong>client.login(options, callback)</strong>: Authenticates a user with username and password in a realm using <code>/oauth/token</code>. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>auth0.client.login(
   {
     realm: 'Username-Password-Authentication', //connection name or HRD domain
     username: 'info@auth0.com',
@@ -525,210 +172,79 @@
   }
 );
 </code></pre>
-          <p>
-            The contents of <code>authResult</code> are identical to those
-            returned by <code>parseHash()</code>.
-          </p>
-          <h2>auth0.Authentication</h2>
-          <p>Provides an API client for the Auth0 Authentication API.</p>
-          <h3>Initialize</h3>
-          <pre
-            class="prettyprint source lang-js"
-          ><code>var auth0 = new auth0.Authentication({
+<p>The contents of <code>authResult</code> are identical to those returned by <code>parseHash()</code>.</p>
+<h2>auth0.Authentication</h2>
+<p>Provides an API client for the Auth0 Authentication API.</p>
+<h3>Initialize</h3>
+<pre class="prettyprint source lang-js"><code>var auth0 = new auth0.Authentication({
   domain: '{YOUR_AUTH0_DOMAIN}',
   clientID: '{YOUR_AUTH0_CLIENT_ID}'
 });
 </code></pre>
-          <h3>API</h3>
-          <ul>
-            <li>
-              <strong>buildAuthorizeUrl(options)</strong>: Builds and returns
-              the <code>/authorize</code> url in order to initialize a new
-              authN/authZ transaction.
-              <a
-                href="https://auth0.com/docs/api/authentication#database-ad-ldap-passive-"
-                >https://auth0.com/docs/api/authentication#database-ad-ldap-passive-</a
-              >
-            </li>
-            <li>
-              <strong>buildLogoutUrl(options)</strong>: Builds and returns the
-              Logout url in order to initialize a new authN/authZ transaction.
-              <a href="https://auth0.com/docs/api/authentication#logout"
-                >https://auth0.com/docs/api/authentication#logout</a
-              >
-            </li>
-            <li>
-              <strong>loginWithDefaultDirectory(options, cb)</strong>: Makes a
-              call to the <code>oauth/token</code> endpoint with
-              <code>password</code> grant type.
-              <a href="https://auth0.com/docs/api-auth/grant/password"
-                >https://auth0.com/docs/api-auth/grant/password</a
-              >
-            </li>
-            <li>
-              <strong>login(options, cb)</strong>: Makes a call to the
-              <code>oauth/token</code> endpoint with
-              <code>https://auth0.com/oauth/grant-type/password-realm</code>
-              grant type.
-            </li>
-            <li>
-              <strong>oauthToken(options, cb)</strong>: Makes a call to the
-              <code>oauth/token</code> endpoint.
-            </li>
-            <li>
-              <strong>userInfo(token, cb)</strong>: Makes a call to the
-              <code>/userinfo</code> endpoint and returns the user profile.
-            </li>
-          </ul>
-          <h2>auth0.Management</h2>
-          <p>
-            Provides an API Client for the Auth0 Management API (only methods
-            meant to be used from the client with the user token). You should
-            use an <code>access_token</code> with the
-            <code>https://YOUR_DOMAIN.auth0.com/api/v2/</code> audience to make
-            this work. For more information, read
-            <a
-              href="https://auth0.com/docs/libraries/auth0js/v9#user-management"
-              >the user management section of the Auth0.js documentation</a
-            >.
-          </p>
-          <h3>Initialize</h3>
-          <pre
-            class="prettyprint source lang-js"
-          ><code>var auth0 = new auth0.Management({
+<h3>API</h3>
+<ul>
+<li><strong>buildAuthorizeUrl(options)</strong>: Builds and returns the <code>/authorize</code> url in order to initialize a new authN/authZ transaction. <a href="https://auth0.com/docs/api/authentication#database-ad-ldap-passive-">https://auth0.com/docs/api/authentication#database-ad-ldap-passive-</a></li>
+<li><strong>buildLogoutUrl(options)</strong>: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. <a href="https://auth0.com/docs/api/authentication#logout">https://auth0.com/docs/api/authentication#logout</a></li>
+<li><strong>loginWithDefaultDirectory(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint with <code>password</code> grant type. <a href="https://auth0.com/docs/api-auth/grant/password">https://auth0.com/docs/api-auth/grant/password</a></li>
+<li><strong>login(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint with <code>https://auth0.com/oauth/grant-type/password-realm</code> grant type.</li>
+<li><strong>oauthToken(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint.</li>
+<li><strong>userInfo(token, cb)</strong>: Makes a call to the <code>/userinfo</code> endpoint and returns the user profile.</li>
+</ul>
+<h2>auth0.Management</h2>
+<p>Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an <code>access_token</code> with the <code>https://YOUR_DOMAIN.auth0.com/api/v2/</code> audience to make this work. For more information, read <a href="https://auth0.com/docs/libraries/auth0js/v9#user-management">the user management section of the Auth0.js documentation</a>.</p>
+<h3>Initialize</h3>
+<pre class="prettyprint source lang-js"><code>var auth0 = new auth0.Management({
   domain: '{YOUR_AUTH0_DOMAIN}',
   token: '{ACCESS_TOKEN_FROM_THE_USER}'
 });
 </code></pre>
-          <h3>API</h3>
-          <ul>
-            <li>
-              <strong>getUser(userId, cb)</strong>: Returns the user profile.
-              <a
-                href="https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id"
-                >https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id</a
-              >
-            </li>
-            <li>
-              <strong>patchUserMetadata(userId, userMetadata, cb)</strong>:
-              Updates the user metadata. It will patch the user metadata with
-              the attributes sent.
-              <a
-                href="https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id"
-                >https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id</a
-              >
-            </li>
-            <li>
-              <strong>patchUserAttributes(userId, user, cb)</strong>: Updates
-              the user attributes. It will patch the root attributes that the
-              server allows it. To check what attributes can be patched, go to
-              <a
-                href="https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id"
-                >https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id</a
-              >
-            </li>
-            <li>
-              <strong>linkUser(userId, secondaryUserToken, cb)</strong>: Link
-              two users.
-              <a
-                href="https://auth0.com/docs/api/management/v2#!/Users/post_identities"
-                >https://auth0.com/docs/api/management/v2#!/Users/post_identities</a
-              >
-            </li>
-          </ul>
-          <h2>Documentation</h2>
-          <p>
-            For a complete reference and examples please check our
-            <a href="https://auth0.com/docs/libraries/auth0js">docs</a>.
-          </p>
-          <h2>Migration</h2>
-          <p>
-            If you need help migrating to v9, please refer to the
-            <a
-              href="https://auth0.com/docs/libraries/auth0js/v9/migration-guide"
-              >v9 Migration Guide</a
-            >.
-          </p>
-          <p>
-            If you need help migrating to v8, please refer to the
-            <a
-              href="https://auth0.com/docs/libraries/auth0js/v8/migration-guide"
-              >v8 Migration Guide</a
-            >.
-          </p>
-          <h2>Develop</h2>
-          <p>Run <code>yarn install</code> to set up the environment.</p>
-          <p>
-            Run <code>yarn start</code> to point your browser to
-            <a href="https://localhost:3000/"
-              ><code>https://localhost:3000/</code></a
-            >
-            to verify the example page works.
-          </p>
-          <p>Run <code>yarn test</code> to run the test suite.</p>
-          <p>Run <code>yarn ci:test</code> to run the tests that ci runs.</p>
-          <p>
-            Run <code>yarn test:watch</code> to run the test suite while you
-            work.
-          </p>
-          <p>
-            Run <code>yarn test:coverage</code> to run the test suite with
-            coverage report.
-          </p>
-          <p>
-            Run <code>yarn lint</code> to run the linter and check code styles.
-          </p>
-          <p>
-            Run
-            <code
-              >yarn install &amp;&amp; yarn build &amp;&amp; yarn
-              test:es-check:es5 &amp;&amp; yarn
-              test:es-check:es2015:module</code
-            >
-            to check for JS incompatibility.
-          </p>
-          <p>
-            See <a href=".circleci/config.yml">.circleci/config.yml</a> for
-            additional checks that might be run as part of
-            <a href="https://circleci.com/">circleci integration tests</a>.
-          </p>
-          <h2>Issue Reporting</h2>
-          <p>
-            If you have found a bug or if you have a feature request, please
-            report them at this repository issues section. Please do not report
-            security vulnerabilities on the public GitHub issue tracker. The
-            <a href="https://auth0.com/whitehat"
-              >Responsible Disclosure Program</a
-            >
-            details the procedure for disclosing security issues.
-          </p>
-          <p>
-            For auth0 related questions/support please use the
-            <a href="https://support.auth0.com">Support Center</a>.
-          </p>
-          <h2>Author</h2>
-          <p><a href="https://auth0.com">Auth0</a></p>
-          <h2>License</h2>
-          <p>
-            This project is licensed under the MIT license. See the
-            <a href="LICENSE">LICENSE</a> file for more info.
-          </p>
-          <!-- Vaaaaarrrrsss -->
-        </article>
-      </section>
-    </div>
+<h3>API</h3>
+<ul>
+<li><strong>getUser(userId, cb)</strong>: Returns the user profile. <a href="https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id">https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id</a></li>
+<li><strong>patchUserMetadata(userId, userMetadata, cb)</strong>: Updates the user metadata. It will patch the user metadata with the attributes sent. <a href="https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id">https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id</a></li>
+<li><strong>patchUserAttributes(userId, user, cb)</strong>: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to <a href="https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id">https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id</a></li>
+<li><strong>linkUser(userId, secondaryUserToken, cb)</strong>: Link two users. <a href="https://auth0.com/docs/api/management/v2#!/Users/post_identities">https://auth0.com/docs/api/management/v2#!/Users/post_identities</a></li>
+</ul>
+<h2>Documentation</h2>
+<p>For a complete reference and examples please check our <a href="https://auth0.com/docs/libraries/auth0js">docs</a>.</p>
+<h2>Migration</h2>
+<p>If you need help migrating to v9, please refer to the <a href="https://auth0.com/docs/libraries/auth0js/v9/migration-guide">v9 Migration Guide</a>.</p>
+<p>If you need help migrating to v8, please refer to the <a href="https://auth0.com/docs/libraries/auth0js/v8/migration-guide">v8 Migration Guide</a>.</p>
+<h2>Develop</h2>
+<p>Run <code>yarn install</code> to set up the environment.</p>
+<p>Run <code>yarn start</code> to point your browser to <a href="https://localhost:3000/"><code>https://localhost:3000/</code></a> to verify the example page works.</p>
+<p>Run <code>yarn test</code> to run the test suite.</p>
+<p>Run <code>yarn ci:test</code> to run the tests that ci runs.</p>
+<p>Run <code>yarn test:watch</code> to run the test suite while you work.</p>
+<p>Run <code>yarn test:coverage</code> to run the test suite with coverage report.</p>
+<p>Run <code>yarn lint</code> to run the linter and check code styles.</p>
+<p>Run <code>yarn install &amp;&amp; yarn build &amp;&amp; yarn test:es-check:es5 &amp;&amp; yarn test:es-check:es2015:module</code> to check for JS incompatibility.</p>
+<p>See <a href=".circleci/config.yml">.circleci/config.yml</a> for additional checks that might be run as part of
+<a href="https://circleci.com/">circleci integration tests</a>.</p>
+<h2>Issue Reporting</h2>
+<p>If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The <a href="https://auth0.com/whitehat">Responsible Disclosure Program</a> details the procedure for disclosing security issues.</p>
+<p>For auth0 related questions/support please use the <a href="https://support.auth0.com">Support Center</a>.</p>
+<h2>Author</h2>
+<p><a href="https://auth0.com">Auth0</a></p>
+<h2>License</h2>
+<p>This project is licensed under the MIT license. See the <a href="LICENSE">LICENSE</a> file for more info.</p>
+<!-- Vaaaaarrrrsss --></article>
+    </section>
 
-    <br class="clear" />
 
-    <footer>
-      Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on
-      Tue Dec 17 2019 23:54:45 GMT+0000 (Greenwich Mean Time) using the Minami
-      theme.
-    </footer>
 
-    <script>
-      prettyPrint();
-    </script>
-    <script src="scripts/linenumber.js"></script>
-  </body>
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Tue Jan 14 2020 11:06:46 GMT+0000 (Greenwich Mean Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
 </html>
