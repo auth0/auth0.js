@@ -45,6 +45,7 @@ function wrapCallback(cb, options) {
 
       errObj.code =
         err.code || err.error || err.error_code || err.status || null;
+
       errObj.description =
         err.errorDescription ||
         err.error_description ||
@@ -56,6 +57,17 @@ function wrapCallback(cb, options) {
       if (options.forceLegacyError) {
         errObj.error = errObj.code;
         errObj.error_description = errObj.description;
+      }
+
+      if (
+        errObj.code === 'blocked_user' &&
+        err.error_codes &&
+        err.error_details
+      ) {
+        errObj.blockedUser = {
+          codes: err.error_codes,
+          details: err.error_details
+        };
       }
 
       if (err.name) {
