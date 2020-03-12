@@ -292,17 +292,35 @@ describe('auth0.WebAuth', function() {
         appState: null
       });
       sinon.spy(SSODataStorage.prototype, 'set');
+
       sinon
         .stub(IdTokenVerifier.prototype, 'validateAccessToken')
         .callsFake(function(at, alg, atHash, cb) {
           cb(null);
         });
+
+      sinon
+        .stub(IdTokenVerifier.prototype, 'getRsaVerifier')
+        .callsFake(function(iss, kid, cb) {
+          cb(null, {
+            verify: function() {
+              return true;
+            }
+          });
+        });
     });
+
     afterEach(function() {
       SSODataStorage.prototype.set.restore();
+
       if (IdTokenVerifier.prototype.validateAccessToken.restore) {
         IdTokenVerifier.prototype.validateAccessToken.restore();
       }
+
+      if (IdTokenVerifier.prototype.getRsaVerifier.restore) {
+        IdTokenVerifier.prototype.getRsaVerifier.restore();
+      }
+
       if (WebAuth.prototype.validateToken.restore) {
         WebAuth.prototype.validateToken.restore();
       }
@@ -360,7 +378,12 @@ describe('auth0.WebAuth', function() {
           nonce: 'lFCnI8.crRTdHfdo5k.zMXfR31856gKz'
         },
         function(err, data) {
+          if (err) {
+            return done(err);
+          }
+
           expect(err).to.be(null);
+
           expect(data).to.be.eql({
             accessToken: null,
             idToken:
@@ -388,6 +411,7 @@ describe('auth0.WebAuth', function() {
             tokenType: 'Bearer',
             scope: null
           });
+
           done();
         }
       ); // eslint-disable-line
