@@ -13,7 +13,7 @@ function IframeHandler(options) {
   this.proxyEventListener = null;
   // If no event identifier specified, set default
   this.eventValidator = options.eventValidator || {
-    isValid: function() {
+    isValid: function () {
       return true;
     }
   };
@@ -23,7 +23,7 @@ function IframeHandler(options) {
   }
 }
 
-IframeHandler.prototype.init = function() {
+IframeHandler.prototype.init = function () {
   var _this = this;
   var _window = windowHelper.getWindow();
 
@@ -31,7 +31,7 @@ IframeHandler.prototype.init = function() {
   this.iframe.style.display = 'none';
 
   // Workaround to avoid using bind that does not work in IE8
-  this.proxyEventListener = function(e) {
+  this.proxyEventListener = function (e) {
     _this.eventListener(e);
   };
 
@@ -58,13 +58,16 @@ IframeHandler.prototype.init = function() {
 
   this.iframe.src = this.url;
 
-  this.timeoutHandle = setTimeout(function() {
+  this.timeoutHandle = setTimeout(function () {
     _this.timeoutHandler();
   }, this.timeout);
 };
 
-IframeHandler.prototype.eventListener = function(event) {
-  var eventData = { event: event, sourceObject: this.eventSourceObject };
+IframeHandler.prototype.eventListener = function (event) {
+  var eventData = {
+    event: event,
+    sourceObject: this.eventSourceObject
+  };
 
   if (!this.eventValidator.isValid(eventData)) {
     return;
@@ -74,19 +77,19 @@ IframeHandler.prototype.eventListener = function(event) {
   this.callback(eventData);
 };
 
-IframeHandler.prototype.timeoutHandler = function() {
+IframeHandler.prototype.timeoutHandler = function () {
   this.destroy();
   if (this.timeoutCallback) {
     this.timeoutCallback();
   }
 };
 
-IframeHandler.prototype.destroy = function() {
+IframeHandler.prototype.destroy = function () {
   var _this = this;
 
   clearTimeout(this.timeoutHandle);
 
-  this._destroyTimeout = setTimeout(function() {
+  this._destroyTimeout = setTimeout(function () {
     _this.eventSourceObject.removeEventListener(
       _this.eventListenerType,
       _this.proxyEventListener,
@@ -96,7 +99,7 @@ IframeHandler.prototype.destroy = function() {
     if (_this.iframe.parentNode) {
       _this.iframe.parentNode.removeChild(_this.iframe);
     }
-  }, 0);
+  }, 2000);
 };
 
 export default IframeHandler;
