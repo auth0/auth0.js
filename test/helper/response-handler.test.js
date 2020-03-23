@@ -150,7 +150,7 @@ describe('helpers responseHandler', function() {
     })(assert_err, null);
   });
 
-  it('should return normalized block codes', function(done) {
+  it('should return normalized error codes and details', function(done) {
     var assert_err = {};
     assert_err.response = {};
     assert_err.response.body = {
@@ -174,7 +174,7 @@ describe('helpers responseHandler', function() {
         original: assert_err,
         code: 'blocked_user',
         description: 'Blocked user.',
-        blockedUser: {
+        errorDetails: {
           codes: ['reason-1', 'reason-2'],
           details: {
             'reason-1': {
