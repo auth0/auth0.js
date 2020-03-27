@@ -4,7 +4,7 @@
 
 **Added**
 
-- [SDK-1405] Added support for new generic error details [\#1084](https://github.com/auth0/auth0.js/pull/1084) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- [SDK-1405] Added support for new generic error codes and details [\#1084](https://github.com/auth0/auth0.js/pull/1084) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 ## [v9.12.2](https://github.com/auth0/auth0.js/tree/v9.12.2) (2020-01-14)
 
