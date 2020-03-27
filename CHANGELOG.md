@@ -1,12 +1,23 @@
+## [v9.13.0](https://github.com/auth0/auth0.js/tree/v9.13.0) (2020-03-27)
+
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.12.2...v9.13.0)
+
+**Added**
+
+- [SDK-1405] Added support for new generic error details [\#1084](https://github.com/auth0/auth0.js/pull/1084) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 ## [v9.12.2](https://github.com/auth0/auth0.js/tree/v9.12.2) (2020-01-14)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.12.1...v9.12.2)
 
 **Changed**
+
 - [SDK-1266] Bumped idtoken-verifier to latest patch [\#1073](https://github.com/auth0/auth0.js/pull/1073) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 **Security**
+
 - [Security] Bump handlebars from 4.1.2 to 4.5.3 [\#1068](https://github.com/auth0/auth0.js/pull/1068) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+
 ## [v9.12.1](https://github.com/auth0/auth0.js/tree/v9.12.1) (2019-12-17)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.12.0...v9.12.1)
