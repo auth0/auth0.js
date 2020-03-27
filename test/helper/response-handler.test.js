@@ -150,6 +150,47 @@ describe('helpers responseHandler', function() {
     })(assert_err, null);
   });
 
+  it('should return normalized error codes and details', function(done) {
+    var assert_err = {};
+    assert_err.response = {};
+    assert_err.response.body = {
+      code: 'blocked_user',
+      error: 'Blocked user.',
+      error_codes: ['reason-1', 'reason-2'],
+      error_details: {
+        'reason-1': {
+          timestamp: 123
+        },
+        'reason-2': {
+          timestamp: 456
+        }
+      }
+    };
+
+    responseHandler(function(err, data) {
+      expect(data).to.be(undefined);
+
+      expect(err).to.eql({
+        original: assert_err,
+        code: 'blocked_user',
+        description: 'Blocked user.',
+        errorDetails: {
+          codes: ['reason-1', 'reason-2'],
+          details: {
+            'reason-1': {
+              timestamp: 123
+            },
+            'reason-2': {
+              timestamp: 456
+            }
+          }
+        }
+      });
+
+      done();
+    })(assert_err, null);
+  });
+
   it('should return the data', function(done) {
     var assert_data = {
       body: {
