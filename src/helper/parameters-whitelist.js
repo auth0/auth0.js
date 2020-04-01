@@ -50,6 +50,7 @@ var authorizeParams = [
   'nonce',
   'display',
   'prompt',
+  'screen_hint',
   'max_age',
   'ui_locales',
   'claims_locales',
