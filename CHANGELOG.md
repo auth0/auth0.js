@@ -1,3 +1,12 @@
+
+## [v9.13.1](https://github.com/auth0/auth0.js/tree/v9.13.1) (2020-04-01)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.0...v9.13.1)
+
+**Fixed**
+- Add screen_hint to allowed parameters [\#1093](https://github.com/auth0/auth0.js/pull/1093) ([tomaszn](https://github.com/tomaszn))
+
+**Security**
+- Update idtoken-verifier dependency [\#1091](https://github.com/auth0/auth0.js/pull/1091) ([lbalmaceda](https://github.com/lbalmaceda))
 ## [v9.13.0](https://github.com/auth0/auth0.js/tree/v9.13.0) (2020-03-27)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.12.2...v9.13.0)
