@@ -8,7 +8,7 @@
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
 
-Client Side Javascript toolkit for Auth0 API.
+Client Side JavaScript toolkit for Auth0 API.
 
 If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html).
 
