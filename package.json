@@ -125,6 +125,7 @@
     "minimist": "^1.2.0",
     "set-value": "^2.0.1",
     "acorn": "^7.1.1",
-    "serialize-javascript": "^2.1.1"
+    "serialize-javascript": "^2.1.1",
+    "kind-of": "^6.0.3"
   }
 }
