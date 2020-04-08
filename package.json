@@ -122,7 +122,7 @@
     }
   },
   "resolutions": {
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.5",
     "set-value": "^2.0.1",
     "acorn": "^7.1.1",
     "serialize-javascript": "^2.1.1",
