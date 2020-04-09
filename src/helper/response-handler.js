@@ -27,6 +27,12 @@ function wrapCallback(cb, options) {
         original: err
       };
 
+      objectHelper.updatePropertyOn(
+        errObj,
+        'original.response.req._data.password',
+        '*****'
+      );
+
       if (err.response && err.response.statusCode) {
         errObj.statusCode = err.response.statusCode;
       }

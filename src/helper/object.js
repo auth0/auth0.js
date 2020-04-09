@@ -168,6 +168,28 @@ function trimUserDetails(options) {
   return trimMultiple(options, ['username', 'email', 'phoneNumber']);
 }
 
+/**
+ * Updates the value of a property on the given object, using a deep path selector.
+ * @param {object} obj The object to set the property value on
+ * @param {string|array} path The path to the property that should have its value updated. e.g. 'prop1.prop2.prop3' or ['prop1', 'prop2', 'prop3']
+ * @param {any} value The value to set
+ */
+function updatePropertyOn(obj, path, value) {
+  if (typeof path === 'string') {
+    path = path.split('.');
+  }
+
+  var next = path[0];
+
+  if (obj.hasOwnProperty(next)) {
+    if (path.length === 1) {
+      obj[next] = value;
+    } else {
+      updatePropertyOn(obj[next], path.slice(1), value);
+    }
+  }
+}
+
 export default {
   toSnakeCase: toSnakeCase,
   toCamelCase: toCamelCase,
@@ -178,5 +200,6 @@ export default {
   extend: extend,
   getOriginFromUrl: getOriginFromUrl,
   getLocationFromUrl: getLocationFromUrl,
-  trimUserDetails: trimUserDetails
+  trimUserDetails: trimUserDetails,
+  updatePropertyOn: updatePropertyOn
 };
