@@ -241,4 +241,88 @@ describe('helpers responseHandler', function() {
       { keepOriginalCasing: true }
     )(null, assert_data);
   });
+
+  it('should mask the password object in the original response object', function(done) {
+    var assert_err = {
+      code: 'the_error_code',
+      error: 'The error description.',
+      response: {
+        req: {
+          _data: {
+            realm: 'realm',
+            client_id: 'client_id',
+            username: 'username',
+            password: 'this is a password'
+          }
+        }
+      }
+    };
+
+    responseHandler(function(err, data) {
+      expect(data).to.be(undefined);
+
+      expect(err).to.eql({
+        original: {
+          code: 'the_error_code',
+          error: 'The error description.',
+          response: {
+            req: {
+              _data: {
+                realm: 'realm',
+                client_id: 'client_id',
+                username: 'username',
+                password: '*****'
+              }
+            }
+          }
+        },
+        code: 'the_error_code',
+        description: 'The error description.'
+      });
+
+      done();
+    })(assert_err, null);
+  });
+
+  it('should mask the password object in the data object', function(done) {
+    var assert_err = {
+      code: 'the_error_code',
+      error: 'The error description.',
+      response: {
+        req: {
+          _data: {
+            realm: 'realm',
+            client_id: 'client_id',
+            username: 'username',
+            password: 'this is a password'
+          }
+        }
+      }
+    };
+
+    responseHandler(function(err, data) {
+      expect(data).to.be(undefined);
+
+      expect(err).to.eql({
+        original: {
+          code: 'the_error_code',
+          error: 'The error description.',
+          response: {
+            req: {
+              _data: {
+                realm: 'realm',
+                client_id: 'client_id',
+                username: 'username',
+                password: '*****'
+              }
+            }
+          }
+        },
+        code: 'the_error_code',
+        description: 'The error description.'
+      });
+
+      done();
+    })(assert_err, null);
+  });
 });

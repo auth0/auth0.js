@@ -707,4 +707,62 @@ describe('helpers', function() {
       });
     });
   });
+
+  describe('setPropertyValue', function() {
+    it('can set a property at the first level of the object', function() {
+      var obj = {
+        one: 1,
+        two: 2,
+        three: 3
+      };
+
+      objectHelper.updatePropertyOn(obj, 'one', 'one');
+
+      expect(obj).to.eql({
+        one: 'one',
+        two: 2,
+        three: 3
+      });
+    });
+
+    it('can set a nested property', function() {
+      var obj = {
+        one: {
+          two: {
+            three: 3
+          }
+        }
+      };
+
+      objectHelper.updatePropertyOn(obj, 'one.two.three', 'three');
+
+      expect(obj).to.eql({
+        one: {
+          two: {
+            three: 'three'
+          }
+        }
+      });
+    });
+
+    it("does not add new values if the key doesn't already exist", function() {
+      var obj = {
+        one: {
+          two: {
+            three: 3
+          }
+        }
+      };
+
+      objectHelper.updatePropertyOn(obj, 'one.two.four', 4);
+
+      expect(obj).to.eql({
+        one: {
+          two: {
+            three: 3
+          }
+        }
+      });
+    });
+  });
 });
