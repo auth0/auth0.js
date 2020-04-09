@@ -1,12 +1,29 @@
+## [v9.13.2](https://github.com/auth0/auth0.js/tree/v9.13.2) (2020-04-09)
+
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.1...v9.13.2)
+
+**Fixed**
+
+- docs: Javascript -> JavaScript [\#1096](https://github.com/auth0/auth0.js/pull/1096) ([nwtgck](https://github.com/nwtgck))
+
+**Security**
+
+- Fixed information disclosure through error object [commit](https://github.com/auth0/auth0.js/commit/355ca749b229fb93142f0b3978399b248d710828) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- Bump minimist from 1.2.0 to 1.2.5 [\#1098](https://github.com/auth0/auth0.js/pull/1098) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Dependency updates for security advisories [\#1097](https://github.com/auth0/auth0.js/pull/1097) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 ## [v9.13.1](https://github.com/auth0/auth0.js/tree/v9.13.1) (2020-04-01)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.0...v9.13.1)
 
 **Fixed**
+
 - Add screen_hint to allowed parameters [\#1093](https://github.com/auth0/auth0.js/pull/1093) ([tomaszn](https://github.com/tomaszn))
 
 **Security**
+
 - Update idtoken-verifier dependency [\#1091](https://github.com/auth0/auth0.js/pull/1091) ([lbalmaceda](https://github.com/lbalmaceda))
+
 ## [v9.13.0](https://github.com/auth0/auth0.js/tree/v9.13.0) (2020-03-27)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.12.2...v9.13.0)
