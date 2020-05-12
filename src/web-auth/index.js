@@ -545,6 +545,8 @@ WebAuth.prototype.renewAuth = function(options, cb) {
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
+ * @param {checkSessionCallback} cb
+ * @see {@link https://auth0.com/docs/libraries/auth0js/v9#using-checksession-to-acquire-new-tokens}
  */
 WebAuth.prototype.checkSession = function(options, cb) {
   var params = objectHelper
