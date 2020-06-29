@@ -1,3 +1,13 @@
+
+## [v9.13.3](https://github.com/auth0/auth0.js/tree/v9.13.3) (2020-06-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.2...v9.13.3)
+
+**Changed**
+- Bump idtoken-verifier to 2.0.3 [\#1113](https://github.com/auth0/auth0.js/pull/1113) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
+**Fixed**
+- Fix IE default redirect url [\#1108](https://github.com/auth0/auth0.js/pull/1108) ([vincentdesmares](https://github.com/vincentdesmares))
+- Document that checkSession requires a callback [\#1103](https://github.com/auth0/auth0.js/pull/1103) ([civility-bot](https://github.com/civility-bot))
 ## [v9.13.2](https://github.com/auth0/auth0.js/tree/v9.13.2) (2020-04-09)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.1...v9.13.2)
