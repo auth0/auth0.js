@@ -15,7 +15,8 @@ describe('auth0.authentication', function() {
         domain: 'me.auth0.com',
         clientID: '...',
         redirectUri: 'http://page.com/callback',
-        responseType: 'code'
+        responseType: 'code',
+        state: 'state-xyz'
       });
     });
 
@@ -80,6 +81,7 @@ describe('auth0.authentication', function() {
           return new RequestMock({
             body: {
               client_id: '...',
+              state: 'state-xyz',
               email: 'the email',
               password: 'the password',
               connection: 'the_connection',
@@ -129,6 +131,7 @@ describe('auth0.authentication', function() {
           return new RequestMock({
             body: {
               client_id: '...',
+              state: 'state-xyz',
               email: 'the email',
               password: 'the password',
               connection: 'the_connection',

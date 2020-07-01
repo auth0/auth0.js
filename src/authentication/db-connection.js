@@ -48,7 +48,7 @@ DBConnection.prototype.signup = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'signup');
 
-  body = objectHelper.merge(this.baseOptions, ['clientID']).with(options);
+  body = objectHelper.merge(this.baseOptions, ['clientID', 'state']).with(options);
 
   metadata = body.user_metadata || body.userMetadata;
 
