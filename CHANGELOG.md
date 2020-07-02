@@ -1,4 +1,10 @@
 
+## [v9.13.4](https://github.com/auth0/auth0.js/tree/v9.13.4) (2020-07-02)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.3...v9.13.4)
+
+**Changed**
+- [CAUTH-423]  Add login state if available to the sign-up request [\#1117](https://github.com/auth0/auth0.js/pull/1117) ([jfromaniello](https://github.com/jfromaniello))
+
 ## [v9.13.3](https://github.com/auth0/auth0.js/tree/v9.13.3) (2020-06-26)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.2...v9.13.3)
 
