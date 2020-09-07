@@ -145,7 +145,7 @@ describe('auth0.authentication', function() {
       );
     });
 
-    it('should return a url using using whitelisted authorization parameter device', function() {
+    it('should return a url using only the allowed authorization parameter device', function() {
       var url = this.auth0.buildAuthorizeUrl({
         responseType: 'token',
         redirectUri: 'http://anotherpage.com/callback2',

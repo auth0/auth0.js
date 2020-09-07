@@ -166,7 +166,7 @@ describe('auth0.authentication', function() {
       );
     });
 
-    it('should exclude parameters not in whitelist', function(done) {
+    it('should exclude parameters that are not allowed', function(done) {
       sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/oauth/ro');
         return new RequestMock({

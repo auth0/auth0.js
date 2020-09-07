@@ -168,7 +168,7 @@ describe('auth0.WebAuth.popup', function() {
           popupOptions: {
             height: 300,
             width: 250,
-            extra: 'blacklisted'
+            extra: 'disallowed'
           }
         },
         function(err, data) {

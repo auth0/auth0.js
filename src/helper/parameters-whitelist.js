@@ -1,5 +1,5 @@
 // For future reference:,
-// The only parameters that should be whitelisted are parameters
+// The only parameters that should be allowed are parameters
 // defined by the specification, or existing parameters that we
 // need for compatibility
 

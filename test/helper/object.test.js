@@ -347,8 +347,8 @@ describe('helpers', function() {
     });
   });
 
-  describe('blacklist', function() {
-    it('should return all the attributes not blacklisted', function() {
+  describe('the disallow list', function() {
+    it('should return all the attributes that are allowed to be used', function() {
       var object = {
         attr1: 'attribute_1',
         attr2: 'attribute_2',
@@ -416,7 +416,7 @@ describe('helpers', function() {
       });
     });
 
-    it('should change the casing to all the attributes that are not blacklisted', function() {
+    it('should change the casing to all the allowed attributes', function() {
       var object = {
         attrName1: 'attribute_1',
         attrName22: 'attribute_2',
@@ -482,7 +482,7 @@ describe('helpers', function() {
       expect(newObject).to.eql('some random string');
     });
 
-    it('should change the casing to all the attributes that are not blacklisted', function() {
+    it('should change the casing to all the allowed attributes', function() {
       var object = {
         attr_name_1: 'attribute_1',
         attr_name_22: 'attribute_2',
