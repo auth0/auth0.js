@@ -8,12 +8,13 @@ describe('captcha rendering', function () {
   describe('when challenge is not required', function () {
     const { window } = new JSDOM('<body><div class="captcha" /></body>');
     const element = window.document.querySelector('.captcha');
+    let c;
 
     beforeEach(function () {
       const mockClient = {
         getChallenge: (cb) => cb(null, { required: false })
       }
-      captcha.render(mockClient, element);
+      c = captcha.render(mockClient, element);
     });
 
     it('should hide the element', function () {
@@ -22,6 +23,10 @@ describe('captcha rendering', function () {
 
     it('should clean the innerHTML', function () {
       expect(element.innerHTML).to.equal('');
+    });
+
+    it('should return undefined when calling getValue', function () {
+      expect(c.getValue()).to.be.equal(undefined);
     });
   });
 
@@ -97,6 +102,12 @@ describe('captcha rendering', function () {
       const inputEl = element.querySelector('input[name="captcha"]');
       expect(inputEl).to.be.ok();
       expect(inputEl.type).to.contain('text');
+    });
+
+    it('should return the user input when calling getValue()', function () {
+      const inputEl = element.querySelector('input[name="captcha"]');
+      inputEl.value = 'foobar';
+      expect(c.getValue()).to.equal('foobar');
     });
 
     it('should load a new image when clicking the reload button', function () {
@@ -229,6 +240,13 @@ describe('captcha rendering', function () {
         const input = element.querySelector('input[name="captcha"]');
         renderOptions.callback(mockToken)
         expect(input.value).to.equal(mockToken);
+      });
+
+
+      it('should return the value when calling getValue()', function () {
+        const mockToken = 'token xxxxxx';
+        renderOptions.callback(mockToken)
+        expect(c.getValue()).to.equal(mockToken);
       });
 
       it('should clean the value when the token expires', function () {

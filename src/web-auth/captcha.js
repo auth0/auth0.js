@@ -118,10 +118,17 @@ function render(auth0Client, element, options, callback) {
     });
   }
 
+  function getValue() {
+    var captchaInput = element.querySelector('input[name="captcha"]');
+    if (!captchaInput) { return; }
+    return captchaInput.value;
+  }
+
   load(callback);
 
   return {
-    reload: load
+    reload: load,
+    getValue: getValue
   };
 }
 
