@@ -7,6 +7,7 @@
 [![Coverage][codecov-image]][codecov-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js?ref=badge_shield)
 
 Client Side JavaScript toolkit for Auth0 API.
 
@@ -245,3 +246,6 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 [license-url]: #license
 [downloads-image]: https://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/auth0-js
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js?ref=badge_large)
