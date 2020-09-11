@@ -201,21 +201,21 @@ If you need help migrating to v8, please refer to the [v8 Migration Guide](https
 
 ## Develop
 
-Run `yarn install` to set up the environment.
+Run `npm install` to set up the environment.
 
-Run `yarn start` to point your browser to [`https://localhost:3000/`](https://localhost:3000/) to verify the example page works.
+Run `npm start` to point your browser to [`https://localhost:3000/`](https://localhost:3000/) to verify the example page works.
 
-Run `yarn test` to run the test suite.
+Run `npm test` to run the test suite.
 
-Run `yarn ci:test` to run the tests that ci runs.
+Run `npm run ci:test` to run the tests that ci runs.
 
-Run `yarn test:watch` to run the test suite while you work.
+Run `npm run test:watch` to run the test suite while you work.
 
-Run `yarn test:coverage` to run the test suite with coverage report.
+Run `npm run test:coverage` to run the test suite with coverage report.
 
-Run `yarn lint` to run the linter and check code styles.
+Run `npm run lint` to run the linter and check code styles.
 
-Run `yarn install && yarn build && yarn test:es-check:es5 && yarn test:es-check:es2015:module` to check for JS incompatibility.
+Run `npm install && npm run build && npm run test:es-check:es5 && npm run test:es-check:es2015:module` to check for JS incompatibility.
 
 See [.circleci/config.yml](.circleci/config.yml) for additional checks that might be run as part of
 [circleci integration tests](https://circleci.com/).
@@ -246,6 +246,5 @@ This project is licensed under the MIT license. See the [LICENSE](LICENSE) file 
 [license-url]: #license
 [downloads-image]: https://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/auth0-js
-
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js?ref=badge_large)
