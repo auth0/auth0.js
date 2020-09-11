@@ -2,44 +2,41 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:10-browsers
+      - image: circleci/node:12-browsers
     environment:
       LANG: en_US.UTF-8
     steps:
       - checkout
-      - run:
-          name: Update Yarn
-          command: 'sudo npm update -g yarn'
       - restore-cache:
-          name: Restore Yarn Package Cache
+          name: Restore Package Cache
           keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
+            - npm-packages-{{ checksum "package-lock.json" }}
       - run:
           name: Install Dependencies
-          command: yarn install
+          command: npm install
       - save-cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-{{ checksum "yarn.lock" }}
+          name: Save Package Cache
+          key: npm-packages-{{ checksum "package-lock.json" }}
           paths:
-            - ~/.cache/yarn
+            - ~/.cache/npm
       - run:
           name: Build
-          command: yarn run build
+          command: npm run build
       - run:
           name: Check for JS incompatibility
-          command: yarn test:es-check:es5 && yarn test:es-check:es2015:module
+          command: npm run test:es-check:es5 && npm run test:es-check:es2015:module
       - run:
           name: Lint
-          command: yarn run lint
+          command: npm run lint
       - run:
           name: Run Tests
-          command: yarn run ci:test
+          command: npm run ci:test
           environment:
             MOCHA_FILE: junit/test-results.xml
           when: always
       - run:
           name: Generate Coverage
-          command: yarn run ci:coverage
+          command: npm run ci:coverage
       - store_artifacts:
           path: dist
       - store_artifacts:
