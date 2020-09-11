@@ -24,7 +24,7 @@ jobs:
           command: npm run build
       - run:
           name: Check for JS incompatibility
-          command: npm test:es-check:es5 && npm test:es-check:es2015:module
+          command: npm run test:es-check:es5 && npm run test:es-check:es2015:module
       - run:
           name: Lint
           command: npm run lint
