@@ -1,4 +1,17 @@
 
+## [v9.14.0](https://github.com/auth0/auth0.js/tree/v9.14.0) (2020-09-11)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.4...v9.14.0)
+
+**Added**
+- [CAUTH-551] add render captcha method [\#1126](https://github.com/auth0/auth0.js/pull/1126) ([jfromaniello](https://github.com/jfromaniello))
+
+**Fixed**
+- [SDK-1812] Inclusive language updates [\#1125](https://github.com/auth0/auth0.js/pull/1125) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- Update superagent dependency to 5.3.1 to get around babel bug [\#1120](https://github.com/auth0/auth0.js/pull/1120) ([paviad](https://github.com/paviad))
+
+**Security**
+- Dependencies and NPM lock file [\#1130](https://github.com/auth0/auth0.js/pull/1130) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v9.13.4](https://github.com/auth0/auth0.js/tree/v9.13.4) (2020-07-02)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.3...v9.13.4)
 
