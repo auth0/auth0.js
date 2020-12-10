@@ -78,7 +78,12 @@ function Authentication(auth0, options) {
         optional: true,
         type: 'object',
         message: '_telemetryInfo option is not valid'
-      }
+      },
+      domainScheme: {
+        optional: true,
+        type: 'string',
+        message: 'domainScheme is not valid'
+      },
     }
   );
   /* eslint-enable */
@@ -88,8 +93,9 @@ function Authentication(auth0, options) {
     this.baseOptions._sendTelemetry === false
       ? this.baseOptions._sendTelemetry
       : true;
-
-  this.baseOptions.rootUrl = 'https://' + this.baseOptions.domain;
+  
+  this.baseOptions.domainScheme = !this.baseOptions.domainScheme ? 'https://' : this.baseOptions.domainScheme
+  this.baseOptions.rootUrl = this.baseOptions.domainScheme + this.baseOptions.domain;
 
   this.request = new RequestBuilder(this.baseOptions);
 
