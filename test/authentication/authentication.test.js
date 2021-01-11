@@ -32,18 +32,19 @@ describe('auth0.authentication', function() {
       var auth0 = new Authentication({}, { domain: 'foo', clientID: 'cid' });
       expect(auth0.baseOptions.domain).to.be.equal('foo');
     });
-    it('should set rootUrl using domain and domain scheme, when two arguements are used', function() {
-      var auth0 = new Authentication({}, { domain: 'foo', clientID: 'cid', domainScheme: 'http://'  });
-      expect(auth0.baseOptions.rootUrl).to.be.equal('http://foo');
+    
+    [
+      {domain: 'https://foo', expectedRootUrl: 'https://foo'},
+      {domain: 'http://foo', expectedRootUrl: 'http://foo'},
+      {domain: 'HTTPS://FOO', expectedRootUrl: 'HTTPS://FOO'},
+      {domain: 'foo', expectedRootUrl: 'https://foo'},
+    ].forEach(function(mockData) {
+      it(`should construct root url ${mockData.expectedRootUrl} when using domain ${mockData.domain}`, function() {
+        var auth0 = new Authentication({ domain: mockData.domain, clientID: 'cid'  });
+        expect(auth0.baseOptions.rootUrl).to.be.equal(mockData.expectedRootUrl);
+      });
     });
-    it('should set rootUrl using domain and domain scheme, when one arguements is used', function() {
-      var auth0 = new Authentication({ domain: 'foo', clientID: 'cid', domainScheme: 'http://'  });
-      expect(auth0.baseOptions.rootUrl).to.be.equal('http://foo');
-    });
-    it('should set prepend https:// to domain if domain scheme is not set', function() {
-      var auth0 = new Authentication({ domain: 'foo', clientID: 'cid'  });
-      expect(auth0.baseOptions.rootUrl).to.be.equal('https://foo');
-    });
+
     it('should check that options is passed', function() {
       expect(function() {
         var auth0 = new Authentication();
