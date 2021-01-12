@@ -89,12 +89,10 @@ function Authentication(auth0, options) {
       ? this.baseOptions._sendTelemetry
       : true;
   
-
-    
-  this.baseOptions.rootUrl = (this.baseOptions.domain && this.baseOptions.domain.toLowerCase().startsWith('http'))
+  this.baseOptions.rootUrl = (this.baseOptions.domain && this.baseOptions.domain.toLowerCase().indexOf('http') === 0)
       ? this.baseOptions.domain
       : 'https://' + this.baseOptions.domain;
-
+      
   this.request = new RequestBuilder(this.baseOptions);
 
   this.passwordless = new PasswordlessAuthentication(
