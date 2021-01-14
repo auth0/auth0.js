@@ -32,6 +32,19 @@ describe('auth0.authentication', function() {
       var auth0 = new Authentication({}, { domain: 'foo', clientID: 'cid' });
       expect(auth0.baseOptions.domain).to.be.equal('foo');
     });
+    
+    [
+      {domain: 'https://foo', expectedRootUrl: 'https://foo'},
+      {domain: 'http://foo', expectedRootUrl: 'http://foo'},
+      {domain: 'HTTPS://FOO', expectedRootUrl: 'HTTPS://FOO'},
+      {domain: 'foo', expectedRootUrl: 'https://foo'},
+    ].forEach(function(mockData) {
+      it(`should construct root url ${mockData.expectedRootUrl} when using domain ${mockData.domain}`, function() {
+        var auth0 = new Authentication({ domain: mockData.domain, clientID: 'cid'  });
+        expect(auth0.baseOptions.rootUrl).to.be.equal(mockData.expectedRootUrl);
+      });
+    });
+
     it('should check that options is passed', function() {
       expect(function() {
         var auth0 = new Authentication();
