@@ -1,38 +1,55 @@
+## [v9.14.2](https://github.com/auth0/auth0.js/tree/v9.14.2) (2021-01-14)
+
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.14.2...v9.14.2)
+
+v9.14.2 is a maintenance release to fix a faulty NPM package - there are no additional changes from 9.14.1.
 
 ## [v9.14.1](https://github.com/auth0/auth0.js/tree/v9.14.1) (2021-01-14)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.14.0...v9.14.1)
 
 **Changed**
+
 - Allow domain to contain http scheme [\#1144](https://github.com/auth0/auth0.js/pull/1144) ([danmastrowcoles](https://github.com/danmastrowcoles))
 
 ## [v9.14.0](https://github.com/auth0/auth0.js/tree/v9.14.0) (2020-09-11)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.4...v9.14.0)
 
 **Added**
+
 - [CAUTH-551] add render captcha method [\#1126](https://github.com/auth0/auth0.js/pull/1126) ([jfromaniello](https://github.com/jfromaniello))
 
 **Fixed**
+
 - [SDK-1812] Inclusive language updates [\#1125](https://github.com/auth0/auth0.js/pull/1125) ([stevehobbsdev](https://github.com/stevehobbsdev))
 - Update superagent dependency to 5.3.1 to get around babel bug [\#1120](https://github.com/auth0/auth0.js/pull/1120) ([paviad](https://github.com/paviad))
 
 **Security**
+
 - Dependencies and NPM lock file [\#1130](https://github.com/auth0/auth0.js/pull/1130) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 ## [v9.13.4](https://github.com/auth0/auth0.js/tree/v9.13.4) (2020-07-02)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.3...v9.13.4)
 
 **Changed**
-- [CAUTH-423]  Add login state if available to the sign-up request [\#1117](https://github.com/auth0/auth0.js/pull/1117) ([jfromaniello](https://github.com/jfromaniello))
+
+- [CAUTH-423] Add login state if available to the sign-up request [\#1117](https://github.com/auth0/auth0.js/pull/1117) ([jfromaniello](https://github.com/jfromaniello))
 
 ## [v9.13.3](https://github.com/auth0/auth0.js/tree/v9.13.3) (2020-06-26)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.2...v9.13.3)
 
 **Changed**
+
 - Bump idtoken-verifier to 2.0.3 [\#1113](https://github.com/auth0/auth0.js/pull/1113) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 **Fixed**
+
 - Fix IE default redirect url [\#1108](https://github.com/auth0/auth0.js/pull/1108) ([vincentdesmares](https://github.com/vincentdesmares))
 - Document that checkSession requires a callback [\#1103](https://github.com/auth0/auth0.js/pull/1103) ([civility-bot](https://github.com/civility-bot))
+
 ## [v9.13.2](https://github.com/auth0/auth0.js/tree/v9.13.2) (2020-04-09)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.1...v9.13.2)

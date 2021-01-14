@@ -1,4 +1,4 @@
-![](https://cdn.auth0.com/resources/oss-source-large-2x.png)
+hange![](https://cdn.auth0.com/resources/oss-source-large-2x.png)
 
 # auth0.js
 
@@ -32,7 +32,7 @@ From CDN:
 
 ```html
 <!-- Latest patch release -->
-<script src="https://cdn.auth0.com/js/auth0/9.14.1/auth0.min.js"></script>
+<script src="https://cdn.auth0.com/js/auth0/9.14.2/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org):
