@@ -1,4 +1,10 @@
 
+## [v9.14.1](https://github.com/auth0/auth0.js/tree/v9.14.1) (2021-01-14)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.14.0...v9.14.1)
+
+**Changed**
+- Allow domain to contain http scheme [\#1144](https://github.com/auth0/auth0.js/pull/1144) ([danmastrowcoles](https://github.com/danmastrowcoles))
+
 ## [v9.14.0](https://github.com/auth0/auth0.js/tree/v9.14.0) (2020-09-11)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.13.4...v9.14.0)
 
