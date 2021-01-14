@@ -78,7 +78,7 @@ function Authentication(auth0, options) {
         optional: true,
         type: 'object',
         message: '_telemetryInfo option is not valid'
-      }
+      },
     }
   );
   /* eslint-enable */
@@ -88,9 +88,11 @@ function Authentication(auth0, options) {
     this.baseOptions._sendTelemetry === false
       ? this.baseOptions._sendTelemetry
       : true;
-
-  this.baseOptions.rootUrl = 'https://' + this.baseOptions.domain;
-
+  
+  this.baseOptions.rootUrl = (this.baseOptions.domain && this.baseOptions.domain.toLowerCase().indexOf('http') === 0)
+      ? this.baseOptions.domain
+      : 'https://' + this.baseOptions.domain;
+      
   this.request = new RequestBuilder(this.baseOptions);
 
   this.passwordless = new PasswordlessAuthentication(
