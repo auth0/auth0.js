@@ -1,4 +1,4 @@
-hange![](https://cdn.auth0.com/resources/oss-source-large-2x.png)
+![](https://cdn.auth0.com/resources/oss-source-large-2x.png)
 
 # auth0.js
 
