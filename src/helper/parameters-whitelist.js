@@ -9,6 +9,7 @@ var tokenParams = [
   // auth0
   'realm',
   'audience',
+  'otp',
   // oauth2
   'client_id',
   'client_secret',
