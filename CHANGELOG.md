@@ -1,3 +1,9 @@
+
+## [v9.14.3](https://github.com/auth0/auth0.js/tree/v9.14.3) (2021-01-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.14.2...v9.14.3)
+
+**Changed**
+- Add otp to tokenParams [\#1153](https://github.com/auth0/auth0.js/pull/1153) ([psamim](https://github.com/psamim))
 ## [v9.14.2](https://github.com/auth0/auth0.js/tree/v9.14.2) (2021-01-14)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.14.2...v9.14.2)
