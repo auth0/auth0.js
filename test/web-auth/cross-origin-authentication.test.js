@@ -319,6 +319,85 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         { expires: times.MINUTES_15 }
       ]);
     });
+
+    it('should call onSuccess if provided when popup:true', function () {
+      sinon.stub(request, 'post').callsFake(function (url) {
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            credential_type: 'password',
+            username: 'me@example.com',
+            password: '123456'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function (cb) {
+            cb(null, {
+              body: {
+                login_ticket: 'a_login_ticket',
+                co_verifier: 'co_verifier',
+                co_id: 'co_id'
+              }
+            });
+          }
+        });
+      });
+
+      const options = {
+        username: 'me@example.com',
+        password: '123456',
+        anotherOption: 'foobar',
+        popup: true,
+        onSuccess: (done) => done()
+      };
+      sinon.spy(options, 'onSuccess');
+      sinon
+        .stub(WebMessageHandler.prototype, 'run')
+        .callsFake(() => { });
+      this.co.login(options);
+
+      expect(options.onSuccess.calledOnce).to.be.ok();
+      expect(WebMessageHandler.prototype.run.calledOnce).to.be.ok();
+    });
+
+    it('should call onSuccess if provided', function () {
+      sinon.stub(request, 'post').callsFake(function (url) {
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            credential_type: 'password',
+            username: 'me@example.com',
+            password: '123456'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function (cb) {
+            cb(null, {
+              body: {
+                login_ticket: 'a_login_ticket',
+                co_verifier: 'co_verifier',
+                co_id: 'co_id'
+              }
+            });
+          }
+        });
+      });
+
+      const options = {
+        username: 'me@example.com',
+        password: '123456',
+        anotherOption: 'foobar',
+        onSuccess: (done) => done()
+      };
+      sinon.spy(options, 'onSuccess');
+      this.co.login(options);
+
+      expect(options.onSuccess.calledOnce).to.be.ok();
+      expect(this.webAuthSpy.authorize.calledOnce).to.be.ok();
+    });
+
     context(
       'should call callback and not redirect to authorize when it is an authentication error',
       function() {

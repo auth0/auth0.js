@@ -41,6 +41,7 @@ function HostedPages(client, options) {
  * @param {String} [options.responseType] type of the response used. It can be any of the values `code` and `token`
  * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`
  * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
+ * @param {Function} [options.onSuccess]
  * @param {credentialsCallback} cb
  */
 HostedPages.prototype.login = function(options, cb) {
@@ -79,10 +80,18 @@ HostedPages.prototype.login = function(options, cb) {
   );
 
   usernamePassword = new UsernamePassword(this.baseOptions);
-  return usernamePassword.login(params, function(err, data) {
+  var onSuccess = params.onSuccess;
+  var loginParams = objectHelper.extend({}, params);
+  delete loginParams.onSuccess;
+  return usernamePassword.login(loginParams, function (err, data) {
     if (err) {
       return cb(err);
     }
+
+    if (onSuccess) {
+      return onSuccess(() => usernamePassword.callback(data));
+    }
+
     return usernamePassword.callback(data);
   });
 };

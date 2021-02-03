@@ -761,6 +761,7 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * @param {String} [options.email] Email (mutually exclusive with username)
  * @param {String} options.password Password
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
+ * @param {Function} [options.onSuccess]
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.login = function(options, cb) {

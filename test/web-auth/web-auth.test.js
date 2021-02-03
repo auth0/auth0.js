@@ -2510,7 +2510,8 @@ describe('auth0.WebAuth', function () {
           responseType: 'token',
           redirectUri: 'http://page.com/callback',
           foo: 'bar',
-          state: 'randomState'
+          state: 'randomState',
+          onSuccess: (done) => done()
         };
         sinon
           .stub(CrossOriginAuthentication.prototype, 'login')

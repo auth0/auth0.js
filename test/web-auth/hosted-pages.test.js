@@ -217,10 +217,56 @@ describe('auth0.WebAuth._universalLogin', function() {
         }
       );
     });
-  });
+  it('should call onSuccess if provided', function () {
+    sinon.stub(UsernamePassword.prototype, 'callback').callsFake(() => { });
+    sinon.stub(request, 'post').callsFake(function (url) {
+      return new RequestMock({
+        body: {
+          client_id: '0HP71GSd6PuoRY',
+          connection: 'tests',
+          password: '1234',
+          redirect_uri: 'https://localhost:3000/example/',
+          response_type: 'id_token',
+          scope: 'openid',
+          tenant: 'me',
+          username: 'me@example.com'
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'Auth0-Client': telemetryInfo
+        },
+        cb: function (cb) {
+          cb(null, {
+            text: 'the_form_html',
+            type: 'text/html'
+          });
+        }
+      });
+    });
 
-  context('signup and login', function() {
-    before(function() {
+    const auth0 = new WebAuth({
+      domain: 'me.auth0.com',
+      redirectUri: 'https://localhost:3000/example/',
+      clientID: '0HP71GSd6PuoRY',
+      responseType: 'id_token'
+    });
+
+    const options = {
+      connection: 'tests',
+      username: 'me@example.com',
+      password: '1234',
+      scope: 'openid',
+      onSuccess: (done) => done()
+    };
+    sinon.spy(options, 'onSuccess');
+    auth0._universalLogin.login(options);
+
+    expect(options.onSuccess.calledOnce).to.be.ok();
+    expect(UsernamePassword.prototype.callback).to.be.ok();
+  });
+});
+context('signup and login', function () {
+  before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',

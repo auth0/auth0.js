@@ -47,6 +47,7 @@ function createKey(origin, coId) {
  * @param {String} [options.email] Email  (mutually exclusive with username)
  * @param {String} options.password Password
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
+ * @param {Function} [options.onSuccess]
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 CrossOriginAuthentication.prototype.login = function(options, cb) {
@@ -103,6 +104,8 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       _this.storage.setItem(key, data.body.co_verifier, {
         expires: times.MINUTES_15
       });
+
+      var successHandler = function () {
       if (popupMode) {
         _this.webMessageHandler.run(
           authorizeOptions,
@@ -110,6 +113,13 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
         );
       } else {
         _this.webAuth.authorize(authorizeOptions);
+      }
+      };
+
+      if (options.onSuccess) {
+        options.onSuccess(successHandler);
+      } else {
+        successHandler();
       }
     });
 };
