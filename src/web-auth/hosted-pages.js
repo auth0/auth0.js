@@ -41,7 +41,7 @@ function HostedPages(client, options) {
  * @param {String} [options.responseType] type of the response used. It can be any of the values `code` and `token`
  * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`
  * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
- * @param {Function} [options.onSuccess]
+ * @param {Function} [options.onSuccess] Callback function called when authentication was successful, accepts a single callback argument that needs to be called when done.
  * @param {credentialsCallback} cb
  */
 HostedPages.prototype.login = function(options, cb) {

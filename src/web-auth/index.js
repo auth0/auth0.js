@@ -761,8 +761,22 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * @param {String} [options.email] Email (mutually exclusive with username)
  * @param {String} options.password Password
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
- * @param {Function} [options.onSuccess]
+ * @param {Function} [options.onSuccess] Callback function called when authentication was successful, accepts a single callback argument that needs to be called when done.
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
+ *
+ * @example
+ * In the case where it's required to be notified when login was successful, the option `onSuccess` can be used to provide a callback function that will get called before redirecting.
+ * The onSuccess callback function accepts a single callback argument that needs to be called either synschronously or asynchronously.
+ * 
+ * ```
+ * webAuth.login({
+ *   onSuccess: function(done) {
+ *     doAnySyncOrAsyncThingsHere(function() {
+ *       done();
+ *     });
+ *   }
+ * });
+ * ```
  */
 WebAuth.prototype.login = function(options, cb) {
   var params = objectHelper
