@@ -116,7 +116,7 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       }
       };
 
-      if (options.onSuccess) {
+      if (typeof options.onSuccess === 'function') {
         options.onSuccess(successHandler);
       } else {
         successHandler();

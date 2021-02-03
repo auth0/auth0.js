@@ -88,8 +88,10 @@ HostedPages.prototype.login = function(options, cb) {
       return cb(err);
     }
 
-    if (onSuccess) {
-      return onSuccess(() => usernamePassword.callback(data));
+    if (typeof onSuccess === 'function') {
+      return onSuccess(function () {
+        usernamePassword.callback(data);
+      });
     }
 
     return usernamePassword.callback(data);
