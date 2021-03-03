@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auth0 Login Callback demo</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.auth0.com/styleguide/core/2.0.5/core.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.auth0.com/styleguide/components/2.0.0/components.min.css"
+    />
+  </head>
+  <body>
+    <button id="login">Log in</button>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/latest/js.cookie.min.js"></script>
+    <script src="/auth0.js"></script>
+    <script src="/cordova-auth0-plugin.js"></script>
+
+    <script type="application/javascript">
+      const loginButton = document.getElementById('login');
+
+      const webAuth = new auth0.WebAuth({
+        domain: 'elkdanger.eu.auth0.com',
+        clientID: 'TgqxTDJFG2G3H5TjqvIEEVL5i6IcZGye'
+      });
+
+      loginButton.addEventListener('click', () => {
+        webAuth.authorize({
+          responseType: 'id_token',
+          redirectUri: 'http://localhost:3000/login.html'
+        });
+      });
+
+      webAuth.parseHash((err, data) => {
+        console.log(data);
+        window.location.hash = '';
+      });
+    </script>
+  </body>
+</html>
