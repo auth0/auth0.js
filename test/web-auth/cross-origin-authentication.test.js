@@ -109,6 +109,50 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
         anotherOption: 'foobar'
       });
     });
+    it('should call /co/authenticate and run onRedirecting before /authorize', function() {
+      sinon.stub(request, 'post').callsFake(function(url) {
+        expect(url).to.be('https://me.auth0.com/co/authenticate');
+
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            credential_type: 'password',
+            username: 'me@example.com',
+            password: '123456'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {
+                login_ticket: 'a_login_ticket',
+                co_verifier: 'co_verifier',
+                co_id: 'co_id'
+              }
+            });
+          }
+        });
+      });
+
+      var spy = this.webAuthSpy;
+
+      this.co.login({
+        username: 'me@example.com',
+        password: '123456',
+        anotherOption: 'foobar',
+        onRedirecting: function(cb) {
+          expect(spy.authorize.getCall(0)).not.to.be.ok();
+          cb();
+
+          expect(spy.authorize.getCall(0).args[0]).to.be.eql({
+            username: 'me@example.com',
+            loginTicket: 'a_login_ticket',
+            anotherOption: 'foobar'
+          });
+        }
+      });
+    });
     it('should call /co/authenticate and call `webMessageHandler.run` when popup:true', function(done) {
       sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');

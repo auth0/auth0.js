@@ -52,6 +52,7 @@ function createKey(origin, coId) {
 CrossOriginAuthentication.prototype.login = function(options, cb) {
   var _this = this;
   var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate');
+
   options.username = options.username || options.email;
   delete options.email;
 
@@ -59,12 +60,15 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
     client_id: options.clientID || this.baseOptions.clientID,
     username: options.username
   };
+
   if (options.password) {
     authenticateBody.password = options.password;
   }
+
   if (options.otp) {
     authenticateBody.otp = options.otp;
   }
+
   var realm = options.realm || this.baseOptions.realm;
 
   if (realm) {
@@ -72,11 +76,13 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
       options.credentialType ||
       this.baseOptions.credentialType ||
       'http://auth0.com/oauth/grant-type/password-realm';
+
     authenticateBody.realm = realm;
     authenticateBody.credential_type = credentialType;
   } else {
     authenticateBody.credential_type = 'password';
   }
+
   this.request
     .post(url)
     .withCredentials()
@@ -87,29 +93,47 @@ CrossOriginAuthentication.prototype.login = function(options, cb) {
           error: 'request_error',
           error_description: JSON.stringify(err)
         };
+
         return responseHandler(cb, { forceLegacyError: true })(errorObject);
       }
-      var popupMode = options.popup === true;
-      options = objectHelper.blacklist(options, [
-        'password',
-        'credentialType',
-        'otp',
-        'popup'
-      ]);
-      var authorizeOptions = objectHelper
-        .merge(options)
-        .with({ loginTicket: data.body.login_ticket });
-      var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
-      _this.storage.setItem(key, data.body.co_verifier, {
-        expires: times.MINUTES_15
-      });
-      if (popupMode) {
-        _this.webMessageHandler.run(
-          authorizeOptions,
-          responseHandler(cb, { forceLegacyError: true })
-        );
+
+      function doAuth() {
+        var popupMode = options.popup === true;
+
+        options = objectHelper.blacklist(options, [
+          'password',
+          'credentialType',
+          'otp',
+          'popup',
+          'onRedirecting'
+        ]);
+
+        var authorizeOptions = objectHelper
+          .merge(options)
+          .with({ loginTicket: data.body.login_ticket });
+
+        var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
+
+        _this.storage.setItem(key, data.body.co_verifier, {
+          expires: times.MINUTES_15
+        });
+
+        if (popupMode) {
+          _this.webMessageHandler.run(
+            authorizeOptions,
+            responseHandler(cb, { forceLegacyError: true })
+          );
+        } else {
+          _this.webAuth.authorize(authorizeOptions);
+        }
+      }
+
+      // Handle pre-redirecting to login, then proceed with '/authorize' once that is complete
+      if (typeof options.onRedirecting === 'function') {
+        options.onRedirecting(doAuth);
       } else {
-        _this.webAuth.authorize(authorizeOptions);
+        // If not handling pre-redirect, just do the login as before
+        doAuth();
       }
     });
 };
