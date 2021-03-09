@@ -16,6 +16,7 @@
   </head>
   <body>
     <button id="login">Log in</button>
+    <button id="authorize">Log in (ULP)</button>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/latest/js.cookie.min.js"></script>
@@ -24,17 +25,37 @@
 
     <script type="application/javascript">
       const loginButton = document.getElementById('login');
+      const authButton = document.getElementById('authorize');
 
       const webAuth = new auth0.WebAuth({
-        domain: 'elkdanger.eu.auth0.com',
-        clientID: 'TgqxTDJFG2G3H5TjqvIEEVL5i6IcZGye'
+        domain: 'brucke.auth0.com',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6'
       });
 
-      loginButton.addEventListener('click', () => {
+      authButton.addEventListener('click', () => {
         webAuth.authorize({
           responseType: 'id_token',
           redirectUri: 'http://localhost:3000/login.html'
         });
+      });
+
+      loginButton.addEventListener('click', () => {
+        webAuth.login(
+          {
+            responseType: 'id_token',
+            redirectUri: 'http://localhost:3000/login.html',
+            username: 'johnfoo@gmail.com',
+            password: '1234',
+            realm: 'acme',
+            onRedirecting: function(done) {
+              console.log('On redirecting..');
+              done();
+            }
+          },
+          function(err) {
+            console.error(err);
+          }
+        );
       });
 
       webAuth.parseHash((err, data) => {
