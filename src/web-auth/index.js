@@ -774,7 +774,8 @@ WebAuth.prototype.login = function(options, cb) {
       '_csrf',
       'state',
       '_intstate',
-      'nonce'
+      'nonce',
+      'onRedirecting'
     ])
     .with(options);
 

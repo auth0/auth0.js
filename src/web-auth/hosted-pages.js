@@ -49,6 +49,7 @@ HostedPages.prototype.login = function(options, cb) {
       'This method is meant to be used only inside the Universal Login Page.'
     );
   }
+
   var usernamePassword;
 
   var params = objectHelper
@@ -63,7 +64,8 @@ HostedPages.prototype.login = function(options, cb) {
       '_csrf',
       'state',
       '_intstate',
-      'nonce'
+      'nonce',
+      'onRedirecting'
     ])
     .with(options);
 
@@ -84,12 +86,18 @@ HostedPages.prototype.login = function(options, cb) {
     if (err) {
       return cb(err);
     }
-    console.log(params.onRedirecting);
-    if (typeof params.onRedirecting === 'function') {
-      console.log('Function!');
+
+    function doAuth() {
+      return usernamePassword.callback(data);
     }
 
-    return usernamePassword.callback(data);
+    if (typeof params.onRedirecting === 'function') {
+      return params.onRedirecting(function() {
+        return doAuth();
+      });
+    }
+
+    return doAuth();
   });
 };
 

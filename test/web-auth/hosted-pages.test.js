@@ -138,6 +138,81 @@ describe('auth0.WebAuth._universalLogin', function() {
         }
       );
     });
+    it('should call onRedirecting if available before submitting the redirect form', function(done) {
+      sinon.stub(request, 'post').callsFake(function(url) {
+        expect(url).to.be('https://me.auth0.com/usernamepassword/login');
+        return new RequestMock({
+          body: {
+            client_id: '0HP71GSd6PuoRY',
+            connection: 'tests',
+            password: '1234',
+            redirect_uri: 'https://localhost:3000/example/',
+            response_type: 'id_token',
+            scope: 'openid',
+            tenant: 'me',
+            username: 'me@example.com'
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            'Auth0-Client': telemetryInfo
+          },
+          cb: function(cb) {
+            cb(null, {
+              text: 'the_form_html',
+              type: 'text/html'
+            });
+          }
+        });
+      });
+
+      sinon.stub(windowHelper, 'getDocument').callsFake(function() {
+        return {
+          createElement: function() {
+            return {};
+          },
+          body: {
+            appendChild: function(element) {
+              expect(element.innerHTML).to.eql('the_form_html');
+              return {
+                children: [
+                  {
+                    submit: function() {
+                      expect(redirectingSpy.getCall(0)).to.be.ok();
+                      done();
+                    }
+                  }
+                ]
+              };
+            }
+          }
+        };
+      });
+
+      var configuration = {
+        domain: 'me.auth0.com',
+        redirectUri: 'https://localhost:3000/example/',
+        clientID: '0HP71GSd6PuoRY',
+        responseType: 'id_token',
+        onRedirecting: function(cb) {
+          cb();
+        }
+      };
+
+      var redirectingSpy = sinon.spy(configuration, 'onRedirecting');
+      var auth0 = new WebAuth(configuration);
+
+      auth0._universalLogin.login(
+        {
+          connection: 'tests',
+          username: 'me@example.com',
+          password: '1234',
+          scope: 'openid'
+        },
+        function(err) {
+          console.log(err);
+        }
+      );
+    });
     it('should use transactionManager.process', function(done) {
       sinon.stub(request, 'post').callsFake(function() {
         expect(TransactionManager.prototype.process.calledOnce).to.be(true);
