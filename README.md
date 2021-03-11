@@ -77,7 +77,7 @@ All parameters can be considered optional unless otherwise stated.
 
 #### authorize(options)
 
-Redirects to the `/authorize` endpoint to start an authentication/authorization transaction. Auth0 will call back to your application with the results at the specified `redirectUri`. 
+Redirects to the `/authorize` endpoint to start an authentication/authorization transaction. Auth0 will call back to your application with the results at the specified `redirectUri`.
 
 **Note:** The default scope for this method is `openid profile email`.
 
@@ -222,6 +222,10 @@ Makes a call to the `oauth/token` endpoint.
 #### userInfo(token, cb)
 
 Makes a call to the `/userinfo` endpoint and returns the user profile.
+
+## Passwordless Login
+
+For information on how to implement Passwordless Login with this SDK, please read [Passwordless Login on Auth0 Docs](https://auth0.com/docs/libraries/auth0js#passwordless-login).
 
 ## auth0.Management
 
