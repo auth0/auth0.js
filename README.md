@@ -60,18 +60,18 @@ var auth0 = new auth0.WebAuth({
 
 All parameters can be considered optional unless otherwise stated.
 
-|------|-------|-------|
-|Property|Type|Description|
-| `domain` | string (required) | Your Auth0 account domain such as `'example.auth0.com'` or `'example.eu.auth0.com'`. |
-| `clientID` | string (required) | The Client ID found on your Application settings page. |
-| `redirectUri` | string | The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be added to the "Allowed Callback URLs" in your Auth0 Application's settings. |
-| `scope` | string | The default scope used for all authorization requests. |
-| `audience` | string | The default audience, used if requesting access to an API. |
-| `responseType` | string | Response type for all authentication requests. It can be any space separated list of the values `code`, `token`, `id_token`. **If you don't provide a global `responseType`, you will have to provide a `responseType` for each method that you use**. |
-| `responseMode` | string | The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. |
-| `_disableDeprecationWarnings` | boolean |Indicates if deprecation warnings should be output to the browser console, defaults to `false`.|
-| `maxAge` | number | Used during token validation. Specifies the maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. If the elapsed time is greater than this value, the token is considered invalid and the user must be re-authenticated. |
-| `leeway` | number | Used during ID token validation. Specifies the number of seconds to account for clock skew when validating time-based claims such as `iat` and `exp`. The default is 60 seconds. |
+| Property                      | Type              | Description                                                                                                                                                                                                                                                                              |
+| ----------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `domain`                      | string (required) | Your Auth0 account domain such as `'example.auth0.com'` or `'example.eu.auth0.com'`.                                                                                                                                                                                                     |
+| `clientID`                    | string (required) | The Client ID found on your Application settings page.                                                                                                                                                                                                                                   |
+| `redirectUri`                 | string            | The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be added to the "Allowed Callback URLs" in your Auth0 Application's settings.                                                                                                    |
+| `scope`                       | string            | The default scope used for all authorization requests.                                                                                                                                                                                                                                   |
+| `audience`                    | string            | The default audience, used if requesting access to an API.                                                                                                                                                                                                                               |
+| `responseType`                | string            | Response type for all authentication requests. It can be any space separated list of the values `code`, `token`, `id_token`. **If you don't provide a global `responseType`, you will have to provide a `responseType` for each method that you use**.                                   |
+| `responseMode`                | string            | The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. |
+| `_disableDeprecationWarnings` | boolean           | Indicates if deprecation warnings should be output to the browser console, defaults to `false`.                                                                                                                                                                                          |
+| `maxAge`                      | number            | Used during token validation. Specifies the maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. If the elapsed time is greater than this value, the token is considered invalid and the user must be re-authenticated.  |
+| `leeway`                      | number            | Used during ID token validation. Specifies the number of seconds to account for clock skew when validating time-based claims such as `iat` and `exp`. The default is 60 seconds.                                                                                                         |
 
 ### API
 
