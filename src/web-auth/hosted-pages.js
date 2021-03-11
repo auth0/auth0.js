@@ -64,8 +64,7 @@ HostedPages.prototype.login = function(options, cb) {
       '_csrf',
       'state',
       '_intstate',
-      'nonce',
-      'onRedirecting'
+      'nonce'
     ])
     .with(options);
 
@@ -91,8 +90,8 @@ HostedPages.prototype.login = function(options, cb) {
       return usernamePassword.callback(data);
     }
 
-    if (typeof params.onRedirecting === 'function') {
-      return params.onRedirecting(function() {
+    if (typeof options.onRedirecting === 'function') {
+      return options.onRedirecting(function() {
         return doAuth();
       });
     }
