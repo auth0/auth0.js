@@ -15,16 +15,17 @@ If you want to read the full API documentation of auth0.js, see [here](https://a
 
 ## Index
 
-1. [Install](#install)
-2. [auth0.WebAuth](#auth0webauth)
-3. [auth0.Authentication](#auth0authentication)
-4. [auth0.Management](#auth0management)
-5. [Documentation](#documentation)
-6. [Migration](#migration)
-7. [Develop](#develop)
-8. [Issue Reporting](#issue-reporting)
-9. [Author](#author)
-10. [License](#license)
+- [Install](#install)
+- [auth0.WebAuth](#auth0webauth)
+- [auth0.Authentication](#auth0authentication)
+- [auth0.Management](#auth0management)
+- [Passwordless Login](#passwordless-login)
+- [Documentation](#documentation)
+- [Migration](#migration)
+- [Develop](#develop)
+- [Issue Reporting](#issue-reporting)
+- [Author](#author)
+- [License](#license)
 
 ## Install
 
@@ -223,13 +224,13 @@ Makes a call to the `oauth/token` endpoint.
 
 Makes a call to the `/userinfo` endpoint and returns the user profile.
 
-## Passwordless Login
-
-For information on how to implement Passwordless Login with this SDK, please read [Passwordless Login on Auth0 Docs](https://auth0.com/docs/libraries/auth0js#passwordless-login).
-
 ## auth0.Management
 
 Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an `access_token` with the `https://YOUR_DOMAIN.auth0.com/api/v2/` audience to make this work. For more information, read [the user management section of the Auth0.js documentation](https://auth0.com/docs/libraries/auth0js/v9#user-management).
+
+## Passwordless Login
+
+For information on how to implement Passwordless Login with this SDK, please read [Passwordless Login on Auth0 Docs](https://auth0.com/docs/libraries/auth0js#passwordless-login).
 
 ### Initialize
 
