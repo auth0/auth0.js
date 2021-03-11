@@ -911,7 +911,8 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
       '_csrf',
       'state',
       '_intstate',
-      'nonce'
+      'nonce',
+      'onRedirecting'
     ])
     .with(options);
 
@@ -927,13 +928,25 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
   );
 
   params = this.transactionManager.process(params);
+
   return this.client.passwordless.verify(params, function(err) {
     if (err) {
       return cb(err);
     }
-    return windowHelper.redirect(
-      _this.client.passwordless.buildVerifyUrl(params)
-    );
+
+    function doAuth() {
+      return windowHelper.redirect(
+        _this.client.passwordless.buildVerifyUrl(params)
+      );
+    }
+
+    if (typeof options.onRedirecting === 'function') {
+      return options.onRedirecting(function() {
+        return doAuth();
+      });
+    }
+
+    return doAuth();
   });
 };
 
