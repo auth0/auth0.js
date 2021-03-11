@@ -2142,6 +2142,42 @@ describe('auth0.WebAuth', function () {
           }
         );
       });
+      it('should pass through the onRedirecting hook', function(done) {
+        var onRedirecting = () => {};
+
+        var expectedOptions = {
+          credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+          realm: 'email',
+          username: 'the@email.com',
+          otp: '123456',
+          clientID: '...',
+          responseType: 'id_token',
+          redirectUri: 'http://page.com/callback',
+          state: 'randomState',
+          nonce: 'randomNonce',
+          onRedirecting
+        };
+
+        sinon
+          .stub(CrossOriginAuthentication.prototype, 'login')
+          .callsFake(function(options, cb) {
+            expect(options).to.be.eql(expectedOptions);
+            expect(cb()).to.be('cb');
+            done();
+          });
+
+        this.auth0.passwordlessLogin(
+          {
+            connection: 'email',
+            email: 'the@email.com',
+            verificationCode: '123456',
+            onRedirecting
+          },
+          function(err, data) {
+            return 'cb';
+          }
+        );
+      });
     });
     context('when inside of the universal login page', function () {
       beforeEach(function () {

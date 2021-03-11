@@ -816,13 +816,16 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
       '_csrf',
       'state',
       '_intstate',
-      'nonce'
+      'nonce',
+      'onRedirecting'
     ])
     .with(options);
+
   params = this.transactionManager.process(params);
 
   var isHostedLoginPage =
     windowHelper.getWindow().location.host === this.baseOptions.domain;
+
   if (isHostedLoginPage) {
     this.passwordlessVerify(params, cb);
   } else {
@@ -840,6 +843,7 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
         'verificationCode'
       ])
     );
+
     this.crossOriginAuthentication.login(crossOriginOptions, cb);
   }
 };
