@@ -30,6 +30,11 @@ function HostedPages(client, options) {
  */
 
 /**
+ * @callback onRedirectingCallback
+ * @param {function} done Must be called when finished so that authentication can be resumed
+ */
+
+/**
  * Performs authentication with username/email and password with a database connection
  *
  * This method is not compatible with API Auth so if you need to fetch API tokens with audience
@@ -41,6 +46,7 @@ function HostedPages(client, options) {
  * @param {String} [options.responseType] type of the response used. It can be any of the values `code` and `token`
  * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`
  * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
+ * @param {onRedirectingCallback} [options.onRedirecting] Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {credentialsCallback} cb
  */
 HostedPages.prototype.login = function(options, cb) {
