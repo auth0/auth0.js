@@ -60,6 +60,7 @@ var auth0 = new auth0.WebAuth({
 
 All parameters can be considered optional unless otherwise stated.
 
+|------|-------|-------|
 |Property|Type|Description|
 | `domain` | string (required) | Your Auth0 account domain such as `'example.auth0.com'` or `'example.eu.auth0.com'`. |
 | `clientID` | string (required) | The Client ID found on your Application settings page. |
