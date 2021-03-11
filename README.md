@@ -75,8 +75,11 @@ All parameters can be considered optional unless otherwise stated.
 
 ### API
 
-- **authorize(options)**: Redirects to the `/authorize` endpoint to start an authentication/authorization transaction.
-  Auth0 will call back to your application with the results at the specified `redirectUri`. **The default scope for this method is `openid profile email`**.
+#### authorize(options)
+
+Redirects to the `/authorize` endpoint to start an authentication/authorization transaction. Auth0 will call back to your application with the results at the specified `redirectUri`. 
+
+**Note:** The default scope for this method is `openid profile email`.
 
 ```js
 auth0.authorize({
@@ -87,9 +90,11 @@ auth0.authorize({
 });
 ```
 
-- **parseHash(options, callback)**: Parses a URL hash fragment to extract the result of an Auth0 authentication response.
+#### parseHash(options, callback)
 
-> This method requires that your tokens are signed with **RS256**. Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide#switching-from-hs256-to-rs256) for more information.
+Parses a URL hash fragment to extract the result of an Auth0 authentication response.
+
+**Note:** This method requires that your tokens are signed with **RS256**. Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide#switching-from-hs256-to-rs256) for more information.
 
 ```js
 auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
@@ -109,8 +114,11 @@ auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
 });
 ```
 
-- **checkSession(options, callback)**: Allows you to acquire a new token from Auth0 for a user who already has an SSO session established against Auth0 for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
-  Everything happens inside an iframe, so it will not reload your application or redirect away from it.
+#### checkSession(options, callback)
+
+Allows you to acquire a new token from Auth0 for a user who already has an SSO session established against Auth0 for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
+
+Everything happens inside an iframe, so it will not reload your application or redirect away from it.
 
 ```js
 auth0.checkSession(
@@ -126,13 +134,15 @@ auth0.checkSession(
 
 The contents of `authResult` are identical to those returned by `parseHash()`.
 
-> **Important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `checkSession`.
+**Important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `checkSession`.
 
-> **Important:** Because there is no redirect in this method, `responseType: 'code'` is not supported and will throw an error.
+**Important:** Because there is no redirect in this method, `responseType: 'code'` is not supported and will throw an error.
 
 Remember to add the URL where the authorization request originates from to the Allowed Web Origins list of your Auth0 Application in the [Dashboard](https://manage.auth0.com/) under your Applications's **Settings**.
 
-- **client.login(options, callback)**: Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
+#### client.login(options, callback)
+
+Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
 
 ```js
 auth0.client.login(
@@ -151,6 +161,29 @@ auth0.client.login(
 
 The contents of `authResult` are identical to those returned by `parseHash()`.
 
+**onRedirecting hook**
+
+When using `login` to log in using a username and password, Auth0.js initially makes a call to Auth0 to get a login ticket, before sending that login ticket to the `/authorize` endpoint to be exchanged for tokens. You are able to specify an `onRedirecting` hook here to handle when Auth0.js is about to redirect to the `/authorize` endpoint, for the purposes of executing some custom code (analytics, etc).
+
+To do this, specify the `onRedirecting` function in the options and ensure that the `done` callback is called when you are finished executing your custom code. Otherwise, authentication will be blocked.
+
+```js
+auth0.client.login(
+  {
+    realm: 'Username-Password-Authentication', //connection name or HRD domain
+    username: 'info@auth0.com',
+    password: 'areallystrongpassword',
+    onRedirecting: function(done) {
+      // Your custom code here
+      done();
+    }
+  },
+  function(err, authResult) {
+    // Auth tokens in the result or an error
+  }
+);
+```
+
 ## auth0.Authentication
 
 Provides an API client for the Auth0 Authentication API.
@@ -166,12 +199,29 @@ var auth0 = new auth0.Authentication({
 
 ### API
 
-- **buildAuthorizeUrl(options)**: Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction. [https://auth0.com/docs/api/authentication#database-ad-ldap-passive-](https://auth0.com/docs/api/authentication#database-ad-ldap-passive-)
-- **buildLogoutUrl(options)**: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. [https://auth0.com/docs/api/authentication#logout](https://auth0.com/docs/api/authentication#logout)
-- **loginWithDefaultDirectory(options, cb)**: Makes a call to the `oauth/token` endpoint with `password` grant type. [https://auth0.com/docs/api-auth/grant/password](https://auth0.com/docs/api-auth/grant/password)
-- **login(options, cb)**: Makes a call to the `oauth/token` endpoint with `https://auth0.com/oauth/grant-type/password-realm` grant type.
-- **oauthToken(options, cb)**: Makes a call to the `oauth/token` endpoint.
-- **userInfo(token, cb)**: Makes a call to the `/userinfo` endpoint and returns the user profile.
+#### buildAuthorizeUrl(options)
+
+Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction. [https://auth0.com/docs/api/authentication#database-ad-ldap-passive-](https://auth0.com/docs/api/authentication#database-ad-ldap-passive-)
+
+#### buildLogoutUrl(options)
+
+Builds and returns the Logout url in order to initialize a new authN/authZ transaction. [https://auth0.com/docs/api/authentication#logout](https://auth0.com/docs/api/authentication#logout)
+
+#### loginWithDefaultDirectory(options, cb)
+
+Makes a call to the `oauth/token` endpoint with `password` grant type. [https://auth0.com/docs/api-auth/grant/password](https://auth0.com/docs/api-auth/grant/password)
+
+#### login(options, cb)
+
+Makes a call to the `oauth/token` endpoint with `https://auth0.com/oauth/grant-type/password-realm` grant type.
+
+#### oauthToken(options, cb)
+
+Makes a call to the `oauth/token` endpoint.
+
+#### userInfo(token, cb)
+
+Makes a call to the `/userinfo` endpoint and returns the user profile.
 
 ## auth0.Management
 
