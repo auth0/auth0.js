@@ -1,5 +1,6 @@
 import Cookie from 'js-cookie';
 import objectHelper from '../object';
+import windowHandler from '../window';
 function CookieStorage() {}
 
 CookieStorage.prototype.getItem = function(key) {
@@ -17,6 +18,11 @@ CookieStorage.prototype.setItem = function(key, value, options) {
     },
     options
   );
+
+  if (windowHandler.getWindow().location.protocol === 'https:') {
+    params.secure = true;
+  }
+
   Cookie.set(key, value, params);
 };
 

@@ -21,7 +21,10 @@ describe('helpers storage handler', function() {
   beforeEach(function() {
     sinon.stub(windowHandler, 'getWindow').callsFake(function(message) {
       return {
-        localStorage: new MockLocalStorage()
+        localStorage: new MockLocalStorage(),
+        location: {
+          protocol: 'http:'
+        }
       };
     });
   });
@@ -40,6 +43,7 @@ describe('helpers storage handler', function() {
     let setItemSpy;
     let getItemStub;
     let removeItemSpy;
+
     beforeEach(function() {
       windowHandler.getWindow.restore();
 
@@ -119,6 +123,7 @@ describe('helpers storage handler', function() {
       var handler = new StorageHandler({ __tryLocalStorageFirst: true });
 
       expect(handler.storage).to.be.a(MockLocalStorage);
+
       handler.setItem('some', 'value', { options: true });
 
       expect(handler.storage).to.be.a(CookieStorage);
