@@ -97,7 +97,7 @@ HostedPages.prototype.login = function(options, cb) {
     }
 
     if (typeof options.onRedirecting === 'function') {
-      options.onRedirecting(function() {
+      return options.onRedirecting(function() {
         doAuth();
       });
     }
