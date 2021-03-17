@@ -953,18 +953,16 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
     }
 
     function doAuth() {
-      return windowHelper.redirect(
-        _this.client.passwordless.buildVerifyUrl(params)
-      );
+      windowHelper.redirect(_this.client.passwordless.buildVerifyUrl(params));
     }
 
     if (typeof options.onRedirecting === 'function') {
-      return options.onRedirecting(function() {
-        return doAuth();
+      options.onRedirecting(function() {
+        doAuth();
       });
     }
 
-    return doAuth();
+    doAuth();
   });
 };
 

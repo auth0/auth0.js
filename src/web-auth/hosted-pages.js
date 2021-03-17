@@ -93,16 +93,16 @@ HostedPages.prototype.login = function(options, cb) {
     }
 
     function doAuth() {
-      return usernamePassword.callback(data);
+      usernamePassword.callback(data);
     }
 
     if (typeof options.onRedirecting === 'function') {
-      return options.onRedirecting(function() {
-        return doAuth();
+      options.onRedirecting(function() {
+        doAuth();
       });
     }
 
-    return doAuth();
+    doAuth();
   });
 };
 
