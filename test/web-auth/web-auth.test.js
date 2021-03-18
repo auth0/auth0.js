@@ -1757,6 +1757,48 @@ describe('auth0.WebAuth', function() {
         expect(e.message).to.be('responseType option is required');
       });
     });
+    it('should pass organization and invitation params to buildAuthorizeUrl from the constructor', function() {
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false,
+        organization: 'org_123',
+        invitation: 'inv_123'
+      });
+
+      sinon.spy(webAuth.client, 'buildAuthorizeUrl');
+
+      webAuth.authorize();
+
+      var args = webAuth.client.buildAuthorizeUrl.lastCall.args[0];
+
+      expect(args.organization).to.eql('org_123');
+      expect(args.invitation).to.eql('inv_123');
+    });
+    it('should pass organization and invitation params to buildAuthorizeUrl from the authorize method', function() {
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false
+      });
+
+      sinon.spy(webAuth.client, 'buildAuthorizeUrl');
+
+      webAuth.authorize({ organization: 'org_123', invitation: 'inv_123' });
+
+      var args = webAuth.client.buildAuthorizeUrl.lastCall.args[0];
+
+      expect(args.organization).to.eql('org_123');
+      expect(args.invitation).to.eql('inv_123');
+    });
   });
 
   context('renewAuth', function() {
