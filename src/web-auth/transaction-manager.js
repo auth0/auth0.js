@@ -56,7 +56,7 @@ TransactionManager.prototype.generateTransaction = function(
     windowHelper.getWindow().location.host === this.options.domain;
 
   if (!isHostedLoginPage) {
-    var transactionPaylod = {
+    var transactionPayload = {
       nonce: nonce,
       appState: appState,
       state: state,
@@ -64,10 +64,10 @@ TransactionManager.prototype.generateTransaction = function(
     };
 
     if (organization) {
-      transactionPaylod.organization = organization;
+      transactionPayload.organization = organization;
     }
 
-    this.storage.setItem(this.namespace + state, transactionPaylod, {
+    this.storage.setItem(this.namespace + state, transactionPayload, {
       expires: times.MINUTES_30
     });
   }
