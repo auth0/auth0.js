@@ -35,6 +35,8 @@ function defaultClock() {
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {Number} [options.leeway] number of seconds to account for clock skew when validating time-based claims in ID tokens. Defaults to 60 seconds.
  * @param {Number} [options.maxAge] maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server.
+ * @param {String} [options.organization] the Id of an organization to log in to (Organizations is currently a Closed Beta)
+ * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
  * @param {Array} [options.plugins]
  * @param {Number} [options._timesToRetryFailedRequests] Number of times to retry a failed request, according to {@link https://github.com/visionmedia/superagent/blob/master/lib/request-base.js}
  * @see {@link https://auth0.com/docs/api/authentication}
@@ -711,6 +713,8 @@ WebAuth.prototype.signup = function(options, cb) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {String} [options.organization] the Id of an organization to log in to (Organizations is currently a Closed Beta)
+ * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
  * @param {Object} [options.appState] any values that you want back on the authentication response
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  */
