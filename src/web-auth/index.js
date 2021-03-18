@@ -727,7 +727,8 @@ WebAuth.prototype.authorize = function(options) {
       'state',
       '_intstate',
       'nonce',
-      'organization'
+      'organization',
+      'invitation'
     ])
     .with(options);
 
