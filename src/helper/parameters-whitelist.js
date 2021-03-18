@@ -35,6 +35,7 @@ var authorizeParams = [
   'device',
   'realm',
   'organization',
+  'invitation',
 
   'protocol',
   '_csrf',
