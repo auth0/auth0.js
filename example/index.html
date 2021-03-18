@@ -460,11 +460,11 @@
         var domain =
           $domainInput.val() ||
           Cookies.get('auth0_domain') ||
-          'elkdanger.eu.auth0.com';
+          'brucke.auth0.com';
         var clientId =
           $clientIdInput.val() ||
           Cookies.get('auth0_client_id') ||
-          'TgqxTDJFG2G3H5TjqvIEEVL5i6IcZGye';
+          'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6';
         var clientIdPwl =
           $clientIdPwl.val() ||
           Cookies.get('auth0_client_id_pwl') ||
@@ -576,11 +576,11 @@
         var inviteUrl = prompt('Paste in the user invitation URL:');
 
         if (inviteUrl) {
-          var url = new URL('https://myapp.com/?invitation=Q0Wd86Qo7OqYMG5cY57GzEuLJhQCqk5W&organization=org_KGZvWnYaUz8jTCxU&organization_name=testorg');
+          var url = new URL(inviteUrl);
           var params = new URLSearchParams(url.search);
           console.log(params.get('organization'));
           console.log(params.get('invitation'));
-          
+
           webAuth.authorize({
             organization: params.get('organization'),
             invitation: params.get('invitation')
