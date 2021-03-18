@@ -394,18 +394,25 @@
             This is only applicable when logging in using the Universal Login
             Page.
           </p>
-          <div>
+          <div style="display: flex">
             <input
               type="text"
               class="form-control update-organization"
               id="config-organization"
+              style="margin-right: 10px;"
             />
             <input
               type="button"
               class="btn btn-default"
               id="clear-org"
-              value="Clear Org"
+              value="Clear"
             />
+          </div>
+
+          <h4>User Invitation</h4>
+          <p>Paste in an invitation URL and be logged in</p>
+          <div>
+            <input type="button" value="Test User Invitation" class="btn btn-default" id="invoke-invite">
           </div>
 
           <br />
@@ -453,11 +460,11 @@
         var domain =
           $domainInput.val() ||
           Cookies.get('auth0_domain') ||
-          'brucke.auth0.com';
+          'elkdanger.eu.auth0.com';
         var clientId =
           $clientIdInput.val() ||
           Cookies.get('auth0_client_id') ||
-          'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6';
+          'TgqxTDJFG2G3H5TjqvIEEVL5i6IcZGye';
         var clientIdPwl =
           $clientIdPwl.val() ||
           Cookies.get('auth0_client_id_pwl') ||
@@ -562,6 +569,24 @@
         organization = null;
         setConfig();
       });
+
+      $('#invoke-invite').click(function(e) {
+        e.preventDefault();
+
+        var inviteUrl = prompt('Paste in the user invitation URL:');
+
+        if (inviteUrl) {
+          var url = new URL('https://myapp.com/?invitation=Q0Wd86Qo7OqYMG5cY57GzEuLJhQCqk5W&organization=org_KGZvWnYaUz8jTCxU&organization_name=testorg');
+          var params = new URLSearchParams(url.search);
+          console.log(params.get('organization'));
+          console.log(params.get('invitation'));
+          
+          webAuth.authorize({
+            organization: params.get('organization'),
+            invitation: params.get('invitation')
+          })
+        }
+      })
 
       $('.login-db').click(function(e) {
         e.preventDefault();
