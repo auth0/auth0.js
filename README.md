@@ -74,6 +74,8 @@ All parameters can be considered optional unless otherwise stated.
 | `_disableDeprecationWarnings` | boolean           | Indicates if deprecation warnings should be output to the browser console, defaults to `false`.                                                                                                                                                                                          |
 | `maxAge`                      | number            | Used during token validation. Specifies the maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. If the elapsed time is greater than this value, the token is considered invalid and the user must be re-authenticated.  |
 | `leeway`                      | number            | Used during ID token validation. Specifies the number of seconds to account for clock skew when validating time-based claims such as `iat` and `exp`. The default is 60 seconds.                                                                                                         |
+| `organization`                | string            | The ID of the Organization to log in to (see [Organizations](#organizations-closed-beta))                                                                                                                                                                                                |
+| `invitation`                  | string            | The ID of the user invitation to accept. This is usually used in conjunction with the `organization` parameter, and should be parsed from an invitation URL. (see [Organizations](#organizations-closed-beta))                                                                           |
 
 ### API
 
