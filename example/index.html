@@ -412,7 +412,12 @@
           <h4>User Invitation</h4>
           <p>Paste in an invitation URL and be logged in</p>
           <div>
-            <input type="button" value="Test User Invitation" class="btn btn-default" id="invoke-invite">
+            <input
+              type="button"
+              value="Test User Invitation"
+              class="btn btn-default"
+              id="invoke-invite"
+            />
           </div>
 
           <br />
@@ -530,7 +535,9 @@
       webAuth.parseHash(function(err, data) {
         console.log(err, data);
         if (err) {
-          return htmlConsole.dumpCallback(err);
+          htmlConsole.dumpCallback(err);
+          window.location.hash = '';
+          return;
         }
 
         if (data) {
@@ -578,15 +585,13 @@
         if (inviteUrl) {
           var url = new URL(inviteUrl);
           var params = new URLSearchParams(url.search);
-          console.log(params.get('organization'));
-          console.log(params.get('invitation'));
 
           webAuth.authorize({
             organization: params.get('organization'),
             invitation: params.get('invitation')
-          })
+          });
         }
-      })
+      });
 
       $('.login-db').click(function(e) {
         e.preventDefault();
