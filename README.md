@@ -274,7 +274,7 @@ Note that Organizations is currently only available to customers on our Enterpri
 To log in to a specific organization, pass the ID of the organization as the `organization` parameter when creating the `WebAuth` client:
 
 ```js
-new WebAuth({
+var webAuth = new WebAuth({
   domain: '{YOUR_AUTH0_DOMAIN}',
   clientID: '{YOUR_AUTH0_CLIENT_ID}',
   organization: '{YOUR_AUTH0_ORGANIZATION_ID}'
@@ -294,8 +294,8 @@ webAuth.authorize({
 Accept a user invitation through the SDK by creating a route within your application that can handle the user invitation URL, and log the user in by passing the `organization` and `invitation` parameters from this URL. You can either use `authorize` or `popup.authorize` as needed.
 
 ```js
-const url = new URL(invitationUrl)
-const params = new URLSearchParams(url.search);
+var url = new URL(invitationUrl)
+var params = new URLSearchParams(url.search);
 
 if (organization && invitation) {
   webAuth.authorize({
