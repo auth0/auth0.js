@@ -20,6 +20,7 @@ If you want to read the full API documentation of auth0.js, see [here](https://a
 - [auth0.Authentication](#auth0authentication)
 - [auth0.Management](#auth0management)
 - [Passwordless Login](#passwordless-login)
+- [Organizations](#organizations)
 - [Documentation](#documentation)
 - [Migration](#migration)
 - [Develop](#develop)
@@ -247,6 +248,44 @@ var auth0 = new auth0.Management({
 - **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metadata. It will patch the user metadata with the attributes sent. [https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
 - **patchUserAttributes(userId, user, cb)**: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to [https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
 - **linkUser(userId, secondaryUserToken, cb)**: Link two users. [https://auth0.com/docs/api/management/v2#!/Users/post_identities](https://auth0.com/docs/api/management/v2#!/Users/post_identities)
+
+## Organizations (Closed Beta)
+
+Organizations is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
+
+Using Organizations, you can:
+
+- Represent teams, business customers, partner companies, or any logical grouping of users that should have different ways of accessing your applications, as organizations.
+
+- Manage their membership in a variety of ways, including user invitation.
+
+- Configure branded, federated login flows for each organization.
+
+- Implement role-based access control, such that users can have different roles when authenticating in the context of different organizations.
+
+- Build administration capabilities into your products, using Organizations APIs, so that those businesses can manage their own organizations.
+
+Note that Organizations is currently only available to customers on our Enterprise and Startup subscription plans.
+
+### Log in to an organization
+
+To log in to a specific organization, pass the ID of the organization as the `organization` parameter when creating the `WebAuth` client:
+
+```js
+new WebAuth({
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  clientID: '{YOUR_AUTH0_CLIENT_ID}',
+  organization: '{YOUR_AUTH0_ORGANIZATION_ID}'
+});
+```
+
+You can also specify an organization when calling `authorize`:
+
+```js
+webAuth.authorize({
+  organization: '{YOUR_AUTH0_ORGANIZATION_ID}'
+});
+```
 
 ## Documentation
 
