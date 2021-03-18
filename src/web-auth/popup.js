@@ -167,7 +167,9 @@ Popup.prototype.authorize = function(options, cb) {
       '_csrf',
       'state',
       '_intstate',
-      'nonce'
+      'nonce',
+      'organization',
+      'invitation'
     ])
     .with(objectHelper.blacklist(options, ['popupHandler']));
 
