@@ -3,6 +3,8 @@ import expect from 'expect.js';
 import sinon from 'sinon';
 
 import CookieStorage from '../../src/helper/storage/cookie';
+import windowHandler from '../../src/helper/window';
+
 var cookieStorage = new CookieStorage();
 const KEY = 'foo';
 const VALUE = 'bar';
@@ -39,20 +41,56 @@ describe('storage.cookies', function() {
     });
   });
   describe('setItem', function() {
+    beforeEach(function() {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
+        return {
+          location: {
+            protocol: 'http:'
+          }
+        };
+      });
+    });
+
+    afterEach(function() {
+      windowHandler.getWindow.restore();
+    });
+
     it('calls Cookie.set with default values', function() {
       cookieStorage.setItem(KEY, VALUE);
+
       expect(CookieLibrary.set.firstCall.args).to.be.eql([
         'foo',
         'bar',
         { expires: 1 }
       ]);
     });
+
     it('calls Cookie.set with custom values', function() {
       cookieStorage.setItem(KEY, VALUE, { expires: 2, test: true });
+
       expect(CookieLibrary.set.firstCall.args).to.be.eql([
         'foo',
         'bar',
         { expires: 2, test: true }
+      ]);
+    });
+
+    it('sets the secure flag on cookies when using the https protocol', function() {
+      windowHandler.getWindow.restore();
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
+        return {
+          location: {
+            protocol: 'https:'
+          }
+        };
+      });
+
+      cookieStorage.setItem(KEY, VALUE, { expires: 2, test: true });
+
+      expect(CookieLibrary.set.firstCall.args).to.be.eql([
+        'foo',
+        'bar',
+        { expires: 2, test: true, secure: true }
       ]);
     });
   });

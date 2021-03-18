@@ -25,9 +25,19 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       });
       global.window = {};
     });
+
     beforeEach(function() {
       sinon.spy(Storage.prototype, 'setItem');
+
+      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
+        return {
+          location: {
+            protocol: 'http:'
+          }
+        };
+      });
     });
+
     afterEach(function() {
       request.post.restore();
       Storage.prototype.setItem.restore();
@@ -37,6 +47,10 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       }
       if (WebMessageHandler.prototype.run.restore) {
         WebMessageHandler.prototype.run.restore();
+      }
+
+      if (windowHelper.getWindow.restore) {
+        windowHelper.getWindow.restore();
       }
     });
     it('should call /co/authenticate and redirect to /authorize with login_ticket using `username`', function() {
@@ -63,16 +77,20 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           }
         });
       });
+
       this.co.login({
         username: 'me@example.com',
         password: '123456',
         anotherOption: 'foobar'
       });
+
       expect(this.webAuthSpy.authorize.getCall(0).args[0]).to.be.eql({
         username: 'me@example.com',
         loginTicket: 'a_login_ticket',
         anotherOption: 'foobar'
       });
+
+      windowHelper.getWindow.restore();
     });
     it('should call /co/authenticate and redirect to /authorize with login_ticket using `email`', function() {
       sinon.stub(request, 'post').callsFake(function(url) {
