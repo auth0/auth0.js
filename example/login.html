@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auth0 Login Callback demo</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.auth0.com/styleguide/core/2.0.5/core.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.auth0.com/styleguide/components/2.0.0/components.min.css"
+    />
+  </head>
+  <body>
+    <button id="login">Log in</button>
+    <button id="authorize">Log in (ULP)</button>
+    <button id="pwd-start">Passwordless Start</button>
+    <button id="pwd-verify">Passwordless Verify</button>
+    <button id="logout">Log out</button>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/latest/js.cookie.min.js"></script>
+    <script src="/auth0.js"></script>
+    <script src="/cordova-auth0-plugin.js"></script>
+
+    <script type="application/javascript">
+      const loginButton = document.getElementById('login');
+      const authButton = document.getElementById('authorize');
+      const pwdStartButton = document.getElementById('pwd-start');
+      const pwdVerifyButton = document.getElementById('pwd-verify');
+      const logoutButton = document.getElementById('logout');
+
+      const options = {
+        domain: 'brucke.auth0.com',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        redirectUri: 'http://localhost:3000/login.html',
+        responseType: 'id_token'
+      };
+
+      var passwordlessEmail;
+
+      authButton.addEventListener('click', () => {
+        const webAuth = new auth0.WebAuth(options);
+
+        webAuth.authorize({
+          responseType: 'id_token'
+        });
+      });
+
+      loginButton.addEventListener('click', () => {
+        const webAuth = new auth0.WebAuth(options);
+
+        webAuth.login(
+          {
+            responseType: 'id_token',
+            username: 'johnfoo@gmail.com',
+            password: '1234',
+            realm: 'acme',
+            onRedirecting: function(done) {
+              console.log('On redirecting..');
+              done();
+            }
+          },
+          function(err) {
+            console.error(err);
+          }
+        );
+      });
+
+      pwdStartButton.addEventListener('click', () => {
+        const webAuth = new auth0.WebAuth({
+          ...options,
+          responseType: 'id_token token'
+        });
+
+        const email = prompt('Enter your email address');
+
+        if (email) {
+          webAuth.passwordlessStart(
+            {
+              connection: 'email',
+              send: 'code',
+              email
+            },
+            (err, result) => {
+              if (err) return console.error(err);
+              console.log(result);
+              passwordlessEmail = email;
+              alert('Done! Check your email');
+            }
+          );
+        }
+      });
+
+      pwdVerifyButton.addEventListener('click', () => {
+        const webAuth = new auth0.WebAuth({
+          ...options,
+          responseType: 'id_token token'
+        });
+
+        const verificationCode = prompt('Enter the code');
+
+        if (!passwordlessEmail) {
+          passwordlessEmail = prompt(
+            'Enter the email address to which the code was sent'
+          );
+        }
+
+        if (verificationCode) {
+          webAuth.passwordlessLogin(
+            {
+              connection: 'email',
+              verificationCode,
+              email: passwordlessEmail,
+              onRedirecting: done => {
+                console.log('Redirecting passwordless...');
+                done();
+              }
+            },
+            (err, res) => {
+              if (err) console.error(err);
+              console.log(res);
+            }
+          );
+        }
+      });
+
+      logoutButton.addEventListener('click', () => {
+        const webAuth = new auth0.WebAuth(options);
+        webAuth.logout({ returnTo: 'http://localhost:3000/login.html' });
+      });
+
+      window.onload = function() {
+        const webAuth = new auth0.WebAuth(options);
+
+        webAuth.parseHash((err, data) => {
+          console.log(data);
+          window.location.hash = '';
+        });
+      };
+    </script>
+  </body>
+</html>

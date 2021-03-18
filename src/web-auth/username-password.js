@@ -20,7 +20,7 @@ UsernamePassword.prototype.login = function(options, cb) {
 
   options.username = options.username || options.email; // eslint-disable-line
 
-  options = objectHelper.blacklist(options, ['email']); // eslint-disable-line
+  options = objectHelper.blacklist(options, ['email', 'onRedirecting']); // eslint-disable-line
 
   body = objectHelper
     .merge(this.baseOptions, [

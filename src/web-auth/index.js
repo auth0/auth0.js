@@ -747,6 +747,11 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  */
 
 /**
+ * @callback onRedirectingCallback
+ * @param {function} done Must be called when finished so that authentication can be resumed
+ */
+
+/**
  * Logs the user in with username and password using the correct flow based on where it's called from:
  * - If you're calling this method from the Universal Login Page, it will use the usernamepassword/login endpoint
  * - If you're calling this method outside the Universal Login Page, it will use the cross origin authentication (/co/authenticate) flow
@@ -759,8 +764,9 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
  * @param {String} [options.username] Username (mutually exclusive with email)
  * @param {String} [options.email] Email (mutually exclusive with username)
- * @param {String} options.password Password
+ * @param {String} [options.password] Password
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
+ * @param {onRedirectingCallback} [options.onRedirecting] Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.login = function(options, cb) {
@@ -774,13 +780,16 @@ WebAuth.prototype.login = function(options, cb) {
       '_csrf',
       'state',
       '_intstate',
-      'nonce'
+      'nonce',
+      'onRedirecting'
     ])
     .with(options);
+
   params = this.transactionManager.process(params);
 
   var isHostedLoginPage =
     windowHelper.getWindow().location.host === this.baseOptions.domain;
+
   if (isHostedLoginPage) {
     params.connection = params.realm;
     delete params.realm;
@@ -791,15 +800,21 @@ WebAuth.prototype.login = function(options, cb) {
 };
 
 /**
+ * @callback onRedirectingCallback
+ * @param {function} done Must be called when finished so that authentication can be resumed
+ */
+
+/**
  * Logs in the user by verifying the verification code (OTP) using the cross origin authentication (/co/authenticate) flow. You can use either `phoneNumber` or `email` to identify the user.
  * This only works when 3rd party cookies are enabled in the browser. After the /co/authenticate call, you'll have to use the {@link parseHash} function at the `redirectUri` specified in the constructor.
  *
  * @method passwordlessLogin
  * @param {Object} options options used in the {@link authorize} call after the login_ticket is acquired
- * @param {String} [options.phoneNumber] Phone Number (mutually exclusive with email)
- * @param {String} [options.email] Email (mutually exclusive with username)
+ * @param {String} options.phoneNumber Phone Number (mutually exclusive with email)
+ * @param {String} options.email Email (mutually exclusive with username)
  * @param {String} options.verificationCode Verification Code (OTP)
  * @param {String} options.connection Passwordless connection to use. It can either be 'sms' or 'email'.
+ * @param {onRedirectingCallback} options.onRedirecting Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  */
 WebAuth.prototype.passwordlessLogin = function(options, cb) {
@@ -813,13 +828,16 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
       '_csrf',
       'state',
       '_intstate',
-      'nonce'
+      'nonce',
+      'onRedirecting'
     ])
     .with(options);
+
   params = this.transactionManager.process(params);
 
   var isHostedLoginPage =
     windowHelper.getWindow().location.host === this.baseOptions.domain;
+
   if (isHostedLoginPage) {
     this.passwordlessVerify(params, cb);
   } else {
@@ -837,6 +855,7 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
         'verificationCode'
       ])
     );
+
     this.crossOriginAuthentication.login(crossOriginOptions, cb);
   }
 };
@@ -880,6 +899,11 @@ WebAuth.prototype.logout = function(options) {
 };
 
 /**
+ * @callback onRedirectingCallback
+ * @param {function} done Must be called when finished so that authentication can be resumed
+ */
+
+/**
  * Verifies the passwordless TOTP and redirects to finish the passwordless transaction
  *
  * @method passwordlessVerify
@@ -889,6 +913,7 @@ WebAuth.prototype.logout = function(options) {
  * @param {String} options.email only if type = email
  * @param {String} options.connection the connection name
  * @param {String} options.verificationCode the TOTP code
+ * @param {onRedirectingCallback} options.onRedirecting Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {Function} cb
  */
 WebAuth.prototype.passwordlessVerify = function(options, cb) {
@@ -904,7 +929,8 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
       '_csrf',
       'state',
       '_intstate',
-      'nonce'
+      'nonce',
+      'onRedirecting'
     ])
     .with(options);
 
@@ -920,13 +946,23 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
   );
 
   params = this.transactionManager.process(params);
+
   return this.client.passwordless.verify(params, function(err) {
     if (err) {
       return cb(err);
     }
-    return windowHelper.redirect(
-      _this.client.passwordless.buildVerifyUrl(params)
-    );
+
+    function doAuth() {
+      windowHelper.redirect(_this.client.passwordless.buildVerifyUrl(params));
+    }
+
+    if (typeof options.onRedirecting === 'function') {
+      return options.onRedirecting(function() {
+        doAuth();
+      });
+    }
+
+    doAuth();
   });
 };
 
