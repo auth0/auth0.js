@@ -716,34 +716,71 @@
 
       $('.popup-login-facebook').click(function(e) {
         e.preventDefault();
+
+        var options = {
+          redirectURI: REDIRECT_URL + '/callback_popup.html',
+          connection: 'facebook'
+        };
+
+        if (organization) {
+          options.organization = organization;
+        }
+
         webAuth.popup.authorize(
-          { connection: 'facebook' },
+          options,
           htmlConsole.dumpCallback.bind(htmlConsole)
         );
       });
 
       $('.popup-login-hosted').click(function(e) {
         e.preventDefault();
+
+        var options = {
+          redirectURI: REDIRECT_URL + '/callback_popup.html'
+        };
+
+        if (organization) {
+          options.organization = organization;
+        }
+
         webAuth.popup.authorize(
-          {
-            redirectURI: REDIRECT_URL + '/callback_popup.html'
-          },
+          options,
           htmlConsole.dumpCallback.bind(htmlConsole)
         );
       });
 
       $('.popup-login-twitter').click(function(e) {
         e.preventDefault();
+
+        var options = {
+          connection: 'twitter',
+          redirectURI: REDIRECT_URL + '/callback_popup.html'
+        };
+
+        if (organization) {
+          options.organization = organization;
+        }
+
         webAuth.popup.authorize(
-          { connection: 'twitter' },
+          options,
           htmlConsole.dumpCallback.bind(htmlConsole)
         );
       });
 
       $('.popup-login-github').click(function(e) {
         e.preventDefault();
+
+        var options = {
+          connection: 'github',
+          redirectURI: REDIRECT_URL + '/callback_popup.html'
+        };
+
+        if (organization) {
+          options.organization = organization;
+        }
+
         webAuth.popup.authorize(
-          { connection: 'github' },
+          options,
           htmlConsole.dumpCallback.bind(htmlConsole)
         );
       });
