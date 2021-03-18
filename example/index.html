@@ -389,6 +389,25 @@
             value=""
           />
 
+          <h4>Organization ID</h4>
+          <p>
+            This is only applicable when logging in using the Universal Login
+            Page.
+          </p>
+          <div>
+            <input
+              type="text"
+              class="form-control update-organization"
+              id="config-organization"
+            />
+            <input
+              type="button"
+              class="btn btn-default"
+              id="clear-org"
+              value="Clear Org"
+            />
+          </div>
+
           <br />
           <input
             type="button"
@@ -421,6 +440,7 @@
 
       var webAuth;
       var webAuthPasswordless;
+      var organization;
 
       function setConfig() {
         var $domainInput = $('#config-domain');
@@ -428,6 +448,7 @@
         var $clientIdPwl = $('#config-client-id-pwl');
         var $userEmailInput = $('#config-user-email');
         var $userPwdInput = $('#config-user-password');
+        var $configOrganization = $('#config-organization');
 
         var domain =
           $domainInput.val() ||
@@ -447,14 +468,20 @@
           'johnfoo@gmail.com';
         var userPass =
           $userPwdInput.val() || Cookies.get('auth0_user_pw') || '1234';
+        var configOrganization =
+          $configOrganization.val() ||
+          Cookies.get('auth0_config_organization') ||
+          undefined;
 
-        webAuth = new auth0.WebAuth({
+        var webAuthConfig = {
           domain: domain,
           redirectUri: REDIRECT_URL,
           clientID: clientId,
           responseType: 'token id_token',
           plugins: [new CordovaAuth0Plugin()]
-        });
+        };
+
+        webAuth = new auth0.WebAuth(webAuthConfig);
 
         webAuthPasswordless = new auth0.WebAuth({
           domain: domain,
@@ -469,9 +496,18 @@
         Cookies.set('auth0_user_email', userEmail);
         Cookies.set('auth0_user_pw', userPass);
 
+        if (configOrganization) {
+          Cookies.set('auth0_config_organization', configOrganization);
+          organization = configOrganization;
+        }
+
         $domainInput.val(domain);
         $clientIdInput.val(clientId);
         $clientIdPwl.val(clientIdPwl);
+
+        if (configOrganization) {
+          $configOrganization.val(configOrganization);
+        }
 
         $('.update-user-email').each(function(index, el) {
           $(el).val(userEmail);
@@ -517,6 +553,15 @@
       });
 
       $('#config-update').click(setConfig);
+
+      $('#clear-org').click(function(e) {
+        e.preventDefault();
+
+        Cookies.remove('auth0_config_organization');
+        $('#config-organization').val('');
+        organization = null;
+        setConfig();
+      });
 
       $('.login-db').click(function(e) {
         e.preventDefault();
@@ -593,22 +638,50 @@
 
       $('.login-facebook').click(function(e) {
         e.preventDefault();
-        webAuth.authorize({ connection: 'facebook' });
+
+        var config = { connection: 'facebook' };
+
+        if (organization) {
+          config.organization = organization;
+        }
+
+        webAuth.authorize(config);
       });
 
       $('.login-hosted').click(function(e) {
         e.preventDefault();
-        webAuth.authorize({});
+
+        var config = {};
+
+        if (organization) {
+          config.organization = organization;
+        }
+
+        webAuth.authorize(config);
       });
 
       $('.login-twitter').click(function(e) {
         e.preventDefault();
-        webAuth.authorize({ connection: 'twitter' });
+
+        var config = { connection: 'twitter' };
+
+        if (organization) {
+          config.organization = organization;
+        }
+
+        webAuth.authorize(config);
       });
 
       $('.login-github').click(function(e) {
         e.preventDefault();
-        webAuth.authorize({ connection: 'github' });
+
+        var config = { connection: 'github' };
+
+        if (organization) {
+          config.organization = organization;
+        }
+
+        webAuth.authorize(config);
       });
 
       $('.popup-login-facebook').click(function(e) {

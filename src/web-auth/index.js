@@ -689,7 +689,8 @@ WebAuth.prototype.authorize = function(options) {
       '_csrf',
       'state',
       '_intstate',
-      'nonce'
+      'nonce',
+      'organization'
     ])
     .with(options);
 
@@ -781,7 +782,9 @@ WebAuth.prototype.login = function(options, cb) {
       'state',
       '_intstate',
       'nonce',
-      'onRedirecting'
+      'onRedirecting',
+      'organization',
+      'invitation'
     ])
     .with(options);
 
