@@ -287,6 +287,22 @@ webAuth.authorize({
 });
 ```
 
+### Accept user invitations
+
+Accept a user invitation through the SDK by creating a route within your application that can handle the user invitation URL, and log the user in by passing the `organization` and `invitation` parameters from this URL. You can either use `authorize` or `popup.authorize` as needed.
+
+```js
+const url = new URL(invitationUrl)
+const params = new URLSearchParams(url.search);
+
+if (organization && invitation) {
+  webAuth.authorize({
+    organization: params.get('organization')
+    invitation: params.get('invitation')
+  });
+}
+```
+
 ## Documentation
 
 For a complete reference and examples please check our [docs](https://auth0.com/docs/libraries/auth0js).
