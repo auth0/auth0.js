@@ -20,7 +20,7 @@ If you want to read the full API documentation of auth0.js, see [here](https://a
 - [auth0.Authentication](#auth0authentication)
 - [auth0.Management](#auth0management)
 - [Passwordless Login](#passwordless-login)
-- [Organizations](#organizations)
+- [Organizations](#organizations-closed-beta)
 - [Documentation](#documentation)
 - [Migration](#migration)
 - [Develop](#develop)
