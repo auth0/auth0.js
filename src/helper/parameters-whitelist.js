@@ -34,6 +34,8 @@ var authorizeParams = [
   'owp',
   'device',
   'realm',
+  'organization',
+  'invitation',
 
   'protocol',
   '_csrf',

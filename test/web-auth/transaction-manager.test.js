@@ -98,11 +98,14 @@ context('TransactionManager', function() {
     context('when inside the hosted login page', function() {
       beforeEach(function() {
         windowHelper.getWindow.restore();
+
         sinon.stub(windowHelper, 'getWindow').callsFake(function() {
           return { location: { host: 'auth.myapp.com' } };
         });
+
         this.tm = new TransactionManager({ domain: 'auth.myapp.com' });
       });
+
       it('uses nonce/state when provided', function() {
         var result = this.tm.generateTransaction(
           'appState',
@@ -110,18 +113,22 @@ context('TransactionManager', function() {
           'providedNonce',
           null
         );
+
         expect(result).to.be.eql({
           state: 'providedState',
           nonce: 'providedNonce'
         });
       });
+
       it('uses random state/nonce when they are not provided', function() {
         var result = this.tm.generateTransaction(null, null, null, null, true);
+
         expect(result).to.be.eql({
           state: 'randomString',
           nonce: 'randomString'
         });
       });
+
       it('does not store transaction', function() {
         this.tm.generateTransaction(
           'appState',
@@ -129,6 +136,7 @@ context('TransactionManager', function() {
           'providedNonce',
           null
         );
+
         expect(Storage.prototype.setItem.calledOnce).to.be(false);
       });
     });
@@ -235,6 +243,24 @@ context('TransactionManager', function() {
           expires: times.MINUTES_30
         });
       });
+      it('stores the organization ID when given', function() {
+        this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null,
+          null,
+          'org_123'
+        );
+
+        expect(Storage.prototype.setItem.lastCall.args[1]).to.eql({
+          nonce: 'providedNonce',
+          appState: 'appState',
+          state: 'providedState',
+          lastUsedConnection: null,
+          organization: 'org_123'
+        })
+      })      
     });
   });
   context('getStoredTransaction', function() {
