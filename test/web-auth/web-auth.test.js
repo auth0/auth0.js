@@ -526,6 +526,132 @@ describe('auth0.WebAuth', function() {
         }
       ); // eslint-disable-line
     });
+    context('Organization validation', function() {
+      beforeEach(function() {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          organization: 'org_123'
+        });
+      });
+
+      afterEach(function() {
+        if (IdTokenVerifier.prototype.verify.restore) {
+          IdTokenVerifier.prototype.verify.restore();
+        }
+      });
+
+      it('should validate the organization', function(done) {
+        sinon
+          .stub(IdTokenVerifier.prototype, 'verify')
+          .callsFake(function(_, __, cb) {
+            cb(null, {
+              org_id: 'org_123'
+            });
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'brucke.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+          responseType: 'id_token',
+          __clock: function() {
+            return new Date(1521045300000);
+          },
+          organization: 'org_123'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#state=foo&token_type=Bearer&id_token=token',
+            nonce: 'lFCnI8.crRTdHfdo5k.zMXfR31856gKz'
+          },
+          function(err, data) {
+            if (err) {
+              return done(err);
+            }
+
+            expect(err).to.be(null);
+            expect(data.idTokenPayload.org_id).to.eql('org_123');
+
+            done();
+          }
+        ); // eslint-disable-line
+      });
+
+      it('should fail if the org_id claim is not present', function(done) {
+        sinon
+          .stub(IdTokenVerifier.prototype, 'verify')
+          .callsFake(function(_, __, cb) {
+            cb(null, {});
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'brucke.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+          responseType: 'id_token',
+          __clock: function() {
+            return new Date(1521045300000);
+          },
+          organization: 'org_123'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#state=foo&token_type=Bearer&id_token=token',
+            nonce: 'lFCnI8.crRTdHfdo5k.zMXfR31856gKz'
+          },
+          function(err, data) {
+            expect(err).not.to.be(null);
+            expect(err.errorDescription).to.eql(
+              'Organization Id (org_id) claim must be a string present in the ID token'
+            );
+
+            done();
+          }
+        ); // eslint-disable-line
+      });
+
+      it('should fail if the org_id claim is different from the transaction', function(done) {
+        sinon
+          .stub(IdTokenVerifier.prototype, 'verify')
+          .callsFake(function(_, __, cb) {
+            cb(null, {
+              org_id: 'org_456'
+            });
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'brucke.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+          responseType: 'id_token',
+          __clock: function() {
+            return new Date(1521045300000);
+          },
+          organization: 'org_123'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#state=foo&token_type=Bearer&id_token=token',
+            nonce: 'lFCnI8.crRTdHfdo5k.zMXfR31856gKz'
+          },
+          function(err, data) {
+            expect(err).not.to.be(null);
+
+            expect(err.errorDescription).to.eql(
+              `Organization Id (org_id) claim value mismatch in the ID token; expected "org_123", found "org_456"`
+            );
+
+            done();
+          }
+        ); // eslint-disable-line
+      });
+    });
+
     it('should validate an access_token when available', function(done) {
       var webAuth = new WebAuth({
         domain: 'brucke.auth0.com',
@@ -1630,6 +1756,48 @@ describe('auth0.WebAuth', function() {
       }).to.throwException(function(e) {
         expect(e.message).to.be('responseType option is required');
       });
+    });
+    it('should pass organization and invitation params to buildAuthorizeUrl from the constructor', function() {
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false,
+        organization: 'org_123',
+        invitation: 'inv_123'
+      });
+
+      sinon.spy(webAuth.client, 'buildAuthorizeUrl');
+
+      webAuth.authorize();
+
+      var args = webAuth.client.buildAuthorizeUrl.lastCall.args[0];
+
+      expect(args.organization).to.eql('org_123');
+      expect(args.invitation).to.eql('inv_123');
+    });
+    it('should pass organization and invitation params to buildAuthorizeUrl from the authorize method', function() {
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false
+      });
+
+      sinon.spy(webAuth.client, 'buildAuthorizeUrl');
+
+      webAuth.authorize({ organization: 'org_123', invitation: 'inv_123' });
+
+      var args = webAuth.client.buildAuthorizeUrl.lastCall.args[0];
+
+      expect(args.organization).to.eql('org_123');
+      expect(args.invitation).to.eql('inv_123');
     });
   });
 

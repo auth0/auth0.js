@@ -26,8 +26,10 @@ TransactionManager.prototype.process = function(options) {
     options.state,
     options.nonce,
     lastUsedConnection,
-    responseTypeIncludesIdToken
+    responseTypeIncludesIdToken,
+    options.organization
   );
+
   if (!options.state) {
     options.state = transaction.state;
   }
@@ -44,24 +46,32 @@ TransactionManager.prototype.generateTransaction = function(
   state,
   nonce,
   lastUsedConnection,
-  generateNonce
+  generateNonce,
+  organization
 ) {
   state = state || random.randomString(this.keyLength);
   nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
+
   var isHostedLoginPage =
     windowHelper.getWindow().location.host === this.options.domain;
+
   if (!isHostedLoginPage) {
-    this.storage.setItem(
-      this.namespace + state,
-      {
-        nonce: nonce,
-        appState: appState,
-        state: state,
-        lastUsedConnection: lastUsedConnection
-      },
-      { expires: times.MINUTES_30 }
-    );
+    var transactionPayload = {
+      nonce: nonce,
+      appState: appState,
+      state: state,
+      lastUsedConnection: lastUsedConnection
+    };
+
+    if (organization) {
+      transactionPayload.organization = organization;
+    }
+
+    this.storage.setItem(this.namespace + state, transactionPayload, {
+      expires: times.MINUTES_30
+    });
   }
+
   return {
     state: state,
     nonce: nonce

@@ -145,6 +145,75 @@ describe('auth0.WebAuth.popup', function() {
       });
     });
 
+    it('should pass organization and invitation params to buildAuthorizeUrl from the constructor', function(done) {
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'id_token',
+        _sendTelemetry: false,
+        popupOrigin: 'https://baseoptions.popupOrigin.com',
+        organization: 'org_123',
+        invitation: 'inv_123'
+      });
+
+      sinon.stub(PopupHandler.prototype, 'load').callsFake(function(url) {
+        expect(url).to.be(
+          'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&organization=org_123&invitation=inv_123&connection=the_connection&state=123&nonce=456&scope=openid'
+        );
+
+        Storage.prototype.setItem.restore();
+        TransactionManager.prototype.process.restore();
+
+        done();
+      });
+
+      sinon.stub(Storage.prototype, 'setItem').callsFake(function() {});
+
+      sinon
+        .stub(TransactionManager.prototype, 'process')
+        .callsFake(function(options) {
+          return options;
+        });
+
+      this.auth0.popup.authorize({
+        connection: 'the_connection',
+        state: '123',
+        nonce: '456',
+        scope: 'openid'
+      });
+    });
+
+    it('should pass organization and invitation params to buildAuthorizeUrl from authorize', function(done) {
+      sinon.stub(PopupHandler.prototype, 'load').callsFake(function(url) {
+        expect(url).to.be(
+          'https://me.auth0.com/authorize?client_id=...&response_type=id_token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&organization=org_123&invitation=inv_123&connection=the_connection&state=123&nonce=456&scope=openid'
+        );
+
+        Storage.prototype.setItem.restore();
+        TransactionManager.prototype.process.restore();
+
+        done();
+      });
+
+      sinon.stub(Storage.prototype, 'setItem').callsFake(function() {});
+
+      sinon
+        .stub(TransactionManager.prototype, 'process')
+        .callsFake(function(options) {
+          return options;
+        });
+
+      this.auth0.popup.authorize({
+        connection: 'the_connection',
+        state: '123',
+        nonce: '456',
+        scope: 'openid',
+        organization: 'org_123',
+        invitation: 'inv_123'
+      });
+    });
+
     it('should open the popup a with the proper parameters', function(done) {
       sinon
         .stub(PopupHandler.prototype, 'load')
