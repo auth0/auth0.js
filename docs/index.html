@@ -59,22 +59,24 @@
 <p>Client Side JavaScript toolkit for Auth0 API.</p>
 <p>If you want to read the full API documentation of auth0.js, see <a href="https://auth0.github.io/auth0.js/index.html">here</a>.</p>
 <h2>Index</h2>
-<ol>
+<ul>
 <li><a href="#install">Install</a></li>
 <li><a href="#auth0webauth">auth0.WebAuth</a></li>
 <li><a href="#auth0authentication">auth0.Authentication</a></li>
 <li><a href="#auth0management">auth0.Management</a></li>
+<li><a href="#passwordless-login">Passwordless Login</a></li>
+<li><a href="#organizations-closed-beta">Organizations</a></li>
 <li><a href="#documentation">Documentation</a></li>
 <li><a href="#migration">Migration</a></li>
 <li><a href="#develop">Develop</a></li>
 <li><a href="#issue-reporting">Issue Reporting</a></li>
 <li><a href="#author">Author</a></li>
 <li><a href="#license">License</a></li>
-</ol>
+</ul>
 <h2>Install</h2>
 <p>From CDN:</p>
 <pre class="prettyprint source lang-html"><code>&lt;!-- Latest patch release -->
-&lt;script src=&quot;https://cdn.auth0.com/js/auth0/9.14.3/auth0.min.js&quot;>&lt;/script>
+&lt;script src=&quot;https://cdn.auth0.com/js/auth0/9.15.0/auth0.min.js&quot;>&lt;/script>
 </code></pre>
 <p>From <a href="https://npmjs.org">npm</a>:</p>
 <pre class="prettyprint source lang-sh"><code>npm install auth0-js
@@ -88,24 +90,83 @@
   clientID: '{YOUR_AUTH0_CLIENT_ID}'
 });
 </code></pre>
-<p>Parameters:</p>
-<ul>
-<li><strong>domain {REQUIRED, string}</strong>: Your Auth0 account domain such as <code>'example.auth0.com'</code> or <code>'example.eu.auth0.com'</code>.</li>
-<li><strong>clientID {REQUIRED, string}</strong>: The Client ID found on your Application settings page.</li>
-<li><strong>redirectUri {OPTIONAL, string}</strong>: The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be added to the &quot;Allowed Callback URLs&quot; in your Auth0 Application's settings.</li>
-<li><strong>scope {OPTIONAL, string}</strong>: The default scope used for all authorization requests.</li>
-<li><strong>audience {OPTIONAL, string}</strong>: The default audience, used if requesting access to an API.</li>
-<li><strong>responseType {OPTIONAL, string}</strong>: Response type for all authentication requests. It can be any space separated list of the values <code>code</code>, <code>token</code>, <code>id_token</code>. <strong>If you don't provide a global <code>responseType</code>, you will have to provide a <code>responseType</code> for each method that you use</strong>.</li>
-<li><strong>responseMode {OPTIONAL, string}</strong>: The default responseMode used, defaults to <code>'fragment'</code>. The <code>parseHash</code> method can be used to parse authentication responses using fragment response mode. Supported values are <code>query</code>, <code>fragment</code> and <code>form_post</code>. The <code>query</code> value is only supported when <code>responseType</code> is <code>code</code>.</li>
-<li><strong>_disableDeprecationWarnings {OPTIONAL, boolean}</strong>: Indicates if deprecation warnings should be output to the browser console, defaults to <code>false</code>.</li>
-<li><strong>maxAge {OPTIONAL, number}</strong>: Used during token validation. Specifies the maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. If the elapsed time is greater than this value, the token is considered invalid and the user must be re-authenticated.</li>
-<li><strong>leeway {OPTIONAL, number}</strong>: Used during ID token validation. Specifies the number of seconds to account for clock skew when validating time-based claims such as <code>iat</code> and <code>exp</code>. The default is 60 seconds.</li>
-</ul>
+<p><strong>Parameters</strong></p>
+<p>All parameters can be considered optional unless otherwise stated.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Option</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>domain</code></td>
+<td>string (required)</td>
+<td>Your Auth0 account domain such as <code>'example.auth0.com'</code> or <code>'example.eu.auth0.com'</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>clientID</code></td>
+<td>string (required)</td>
+<td>The Client ID found on your Application settings page.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>redirectUri</code></td>
+<td>string</td>
+<td>The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be added to the &quot;Allowed Callback URLs&quot; in your Auth0 Application's settings.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>scope</code></td>
+<td>string</td>
+<td>The default scope used for all authorization requests.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>audience</code></td>
+<td>string</td>
+<td>The default audience, used if requesting access to an API.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>responseType</code></td>
+<td>string</td>
+<td>Response type for all authentication requests. It can be any space separated list of the values <code>code</code>, <code>token</code>, <code>id_token</code>. <strong>If you don't provide a global <code>responseType</code>, you will have to provide a <code>responseType</code> for each method that you use</strong>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>responseMode</code></td>
+<td>string</td>
+<td>The default responseMode used, defaults to <code>'fragment'</code>. The <code>parseHash</code> method can be used to parse authentication responses using fragment response mode. Supported values are <code>query</code>, <code>fragment</code> and <code>form_post</code>. The <code>query</code> value is only supported when <code>responseType</code> is <code>code</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>_disableDeprecationWarnings</code></td>
+<td>boolean</td>
+<td>Indicates if deprecation warnings should be output to the browser console, defaults to <code>false</code>.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>maxAge</code></td>
+<td>number</td>
+<td>Used during token validation. Specifies the maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. If the elapsed time is greater than this value, the token is considered invalid and the user must be re-authenticated.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>leeway</code></td>
+<td>number</td>
+<td>Used during ID token validation. Specifies the number of seconds to account for clock skew when validating time-based claims such as <code>iat</code> and <code>exp</code>. The default is 60 seconds.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>organization</code></td>
+<td>string</td>
+<td>The ID of the Organization to log in to (see <a href="#organizations-closed-beta">Organizations</a>)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>invitation</code></td>
+<td>string</td>
+<td>The ID of the user invitation to accept. This is usually used in conjunction with the <code>organization</code> parameter, and should be parsed from an invitation URL. (see <a href="#organizations-closed-beta">Organizations</a>)</td>
+</tr>
+</tbody>
+</table>
 <h3>API</h3>
-<ul>
-<li><strong>authorize(options)</strong>: Redirects to the <code>/authorize</code> endpoint to start an authentication/authorization transaction.
-Auth0 will call back to your application with the results at the specified <code>redirectUri</code>. <strong>The default scope for this method is <code>openid profile email</code></strong>.</li>
-</ul>
+<h4>authorize(options)</h4>
+<p>Redirects to the <code>/authorize</code> endpoint to start an authentication/authorization transaction. Auth0 will call back to your application with the results at the specified <code>redirectUri</code>.</p>
+<p><strong>Note:</strong> The default scope for this method is <code>openid profile email</code>.</p>
 <pre class="prettyprint source lang-js"><code>auth0.authorize({
   audience: 'https://mystore.com/api/v2',
   scope: 'read:order write:order',
@@ -113,12 +174,9 @@ Auth0 will call back to your application with the results at the specified <code
   redirectUri: 'https://example.com/auth/callback'
 });
 </code></pre>
-<ul>
-<li><strong>parseHash(options, callback)</strong>: Parses a URL hash fragment to extract the result of an Auth0 authentication response.</li>
-</ul>
-<blockquote>
-<p>This method requires that your tokens are signed with <strong>RS256</strong>. Please check our <a href="https://auth0.com/docs/libraries/auth0js/v8/migration-guide#switching-from-hs256-to-rs256">Migration Guide</a> for more information.</p>
-</blockquote>
+<h4>parseHash(options, callback)</h4>
+<p>Parses a URL hash fragment to extract the result of an Auth0 authentication response.</p>
+<p><strong>Note:</strong> This method requires that your tokens are signed with <strong>RS256</strong>. Please check our <a href="https://auth0.com/docs/libraries/auth0js/v8/migration-guide#switching-from-hs256-to-rs256">Migration Guide</a> for more information.</p>
 <pre class="prettyprint source lang-js"><code>auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
   if (err) {
     return console.log(err);
@@ -135,10 +193,9 @@ Auth0 will call back to your application with the results at the specified <code
   });
 });
 </code></pre>
-<ul>
-<li><strong>checkSession(options, callback)</strong>: Allows you to acquire a new token from Auth0 for a user who already has an SSO session established against Auth0 for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: <code>{error: 'login_required'}</code>.The method accepts any valid OAuth2 parameters that would normally be sent to <code>/authorize</code>.
-Everything happens inside an iframe, so it will not reload your application or redirect away from it.</li>
-</ul>
+<h4>checkSession(options, callback)</h4>
+<p>Allows you to acquire a new token from Auth0 for a user who already has an SSO session established against Auth0 for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: <code>{error: 'login_required'}</code>.The method accepts any valid OAuth2 parameters that would normally be sent to <code>/authorize</code>.</p>
+<p>Everything happens inside an iframe, so it will not reload your application or redirect away from it.</p>
 <pre class="prettyprint source lang-js"><code>auth0.checkSession(
   {
     audience: 'https://mystore.com/api/v2',
@@ -150,16 +207,11 @@ Everything happens inside an iframe, so it will not reload your application or r
 );
 </code></pre>
 <p>The contents of <code>authResult</code> are identical to those returned by <code>parseHash()</code>.</p>
-<blockquote>
 <p><strong>Important:</strong> If you're not using the hosted login page to do social logins, you have to use your own <a href="https://manage.auth0.com/#/connections/social">social connection keys</a>. If you use Auth0's dev keys, you'll always get <code>login_required</code> as an error when calling <code>checkSession</code>.</p>
-</blockquote>
-<blockquote>
 <p><strong>Important:</strong> Because there is no redirect in this method, <code>responseType: 'code'</code> is not supported and will throw an error.</p>
-</blockquote>
 <p>Remember to add the URL where the authorization request originates from to the Allowed Web Origins list of your Auth0 Application in the <a href="https://manage.auth0.com/">Dashboard</a> under your Applications's <strong>Settings</strong>.</p>
-<ul>
-<li><strong>client.login(options, callback)</strong>: Authenticates a user with username and password in a realm using <code>/oauth/token</code>. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.</li>
-</ul>
+<h4>client.login(options, callback)</h4>
+<p>Authenticates a user with username and password in a realm using <code>/oauth/token</code>. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.</p>
 <pre class="prettyprint source lang-js"><code>auth0.client.login(
   {
     realm: 'Username-Password-Authentication', //connection name or HRD domain
@@ -174,6 +226,24 @@ Everything happens inside an iframe, so it will not reload your application or r
 );
 </code></pre>
 <p>The contents of <code>authResult</code> are identical to those returned by <code>parseHash()</code>.</p>
+<p><strong>onRedirecting hook</strong></p>
+<p>When using <code>login</code> to log in using a username and password, Auth0.js initially makes a call to Auth0 to get a login ticket, before sending that login ticket to the <code>/authorize</code> endpoint to be exchanged for tokens. You are able to specify an <code>onRedirecting</code> hook here to handle when Auth0.js is about to redirect to the <code>/authorize</code> endpoint, for the purposes of executing some custom code (analytics, etc).</p>
+<p>To do this, specify the <code>onRedirecting</code> function in the options and ensure that the <code>done</code> callback is called when you are finished executing your custom code. Otherwise, authentication will be blocked.</p>
+<pre class="prettyprint source lang-js"><code>auth0.client.login(
+  {
+    realm: 'Username-Password-Authentication', //connection name or HRD domain
+    username: 'info@auth0.com',
+    password: 'areallystrongpassword',
+    onRedirecting: function(done) {
+      // Your custom code here
+      done();
+    }
+  },
+  function(err, authResult) {
+    // Auth tokens in the result or an error
+  }
+);
+</code></pre>
 <h2>auth0.Authentication</h2>
 <p>Provides an API client for the Auth0 Authentication API.</p>
 <h3>Initialize</h3>
@@ -183,16 +253,22 @@ Everything happens inside an iframe, so it will not reload your application or r
 });
 </code></pre>
 <h3>API</h3>
-<ul>
-<li><strong>buildAuthorizeUrl(options)</strong>: Builds and returns the <code>/authorize</code> url in order to initialize a new authN/authZ transaction. <a href="https://auth0.com/docs/api/authentication#database-ad-ldap-passive-">https://auth0.com/docs/api/authentication#database-ad-ldap-passive-</a></li>
-<li><strong>buildLogoutUrl(options)</strong>: Builds and returns the Logout url in order to initialize a new authN/authZ transaction. <a href="https://auth0.com/docs/api/authentication#logout">https://auth0.com/docs/api/authentication#logout</a></li>
-<li><strong>loginWithDefaultDirectory(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint with <code>password</code> grant type. <a href="https://auth0.com/docs/api-auth/grant/password">https://auth0.com/docs/api-auth/grant/password</a></li>
-<li><strong>login(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint with <code>https://auth0.com/oauth/grant-type/password-realm</code> grant type.</li>
-<li><strong>oauthToken(options, cb)</strong>: Makes a call to the <code>oauth/token</code> endpoint.</li>
-<li><strong>userInfo(token, cb)</strong>: Makes a call to the <code>/userinfo</code> endpoint and returns the user profile.</li>
-</ul>
+<h4>buildAuthorizeUrl(options)</h4>
+<p>Builds and returns the <code>/authorize</code> url in order to initialize a new authN/authZ transaction. <a href="https://auth0.com/docs/api/authentication#database-ad-ldap-passive-">https://auth0.com/docs/api/authentication#database-ad-ldap-passive-</a></p>
+<h4>buildLogoutUrl(options)</h4>
+<p>Builds and returns the Logout url in order to initialize a new authN/authZ transaction. <a href="https://auth0.com/docs/api/authentication#logout">https://auth0.com/docs/api/authentication#logout</a></p>
+<h4>loginWithDefaultDirectory(options, cb)</h4>
+<p>Makes a call to the <code>oauth/token</code> endpoint with <code>password</code> grant type. <a href="https://auth0.com/docs/api-auth/grant/password">https://auth0.com/docs/api-auth/grant/password</a></p>
+<h4>login(options, cb)</h4>
+<p>Makes a call to the <code>oauth/token</code> endpoint with <code>https://auth0.com/oauth/grant-type/password-realm</code> grant type.</p>
+<h4>oauthToken(options, cb)</h4>
+<p>Makes a call to the <code>oauth/token</code> endpoint.</p>
+<h4>userInfo(token, cb)</h4>
+<p>Makes a call to the <code>/userinfo</code> endpoint and returns the user profile.</p>
 <h2>auth0.Management</h2>
 <p>Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an <code>access_token</code> with the <code>https://YOUR_DOMAIN.auth0.com/api/v2/</code> audience to make this work. For more information, read <a href="https://auth0.com/docs/libraries/auth0js/v9#user-management">the user management section of the Auth0.js documentation</a>.</p>
+<h2>Passwordless Login</h2>
+<p>For information on how to implement Passwordless Login with this SDK, please read <a href="https://auth0.com/docs/libraries/auth0js#passwordless-login">Passwordless Login on Auth0 Docs</a>.</p>
 <h3>Initialize</h3>
 <pre class="prettyprint source lang-js"><code>var auth0 = new auth0.Management({
   domain: '{YOUR_AUTH0_DOMAIN}',
@@ -206,6 +282,52 @@ Everything happens inside an iframe, so it will not reload your application or r
 <li><strong>patchUserAttributes(userId, user, cb)</strong>: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to <a href="https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id">https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id</a></li>
 <li><strong>linkUser(userId, secondaryUserToken, cb)</strong>: Link two users. <a href="https://auth0.com/docs/api/management/v2#!/Users/post_identities">https://auth0.com/docs/api/management/v2#!/Users/post_identities</a></li>
 </ul>
+<h2>Organizations (Closed Beta)</h2>
+<p>Organizations is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.</p>
+<p>Using Organizations, you can:</p>
+<ul>
+<li>
+<p>Represent teams, business customers, partner companies, or any logical grouping of users that should have different ways of accessing your applications, as organizations.</p>
+</li>
+<li>
+<p>Manage their membership in a variety of ways, including user invitation.</p>
+</li>
+<li>
+<p>Configure branded, federated login flows for each organization.</p>
+</li>
+<li>
+<p>Implement role-based access control, such that users can have different roles when authenticating in the context of different organizations.</p>
+</li>
+<li>
+<p>Build administration capabilities into your products, using Organizations APIs, so that those businesses can manage their own organizations.</p>
+</li>
+</ul>
+<p>Note that Organizations is currently only available to customers on our Enterprise and Startup subscription plans.</p>
+<h3>Log in to an organization</h3>
+<p>To log in to a specific organization, pass the ID of the organization as the <code>organization</code> parameter when creating the <code>WebAuth</code> client:</p>
+<pre class="prettyprint source lang-js"><code>var webAuth = new WebAuth({
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  clientID: '{YOUR_AUTH0_CLIENT_ID}',
+  organization: '{YOUR_AUTH0_ORGANIZATION_ID}'
+});
+</code></pre>
+<p>You can also specify an organization when calling <code>authorize</code>:</p>
+<pre class="prettyprint source lang-js"><code>webAuth.authorize({
+  organization: '{YOUR_AUTH0_ORGANIZATION_ID}'
+});
+</code></pre>
+<h3>Accept user invitations</h3>
+<p>Accept a user invitation through the SDK by creating a route within your application that can handle the user invitation URL, and log the user in by passing the <code>organization</code> and <code>invitation</code> parameters from this URL. You can either use <code>authorize</code> or <code>popup.authorize</code> as needed.</p>
+<pre class="prettyprint source lang-js"><code>var url = new URL(invitationUrl)
+var params = new URLSearchParams(url.search);
+
+if (organization && invitation) {
+  webAuth.authorize({
+    organization: params.get('organization')
+    invitation: params.get('invitation')
+  });
+}
+</code></pre>
 <h2>Documentation</h2>
 <p>For a complete reference and examples please check our <a href="https://auth0.com/docs/libraries/auth0js">docs</a>.</p>
 <h2>Migration</h2>
@@ -243,7 +365,7 @@ Everything happens inside an iframe, so it will not reload your application or r
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Tue Jan 26 2021 10:43:29 GMT+0000 (Greenwich Mean Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Mar 19 2021 12:30:56 GMT+0000 (Greenwich Mean Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -1,4 +1,14 @@
 
+## [v9.15.0](https://github.com/auth0/auth0.js/tree/v9.15.0) (2021-03-19)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.14.3...v9.15.0)
+
+**Added**
+- [SDK-2391] Organizations support [\#1159](https://github.com/auth0/auth0.js/pull/1159) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- [SDK-2273] Add onRedirecting login hook [\#1157](https://github.com/auth0/auth0.js/pull/1157) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
+**Changed**
+- Apply secure flag to cookies when running on https protocol [\#1158](https://github.com/auth0/auth0.js/pull/1158) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v9.14.3](https://github.com/auth0/auth0.js/tree/v9.14.3) (2021-01-26)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.14.2...v9.14.3)
 
