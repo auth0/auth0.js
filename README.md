@@ -20,7 +20,7 @@ If you want to read the full API documentation of auth0.js, see [here](https://a
 - [auth0.Authentication](#auth0authentication)
 - [auth0.Management](#auth0management)
 - [Passwordless Login](#passwordless-login)
-- [Organizations](#organizations-closed-beta)
+- [Organizations](#organizations)
 - [Documentation](#documentation)
 - [Migration](#migration)
 - [Develop](#develop)
@@ -74,8 +74,8 @@ All parameters can be considered optional unless otherwise stated.
 | `_disableDeprecationWarnings` | boolean           | Indicates if deprecation warnings should be output to the browser console, defaults to `false`.                                                                                                                                                                                          |
 | `maxAge`                      | number            | Used during token validation. Specifies the maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. If the elapsed time is greater than this value, the token is considered invalid and the user must be re-authenticated.  |
 | `leeway`                      | number            | Used during ID token validation. Specifies the number of seconds to account for clock skew when validating time-based claims such as `iat` and `exp`. The default is 60 seconds.                                                                                                         |
-| `organization`                | string            | The ID of the Organization to log in to (see [Organizations](#organizations-closed-beta))                                                                                                                                                                                                |
-| `invitation`                  | string            | The ID of the user invitation to accept. This is usually used in conjunction with the `organization` parameter, and should be parsed from an invitation URL. (see [Organizations](#organizations-closed-beta))                                                                           |
+| `organization`                | string            | The ID of the Organization to log in to (see [Organizations](#organizations))                                                                                                                                                                                                |
+| `invitation`                  | string            | The ID of the user invitation to accept. This is usually used in conjunction with the `organization` parameter, and should be parsed from an invitation URL. (see [Organizations](#organizations))                                                                           |
 
 ### API
 
@@ -251,9 +251,9 @@ var auth0 = new auth0.Management({
 - **patchUserAttributes(userId, user, cb)**: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to [https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
 - **linkUser(userId, secondaryUserToken, cb)**: Link two users. [https://auth0.com/docs/api/management/v2#!/Users/post_identities](https://auth0.com/docs/api/management/v2#!/Users/post_identities)
 
-## Organizations (Closed Beta)
+## Organizations
 
-Organizations is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
+[Organizations](https://auth0.com/docs/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
 
 Using Organizations, you can:
 
