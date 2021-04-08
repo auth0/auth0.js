@@ -167,4 +167,41 @@ Management.prototype.linkUser = function(userId, secondaryUserToken, cb) {
     .end(responseHandler(cb, { ignoreCasing: true }));
 };
 
+/**
+ * Unlink a User Identity
+ *
+ * @method unlinkUser
+ * @param {String} userId
+ * @param {String} provider
+ * @param {String} secondaryLinkedAccount
+ * @param {userCallback} cb
+ * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/delete_user_identity_by_user_id}
+ */
+Management.prototype.unlinkUser = function(userId, provider, secondaryLinkedAccount, cb) {
+  var url;
+  /* eslint-disable */
+  assert.check(userId, {
+    type: 'string',
+    message: 'userId parameter is not valid'
+  });
+  assert.check(provider, {
+    type: 'string',
+    message: 'provider parameter is not valid'
+  });
+  assert.check(secondaryLinkedAccount, {
+    type: 'string',
+    message: 'secondaryLinkedAccount parameter is not valid'
+  });
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+  /* eslint-enable */
+
+  url = urljoin(this.baseOptions.rootUrl, 'users', userId, 'identities', provider, secondaryLinkedAccount);
+
+  return this.request
+    .delete(url)
+    .send()
+    .end(responseHandler(cb, { ignoreCasing: true }));
+};
+
+
 export default Management;
