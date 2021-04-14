@@ -11,7 +11,7 @@ var AUTH0_PROVIDER = 'auth0';
 var defaults = {
   lang: 'en',
   templates: {
-    [AUTH0_PROVIDER]: function (challenge) {
+    'auth0': function (challenge) {
       var message = challenge.type === 'code' ?
         'Enter the code shown above' :
         'Solve the formula shown above';
@@ -24,10 +24,10 @@ var defaults = {
         '  placeholder="' + message + '" />';
     }
     ,
-    [RECAPTCHA_V2_PROVIDER]: function () {
+    'recaptcha_v2': function () {
       return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
     },
-    [RECAPTCHA_ENTERPRISE_PROVIDER]: function () {
+    'recaptcha_enterprise': function () {
       return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
     }    
     ,
@@ -59,9 +59,9 @@ function globalForRecaptchaProvider(provider) {
 function scriptForRecaptchaProvider(provider, lang, callback) {
   switch (provider) {
     case RECAPTCHA_V2_PROVIDER:
-      return `https://www.google.com/recaptcha/api.js?hl=${lang}&onload=${callback}`;
+      return 'https://www.google.com/recaptcha/api.js?hl='+lang+'&onload='+callback;
     case RECAPTCHA_ENTERPRISE_PROVIDER:
-      return `https://www.google.com/recaptcha/enterprise.js?render=explicit&hl=${lang}&onload=${callback}`;
+      return 'https://www.google.com/recaptcha/enterprise.js?render=explicit&hl='+lang+'&onload='+callback;
     default:
       throw new Error('Unknown captcha provider');      
   }
