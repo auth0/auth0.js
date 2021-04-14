@@ -692,6 +692,11 @@ WebAuth.prototype.passwordlessStart = function(options, cb) {
  * @param {String} options.email user email address
  * @param {String} options.password user password
  * @param {String} options.connection name of the connection where the user will be created
+ * @param {String} [options.given_name] The user's given name(s).
+ * @param {String} [options.family_name] The user's family name(s).
+ * @param {String} [options.name] The user's full name.
+ * @param {String} [options.nickname] The user's nickname.
+ * @param {String} [options.picture] A URI pointing to the user's picture.
  * @param {signUpCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
  */
