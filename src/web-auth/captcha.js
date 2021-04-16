@@ -2,7 +2,7 @@
 import Authentication from '../authentication';
 import object from '../helper/object';
 
-var noop = function () { };
+var noop = function() {};
 
 var RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
 var RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
@@ -11,38 +11,45 @@ var AUTH0_PROVIDER = 'auth0';
 var defaults = {
   lang: 'en',
   templates: {
-    'auth0': function (challenge) {
-      var message = challenge.type === 'code' ?
-        'Enter the code shown above' :
-        'Solve the formula shown above';
-      return '<div class="captcha-challenge">\n' +
-        '  <img src="' + challenge.image + '" />\n' +
+    auth0: function(challenge) {
+      var message =
+        challenge.type === 'code'
+          ? 'Enter the code shown above'
+          : 'Solve the formula shown above';
+      return (
+        '<div class="captcha-challenge">\n' +
+        '  <img src="' +
+        challenge.image +
+        '" />\n' +
         '  <button type="button" class="captcha-reload">↺</button>\n' +
         '</div>\n' +
         '<input type="text" name="captcha"\n' +
         '  class="form-control captcha-control"\n' +
-        '  placeholder="' + message + '" />';
-    }
-    ,
-    'recaptcha_v2': function () {
+        '  placeholder="' +
+        message +
+        '" />'
+      );
+    },
+    recaptcha_v2: function() {
       return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
     },
-    'recaptcha_enterprise': function () {
+    recaptcha_enterprise: function() {
       return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
-    }    
-    ,
-    'error': function () {
-      return '<div class="error" style="color: red;">Error getting the bot detection challenge. Please contact the system administrator.</div>'
+    },
+    error: function() {
+      return '<div class="error" style="color: red;">Error getting the bot detection challenge. Please contact the system administrator.</div>';
     }
   }
 };
 
 function handleAuth0Provider(element, options, challenge, load) {
   element.innerHTML = options.templates[challenge.provider](challenge);
-  element.querySelector('.captcha-reload').addEventListener('click', function (e) {
-    e.preventDefault();
-    load();
-  });
+  element
+    .querySelector('.captcha-reload')
+    .addEventListener('click', function(e) {
+      e.preventDefault();
+      load();
+    });
 }
 
 function globalForRecaptchaProvider(provider) {
@@ -51,7 +58,8 @@ function globalForRecaptchaProvider(provider) {
       return window.grecaptcha;
     case RECAPTCHA_ENTERPRISE_PROVIDER:
       return window.grecaptcha.enterprise;
-    /* istanbul ignore next */      
+    /* istanbul ignore next */
+
     default:
       throw new Error('Unknown captcha provider');
   }
@@ -60,29 +68,44 @@ function globalForRecaptchaProvider(provider) {
 function scriptForRecaptchaProvider(provider, lang, callback) {
   switch (provider) {
     case RECAPTCHA_V2_PROVIDER:
-      return 'https://www.google.com/recaptcha/api.js?hl='+lang+'&onload='+callback;
+      return (
+        'https://www.google.com/recaptcha/api.js?hl=' +
+        lang +
+        '&onload=' +
+        callback
+      );
     case RECAPTCHA_ENTERPRISE_PROVIDER:
-      return 'https://www.google.com/recaptcha/enterprise.js?render=explicit&hl='+lang+'&onload='+callback;
+      return (
+        'https://www.google.com/recaptcha/enterprise.js?render=explicit&hl=' +
+        lang +
+        '&onload=' +
+        callback
+      );
     /* istanbul ignore next */
     default:
-      throw new Error('Unknown captcha provider');      
+      throw new Error('Unknown captcha provider');
   }
 }
 
 function injectRecaptchaScript(element, opts, callback) {
   var callbackName = 'recaptchaCallback_' + Math.floor(Math.random() * 1000001);
-  window[callbackName] = function () {
+  window[callbackName] = function() {
     delete window[callbackName];
     callback();
   };
   var script = window.document.createElement('script');
-  script.src = scriptForRecaptchaProvider(opts.provider,opts.lang,callbackName);
+  script.src = scriptForRecaptchaProvider(
+    opts.provider,
+    opts.lang,
+    callbackName
+  );
   script.async = true;
   window.document.body.appendChild(script);
 }
 
 function handleRecaptchaProvider(element, options, challenge) {
-  var widgetId = element.hasAttribute('data-wid') && element.getAttribute('data-wid');
+  var widgetId =
+    element.hasAttribute('data-wid') && element.getAttribute('data-wid');
 
   function setValue(value) {
     var input = element.querySelector('input[name="captcha"]');
@@ -99,18 +122,25 @@ function handleRecaptchaProvider(element, options, challenge) {
 
   var recaptchaDiv = element.querySelector('.recaptcha');
 
-  injectRecaptchaScript(element, {lang:options.lang,provider:challenge.provider}, function () {
-    var global = globalForRecaptchaProvider(challenge.provider);
-    widgetId = global.render(recaptchaDiv, {
-      callback: setValue,
-      'expired-callback': function () { setValue(); },
-      'error-callback': function () { setValue(); },
-      sitekey: challenge.siteKey
-    });
-    element.setAttribute('data-wid', widgetId)
-  });
+  injectRecaptchaScript(
+    element,
+    { lang: options.lang, provider: challenge.provider },
+    function() {
+      var global = globalForRecaptchaProvider(challenge.provider);
+      widgetId = global.render(recaptchaDiv, {
+        callback: setValue,
+        'expired-callback': function() {
+          setValue();
+        },
+        'error-callback': function() {
+          setValue();
+        },
+        sitekey: challenge.siteKey
+      });
+      element.setAttribute('data-wid', widgetId);
+    }
+  );
 }
-
 
 /**
  *
@@ -130,7 +160,7 @@ function render(auth0Client, element, options, callback) {
 
   function load(done) {
     done = done || noop;
-    auth0Client.getChallenge(function (err, challenge) {
+    auth0Client.getChallenge(function(err, challenge) {
       if (err) {
         element.innerHTML = options.templates.error(err);
         return done(err);
@@ -143,7 +173,10 @@ function render(auth0Client, element, options, callback) {
       element.style.display = '';
       if (challenge.provider === AUTH0_PROVIDER) {
         handleAuth0Provider(element, options, challenge, load);
-      } else if (challenge.provider === RECAPTCHA_V2_PROVIDER || challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER) {
+      } else if (
+        challenge.provider === RECAPTCHA_V2_PROVIDER ||
+        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER
+      ) {
         handleRecaptchaProvider(element, options, challenge);
       }
       done();
@@ -152,7 +185,9 @@ function render(auth0Client, element, options, callback) {
 
   function getValue() {
     var captchaInput = element.querySelector('input[name="captcha"]');
-    if (!captchaInput) { return; }
+    if (!captchaInput) {
+      return;
+    }
     return captchaInput.value;
   }
 
