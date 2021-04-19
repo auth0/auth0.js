@@ -76,7 +76,7 @@ function scriptForRecaptchaProvider(provider, lang, callback) {
       );
     case RECAPTCHA_ENTERPRISE_PROVIDER:
       return (
-        'https://www.recaptcha.net/recaptcha/enterprise.js?render=explicit&hl=' +
+        'https://www.google.com/recaptcha/enterprise.js?render=explicit&hl=' +
         lang +
         '&onload=' +
         callback
