@@ -180,12 +180,23 @@ describe('captcha rendering', function () {
   const RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
 
   [RECAPTCHA_V2_PROVIDER,RECAPTCHA_ENTERPRISE_PROVIDER].forEach(provider => {
-    const getScript = () => {
+
+    const hostName = () => {
       switch(provider) {
-        case RECAPTCHA_V2_PROVIDER: return 'api.js';
-        case RECAPTCHA_ENTERPRISE_PROVIDER: return 'enterprise.js';
+        case RECAPTCHA_V2_PROVIDER: return 'www.google.com';
+        case RECAPTCHA_ENTERPRISE_PROVIDER: return 'www.recaptcha.net';
       }
     }
+
+    const pathName = () => {
+      switch(provider) {
+        case RECAPTCHA_V2_PROVIDER: return '/recaptcha/api.js';
+        case RECAPTCHA_ENTERPRISE_PROVIDER: return '/recaptcha/enterprise.js';
+      }
+    }
+
+    const getScript = () => `https://${hostName()}${pathName()}`;
+
     const setMockGlobal = (mock) => {
       switch(provider) {
         case RECAPTCHA_V2_PROVIDER: 
@@ -215,7 +226,7 @@ describe('captcha rendering', function () {
           }
         };
         c = captcha.render(mockClient, element);
-        recaptchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match('google\.com'));
+        recaptchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match(getScript()));
         scriptOnLoadCallback = window[url.parse(recaptchaScript.src, true).query.onload];
       });
   
@@ -226,8 +237,8 @@ describe('captcha rendering', function () {
       it('should inject the recaptcha script', function () {
         expect(recaptchaScript.async).to.be.ok();
         const scriptUrl = url.parse(recaptchaScript.src, true);
-        expect(scriptUrl.hostname).to.equal('www.google.com');
-        expect(scriptUrl.pathname).to.equal(`/recaptcha/${getScript()}`);
+        expect(scriptUrl.hostname).to.equal(hostName());
+        expect(scriptUrl.pathname).to.equal(pathName());
         expect(scriptUrl.query.hl).to.equal('en');
         expect(scriptUrl.query).to.have.property('onload');
       });
