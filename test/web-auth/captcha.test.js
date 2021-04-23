@@ -215,7 +215,7 @@ describe('captcha rendering', function () {
           }
         };
         c = captcha.render(mockClient, element);
-        recaptchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match('google\.com'));
+        recaptchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match('recaptcha.net'));
         scriptOnLoadCallback = window[url.parse(recaptchaScript.src, true).query.onload];
       });
   
@@ -226,7 +226,7 @@ describe('captcha rendering', function () {
       it('should inject the recaptcha script', function () {
         expect(recaptchaScript.async).to.be.ok();
         const scriptUrl = url.parse(recaptchaScript.src, true);
-        expect(scriptUrl.hostname).to.equal('www.google.com');
+        expect(scriptUrl.hostname).to.equal('www.recaptcha.net');
         expect(scriptUrl.pathname).to.equal(`/recaptcha/${getScript()}`);
         expect(scriptUrl.query.hl).to.equal('en');
         expect(scriptUrl.query).to.have.property('onload');
