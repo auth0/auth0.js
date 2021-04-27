@@ -1,4 +1,16 @@
 
+## [v9.16.0](https://github.com/auth0/auth0.js/tree/v9.16.0) (2021-04-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.15.0...v9.16.0)
+
+**Added**
+- Add Recaptcha Enterprise support [\#1169](https://github.com/auth0/auth0.js/pull/1169) ([akmjenkins](https://github.com/akmjenkins))
+
+**Fixed**
+- Document  optional params to WebAuth.signup [\#1168](https://github.com/auth0/auth0.js/pull/1168) ([zog](https://github.com/zog))
+
+**Security**
+- [Security] Bump y18n from 4.0.0 to 4.0.1 [\#1162](https://github.com/auth0/auth0.js/pull/1162) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+
 ## [v9.15.0](https://github.com/auth0/auth0.js/tree/v9.15.0) (2021-03-19)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.14.3...v9.15.0)
 
