@@ -321,6 +321,35 @@
         <hr />
 
         <div>
+          <h4>Sign up</h4>
+          <p>
+            <input
+              class="form-control"
+              id="signup-email"
+              value=""
+              placeholder=""
+            />
+          </p>
+          <p>
+            <input
+              class="form-control"
+              value=""
+              id="signup-password"
+              type="password"
+            />
+          </p>
+          <p>
+            <input
+              type="button"
+              class="btn btn-default btn-sm signup-btn"
+              value="Sign up"
+            />
+          </p>
+        </div>
+
+        <hr />
+
+        <div>
           <h4>Renew authentication:</h4>
           <input
             type="button"
@@ -788,6 +817,21 @@
       $('.logout').click(function(e) {
         e.preventDefault();
         webAuth.logout({ returnTo: REDIRECT_URL });
+      });
+
+      $('.signup-btn').click(function(e) {
+        e.preventDefault();
+        var user = document.getElementById('signup-email').value;
+        var pwd = document.getElementById('signup-password').value;
+
+        webAuth.redirect.signupAndLogin(
+          {
+            connection: 'Username-Password-Authentication',
+            email: user,
+            password: pwd
+          },
+          htmlConsole.dumpCallback.bind(htmlConsole)
+        );
       });
 
       $('.renew-auth').click(function(e) {
