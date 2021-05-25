@@ -1,4 +1,10 @@
 
+## [v9.16.1](https://github.com/auth0/auth0.js/tree/v9.16.1) (2021-05-25)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.0...v9.16.1)
+
+**Security**
+- Bump idtoken-verifier and run npm audit fix [\#1179](https://github.com/auth0/auth0.js/pull/1179) ([frederikprijck](https://github.com/frederikprijck))
+
 ## [v9.16.0](https://github.com/auth0/auth0.js/tree/v9.16.0) (2021-04-26)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.15.0...v9.16.0)
 
