@@ -1,4 +1,10 @@
 
+## [v9.16.2](https://github.com/auth0/auth0.js/tree/v9.16.2) (2021-05-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.1...v9.16.2)
+
+**Security**
+- Update idtoken-verifier to 2.1.2 [\#1182](https://github.com/auth0/auth0.js/pull/1182) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v9.16.1](https://github.com/auth0/auth0.js/tree/v9.16.1) (2021-05-25)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.0...v9.16.1)
 
