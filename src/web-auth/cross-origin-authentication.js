@@ -39,6 +39,7 @@ function createKey(origin, coId) {
 /**
  * @callback onRedirectingCallback
  * @param {function} done Must be called when finished so that authentication can be resumed
+ * @ignore
  */
 
 /**
@@ -54,6 +55,7 @@ function createKey(origin, coId) {
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
  * @param {onRedirectingCallback} [options.onRedirecting] Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
+ * @ignore
  */
 CrossOriginAuthentication.prototype.login = function(options, cb) {
   var _this = this;
@@ -158,6 +160,7 @@ function tryGetVerifier(storage, key) {
  * Runs the callback code for the cross origin authentication call. This method is meant to be called by the cross origin authentication callback url.
  *
  * @method callback
+ * @ignore
  */
 CrossOriginAuthentication.prototype.callback = function() {
   var targetOrigin = decodeURIComponent(getFragment('origin'));

@@ -27,11 +27,13 @@ function HostedPages(client, options) {
  * @param {String} result.accessToken token that can be used with {@link userinfo}
  * @param {String} [result.idToken] token that identifies the user
  * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all Auth0 Applications can request them or the resource server might not allow them.
+ * @ignore
  */
 
 /**
  * @callback onRedirectingCallback
  * @param {function} done Must be called when finished so that authentication can be resumed
+ * @ignore
  */
 
 /**
@@ -48,6 +50,7 @@ function HostedPages(client, options) {
  * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
  * @param {onRedirectingCallback} [options.onRedirecting] Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {credentialsCallback} cb
+ * @ignore
  */
 HostedPages.prototype.login = function(options, cb) {
   if (windowHelper.getWindow().location.host !== this.baseOptions.domain) {
@@ -115,6 +118,7 @@ HostedPages.prototype.login = function(options, cb) {
  * @param {String} options.password user password
  * @param {String} options.connection name of the connection where the user will be created
  * @param {credentialsCallback} cb
+ * @ignore
  */
 HostedPages.prototype.signupAndLogin = function(options, cb) {
   var _this = this;

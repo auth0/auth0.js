@@ -168,7 +168,10 @@ function WebAuth(options) {
 
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this, this.baseOptions);
+
+  /** @member {Popup} */
   this.popup = new Popup(this, this.baseOptions);
+
   this.crossOriginAuthentication = new CrossOriginAuthentication(
     this,
     this.baseOptions

@@ -27,6 +27,7 @@ function Redirect(auth0, options) {
  * @param {String} options.password Password
  * @param {String} [options.connection] Connection used to authenticate the user, it can be a realm name or a database connection name
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
+ * @ignore
  */
 Redirect.prototype.loginWithCredentials = function(options, cb) {
   options.realm = options.realm || options.connection;
@@ -43,6 +44,7 @@ Redirect.prototype.loginWithCredentials = function(options, cb) {
  * @param {String} options.password user password
  * @param {String} options.connection name of the connection where the user will be created
  * @param {crossOriginLoginCallback} cb
+ * @ignore
  */
 Redirect.prototype.signupAndLogin = function(options, cb) {
   var _this = this;

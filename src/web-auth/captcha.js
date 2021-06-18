@@ -155,6 +155,7 @@ function handleRecaptchaProvider(element, options, challenge) {
  * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning an string
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha*
  * @param {Function} [callback] an optional callback function
+ * @ignore
  */
 function render(auth0Client, element, options, callback) {
   options = object.merge(defaults).with(options || {});
