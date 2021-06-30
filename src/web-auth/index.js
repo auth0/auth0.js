@@ -1038,6 +1038,7 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
  * Renders the captcha challenge in the provided element.
  * This function can only be used in the context of a Classic Universal Login Page.
  *
+ * @method renderCaptcha
  * @param {HTMLElement} element The element where the captcha needs to be rendered
  * @param {Object} options The configuration options for the captcha
  * @param {Object} [options.templates] An object containaing templates for each captcha provider
