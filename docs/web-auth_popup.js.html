@@ -2,35 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>web-auth/popup.js - Documentation</title>
+    <title>JSDoc: Source: web-auth/popup.js</title>
 
-    <script src="scripts/prettify/prettify.js"></script>
-    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
 </head>
+
 <body>
 
-<input type="checkbox" id="nav-trigger" class="nav-trigger" />
-<label for="nav-trigger" class="navicon-button x">
-  <div class="navicon"></div>
-</label>
-
-<label for="nav-trigger" class="overlay"></label>
-
-<nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Authentication.html">Authentication</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Management.html">Management</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="WebAuth.html">WebAuth</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="WebAuth.html#renderCaptcha">renderCaptcha</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authorize">authorize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#buildAuthorizeUrl">buildAuthorizeUrl</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#buildLogoutUrl">buildLogoutUrl</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#callback">callback</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#changePassword">changePassword</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#checkSession">checkSession</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#crossOriginAuthenticationCallback">crossOriginAuthenticationCallback</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#crossOriginVerification">crossOriginVerification</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#delegation">delegation</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getChallenge">getChallenge</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getSSOData">getSSOData</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getUser">getUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#linkUser">linkUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#login">login</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#loginWithCredentials">loginWithCredentials</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#loginWithDefaultDirectory">loginWithDefaultDirectory</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#loginWithResourceOwner">loginWithResourceOwner</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#logout">logout</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#parseHash">parseHash</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#passwordlessLogin">passwordlessLogin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#passwordlessStart">passwordlessStart</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#passwordlessVerify">passwordlessVerify</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#patchUserAttributes">patchUserAttributes</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#patchUserMetadata">patchUserMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#preload">preload</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#render">render</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#renewAuth">renewAuth</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#signup">signup</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#signupAndAuthorize">signupAndAuthorize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#signupAndLogin">signupAndLogin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#updatePropertyOn">updatePropertyOn</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#userInfo">userInfo</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#validateAuthenticationResponse">validateAuthenticationResponse</a></span></li>
-</nav>
-
 <div id="main">
-    
-    <h1 class="page-title">web-auth/popup.js</h1>
-    
+
+    <h1 class="page-title">Source: web-auth/popup.js</h1>
 
     
 
@@ -52,6 +39,11 @@ import Warn from '../helper/warn';
 import TransactionManager from './transaction-manager';
 import CrossOriginAuthentication from './cross-origin-authentication';
 
+/**
+ * @class
+ * @classdesc This class cannot be instantiated directly. Instead, use WebAuth.popup
+ * @hideconstructor
+ */
 function Popup(webAuth, options) {
   this.baseOptions = options;
   this.baseOptions.popupOrigin = options.popupOrigin;
@@ -89,6 +81,7 @@ Popup.prototype.buildPopupHandler = function() {
  *
  * @method preload
  * @param {Object} options receives the window height and width and any other window feature to be sent to window.open
+ * @memberof Popup.prototype
  */
 Popup.prototype.preload = function(options) {
   options = options || {};
@@ -126,6 +119,7 @@ Popup.prototype.getPopupHandler = function(options, preload) {
  * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
  * @see   {@link parseHash}
+ * @memberof Popup.prototype
  */
 Popup.prototype.callback = function(options) {
   var _this = this;
@@ -189,6 +183,7 @@ Popup.prototype.callback = function(options) {
  * @param {Boolean} [options.owp] determines if Auth0 should render the relay page or not and the caller is responsible of handling the response.
  * @param {authorizeCallback} cb
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
+ * @memberof Popup.prototype
  */
 Popup.prototype.authorize = function(options, cb) {
   var popup;
@@ -283,6 +278,7 @@ Popup.prototype.authorize = function(options, cb) {
  * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`. The `query` value is only supported when `responseType` is `code`.
  * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
  * @param {credentialsCallback} cb
+ * @memberof Popup.prototype
  */
 Popup.prototype.loginWithCredentials = function(options, cb) {
   options.realm = options.realm || options.connection;
@@ -305,6 +301,7 @@ Popup.prototype.loginWithCredentials = function(options, cb) {
  * @param {String} options.connection the connection name
  * @param {String} options.verificationCode the TOTP code
  * @param {Function} cb
+ * @memberof Popup.prototype
  */
 Popup.prototype.passwordlessVerify = function(options, cb) {
   var _this = this;
@@ -340,6 +337,7 @@ Popup.prototype.passwordlessVerify = function(options, cb) {
  * @param {String} options.password user password
  * @param {String} options.connection name of the connection where the user will be created
  * @param {credentialsCallback} cb
+ * @memberof Popup.prototype
  */
 Popup.prototype.signupAndLogin = function(options, cb) {
   var _this = this;
@@ -362,13 +360,17 @@ export default Popup;
 
 </div>
 
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Authentication.html">Authentication</a></li><li><a href="Management.html">Management</a></li><li><a href="Popup.html">Popup</a></li><li><a href="WebAuth.html">WebAuth</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Wed May 26 2021 13:54:12 GMT+0100 (British Summer Time) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Jun 30 2021 11:29:38 GMT+0100 (British Summer Time)
 </footer>
 
-<script>prettyPrint();</script>
-<script src="scripts/linenumber.js"></script>
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
 </body>
 </html>

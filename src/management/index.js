@@ -51,6 +51,7 @@ function Management(options) {
  * @callback userCallback
  * @param {Error} [err] failure reason for the failed request to Management API
  * @param {Object} [result] user profile
+ * @memberof Management.prototype
  */
 
 /**
@@ -60,6 +61,7 @@ function Management(options) {
  * @param {String} userId identifier of the user to retrieve
  * @param {userCallback} cb
  * @see https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
+ * @memberof Management.prototype
  */
 Management.prototype.getUser = function(userId, cb) {
   var url;
@@ -84,6 +86,7 @@ Management.prototype.getUser = function(userId, cb) {
  * @param {Object} userMetadata
  * @param {userCallback} cb
  * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id}
+ * @memberof Management.prototype
  */
 Management.prototype.patchUserMetadata = function(userId, userMetadata, cb) {
   var url;
@@ -114,6 +117,7 @@ Management.prototype.patchUserMetadata = function(userId, userMetadata, cb) {
  * @param {Object} user
  * @param {userCallback} cb
  * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id}
+ * @memberof Management.prototype
  */
 Management.prototype.patchUserAttributes = function(userId, user, cb) {
   var url;
@@ -144,6 +148,7 @@ Management.prototype.patchUserAttributes = function(userId, user, cb) {
  * @param {String} secondaryUserToken
  * @param {userCallback} cb
  * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/post_identities}
+ * @memberof Management.prototype
  */
 Management.prototype.linkUser = function(userId, secondaryUserToken, cb) {
   var url;

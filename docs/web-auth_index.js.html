@@ -2,35 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>web-auth/index.js - Documentation</title>
+    <title>JSDoc: Source: web-auth/index.js</title>
 
-    <script src="scripts/prettify/prettify.js"></script>
-    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
 </head>
+
 <body>
 
-<input type="checkbox" id="nav-trigger" class="nav-trigger" />
-<label for="nav-trigger" class="navicon-button x">
-  <div class="navicon"></div>
-</label>
-
-<label for="nav-trigger" class="overlay"></label>
-
-<nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Authentication.html">Authentication</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Management.html">Management</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="WebAuth.html">WebAuth</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="WebAuth.html#renderCaptcha">renderCaptcha</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#authorize">authorize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#buildAuthorizeUrl">buildAuthorizeUrl</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#buildLogoutUrl">buildLogoutUrl</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#callback">callback</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#changePassword">changePassword</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#checkSession">checkSession</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#crossOriginAuthenticationCallback">crossOriginAuthenticationCallback</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#crossOriginVerification">crossOriginVerification</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#delegation">delegation</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getChallenge">getChallenge</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getSSOData">getSSOData</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getUser">getUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#linkUser">linkUser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#login">login</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#loginWithCredentials">loginWithCredentials</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#loginWithDefaultDirectory">loginWithDefaultDirectory</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#loginWithResourceOwner">loginWithResourceOwner</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#logout">logout</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#parseHash">parseHash</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#passwordlessLogin">passwordlessLogin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#passwordlessStart">passwordlessStart</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#passwordlessVerify">passwordlessVerify</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#patchUserAttributes">patchUserAttributes</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#patchUserMetadata">patchUserMetadata</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#preload">preload</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#render">render</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#renewAuth">renewAuth</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#signup">signup</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#signupAndAuthorize">signupAndAuthorize</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#signupAndLogin">signupAndLogin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#updatePropertyOn">updatePropertyOn</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#userInfo">userInfo</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#validateAuthenticationResponse">validateAuthenticationResponse</a></span></li>
-</nav>
-
 <div id="main">
-    
-    <h1 class="page-title">web-auth/index.js</h1>
-    
+
+    <h1 class="page-title">Source: web-auth/index.js</h1>
 
     
 
@@ -209,7 +196,10 @@ function WebAuth(options) {
 
   this.client = new Authentication(this.baseOptions);
   this.redirect = new Redirect(this, this.baseOptions);
+
+  /** @member {Popup} */
   this.popup = new Popup(this, this.baseOptions);
+
   this.crossOriginAuthentication = new CrossOriginAuthentication(
     this,
     this.baseOptions
@@ -236,6 +226,7 @@ function WebAuth(options) {
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
  * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `token`, `id_token`. For this specific method, we'll only use this value to check if the hash contains the tokens requested in the responseType.
  * @param {authorizeCallback} cb
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.parseHash = function(options, cb) {
   var parsedQs;
@@ -322,6 +313,7 @@ WebAuth.prototype.parseHash = function(options, cb) {
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
  * @param {Object} parsedHash an object that represents the parsed hash
  * @param {authorizeCallback} cb
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.validateAuthenticationResponse = function(
   options,
@@ -379,110 +371,109 @@ WebAuth.prototype.validateAuthenticationResponse = function(
     return callback(null, null);
   }
 
-  return this.validateToken(
-    parsedHash.id_token,
-    transactionNonce,
-    function(validationError, payload) {
-      if (!validationError) {
-        // Verify the organization
-        if (transactionOrganization) {
-          if (!payload.org_id) {
-            return callback(
-              error.invalidToken(
-                'Organization Id (org_id) claim must be a string present in the ID token'
-              )
-            );
-          }
+  return this.validateToken(parsedHash.id_token, transactionNonce, function(
+    validationError,
+    payload
+  ) {
+    if (!validationError) {
+      // Verify the organization
+      if (transactionOrganization) {
+        if (!payload.org_id) {
+          return callback(
+            error.invalidToken(
+              'Organization Id (org_id) claim must be a string present in the ID token'
+            )
+          );
+        }
 
-          if (payload.org_id !== transactionOrganization) {
-            return callback(
-              error.invalidToken(
-                'Organization Id (org_id) claim value mismatch in the ID token; expected "' +
+        if (payload.org_id !== transactionOrganization) {
+          return callback(
+            error.invalidToken(
+              'Organization Id (org_id) claim value mismatch in the ID token; expected "' +
                 transactionOrganization +
-                  '", found "' +
-                  payload.org_id +
-                  '"'
-              )
-            );
-          }
+                '", found "' +
+                payload.org_id +
+                '"'
+            )
+          );
         }
-
-        if (!parsedHash.access_token) {
-          return callback(null, payload);
-        }
-
-        // id_token's generated by non-oidc applications don't have at_hash
-        if (!payload.at_hash) {
-          return callback(null, payload);
-        }
-
-        // here we're absolutely sure that the id_token's alg is RS256
-        // and that the id_token is valid, so we can check the access_token
-        return new IdTokenVerifier().validateAccessToken(
-          parsedHash.access_token,
-          'RS256',
-          payload.at_hash,
-          function(err) {
-            if (err) {
-              return callback(error.invalidToken(err.message));
-            }
-            return callback(null, payload);
-          }
-        );
-      }
-
-      if (
-        validationError.error !== 'invalid_token' ||
-        (validationError.errorDescription &amp;&amp;
-          validationError.errorDescription.indexOf(
-            'Nonce (nonce) claim value mismatch in the ID token'
-          ) > -1)
-      ) {
-        return callback(validationError);
-      }
-
-      // if it's an invalid_token error, decode the token
-      var decodedToken = new IdTokenVerifier().decode(parsedHash.id_token);
-
-      // if the alg is not HS256, return the raw error
-      if (decodedToken.header.alg !== 'HS256') {
-        return callback(validationError);
-      }
-
-      if ((decodedToken.payload.nonce || null) !== transactionNonce) {
-        return callback({
-          error: 'invalid_token',
-          errorDescription:
-            'Nonce (nonce) claim value mismatch in the ID token; expected "' +
-            transactionNonce +
-            '", found "' +
-            decodedToken.payload.nonce +
-            '"'
-        });
       }
 
       if (!parsedHash.access_token) {
-        var noAccessTokenError = {
-          error: 'invalid_token',
-          description:
-            'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this. Read more: https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
-        };
-        return callback(noAccessTokenError);
+        return callback(null, payload);
       }
 
-      // if the alg is HS256, use the /userinfo endpoint to build the payload
-      return _this.client.userInfo(parsedHash.access_token, function(
-        errUserInfo,
-        profile
-      ) {
-        // if the /userinfo request fails, use the validationError instead
-        if (errUserInfo) {
-          return callback(errUserInfo);
+      // id_token's generated by non-oidc applications don't have at_hash
+      if (!payload.at_hash) {
+        return callback(null, payload);
+      }
+
+      // here we're absolutely sure that the id_token's alg is RS256
+      // and that the id_token is valid, so we can check the access_token
+      return new IdTokenVerifier().validateAccessToken(
+        parsedHash.access_token,
+        'RS256',
+        payload.at_hash,
+        function(err) {
+          if (err) {
+            return callback(error.invalidToken(err.message));
+          }
+          return callback(null, payload);
         }
-        return callback(null, profile);
+      );
+    }
+
+    if (
+      validationError.error !== 'invalid_token' ||
+      (validationError.errorDescription &amp;&amp;
+        validationError.errorDescription.indexOf(
+          'Nonce (nonce) claim value mismatch in the ID token'
+        ) > -1)
+    ) {
+      return callback(validationError);
+    }
+
+    // if it's an invalid_token error, decode the token
+    var decodedToken = new IdTokenVerifier().decode(parsedHash.id_token);
+
+    // if the alg is not HS256, return the raw error
+    if (decodedToken.header.alg !== 'HS256') {
+      return callback(validationError);
+    }
+
+    if ((decodedToken.payload.nonce || null) !== transactionNonce) {
+      return callback({
+        error: 'invalid_token',
+        errorDescription:
+          'Nonce (nonce) claim value mismatch in the ID token; expected "' +
+          transactionNonce +
+          '", found "' +
+          decodedToken.payload.nonce +
+          '"'
       });
     }
-  );
+
+    if (!parsedHash.access_token) {
+      var noAccessTokenError = {
+        error: 'invalid_token',
+        description:
+          'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this. Read more: https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
+      };
+      return callback(noAccessTokenError);
+    }
+
+    // if the alg is HS256, use the /userinfo endpoint to build the payload
+    return _this.client.userInfo(parsedHash.access_token, function(
+      errUserInfo,
+      profile
+    ) {
+      // if the /userinfo request fails, use the validationError instead
+      if (errUserInfo) {
+        return callback(errUserInfo);
+      }
+      return callback(null, profile);
+    });
+  });
 };
 
 function buildParseHashResponse(qsParams, appState, token) {
@@ -554,6 +545,7 @@ WebAuth.prototype.validateToken = function(token, nonce, cb) {
  * @param {Boolean} [options.usePostMessage] use postMessage to comunicate between the silent callback and the SPA. When false the SDK will attempt to parse the url hash should ignore the url hash and no extra behaviour is needed
  * @param {authorizeCallback} cb
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.renewAuth = function(options, cb) {
   var handler;
@@ -628,6 +620,7 @@ WebAuth.prototype.renewAuth = function(options, cb) {
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
  * @param {checkSessionCallback} cb
  * @see {@link https://auth0.com/docs/libraries/auth0js/v9#using-checksession-to-acquire-new-tokens}
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.checkSession = function(options, cb) {
   var params = objectHelper
@@ -688,6 +681,7 @@ WebAuth.prototype.checkSession = function(options, cb) {
  * @param {String} options.connection name of the connection where the user was created
  * @param {changePasswordCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#change-password}
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.changePassword = function(options, cb) {
   return this.client.dbConnection.changePassword(options, cb);
@@ -705,6 +699,7 @@ WebAuth.prototype.changePassword = function(options, cb) {
  * @param {Object} [options.authParams] additional Auth parameters when using `link`
  * @param {Function} cb
  * @see   {@link https://auth0.com/docs/api/authentication#passwordless}
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.passwordlessStart = function(options, cb) {
   var authParams = objectHelper
@@ -740,6 +735,7 @@ WebAuth.prototype.passwordlessStart = function(options, cb) {
  * @param {String} [options.picture] A URI pointing to the user's picture.
  * @param {signUpCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.signup = function(options, cb) {
   return this.client.dbConnection.signup(options, cb);
@@ -763,6 +759,7 @@ WebAuth.prototype.signup = function(options, cb) {
  * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
  * @param {Object} [options.appState] any values that you want back on the authentication response
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.authorize = function(options) {
   var params = objectHelper
@@ -811,6 +808,7 @@ WebAuth.prototype.authorize = function(options) {
  * @param {tokenCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
  * @see   {@link https://auth0.com/docs/api-auth/grant/password}
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.signupAndAuthorize = function(options, cb) {
   var _this = this;
@@ -857,6 +855,7 @@ WebAuth.prototype.signupAndAuthorize = function(options, cb) {
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
  * @param {onRedirectingCallback} [options.onRedirecting] Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.login = function(options, cb) {
   var params = objectHelper
@@ -907,6 +906,7 @@ WebAuth.prototype.login = function(options, cb) {
  * @param {String} options.connection Passwordless connection to use. It can either be 'sms' or 'email'.
  * @param {onRedirectingCallback} options.onRedirecting Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.passwordlessLogin = function(options, cb) {
   var params = objectHelper
@@ -956,6 +956,7 @@ WebAuth.prototype.passwordlessLogin = function(options, cb) {
  *
  * @method crossOriginAuthenticationCallback
  * @deprecated Use {@link crossOriginVerification} instead.
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.crossOriginAuthenticationCallback = function() {
   this.crossOriginVerification();
@@ -965,6 +966,7 @@ WebAuth.prototype.crossOriginAuthenticationCallback = function() {
  * Runs the callback code for the cross origin authentication call. This method is meant to be called by the cross origin authentication callback url.
  *
  * @method crossOriginVerification
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.crossOriginVerification = function() {
   this.crossOriginAuthentication.callback();
@@ -984,6 +986,7 @@ WebAuth.prototype.crossOriginVerification = function() {
  * @param {String} [options.returnTo] URL to be redirected after the logout
  * @param {Boolean} [options.federated] tells Auth0 if it should logout the user also from the IdP.
  * @see   {@link https://auth0.com/docs/api/authentication#logout}
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.logout = function(options) {
   windowHelper.redirect(this.client.buildLogoutUrl(options));
@@ -1006,6 +1009,7 @@ WebAuth.prototype.logout = function(options) {
  * @param {String} options.verificationCode the TOTP code
  * @param {onRedirectingCallback} options.onRedirecting Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {Function} cb
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.passwordlessVerify = function(options, cb) {
   var _this = this;
@@ -1062,13 +1066,16 @@ WebAuth.prototype.passwordlessVerify = function(options, cb) {
  * Renders the captcha challenge in the provided element.
  * This function can only be used in the context of a Classic Universal Login Page.
  *
+ * @method renderCaptcha
  * @param {HTMLElement} element The element where the captcha needs to be rendered
  * @param {Object} options The configuration options for the captcha
  * @param {Object} [options.templates] An object containaing templates for each captcha provider
  * @param {Function} [options.templates.auth0] template function receiving the challenge and returning an string
  * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning an string
+ * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning an string
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
  * @param {Function} [callback] An optional completion callback
+ * @memberof WebAuth.prototype
  */
 WebAuth.prototype.renderCaptcha = function(element, options, callback) {
   return captcha.render(this.client, element, options, callback);
@@ -1084,13 +1091,17 @@ export default WebAuth;
 
 </div>
 
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Authentication.html">Authentication</a></li><li><a href="Management.html">Management</a></li><li><a href="Popup.html">Popup</a></li><li><a href="WebAuth.html">WebAuth</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Wed May 26 2021 13:54:12 GMT+0100 (British Summer Time) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Wed Jun 30 2021 11:29:38 GMT+0100 (British Summer Time)
 </footer>
 
-<script>prettyPrint();</script>
-<script src="scripts/linenumber.js"></script>
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
 </body>
 </html>

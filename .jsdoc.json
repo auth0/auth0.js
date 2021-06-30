@@ -1,26 +1,23 @@
 {
-    "tags": {
-        "allowUnknownTags": true,
-        "dictionaries": ["jsdoc"]
-    },
-    "source": {
-        "include": ["src", "package.json", "README.md"],
-        "includePattern": ".js$",
-        "excludePattern": "(node_modules/|docs)"
-    },
-    "plugins": [
-        "./node_modules/jsdoc/plugins/markdown"
-    ],
-    "templates": {
-        "cleverLinks": false,
-        "monospaceLinks": true,
-        "useLongnameInNav": false
-    },
-    "opts": {
-        "destination": "./out/",
-        "encoding": "utf8",
-        "private": false,
-        "recurse": true,
-        "template": "./node_modules/minami"
-    }
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc"]
+  },
+  "source": {
+    "include": ["src", "package.json", "README.md"],
+    "includePattern": ".js$",
+    "excludePattern": "(node_modules/|docs)"
+  },
+  "plugins": ["./node_modules/jsdoc/plugins/markdown"],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": true,
+    "useLongnameInNav": false
+  },
+  "opts": {
+    "destination": "./out/",
+    "encoding": "utf8",
+    "private": false,
+    "recurse": true
+  }
 }

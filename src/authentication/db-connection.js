@@ -15,6 +15,7 @@ function DBConnection(request, options) {
  * @param {Object} [result] result of the signup request
  * @param {Object} result.email user's email
  * @param {Object} result.emailVerified if the user's email was verified
+ * @ignore
  */
 
 /**
@@ -34,6 +35,7 @@ function DBConnection(request, options) {
  * @param {Object} [options.user_metadata] additional signup attributes used for creating the user. Will be stored in `user_metadata`
  * @param {signUpCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
+ * @ignore
  */
 DBConnection.prototype.signup = function(options, cb) {
   var url;
@@ -53,7 +55,9 @@ DBConnection.prototype.signup = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'signup');
 
-  body = objectHelper.merge(this.baseOptions, ['clientID', 'state']).with(options);
+  body = objectHelper
+    .merge(this.baseOptions, ['clientID', 'state'])
+    .with(options);
 
   metadata = body.user_metadata || body.userMetadata;
 
@@ -78,6 +82,7 @@ DBConnection.prototype.signup = function(options, cb) {
 /**
  * @callback changePasswordCallback
  * @param {Error} [err] error returned by Auth0 with the reason why the request failed
+ * @ignore
  */
 
 /**
@@ -89,6 +94,7 @@ DBConnection.prototype.signup = function(options, cb) {
  * @param {String} options.connection name of the connection where the user was created
  * @param {changePasswordCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#change-password}
+ * @ignore
  */
 DBConnection.prototype.changePassword = function(options, cb) {
   var url;
