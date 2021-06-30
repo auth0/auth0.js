@@ -11,6 +11,11 @@ import Warn from '../helper/warn';
 import TransactionManager from './transaction-manager';
 import CrossOriginAuthentication from './cross-origin-authentication';
 
+/**
+ * @class
+ * @classdesc This class cannot be instantiated directly. Instead, use WebAuth.popup
+ * @hideconstructor
+ */
 function Popup(webAuth, options) {
   this.baseOptions = options;
   this.baseOptions.popupOrigin = options.popupOrigin;
@@ -48,6 +53,7 @@ Popup.prototype.buildPopupHandler = function() {
  *
  * @method preload
  * @param {Object} options receives the window height and width and any other window feature to be sent to window.open
+ * @memberof Popup.prototype
  */
 Popup.prototype.preload = function(options) {
   options = options || {};
@@ -85,6 +91,7 @@ Popup.prototype.getPopupHandler = function(options, preload) {
  * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
  * @see   {@link parseHash}
+ * @memberof Popup.prototype
  */
 Popup.prototype.callback = function(options) {
   var _this = this;
@@ -148,6 +155,7 @@ Popup.prototype.callback = function(options) {
  * @param {Boolean} [options.owp] determines if Auth0 should render the relay page or not and the caller is responsible of handling the response.
  * @param {authorizeCallback} cb
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
+ * @memberof Popup.prototype
  */
 Popup.prototype.authorize = function(options, cb) {
   var popup;
@@ -242,6 +250,7 @@ Popup.prototype.authorize = function(options, cb) {
  * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`. The `query` value is only supported when `responseType` is `code`.
  * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
  * @param {credentialsCallback} cb
+ * @memberof Popup.prototype
  */
 Popup.prototype.loginWithCredentials = function(options, cb) {
   options.realm = options.realm || options.connection;
@@ -264,6 +273,7 @@ Popup.prototype.loginWithCredentials = function(options, cb) {
  * @param {String} options.connection the connection name
  * @param {String} options.verificationCode the TOTP code
  * @param {Function} cb
+ * @memberof Popup.prototype
  */
 Popup.prototype.passwordlessVerify = function(options, cb) {
   var _this = this;
@@ -299,6 +309,7 @@ Popup.prototype.passwordlessVerify = function(options, cb) {
  * @param {String} options.password user password
  * @param {String} options.connection name of the connection where the user will be created
  * @param {credentialsCallback} cb
+ * @memberof Popup.prototype
  */
 Popup.prototype.signupAndLogin = function(options, cb) {
   var _this = this;

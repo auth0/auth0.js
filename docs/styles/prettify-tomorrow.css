@@ -9,35 +9,35 @@
 @media screen {
   /* string content */
   .str {
-    color: hsl(104, 100%, 24%); }
+    color: #718c00; }
 
   /* a keyword */
   .kwd {
-    color: hsl(240, 100%, 50%); }
+    color: #8959a8; }
 
   /* a comment */
   .com {
-    color: hsl(0, 0%, 60%); }
+    color: #8e908c; }
 
   /* a type name */
   .typ {
-    color: hsl(240, 100%, 32%); }
+    color: #4271ae; }
 
   /* a literal value */
   .lit {
-    color: hsl(240, 100%, 40%); }
+    color: #f5871f; }
 
   /* punctuation */
   .pun {
-    color: #000000; }
+    color: #4d4d4c; }
 
   /* lisp open bracket */
   .opn {
-    color: #000000; }
+    color: #4d4d4c; }
 
   /* lisp close bracket */
   .clo {
-    color: #000000; }
+    color: #4d4d4c; }
 
   /* a markup tag name */
   .tag {

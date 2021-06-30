@@ -176,6 +176,7 @@ function trimUserDetails(options) {
  * @param {object} obj The object to set the property value on
  * @param {string|array} path The path to the property that should have its value updated. e.g. 'prop1.prop2.prop3' or ['prop1', 'prop2', 'prop3']
  * @param {any} value The value to set
+ * @ignore
  */
 function updatePropertyOn(obj, path, value) {
   if (typeof path === 'string') {

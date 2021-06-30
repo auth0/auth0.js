@@ -78,7 +78,7 @@ function Authentication(auth0, options) {
         optional: true,
         type: 'object',
         message: '_telemetryInfo option is not valid'
-      },
+      }
     }
   );
   /* eslint-enable */
@@ -88,11 +88,13 @@ function Authentication(auth0, options) {
     this.baseOptions._sendTelemetry === false
       ? this.baseOptions._sendTelemetry
       : true;
-  
-  this.baseOptions.rootUrl = (this.baseOptions.domain && this.baseOptions.domain.toLowerCase().indexOf('http') === 0)
+
+  this.baseOptions.rootUrl =
+    this.baseOptions.domain &&
+    this.baseOptions.domain.toLowerCase().indexOf('http') === 0
       ? this.baseOptions.domain
       : 'https://' + this.baseOptions.domain;
-      
+
   this.request = new RequestBuilder(this.baseOptions);
 
   this.passwordless = new PasswordlessAuthentication(
@@ -122,6 +124,7 @@ function Authentication(auth0, options) {
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  * @see {@link https://auth0.com/docs/api/authentication#social}
+ * @memberof Authentication.prototype
  */
 Authentication.prototype.buildAuthorizeUrl = function(options) {
   var params;
@@ -220,6 +223,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
  * @param {String} [options.returnTo] URL to be redirected after the logout
  * @param {Boolean} [options.federated] tells Auth0 if it should logout the user also from the IdP.
  * @see {@link https://auth0.com/docs/api/authentication#logout}
+ * @memberof Authentication.prototype
  */
 Authentication.prototype.buildLogoutUrl = function(options) {
   var params;
@@ -264,6 +268,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
  * @param {String} [result.idToken] token that identifies the user
  * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all Auth0 Applications can request them or the resource server might not allow them.
  * @param {Object} [result.appState] values that you receive back on the authentication response
+ * @memberof Authentication.prototype
  */
 
 /**
@@ -274,6 +279,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
  * @param {Number} result.expiresIn number of seconds until the access token expires
  * @param {String} [result.idToken] token that identifies the user
  * @param {String} [result.refreshToken] token that can be used to get new access tokens from Auth0. Note that not all Auth0 Applications can request them or the resource server might not allow them.
+ * @memberof Authentication.prototype
  */
 
 /**
@@ -287,6 +293,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {tokenCallback} cb function called with the result of the request
  * @see Requires [`password` grant]{@link https://auth0.com/docs/api-auth/grant/password}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
+ * @memberof Authentication.prototype
  */
 Authentication.prototype.loginWithDefaultDirectory = function(options, cb) {
   assert.check(
@@ -325,6 +332,7 @@ Authentication.prototype.loginWithDefaultDirectory = function(options, cb) {
  * @param {Object} options.realm the HRD domain or the connection name where the user belongs to. e.g. `Username-Password-Authentication`
  * @param {tokenCallback} cb function called with the result of the request
  * @see Requires [`http://auth0.com/oauth/grant-type/password-realm` grant]{@link https://auth0.com/docs/api-auth/grant/password#realm-support}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
+ * @memberof Authentication.prototype
  */
 Authentication.prototype.login = function(options, cb) {
   assert.check(
@@ -417,6 +425,7 @@ Authentication.prototype.oauthToken = function(options, cb) {
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.device] name of the device/browser where the Auth was requested
  * @param {tokenCallback} cb function called with the result of the request
+ * @memberof Authentication.prototype
  */
 Authentication.prototype.loginWithResourceOwner = function(options, cb) {
   var url;
@@ -460,6 +469,7 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
  * @method getSSOData
  * @param {Boolean} withActiveDirectories this parameter is not used anymore. It's here to be backward compatible
  * @param {Function} cb
+ * @memberof Authentication.prototype
  */
 Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
   /* istanbul ignore if  */
@@ -521,6 +531,7 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
  * @callback userInfoCallback
  * @param {Error} [err] error returned by Auth0
  * @param {Object} [userInfo] user information
+ * @memberof Authentication.prototype
  */
 
 /**
@@ -530,6 +541,7 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
  * @param {String} accessToken token issued to a user after Auth
  * @param {userInfoCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#get-user-info}
+ * @memberof Authentication.prototype
  */
 Authentication.prototype.userInfo = function(accessToken, cb) {
   var url;
@@ -554,6 +566,7 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
  *
  * @method getChallenge
  * @param {callback} cb
+ * @memberof Authentication.prototype
  */
 Authentication.prototype.getChallenge = function(cb) {
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
@@ -574,6 +587,7 @@ Authentication.prototype.getChallenge = function(cb) {
  * @callback delegationCallback
  * @param {Error} [err] error returned by Auth0 with the reason why the delegation failed
  * @param {Object} [result] result of the delegation request. The payload depends on what ai type was used
+ * @memberof Authentication.prototype
  */
 
 /**
@@ -591,6 +605,7 @@ Authentication.prototype.getChallenge = function(cb) {
  * @param {delegationCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#delegation}
  * @see Requires [http://auth0.com/oauth/grant-type/password-realm]{@link https://auth0.com/docs/api-auth/grant/password#realm-support}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
+ * @memberof Authentication.prototype
  */
 Authentication.prototype.delegation = function(options, cb) {
   var url;
@@ -623,6 +638,7 @@ Authentication.prototype.delegation = function(options, cb) {
  * @method getUserCountry
  * @private
  * @param {Function} cb
+ * @memberof Authentication.prototype
  */
 Authentication.prototype.getUserCountry = function(cb) {
   var url;
