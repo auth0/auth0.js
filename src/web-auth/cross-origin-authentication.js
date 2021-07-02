@@ -59,7 +59,7 @@ function createKey(origin, coId) {
  */
 CrossOriginAuthentication.prototype.login = function(options, cb) {
   var _this = this;
-  var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate');
+  var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate?ngsw-bypass=true');
 
   options.username = options.username || options.email;
   delete options.email;
