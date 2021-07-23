@@ -2978,16 +2978,7 @@ describe('auth0.WebAuth', function() {
     });
     it('eventValidator gracefully handles null data object', function(done) {
       sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
-        var getEvent = function() {
-          return {
-            event: {}
-          };
-        };
-
-        expect(
-          this.eventValidator.isValid(getEvent('authorization_response', 'any'))
-        ).to.be(false);
-
+        expect(this.eventValidator.isValid({ event: {} })).to.be(false);
         done();
       });
       this.auth0.checkSession({ state: '123' }, function() {});
