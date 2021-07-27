@@ -2976,6 +2976,13 @@ describe('auth0.WebAuth', function() {
       });
       this.auth0.checkSession({ state: '123' }, function(err, data) {});
     });
+    it('eventValidator gracefully handles null data object', function(done) {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
+        expect(this.eventValidator.isValid({ event: {} })).to.be(false);
+        done();
+      });
+      this.auth0.checkSession({ state: '123' }, function() {});
+    });
     it('timeoutCallback calls callback with error response', function(done) {
       sinon.stub(IframeHandler.prototype, 'init').callsFake(function() {
         this.timeoutCallback();
