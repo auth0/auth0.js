@@ -137,7 +137,6 @@ function WebAuth(options) {
     );
   }
   /* eslint-enable */
-
   this.baseOptions = options;
   this.baseOptions.plugins = new PluginHandler(
     this,

@@ -598,7 +598,9 @@
         webAuth.login(
           {
             username: $('.login-username').val(),
-            password: $('.login-password').val()
+            password: $('.login-password').val(),
+            redirectUri: 'https://yahoo.com',
+            realm: 'Username-Password-Authentication'
           },
           htmlConsole.dumpCallback.bind(htmlConsole)
         );
