@@ -1,57 +1,64 @@
 /* eslint-disable no-console, no-unneeded-ternary */
 
-var expect = require('expect.js');
-var webdriver = require('selenium-webdriver');
-var selenium = require('./selenium');
+require('@babel/polyfill');
+const expect = require('expect.js');
+const webdriver = require('selenium-webdriver');
+const selenium = require('./selenium');
 
-var By = webdriver.By;
-var until = webdriver.until;
+const By = webdriver.By;
+const until = webdriver.until;
 
-describe('redirect authorize', function() {
-  this.timeout(9999999);
+selenium.runTests((newSession, browser, done) => {
+  describe('redirect authorize', function() {
+    this.timeout(9999999);
 
-  selenium.runTests((newSession, browser) => {
-    context(browser, function() {
-      it('[token] should result in a successful transaction', function() {
-        var session = newSession(this.test.title);
-        var driver = session.start();
+    after(() => {
+      console.log('All done');
+      done();
+    });
 
-        driver.findElement(By.id('login-response-type')).sendKeys('token');
-        driver.findElement(By.className('login-redirect-authorize')).click();
-        driver.wait(until.elementLocated(By.id('hlploaded')), 30000);
-        driver.findElement(By.id('email')).sendKeys('johnfoo@gmail.com');
-        driver.findElement(By.id('password')).sendKeys('1234');
-        driver.findElement(By.id('upLogin')).click();
-        driver.wait(until.elementLocated(By.id('parsed')), 10000);
+    context(browser, () => {
+      it.only('[token] should result in a successful transaction', async () => {
+        const session = newSession();
+        const driver = await session.start();
 
-        driver
-          .findElement(By.id('err'))
-          .getText()
-          .then(function(value) {
-            console.log('ERR:', value ? value : '-empty-');
-            expect(value).to.equal('');
-          });
-        driver
-          .findElement(By.id('result'))
-          .getText()
-          .then(function(value) {
-            console.log('RESULT:', value);
-            expect(value).to.not.equal('');
+        await driver
+          .findElement(By.id('login-response-type'))
+          .sendKeys('token');
 
-            var response = JSON.parse(value);
+        await driver
+          .findElement(By.className('login-redirect-authorize'))
+          .click();
 
-            expect(response.accessToken).to.be.ok();
-            expect(response.idToken).to.not.be.ok();
-            expect(response.tokenType).to.be.ok();
-            expect(response.expiresIn).to.be.ok();
-          });
+        await driver.wait(until.elementLocated(By.id('hlploaded')), 30000);
+        await driver.findElement(By.id('email')).sendKeys('johnfoo@gmail.com');
+        await driver.findElement(By.id('password')).sendKeys('1234');
+        await driver.findElement(By.id('upLogin')).click();
+        await driver.wait(until.elementLocated(By.id('parsed')), 10000);
 
-        return session.finish();
+        const value = await driver.findElement(By.id('err')).getText();
+
+        console.log('ERR:', value ? value : '-empty-');
+        expect(value).to.equal('');
+
+        const result = await driver.findElement(By.id('result')).getText();
+
+        console.log('RESULT:', result);
+        expect(result).to.not.equal('');
+
+        const response = JSON.parse(result);
+
+        expect(response.accessToken).to.be.ok();
+        expect(response.idToken).to.not.be.ok();
+        expect(response.tokenType).to.be.ok();
+        expect(response.expiresIn).to.be.ok();
+
+        session.finish();
       });
 
       it('[code] should result in a successful transaction', function() {
-        var session = newSession(this.test.title);
-        var driver = session.start();
+        const session = newSession(this.test.title);
+        const driver = session.start();
 
         driver.findElement(By.id('login-response-type')).sendKeys('code');
         driver.findElement(By.className('login-redirect-authorize')).click();
@@ -70,8 +77,8 @@ describe('redirect authorize', function() {
       });
 
       it('[token openid] should result in a successful transaction', function() {
-        var session = newSession(this.test.title);
-        var driver = session.start();
+        const session = newSession(this.test.title);
+        const driver = session.start();
 
         driver.findElement(By.id('login-scope')).sendKeys('openid');
         driver.findElement(By.id('login-response-type')).sendKeys('token');
@@ -97,7 +104,7 @@ describe('redirect authorize', function() {
             console.log('RESULT:', value);
             expect(value).to.not.equal('');
 
-            var response = JSON.parse(value);
+            const response = JSON.parse(value);
 
             expect(response.accessToken).to.be.ok();
             expect(response.idToken).to.not.be.ok();
@@ -109,8 +116,8 @@ describe('redirect authorize', function() {
       });
 
       it('[id_token] should result in a successful transaction', function() {
-        var session = newSession(this.test.title);
-        var driver = session.start();
+        const session = newSession(this.test.title);
+        const driver = session.start();
 
         driver.findElement(By.id('login-response-type')).sendKeys('id_token');
         driver.findElement(By.className('login-redirect-authorize')).click();
@@ -135,7 +142,7 @@ describe('redirect authorize', function() {
             console.log('RESULT:', value);
             expect(value).to.not.equal('');
 
-            var response = JSON.parse(value);
+            const response = JSON.parse(value);
 
             expect(response.accessToken).to.not.be.ok();
             expect(response.idToken).to.be.ok();
@@ -147,8 +154,8 @@ describe('redirect authorize', function() {
       });
 
       it('[token id_token] should result in a successful transaction', function() {
-        var session = newSession(this.test.title);
-        var driver = session.start();
+        const session = newSession(this.test.title);
+        const driver = session.start();
 
         driver
           .findElement(By.id('login-response-type'))
@@ -175,7 +182,7 @@ describe('redirect authorize', function() {
             console.log('RESULT:', value);
             expect(value).to.not.equal('');
 
-            var response = JSON.parse(value);
+            const response = JSON.parse(value);
 
             expect(response.accessToken).to.be.ok();
             expect(response.idToken).to.be.ok();
@@ -187,4 +194,6 @@ describe('redirect authorize', function() {
       });
     });
   });
+
+  run();
 });

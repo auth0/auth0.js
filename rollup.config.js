@@ -3,15 +3,12 @@ const commonjs = require('rollup-plugin-commonjs');
 const replace = require('rollup-plugin-replace');
 const { terser } = require('rollup-plugin-terser');
 const serve = require('rollup-plugin-serve');
-const livereload = require('rollup-plugin-livereload');
+// const livereload = require('rollup-plugin-livereload');
 const license = require('rollup-plugin-license');
 const json = require('rollup-plugin-json');
 const { argv } = require('yargs');
-
 const pkg = require('./package.json');
-
 const isProduction = argv.prod === true;
-
 const OUTPUT_PATH = 'dist';
 
 const getPlugins = prod => [
@@ -86,10 +83,9 @@ const devFiles = [
       !isProduction &&
         serve({
           contentBase: ['dist', 'example'],
-          open: true,
           port: 3000
-        }),
-      !isProduction && livereload()
+        })
+      // !isProduction && livereload()
     ]
   },
   {
