@@ -1,3 +1,5 @@
+/* eslint-disable no-console, no-unneeded-ternary */
+
 var expect = require('expect.js');
 var webdriver = require('selenium-webdriver');
 var selenium = require('./selenium');

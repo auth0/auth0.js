@@ -1,5 +1,6 @@
-var webdriver = require('selenium-webdriver');
+/* eslint-disable import/no-extraneous-dependencies */
 
+var webdriver = require('selenium-webdriver');
 var username = process.env.SAUCELABS_USER;
 var accessKey = process.env.SAUCELABS_KEY;
 

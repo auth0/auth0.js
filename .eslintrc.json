@@ -2,7 +2,8 @@
   "extends": ["auth0-base/prettier"],
   "plugins": ["compat"],
   "env": {
-    "browser": true
+    "browser": true,
+    "mocha": true
   },
   "rules": {
     "func-names": "off",
