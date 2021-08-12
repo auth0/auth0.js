@@ -74,8 +74,7 @@ export async function runTests(tests) {
           await driver.get('http://127.0.0.1:3000/test.html');
           await driver.wait(until.elementLocated(By.id('loaded')), 2000);
           return driver;
-        },
-        finish: () => {}
+        }
       }),
       browser,
       done
