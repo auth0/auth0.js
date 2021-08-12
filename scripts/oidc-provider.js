@@ -8,16 +8,19 @@ const config = {
       application_type: 'web',
       redirect_uris: ['http://127.0.0.1:3000/test.html'],
       token_endpoint_auth_method: 'none',
-      grant_types: ['implicit'],
-      response_types: ['id_token token', 'id_token']
+      grant_types: ['implicit', 'authorization_code'],
+      response_types: ['id_token token', 'id_token', 'code']
     }
   ],
-  responseTypes: ['id_token token', 'id_token'],
+  responseTypes: ['id_token token', 'id_token', 'code'],
   routes: {
     authorization: '/authorize', // lgtm [js/hardcoded-credentials]
     token: '/oauth/token',
     end_session: '/v2/logout',
     jwks: '/.well-known/jwks.json'
+  },
+  pkce: {
+    required: () => false
   },
   scopes: ['openid'],
   clientBasedCORS() {
