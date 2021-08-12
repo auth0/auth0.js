@@ -1,13 +1,14 @@
-const resolve = require('rollup-plugin-node-resolve');
-const commonjs = require('rollup-plugin-commonjs');
-const replace = require('rollup-plugin-replace');
-const { terser } = require('rollup-plugin-terser');
-const dev = require('rollup-plugin-dev');
-const license = require('rollup-plugin-license');
-const json = require('rollup-plugin-json');
-const { argv } = require('yargs');
-const pkg = require('./package.json');
-const createApp = require('./scripts/oidc-provider');
+import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
+import replace from 'rollup-plugin-replace';
+import { terser } from 'rollup-plugin-terser';
+import dev from 'rollup-plugin-dev';
+import license from 'rollup-plugin-license';
+import json from 'rollup-plugin-json';
+import { argv } from 'yargs';
+import pkg from './package.json';
+import createApp from './scripts/oidc-provider';
+
 const isProduction = argv.prod === true;
 const OUTPUT_PATH = 'dist';
 
