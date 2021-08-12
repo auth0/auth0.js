@@ -478,6 +478,7 @@ function buildParseHashResponse(qsParams, appState, token) {
  * @param {validateTokenCallback} cb
  */
 WebAuth.prototype.validateToken = function(token, nonce, cb) {
+  console.log(this.baseOptions.token_issuer);
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     jwksURI: this.baseOptions.jwksURI,
