@@ -1,14 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { Provider } from 'oidc-provider';
 
-// policy.add(
-//   new Prompt(
-//     { name: 'noop', requestable: false },
-//     new Check('foo', 'bar', () => Check.NO_NEED_TO_PROMPT)
-//   ),
-//   0
-// );
-
 const config = {
   clients: [
     {
@@ -16,10 +8,11 @@ const config = {
       application_type: 'web',
       redirect_uris: ['http://127.0.0.1:3000/test.html'],
       token_endpoint_auth_method: 'none',
-      grant_types: ['implicit', 'authorization_code'],
-      response_types: ['id_token token']
+      grant_types: ['implicit'],
+      response_types: ['id_token token', 'id_token']
     }
   ],
+  responseTypes: ['id_token token', 'id_token'],
   routes: {
     authorization: '/authorize', // lgtm [js/hardcoded-credentials]
     token: '/oauth/token',
