@@ -2,17 +2,14 @@
 
 require('@babel/polyfill');
 import expect from 'expect.js';
-import { runTests } from './selenium';
+import { setupDriver } from './selenium';
 import { By, authorize, until, logout } from './helper';
 
-runTests((newSession, browser, done) => {
-  describe('redirect authorize', function() {
-    after(() => {
-      console.log('All done');
-      done();
-    });
+setupDriver((newSession, browser, done) => {
+  context(browser, () => {
+    describe('redirect authorize', function() {
+      after(done);
 
-    context(browser, () => {
       it('[code] should result in a successful transaction', async () => {
         const session = newSession();
         const driver = await session.start();

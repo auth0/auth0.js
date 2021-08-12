@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable import/no-extraneous-dependencies, no-console */
 
@@ -66,9 +67,9 @@ const capabilities = [
   // }
 ];
 
-export async function runTests(tests) {
-  const fn = (driver, browser, done) =>
-    tests(
+export async function setupDriver(callback) {
+  const runTests = (driver, browser, done) =>
+    callback(
       () => ({
         start: async () => {
           await driver.get('http://127.0.0.1:3000/test.html');
@@ -83,17 +84,15 @@ export async function runTests(tests) {
   const builder = new webdriver.Builder();
 
   if (process.env.BROWSERSTACK === 'true') {
-    console.log('Using BrowserStack');
-
-    bsLocal.start({ verbose: true }, () => {
+    bsLocal.start({}, async () => {
       console.log('BrowserStack local started');
       console.log('BrowserStackLocal running:', bsLocal.isRunning());
 
       // TODO: This needs to be async
-      capabilities.forEach(capability => {
+      for await (const capability of capabilities) {
         // Note: this is just for displaying in the console as the tests are running.
         const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
-        const driver = builder.build();
+        const driver = await builder.build();
 
         builder
           .withCapabilities({
@@ -102,11 +101,8 @@ export async function runTests(tests) {
           })
           .usingServer(server);
 
-        fn(driver, browser);
-
-        // TODO: This should be async
-        driver.quit();
-      });
+        runTests(driver, browser, () => driver.quit());
+      }
 
       bsLocal.stop(() => {
         console.log('Stopped BrowserStackLocal');
@@ -123,6 +119,6 @@ export async function runTests(tests) {
 
     const driver = await builder.build();
 
-    fn(driver, browserName, () => driver.quit());
+    runTests(driver, browserName, () => driver.quit());
   }
 }

@@ -30,7 +30,7 @@ dist
 coverage
 test-results.xml
 .nyc_output
-
+browserstack.err
 .idea/
 
 # jsdocs
