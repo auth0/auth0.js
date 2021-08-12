@@ -23,6 +23,8 @@
       value="redirect authorize"
     />
 
+    <input type="button" value="logout" class="logout-button" />
+
     <input type="button" class="reset-button" value="reset" />
 
     <div id="err"></div>
@@ -36,7 +38,8 @@
         leeway: 30,
         overrides: {
           __token_issuer: 'http://127.0.0.1:3000/'
-        }
+        },
+        prompt: 'login'
       });
 
       $('.login-redirect-usernamepassword').click(function(e) {
@@ -63,6 +66,11 @@
           scope: $('#login-scope').val(),
           responseType: $('#login-response-type').val()
         });
+      });
+
+      $('.logout-button').click(function(e) {
+        e.preventDefault();
+        webAuth.logout({ returnTo: 'http://127.0.0.1:3000/test.html' });
       });
 
       $('.reset-button').click(function(e) {

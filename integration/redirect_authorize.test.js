@@ -3,7 +3,7 @@
 require('@babel/polyfill');
 import expect from 'expect.js';
 import { runTests } from './selenium';
-import { By, authorize, until } from './helper';
+import { By, authorize, until, logout } from './helper';
 
 runTests((newSession, browser, done) => {
   describe('redirect authorize', function() {
@@ -53,23 +53,20 @@ runTests((newSession, browser, done) => {
       //   session.finish();
       // });
 
-      it.only('[code] should result in a successful transaction', async () => {
+      it('[code] should result in a successful transaction', async () => {
         const session = newSession();
         const driver = await session.start();
 
         await driver.wait(until.elementLocated(By.id('loaded')));
         await driver.findElement(By.id('login-response-type')).sendKeys('code');
 
-        await driver
-          .findElement(By.className('login-redirect-authorize'))
-          .click();
-
         await authorize(driver);
 
         driver.getCurrentUrl().then(function(url) {
-          console.log('RESULT URL:', url);
           expect(url).to.contain('code=');
         });
+
+        await logout(driver);
 
         session.finish();
       });
@@ -115,19 +112,18 @@ runTests((newSession, browser, done) => {
       });
       */
 
-      it('[id_token] should result in a successful transaction', function() {
-        const session = newSession(this.test.title);
-        const driver = session.start();
+      it('[id_token] should result in a successful transaction', async () => {
+        const session = newSession();
+        const driver = await session.start();
 
-        driver.findElement(By.id('login-response-type')).sendKeys('id_token');
-        driver.findElement(By.className('login-redirect-authorize')).click();
-        driver.wait(until.elementLocated(By.id('hlploaded')), 30000);
-        driver.findElement(By.id('email')).sendKeys('johnfoo@gmail.com');
-        driver.findElement(By.id('password')).sendKeys('1234');
-        driver.findElement(By.id('upLogin')).click();
-        driver.wait(until.elementLocated(By.id('parsed')), 10000);
+        await driver
+          .findElement(By.id('login-response-type'))
+          .sendKeys('id_token');
 
-        driver
+        await authorize(driver);
+        await driver.wait(until.elementLocated(By.id('parsed')), 2000);
+
+        await driver
           .findElement(By.id('err'))
           .getText()
           .then(function(value) {
@@ -135,11 +131,10 @@ runTests((newSession, browser, done) => {
             expect(value).to.equal('');
           });
 
-        driver
+        await driver
           .findElement(By.id('result'))
           .getText()
           .then(function(value) {
-            console.log('RESULT:', value);
             expect(value).to.not.equal('');
 
             const response = JSON.parse(value);
@@ -150,9 +145,12 @@ runTests((newSession, browser, done) => {
             expect(response.expiresIn).to.not.be.ok();
           });
 
-        return session.finish();
+        await logout(driver);
+
+        session.finish();
       });
 
+      /*
       it('[token id_token] should result in a successful transaction', function() {
         const session = newSession(this.test.title);
         const driver = session.start();
@@ -192,6 +190,7 @@ runTests((newSession, browser, done) => {
 
         return session.finish();
       });
+      */
     });
   });
 

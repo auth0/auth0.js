@@ -15,3 +15,10 @@ export async function authorize(driver) {
   await driver.findElement(By.className('login-submit')).click();
   await driver.wait(until.elementLocated(By.id('loaded')));
 }
+
+export async function logout(driver) {
+  await driver.findElement(By.className('logout-button')).click();
+  await driver.wait(until.elementLocated(By.id('op.logoutForm')), 2000);
+  await driver.findElement(By.name('logout')).click();
+  await driver.wait(until.elementLocated(By.id('loaded')));
+}
