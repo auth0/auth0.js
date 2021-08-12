@@ -7,8 +7,6 @@ import { By, authorize, until, logout } from './helper';
 
 runTests((newSession, browser, done) => {
   describe('redirect authorize', function() {
-    this.timeout(9999999);
-
     after(() => {
       console.log('All done');
       done();
