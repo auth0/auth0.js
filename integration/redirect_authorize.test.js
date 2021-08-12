@@ -2,10 +2,10 @@
 
 require('@babel/polyfill');
 import expect from 'expect.js';
-const selenium = require('./selenium');
+import { runTests } from './selenium';
 import { By, authorize, until } from './helper';
 
-selenium.runTests((newSession, browser, done) => {
+runTests((newSession, browser, done) => {
   describe('redirect authorize', function() {
     this.timeout(9999999);
 

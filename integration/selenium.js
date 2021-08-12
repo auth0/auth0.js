@@ -1,8 +1,11 @@
+/* eslint-disable import/prefer-default-export */
 /* eslint-disable import/no-extraneous-dependencies, no-console */
 
-const webdriver = require('selenium-webdriver');
-const browserstack = require('browserstack-local');
-const chrome = require('selenium-webdriver/chrome');
+import webdriver from 'selenium-webdriver';
+import browserstack from 'browserstack-local';
+import chrome from 'selenium-webdriver/chrome';
+import { By, until } from './helper';
+
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
 const server = `http://${username}:${accessKey}@hub-cloud.browserstack.com/wd/hub`;
@@ -63,69 +66,64 @@ const capabilities = [
   // }
 ];
 
-const By = webdriver.By;
-const until = webdriver.until;
+export async function runTests(tests) {
+  const fn = (driver, browser, done) =>
+    tests(
+      () => ({
+        start: async () => {
+          await driver.get('http://127.0.0.1:3000/test.html');
+          await driver.wait(until.elementLocated(By.id('loaded')), 2000);
+          return driver;
+        },
+        finish: () => {}
+      }),
+      browser,
+      done
+    );
 
-module.exports = {
-  runTests: async tests => {
-    const fn = (driver, browser, done) =>
-      tests(
-        () => ({
-          start: async () => {
-            await driver.get('http://127.0.0.1:3000/test.html');
-            await driver.wait(until.elementLocated(By.id('loaded')), 2000);
-            return driver;
-          },
-          finish: () => {}
-        }),
-        browser,
-        done
-      );
+  const builder = new webdriver.Builder();
 
-    const builder = new webdriver.Builder();
+  if (process.env.BROWSERSTACK === 'true') {
+    console.log('Using BrowserStack');
 
-    if (process.env.BROWSERSTACK === 'true') {
-      console.log('Using BrowserStack');
+    bsLocal.start({ verbose: true }, () => {
+      console.log('BrowserStack local started');
+      console.log('BrowserStackLocal running:', bsLocal.isRunning());
 
-      bsLocal.start({ verbose: true }, () => {
-        console.log('BrowserStack local started');
-        console.log('BrowserStackLocal running:', bsLocal.isRunning());
+      // TODO: This needs to be async
+      capabilities.forEach(capability => {
+        // Note: this is just for displaying in the console as the tests are running.
+        const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
+        const driver = builder.build();
 
-        // TODO: This needs to be async
-        capabilities.forEach(capability => {
-          // Note: this is just for displaying in the console as the tests are running.
-          const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
-          const driver = builder.build();
+        builder
+          .withCapabilities({
+            ...capability,
+            ...commonCapabilities
+          })
+          .usingServer(server);
 
-          builder
-            .withCapabilities({
-              ...capability,
-              ...commonCapabilities
-            })
-            .usingServer(server);
+        fn(driver, browser);
 
-          fn(driver, browser);
-
-          // TODO: This should be async
-          driver.quit();
-        });
-
-        bsLocal.stop(() => {
-          console.log('Stopped BrowserStackLocal');
-        });
+        // TODO: This should be async
+        driver.quit();
       });
-    } else {
-      let browserName = 'Chrome';
-      builder.forBrowser('chrome');
 
-      if (process.env.HEADLESS) {
-        builder.setChromeOptions(new chrome.Options().headless());
-        browserName = 'Chrome Headless';
-      }
+      bsLocal.stop(() => {
+        console.log('Stopped BrowserStackLocal');
+      });
+    });
+  } else {
+    let browserName = 'Chrome';
+    builder.forBrowser('chrome');
 
-      const driver = await builder.build();
-
-      fn(driver, browserName, () => driver.quit());
+    if (process.env.HEADLESS) {
+      builder.setChromeOptions(new chrome.Options().headless());
+      browserName = 'Chrome Headless';
     }
+
+    const driver = await builder.build();
+
+    fn(driver, browserName, () => driver.quit());
   }
-};
+}
