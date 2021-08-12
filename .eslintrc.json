@@ -5,9 +5,7 @@
     "browser": true,
     "mocha": true
   },
-  "parserOptions": {
-    "ecmaVersion": 2018
-  },
+  "parser": "@babel/eslint-parser",
   "rules": {
     "func-names": "off",
     "no-underscore-dangle": "off",

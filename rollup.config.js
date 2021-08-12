@@ -2,12 +2,12 @@ const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const replace = require('rollup-plugin-replace');
 const { terser } = require('rollup-plugin-terser');
-const serve = require('rollup-plugin-serve');
-// const livereload = require('rollup-plugin-livereload');
+const dev = require('rollup-plugin-dev');
 const license = require('rollup-plugin-license');
 const json = require('rollup-plugin-json');
 const { argv } = require('yargs');
 const pkg = require('./package.json');
+const createApp = require('./scripts/oidc-provider');
 const isProduction = argv.prod === true;
 const OUTPUT_PATH = 'dist';
 
@@ -81,9 +81,12 @@ const devFiles = [
     plugins: [
       ...getPlugins(false),
       !isProduction &&
-        serve({
-          contentBase: ['dist', 'example'],
-          port: 3000
+        dev({
+          dirs: ['dist', 'example'],
+          port: 3000,
+          extend(app, modules) {
+            app.use(modules.mount(createApp({ port: 3000 })));
+          }
         })
       // !isProduction && livereload()
     ]
