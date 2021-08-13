@@ -10,11 +10,10 @@ import { By, until } from './helper';
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
 const server = `http://${username}:${accessKey}@hub-cloud.browserstack.com/wd/hub`;
-const bsLocal = new browserstack.Local();
 
 const build = process.env.CIRCLECI
   ? `${process.env.CIRCLE_BRANCH} ${process.env.CIRCLE_BUILD_NUM}`
-  : 'Local run 2';
+  : 'Local run';
 
 const commonCapabilities = {
   resolution: '1920x1080',
@@ -87,11 +86,15 @@ export async function setupDriver(callback) {
   const builder = new webdriver.Builder();
 
   if (process.env.BROWSERSTACK === 'true') {
-    bsLocal.start({}, err => {
-      if (err) throw err;
-    });
+    const bsLocal = new browserstack.Local();
 
-    console.log('BrowserStack local started', bsLocal.isRunning());
+    bsLocal.start(
+      { force: 'true', verbose: 'true', localIdentifier: 'auth0jstests' },
+      err => {
+        if (err) throw err;
+        console.log('BrowserStack local started', bsLocal.isRunning());
+      }
+    );
 
     // TODO: This needs to be async
     const capability = capabilities[0];
@@ -100,21 +103,19 @@ export async function setupDriver(callback) {
     // Note: this is just for displaying in the console as the tests are running.
     const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
 
-    builder
+    const driver = await builder
       .withCapabilities({
         ...capability,
         ...commonCapabilities
       })
-      .usingServer(server);
+      .usingServer(server)
+      .build();
 
-    const driver = await builder.build();
+    await runTests(driver, browser);
+    await driver.quit();
 
-    runTests(driver, browser, () => {
-      driver.quit();
-
-      bsLocal.stop(() => {
-        console.log('Stopped BrowserStackLocal');
-      });
+    bsLocal.stop(() => {
+      console.log('Stopped BrowserStackLocal');
     });
   } else {
     let browserName = 'Chrome';

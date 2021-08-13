@@ -8,7 +8,7 @@ import { By, authorize, until, logout } from './helper';
 setupDriver((newSession, browser, done) => {
   context(browser, () => {
     describe('redirect authorize', function() {
-      this.timeout(10000);
+      this.timeout(99999);
 
       after(() => done());
 
