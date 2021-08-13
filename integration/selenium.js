@@ -14,7 +14,7 @@ const bsLocal = new browserstack.Local();
 
 const build = process.env.CIRCLECI
   ? `${process.env.CIRCLE_BRANCH} ${process.env.CIRCLE_BUILD_NUM}`
-  : 'Local run';
+  : 'Local run 2';
 
 const commonCapabilities = {
   resolution: '1920x1080',
@@ -84,28 +84,30 @@ export async function setupDriver(callback) {
   const builder = new webdriver.Builder();
 
   if (process.env.BROWSERSTACK === 'true') {
-    bsLocal.start({}, async () => {
-      console.log('BrowserStack local started');
-      console.log('BrowserStackLocal running:', bsLocal.isRunning());
+    bsLocal.start({}, () => {
+      console.log('BrowserStack local started', bsLocal.isRunning());
 
       // TODO: This needs to be async
-      for await (const capability of capabilities) {
-        // Note: this is just for displaying in the console as the tests are running.
-        const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
-        const driver = await builder.build();
+      const capability = capabilities[0];
 
-        builder
-          .withCapabilities({
-            ...capability,
-            ...commonCapabilities
-          })
-          .usingServer(server);
+      // for await (const capability of capabilities) {
+      // Note: this is just for displaying in the console as the tests are running.
+      const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
 
+      builder
+        .withCapabilities({
+          ...capability,
+          ...commonCapabilities
+        })
+        .usingServer(server);
+
+      builder.build().then(driver => {
         runTests(driver, browser, () => driver.quit());
-      }
+        // }
 
-      bsLocal.stop(() => {
-        console.log('Stopped BrowserStackLocal');
+        bsLocal.stop(() => {
+          console.log('Stopped BrowserStackLocal');
+        });
       });
     });
   } else {

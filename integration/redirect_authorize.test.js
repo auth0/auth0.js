@@ -8,6 +8,8 @@ import { By, authorize, until, logout } from './helper';
 setupDriver((newSession, browser, done) => {
   context(browser, () => {
     describe('redirect authorize', function() {
+      this.timeout(10000);
+
       after(done);
 
       it('[code] should result in a successful transaction', async () => {
