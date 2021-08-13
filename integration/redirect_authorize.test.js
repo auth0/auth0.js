@@ -10,7 +10,7 @@ setupDriver((newSession, browser, done) => {
     describe('redirect authorize', function() {
       this.timeout(10000);
 
-      after(done);
+      after(() => done());
 
       it('[code] should result in a successful transaction', async () => {
         const session = newSession();

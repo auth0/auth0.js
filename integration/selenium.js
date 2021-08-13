@@ -68,46 +68,52 @@ const capabilities = [
 ];
 
 export async function setupDriver(callback) {
-  const runTests = (driver, browser, done) =>
-    callback(
-      () => ({
-        start: async () => {
-          await driver.get('http://127.0.0.1:3000/test.html');
-          await driver.wait(until.elementLocated(By.id('loaded')), 2000);
-          return driver;
-        }
-      }),
-      browser,
-      done
-    );
+  const runTests = (driver, browser) =>
+    // eslint-disable-next-line compat/compat
+    new Promise(res => {
+      callback(
+        () => ({
+          start: async () => {
+            await driver.get('http://127.0.0.1:3000/test.html');
+            await driver.wait(until.elementLocated(By.id('loaded')), 2000);
+            return driver;
+          }
+        }),
+        browser,
+        res
+      );
+    });
 
   const builder = new webdriver.Builder();
 
   if (process.env.BROWSERSTACK === 'true') {
-    bsLocal.start({}, () => {
-      console.log('BrowserStack local started', bsLocal.isRunning());
+    bsLocal.start({}, err => {
+      if (err) throw err;
+    });
 
-      // TODO: This needs to be async
-      const capability = capabilities[0];
+    console.log('BrowserStack local started', bsLocal.isRunning());
 
-      // for await (const capability of capabilities) {
-      // Note: this is just for displaying in the console as the tests are running.
-      const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
+    // TODO: This needs to be async
+    const capability = capabilities[0];
 
-      builder
-        .withCapabilities({
-          ...capability,
-          ...commonCapabilities
-        })
-        .usingServer(server);
+    // for await (const capability of capabilities) {
+    // Note: this is just for displaying in the console as the tests are running.
+    const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
 
-      builder.build().then(driver => {
-        runTests(driver, browser, () => driver.quit());
-        // }
+    builder
+      .withCapabilities({
+        ...capability,
+        ...commonCapabilities
+      })
+      .usingServer(server);
 
-        bsLocal.stop(() => {
-          console.log('Stopped BrowserStackLocal');
-        });
+    const driver = await builder.build();
+
+    runTests(driver, browser, () => {
+      driver.quit();
+
+      bsLocal.stop(() => {
+        console.log('Stopped BrowserStackLocal');
       });
     });
   } else {
@@ -121,6 +127,7 @@ export async function setupDriver(callback) {
 
     const driver = await builder.build();
 
-    runTests(driver, browserName, () => driver.quit());
+    await runTests(driver, browserName);
+    await driver.quit();
   }
 }
