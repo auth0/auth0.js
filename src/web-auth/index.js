@@ -153,11 +153,10 @@ function WebAuth(options) {
     ? parseInt(options._timesToRetryFailedRequests, 0)
     : 0;
 
-  console.log('here 1');
   this.baseOptions.tenant =
     (this.baseOptions.overrides && this.baseOptions.overrides.__tenant) ||
     this.baseOptions.domain.split('.')[0];
-  console.log('here 2');
+
   this.baseOptions.token_issuer =
     (this.baseOptions.overrides && this.baseOptions.overrides.__token_issuer) ||
     'https://' + this.baseOptions.domain + '/';
@@ -479,7 +478,6 @@ function buildParseHashResponse(qsParams, appState, token) {
  * @param {validateTokenCallback} cb
  */
 WebAuth.prototype.validateToken = function(token, nonce, cb) {
-  console.log(this.baseOptions.token_issuer);
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     jwksURI: this.baseOptions.jwksURI,
