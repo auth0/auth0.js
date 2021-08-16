@@ -29,23 +29,25 @@ const capabilities = [
     os: 'Windows',
     os_version: '10',
     browser_version: 'latest'
-  }
-  // {
-  //   browserName: 'firefox',
-  //   platform: 'Windows 10',
-  //   version: 'latest'
-  // }
+  },
+  {
+    browserName: 'firefox',
+    os: 'Windows',
+    os_version: '10',
+    browser_version: 'latest'
+  },
   // {
   //   'browserName': 'firefox',
   //   'platform': 'Windows 10',
   //   'version': 'beta'
   // }
   // ,
-  // {
-  //   'browserName': 'internet explorer',
-  //   'platform': 'Windows 7',
-  //   'version': '11.0'
-  // }
+  {
+    browserName: 'internet explorer',
+    os: 'Windows',
+    os_version: '10',
+    browser_version: '11'
+  }
   // ,
   // {
   //   'browserName': 'internet explorer',
@@ -96,23 +98,24 @@ export async function setupDriver(callback) {
       }
     );
 
-    // TODO: This needs to be async
-    const capability = capabilities[0];
+    await Promise.all(
+      capabilities.map(async capability => {
+        // Note: this is just for displaying in the console as the tests are running.
+        const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
 
-    // for await (const capability of capabilities) {
-    // Note: this is just for displaying in the console as the tests are running.
-    const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
+        const driver = await builder
+          .withCapabilities({
+            ...capability,
+            ...commonCapabilities
+          })
+          .usingServer(server)
+          .build();
 
-    const driver = await builder
-      .withCapabilities({
-        ...capability,
-        ...commonCapabilities
+        await runTests(driver, browser).then(() => {
+          driver.quit();
+        });
       })
-      .usingServer(server)
-      .build();
-
-    await runTests(driver, browser);
-    await driver.quit();
+    );
 
     bsLocal.stop(() => {
       console.log('Stopped BrowserStackLocal');
