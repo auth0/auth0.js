@@ -55,24 +55,6 @@ const capabilities = [
   //   os_version: '10',
   //   browser_version: '11'
   // }
-  // ,
-  // {
-  //   'browserName': 'internet explorer',
-  //   'platform': 'Windows 7',
-  //   'version': '10.0'
-  // }
-  // ,
-  // {
-  //   'browserName': 'MicrosoftEdge',
-  //   'platform': 'Windows 10',
-  //   'version': '13.10586'
-  // }
-  // ,
-  // {
-  //   browserName: 'safari',
-  //   platform: 'macOS Big Sur',
-  //   version: 'latest'
-  // }
 ];
 
 const startBrowserStackLocal = () =>
