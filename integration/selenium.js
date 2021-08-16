@@ -47,14 +47,13 @@ const capabilities = [
     os: 'OS X',
     os_version: 'Big Sur',
     browser_version: 'latest'
+  },
+  {
+    browserName: 'internet explorer',
+    os: 'Windows',
+    os_version: '10',
+    browser_version: '11'
   }
-  // ,
-  // {
-  //   browserName: 'internet explorer',
-  //   os: 'Windows',
-  //   os_version: '10',
-  //   browser_version: '11'
-  // }
 ];
 
 const startBrowserStackLocal = () =>
