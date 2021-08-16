@@ -37,9 +37,20 @@ jobs:
       - run:
           name: Generate Coverage
           command: npm run ci:coverage
+      - run:
+          name: BrowserStack tests
+          command: npm run test:e2e:browserstack
       - store_artifacts:
           path: dist
       - store_artifacts:
           path: junit
       - store_test_results:
           path: junit
+
+workflows:
+  version: 2
+  default:
+    jobs:
+      - build:
+          context:
+            - browserstack-env
