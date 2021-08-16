@@ -36,18 +36,25 @@ const capabilities = [
     os_version: '10',
     browser_version: 'latest'
   },
-  // {
-  //   'browserName': 'firefox',
-  //   'platform': 'Windows 10',
-  //   'version': 'beta'
-  // }
-  // ,
   {
-    browserName: 'internet explorer',
+    browserName: 'edge',
     os: 'Windows',
     os_version: '10',
-    browser_version: '11'
+    browser_version: 'latest'
+  },
+  {
+    browserName: 'safari',
+    os: 'OS X',
+    os_version: 'Big Sur',
+    browser_version: 'latest'
   }
+  // ,
+  // {
+  //   browserName: 'internet explorer',
+  //   os: 'Windows',
+  //   os_version: '10',
+  //   browser_version: '11'
+  // }
   // ,
   // {
   //   'browserName': 'internet explorer',
