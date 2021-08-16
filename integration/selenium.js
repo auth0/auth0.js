@@ -68,6 +68,18 @@ const capabilities = [
   // }
 ];
 
+const startBrowserStackLocal = () =>
+  // eslint-disable-next-line compat/compat
+  new Promise((res, rej) => {
+    const bsLocal = new browserstack.Local();
+
+    bsLocal.start({ force: true }, err => {
+      if (err) return rej(err);
+      console.log('BrowserStack local started', bsLocal.isRunning());
+      res(bsLocal);
+    });
+  });
+
 export async function setupDriver(callback) {
   const runTests = (driver, browser) =>
     // eslint-disable-next-line compat/compat
@@ -86,40 +98,45 @@ export async function setupDriver(callback) {
     });
 
   const builder = new webdriver.Builder();
+  const bsLocal = await startBrowserStackLocal();
 
   if (process.env.BROWSERSTACK === 'true') {
-    const bsLocal = new browserstack.Local();
+    const promises = [];
 
-    bsLocal.start(
-      { force: 'true', verbose: 'true', localIdentifier: 'auth0jstests' },
-      err => {
-        if (err) throw err;
-        console.log('BrowserStack local started', bsLocal.isRunning());
-      }
+    capabilities.forEach(capability =>
+      promises.push(
+        new Promise(res => {
+          // Note: this is just for displaying in the console as the tests are running.
+          const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
+
+          builder
+            .withCapabilities({
+              ...capability,
+              ...commonCapabilities
+            })
+            .usingServer(server)
+            .build()
+            .then(driver => {
+              runTests(driver, browser).then(() => {
+                driver.quit();
+                res();
+              });
+            })
+            .catch(e => {
+              bsLocal.stop(() => console.log('BrowserStack local stopped'));
+              throw e;
+            });
+        })
+      )
     );
 
-    await Promise.all(
-      capabilities.map(async capability => {
-        // Note: this is just for displaying in the console as the tests are running.
-        const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
-
-        const driver = await builder
-          .withCapabilities({
-            ...capability,
-            ...commonCapabilities
-          })
-          .usingServer(server)
-          .build();
-
-        await runTests(driver, browser).then(() => {
-          driver.quit();
-        });
-      })
-    );
-
-    bsLocal.stop(() => {
-      console.log('Stopped BrowserStackLocal');
-    });
+    try {
+      console.log(promises.length);
+      await Promise.all(promises);
+    } finally {
+      console.log('Stopping');
+      bsLocal.stop(() => console.log('BrowserStack local stopped'));
+    }
   } else {
     let browserName = 'Chrome';
     builder.forBrowser('chrome');
