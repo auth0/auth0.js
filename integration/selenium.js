@@ -1,92 +1,142 @@
-var webdriver = require('selenium-webdriver');
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable import/prefer-default-export */
+/* eslint-disable import/no-extraneous-dependencies, no-console */
 
-var username = process.env.SAUCELABS_USER;
-var accessKey = process.env.SAUCELABS_KEY;
+import webdriver from 'selenium-webdriver';
+import browserstack from 'browserstack-local';
+import chrome from 'selenium-webdriver/chrome';
+import { By, until } from './helper';
 
-var capabilities = [
+const username = process.env.BROWSERSTACK_USERNAME;
+const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
+const server = `http://${username}:${accessKey}@hub-cloud.browserstack.com/wd/hub`;
+
+const build = process.env.CIRCLECI
+  ? `${process.env.CIRCLE_BRANCH} ${process.env.CIRCLE_BUILD_NUM}`
+  : 'Local run';
+
+const commonCapabilities = {
+  resolution: '1920x1080',
+  name: 'Auth0.js Acceptance Test',
+  'browserstack.local': 'true',
+  project: 'Auth0.js',
+  build
+};
+
+const capabilities = [
   {
     browserName: 'chrome',
-    platform: 'Windows 10',
-    version: '55.0'
-  },
-  {
-    browserName: 'chrome',
-    platform: 'Windows 10',
-    version: 'beta'
+    os: 'Windows',
+    os_version: '10',
+    browser_version: 'latest'
   },
   {
     browserName: 'firefox',
-    platform: 'Windows 10',
-    version: '50.0'
+    os: 'Windows',
+    os_version: '10',
+    browser_version: 'latest'
   },
-  // {
-  //   'browserName': 'firefox',
-  //   'platform': 'Windows 10',
-  //   'version': 'beta'
-  // }
-  // ,
-  // {
-  //   'browserName': 'internet explorer',
-  //   'platform': 'Windows 7',
-  //   'version': '11.0'
-  // }
-  // ,
-  // {
-  //   'browserName': 'internet explorer',
-  //   'platform': 'Windows 7',
-  //   'version': '10.0'
-  // }
-  // ,
-  // {
-  //   'browserName': 'MicrosoftEdge',
-  //   'platform': 'Windows 10',
-  //   'version': '13.10586'
-  // }
-  // ,
+  {
+    browserName: 'edge',
+    os: 'Windows',
+    os_version: '10',
+    browser_version: 'latest'
+  },
   {
     browserName: 'safari',
-    platform: 'macOS 10.12',
-    version: '10.0'
+    os: 'OS X',
+    os_version: 'Big Sur',
+    browser_version: 'latest'
+  },
+  {
+    browserName: 'internet explorer',
+    os: 'Windows',
+    os_version: '10',
+    browser_version: '11'
   }
 ];
 
-var By = webdriver.By;
-var until = webdriver.until;
+const startBrowserStackLocal = () =>
+  // eslint-disable-next-line compat/compat
+  new Promise((res, rej) => {
+    const bsLocal = new browserstack.Local();
 
-module.exports = {
-  runTests: tests => {
-    capabilities.forEach(capability => {
-      var browser =
-        capability.browserName +
-        ' ' +
-        capability.version +
-        ' ' +
-        capability.platform;
-
-      tests(name => {
-        var driver = new webdriver.Builder()
-          .withCapabilities(capability)
-          .usingServer(
-            'http://' +
-              username +
-              ':' +
-              accessKey +
-              '@ondemand.saucelabs.com:80/wd/hub'
-          )
-          .build();
-        driver.executeScript('sauce:job-name=' + name);
-        return {
-          start: () => {
-            driver.get('https://auth0.github.io/auth0.js/example/test.html');
-            driver.wait(until.elementLocated(By.id('loaded')), 10000);
-            return driver;
-          },
-          finish: () => {
-            driver.executeScript('sauce:job-result=passed');
-            return driver.quit();
-          }
-        };
-      }, browser);
+    bsLocal.start({ force: true }, err => {
+      if (err) return rej(err);
+      console.log('BrowserStack local started', bsLocal.isRunning());
+      res(bsLocal);
     });
+  });
+
+export async function setupDriver(callback) {
+  const runTests = (driver, browser) =>
+    // eslint-disable-next-line compat/compat
+    new Promise(res => {
+      callback(
+        () => ({
+          start: async () => {
+            await driver.get('http://127.0.0.1:3000/test.html');
+            await driver.wait(until.elementLocated(By.id('loaded')), 2000);
+            return driver;
+          }
+        }),
+        browser,
+        res
+      );
+    });
+
+  const builder = new webdriver.Builder();
+  const bsLocal = await startBrowserStackLocal();
+
+  if (process.env.BROWSERSTACK === 'true') {
+    const promises = [];
+
+    capabilities.forEach(capability =>
+      promises.push(
+        new Promise(res => {
+          // Note: this is just for displaying in the console as the tests are running.
+          const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
+
+          builder
+            .withCapabilities({
+              ...capability,
+              ...commonCapabilities
+            })
+            .usingServer(server)
+            .build()
+            .then(driver => {
+              runTests(driver, browser).then(() => {
+                driver.quit();
+                res();
+              });
+            })
+            .catch(e => {
+              bsLocal.stop(() => console.log('BrowserStack local stopped'));
+              throw e;
+            });
+        })
+      )
+    );
+
+    try {
+      console.log(promises.length);
+      await Promise.all(promises);
+    } finally {
+      console.log('Stopping');
+      bsLocal.stop(() => console.log('BrowserStack local stopped'));
+    }
+  } else {
+    let browserName = 'Chrome';
+    builder.forBrowser('chrome');
+
+    if (process.env.HEADLESS) {
+      builder.setChromeOptions(new chrome.Options().headless());
+      browserName = 'Chrome Headless';
+    }
+
+    const driver = await builder.build();
+
+    await runTests(driver, browserName);
+    await driver.quit();
   }
-};
+}
