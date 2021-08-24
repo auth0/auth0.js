@@ -1,46 +1,68 @@
-
 ## [v9.16.3](https://github.com/auth0/auth0.js/tree/v9.16.3) (2021-08-24)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.2...v9.16.3)
 
+**Security**
+
+- Dependency updates [\#1200](https://github.com/auth0/auth0.js/pull/1200) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
+**Fixed**
+
+- Add check around accessing event.data in web-message-handler [\#1195](https://github.com/auth0/auth0.js/pull/1195) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v9.16.2](https://github.com/auth0/auth0.js/tree/v9.16.2) (2021-05-26)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.1...v9.16.2)
 
 **Security**
+
 - Update idtoken-verifier to 2.1.2 [\#1182](https://github.com/auth0/auth0.js/pull/1182) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 ## [v9.16.1](https://github.com/auth0/auth0.js/tree/v9.16.1) (2021-05-25)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.0...v9.16.1)
 
 **Security**
+
 - Bump idtoken-verifier and run npm audit fix [\#1179](https://github.com/auth0/auth0.js/pull/1179) ([frederikprijck](https://github.com/frederikprijck))
 
 ## [v9.16.0](https://github.com/auth0/auth0.js/tree/v9.16.0) (2021-04-26)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.15.0...v9.16.0)
 
 **Added**
+
 - Add Recaptcha Enterprise support [\#1169](https://github.com/auth0/auth0.js/pull/1169) ([akmjenkins](https://github.com/akmjenkins))
 
 **Fixed**
-- Document  optional params to WebAuth.signup [\#1168](https://github.com/auth0/auth0.js/pull/1168) ([zog](https://github.com/zog))
+
+- Document optional params to WebAuth.signup [\#1168](https://github.com/auth0/auth0.js/pull/1168) ([zog](https://github.com/zog))
 
 **Security**
+
 - [Security] Bump y18n from 4.0.0 to 4.0.1 [\#1162](https://github.com/auth0/auth0.js/pull/1162) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 
 ## [v9.15.0](https://github.com/auth0/auth0.js/tree/v9.15.0) (2021-03-19)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.14.3...v9.15.0)
 
 **Added**
+
 - [SDK-2391] Organizations support [\#1159](https://github.com/auth0/auth0.js/pull/1159) ([stevehobbsdev](https://github.com/stevehobbsdev))
 - [SDK-2273] Add onRedirecting login hook [\#1157](https://github.com/auth0/auth0.js/pull/1157) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 **Changed**
+
 - Apply secure flag to cookies when running on https protocol [\#1158](https://github.com/auth0/auth0.js/pull/1158) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 ## [v9.14.3](https://github.com/auth0/auth0.js/tree/v9.14.3) (2021-01-26)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.14.2...v9.14.3)
 
 **Changed**
+
 - Add otp to tokenParams [\#1153](https://github.com/auth0/auth0.js/pull/1153) ([psamim](https://github.com/psamim))
+
 ## [v9.14.2](https://github.com/auth0/auth0.js/tree/v9.14.2) (2021-01-14)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.14.2...v9.14.2)
