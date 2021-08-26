@@ -23,7 +23,6 @@ release
 
 .DS_Store
 
-build
 dist
 
 .gitignore
