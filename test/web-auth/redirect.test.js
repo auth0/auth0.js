@@ -261,6 +261,47 @@ describe('auth0.WebAuth.redirect', function() {
     it('should verify the code and redirect to the passwordless verify page', function(done) {
       sinon.stub(windowHelper, 'redirect').callsFake(function(url) {
         expect(url).to.be(
+          'https://me.auth0.com/passwordless/verify_redirect?client_id=test-client-id&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&auth0Client=' +
+            encodeURIComponent(telemetryInfo)
+        );
+        done();
+      });
+
+      sinon.stub(request, 'post').callsFake(function(url) {
+        expect(url).to.be('https://me.auth0.com/passwordless/verify');
+        return new RequestMock({
+          body: {
+            client_id: 'test-client-id',
+            connection: 'the_connection',
+            phone_number: '123456',
+            verification_code: 'abc'
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            'Auth0-Client': telemetryInfo
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {}
+            });
+          }
+        });
+      });
+
+      this.auth0.passwordlessVerify(
+        {
+          clientID: 'test-client-id',
+          connection: 'the_connection',
+          phoneNumber: '123456',
+          verificationCode: 'abc'
+        },
+        function(err) {}
+      );
+    });
+
+    it('should verify the code and redirect to the passwordless verify page (using global client ID)', function(done) {
+      sinon.stub(windowHelper, 'redirect').callsFake(function(url) {
+        expect(url).to.be(
           'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&auth0Client=' +
             encodeURIComponent(telemetryInfo)
         );
@@ -271,6 +312,7 @@ describe('auth0.WebAuth.redirect', function() {
         expect(url).to.be('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
+            client_id: '...',
             connection: 'the_connection',
             phone_number: '123456',
             verification_code: 'abc'
@@ -326,6 +368,7 @@ describe('auth0.WebAuth.redirect', function() {
         expect(url).to.be('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
+            client_id: '...',
             connection: 'the_connection',
             phone_number: '123456',
             verification_code: 'abc'
@@ -371,6 +414,7 @@ describe('auth0.WebAuth.redirect', function() {
         expect(url).to.be('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
+            client_id: '...',
             connection: 'the_connection',
             phone_number: '123456',
             verification_code: 'abc'
