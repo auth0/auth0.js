@@ -1,6 +1,11 @@
 import CrossOriginAuthentication from './cross-origin-authentication';
 import Warn from '../helper/warn';
 
+/**
+ * @class
+ * @classdesc This class cannot be instantiated directly. Instead, use WebAuth.redirect
+ * @hideconstructor
+ */
 function Redirect(auth0, options) {
   this.webAuth = auth0;
   this.baseOptions = options;
@@ -27,7 +32,8 @@ function Redirect(auth0, options) {
  * @param {String} options.password Password
  * @param {String} [options.connection] Connection used to authenticate the user, it can be a realm name or a database connection name
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
- * @ignore
+ * @memberof Redirect.prototype
+ * @memberof Redirect.prototype
  */
 Redirect.prototype.loginWithCredentials = function(options, cb) {
   options.realm = options.realm || options.connection;
@@ -44,16 +50,19 @@ Redirect.prototype.loginWithCredentials = function(options, cb) {
  * @param {String} options.password user password
  * @param {String} options.connection name of the connection where the user will be created
  * @param {crossOriginLoginCallback} cb
- * @ignore
+ * @memberof Redirect.prototype
  */
 Redirect.prototype.signupAndLogin = function(options, cb) {
   var _this = this;
+
   return this.webAuth.client.dbConnection.signup(options, function(err) {
     if (err) {
       return cb(err);
     }
+
     options.realm = options.realm || options.connection;
     delete options.connection;
+
     return _this.webAuth.login(options, cb);
   });
 };
