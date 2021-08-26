@@ -979,6 +979,7 @@ WebAuth.prototype.logout = function(options) {
  * @param {String} options.email only if type = email
  * @param {String} options.connection the connection name
  * @param {String} options.verificationCode the TOTP code
+ * @param {String} options.clientID the client ID
  * @param {onRedirectingCallback} options.onRedirecting Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {Function} cb
  * @memberof WebAuth.prototype
