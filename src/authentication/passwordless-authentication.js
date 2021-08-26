@@ -201,7 +201,8 @@ PasswordlessAuthentication.prototype.verify = function(options, cb) {
     'verificationCode',
     'phoneNumber',
     'email',
-    'auth0Client'
+    'auth0Client',
+    'clientID'
   ]);
   cleanOption = objectHelper.toSnakeCase(cleanOption, ['auth0Client']);
 
