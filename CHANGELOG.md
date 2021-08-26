@@ -1,3 +1,9 @@
+
+## [v9.16.4](https://github.com/auth0/auth0.js/tree/v9.16.4) (2021-08-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.3...v9.16.4)
+
+**Fixed**
+- Fix: Passwordless Verify [\#1202](https://github.com/auth0/auth0.js/pull/1202) ([seanaye](https://github.com/seanaye))
 ## [v9.16.3](https://github.com/auth0/auth0.js/tree/v9.16.3) (2021-08-24)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.2...v9.16.3)
