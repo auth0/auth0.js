@@ -167,6 +167,8 @@ function WebAuth(options) {
   this.transactionManager = new TransactionManager(this.baseOptions);
 
   this.client = new Authentication(this.baseOptions);
+
+  /** @member {Redirect} */
   this.redirect = new Redirect(this, this.baseOptions);
 
   /** @member {Popup} */
@@ -176,6 +178,7 @@ function WebAuth(options) {
     this,
     this.baseOptions
   );
+
   this.webMessageHandler = new WebMessageHandler(this);
   this._universalLogin = new HostedPages(this, this.baseOptions);
   this.ssodataStorage = new SSODataStorage(this.baseOptions);
