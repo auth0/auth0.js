@@ -1,4 +1,6 @@
-version: 2
+version: 2.1
+orbs:
+  ship: auth0/ship@0.2.0
 jobs:
   build:
     docker:
@@ -7,18 +9,7 @@ jobs:
       LANG: en_US.UTF-8
     steps:
       - checkout
-      - restore-cache:
-          name: Restore Package Cache
-          keys:
-            - npm-packages-{{ checksum "package-lock.json" }}
-      - run:
-          name: Install Dependencies
-          command: npm install
-      - save-cache:
-          name: Save Package Cache
-          key: npm-packages-{{ checksum "package-lock.json" }}
-          paths:
-            - ~/.cache/npm
+      - ship/node-install-packages
       - run:
           name: Build
           command: npm run build
@@ -48,9 +39,18 @@ jobs:
           path: junit
 
 workflows:
-  version: 2
-  default:
+  build-and-test:
     jobs:
       - build:
           context:
             - browserstack-env
+      - ship/node-publish:
+          requires:
+            - build
+          context:
+            - publish-npm
+            - publish-gh
+          filters:
+            branches:
+              only:
+                - master
