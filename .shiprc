@@ -1,0 +1,7 @@
+{
+    "files": {
+        "src/version.js": [],
+        "README.md": []
+    },
+    "postbump": "node scripts/jsdocs.js"
+}

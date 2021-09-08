@@ -38,7 +38,6 @@
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix ./src",
     "publish:cdn": "ccu --trace",
-    "release": "scripts/release.sh",
     "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
     "precommit": "pretty-quick --staged"
   },
