@@ -38,12 +38,11 @@
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix ./src",
     "publish:cdn": "ccu --trace",
-    "jsdocs": "jsdoc --configure .jsdoc.json --verbose",
-    "precommit": "pretty-quick --staged"
+    "jsdocs": "jsdoc --configure .jsdoc.json --verbose"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "pretty-quick --staged && lint-staged"
     }
   },
   "lint-staged": {

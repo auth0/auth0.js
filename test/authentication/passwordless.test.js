@@ -277,6 +277,64 @@ describe('auth0.authentication', function() {
         }
       );
     });
+
+    it('should call passwordless start with X-Request-Language header set', function(done) {
+      var auth0 = new Authentication({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'will be overridden',
+        responseType: 'code',
+        _sendTelemetry: false,
+        scope: 'will be overridden'
+      });
+
+      sinon.stub(request, 'post').callsFake(function(url) {
+        expect(url).to.be('https://me.auth0.com/passwordless/start');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            connection: 'the_connection',
+            email: 'me@example.com',
+            send: 'code',
+            authParams: {
+              scope: 'openid email',
+              redirect_uri: 'http://page.com/othercallback',
+              response_type: 'token',
+              protocol: 'wsfed'
+            }
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Request-Language': 'de-DE'
+          },
+          cb: function(cb) {
+            cb(null, {
+              body: {}
+            });
+          }
+        });
+      });
+
+      auth0.passwordless.start(
+        {
+          connection: 'the_connection',
+          email: 'me@example.com',
+          send: 'code',
+          authParams: {
+            redirectUri: 'http://page.com/othercallback',
+            protocol: 'wsfed',
+            responseType: 'token',
+            scope: 'openid email'
+          },
+          xRequestLanguage: 'de-DE'
+        },
+        function(err, data) {
+          expect(err).to.be(null);
+          expect(data).to.eql({});
+          done();
+        }
+      );
+    });
   });
 
   context('passwordless verify', function() {
