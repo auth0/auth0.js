@@ -122,6 +122,9 @@ PasswordlessAuthentication.prototype.start = function(options, cb) {
 
   url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'start');
 
+  var xRequestLanguage = options.xRequestLanguage;
+  delete options.xRequestLanguage;
+
   body = objectHelper
     .merge(this.baseOptions, [
       'clientID',
@@ -154,8 +157,12 @@ PasswordlessAuthentication.prototype.start = function(options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client', 'authParams']);
 
+  var postOptions = xRequestLanguage
+    ? { xRequestLanguage: xRequestLanguage }
+    : undefined;
+
   return this.request
-    .post(url)
+    .post(url, postOptions)
     .send(body)
     .end(responseHandler(cb));
 };
