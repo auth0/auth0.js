@@ -332,6 +332,17 @@
         <hr />
 
         <div>
+          <h4>Call token endpoint</h4>
+          <input
+            type="button"
+            value="Get token"
+            class="btn btn-default token-endpoint"
+          />
+        </div>
+
+        <hr />
+
+        <div>
           <h4>Check if you have an active session:</h4>
           <input
             type="button"
@@ -489,8 +500,9 @@
           domain: domain,
           redirectUri: REDIRECT_URL,
           clientID: clientId,
-          responseType: 'code',
-          plugins: [new CordovaAuth0Plugin()]
+          plugins: [new CordovaAuth0Plugin()],
+          scope: 'openid email',
+          responseType: 'code'
         };
 
         webAuth = new auth0.WebAuth(webAuthConfig);
@@ -799,6 +811,26 @@
           },
           htmlConsole.dumpCallback.bind(htmlConsole)
         );
+      });
+
+      $('.token-endpoint').click(function(e) {
+        e.preventDefault();
+
+        var params = new URLSearchParams(window.location.search);
+
+        if (params.get('code')) {
+          webAuth.client.oauthToken(
+            {
+              code: params.get('code'),
+              grantType: 'authorization_code',
+              redirectUri: window.location.origin
+            },
+            function(err, data) {
+              history.pushState({}, null, '/');
+              htmlConsole.dumpCallback(err, data);
+            }
+          );
+        }
       });
 
       $('.web-message-check-session').click(function(e) {
