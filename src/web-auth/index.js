@@ -214,10 +214,8 @@ WebAuth.prototype.parseHash = function(options, cb) {
     options = options || {};
   }
 
-  var _window = windowHelper.getWindow();
-
   var hashStr =
-    options.hash === undefined ? _window.location.hash : options.hash;
+    options.hash === undefined ? windowHelper.getWindow().location.hash : options.hash;
   hashStr = hashStr.replace(/^#?\/?/, '');
 
   parsedQs = qs.parse(hashStr);
