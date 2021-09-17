@@ -670,6 +670,7 @@ WebAuth.prototype.changePassword = function(options, cb) {
  * @param {String} [options.email] email where to send the `code` or `link`. This parameter is mutually exclusive with `phoneNumber`
  * @param {String} options.connection name of the passwordless connection
  * @param {Object} [options.authParams] additional Auth parameters when using `link`
+ * @param {Object} [options.xRequestLanguage] value for the X-Request-Language header. If not set, the language is detected using the client browser.
  * @param {Function} cb
  * @see   {@link https://auth0.com/docs/api/authentication#passwordless}
  * @memberof WebAuth.prototype

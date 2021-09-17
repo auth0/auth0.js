@@ -255,20 +255,6 @@ var auth0 = new auth0.Management({
 
 [Organizations](https://auth0.com/docs/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
 
-Using Organizations, you can:
-
-- Represent teams, business customers, partner companies, or any logical grouping of users that should have different ways of accessing your applications, as organizations.
-
-- Manage their membership in a variety of ways, including user invitation.
-
-- Configure branded, federated login flows for each organization.
-
-- Implement role-based access control, such that users can have different roles when authenticating in the context of different organizations.
-
-- Build administration capabilities into your products, using Organizations APIs, so that those businesses can manage their own organizations.
-
-Note that Organizations is currently only available to customers on our Enterprise and Startup subscription plans.
-
 ### Log in to an organization
 
 To log in to a specific organization, pass the ID of the organization as the `organization` parameter when creating the `WebAuth` client:

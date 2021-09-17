@@ -88,6 +88,13 @@ RequestBuilder.prototype.setCommonConfiguration = function(
   var headers = this.headers;
   ongoingRequest = ongoingRequest.set('Content-Type', 'application/json');
 
+  if (options.xRequestLanguage) {
+    ongoingRequest = ongoingRequest.set(
+      'X-Request-Language',
+      options.xRequestLanguage
+    );
+  }
+
   var keys = Object.keys(this.headers);
 
   for (var a = 0; a < keys.length; a++) {
