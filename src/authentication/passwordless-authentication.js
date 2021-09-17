@@ -157,7 +157,9 @@ PasswordlessAuthentication.prototype.start = function(options, cb) {
 
   body = objectHelper.toSnakeCase(body, ['auth0Client', 'authParams']);
 
-  const postOptions = xRequestLanguage ? { xRequestLanguage } : undefined;
+  var postOptions = xRequestLanguage
+    ? { xRequestLanguage: xRequestLanguage }
+    : undefined;
 
   return this.request
     .post(url, postOptions)
