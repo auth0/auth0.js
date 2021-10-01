@@ -1,7 +1,7 @@
 {
-    "files": {
-        "src/version.js": [],
-        "README.md": []
-    },
-    "postbump": "node scripts/jsdocs.js"
+  "files": {
+    "src/version.js": [],
+    "README.md": []
+  },
+  "postbump": "npm run build && git add -f dist/ && node scripts/jsdocs.js"
 }

@@ -26,7 +26,8 @@
     "prefer-spread": 0,
     "prefer-rest-params": 0,
     "lines-around-directive": 0,
-    "valid-typeof": 0
+    "valid-typeof": 0,
+    "radix": "off"
   },
   "settings": {
     "polyfills": ["Object.assign"]

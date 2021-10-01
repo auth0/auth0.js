@@ -150,7 +150,7 @@ function WebAuth(options) {
       : true;
 
   this.baseOptions._timesToRetryFailedRequests = options._timesToRetryFailedRequests
-    ? parseInt(options._timesToRetryFailedRequests, 0)
+    ? parseInt(options._timesToRetryFailedRequests)
     : 0;
 
   this.baseOptions.tenant =
@@ -215,7 +215,9 @@ WebAuth.prototype.parseHash = function(options, cb) {
   }
 
   var hashStr =
-    options.hash === undefined ? windowHelper.getWindow().location.hash : options.hash;
+    options.hash === undefined
+      ? windowHelper.getWindow().location.hash
+      : options.hash;
   hashStr = hashStr.replace(/^#?\/?/, '');
 
   parsedQs = qs.parse(hashStr);

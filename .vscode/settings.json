@@ -1,8 +1,6 @@
 // Place your settings in this file to overwrite default and user settings.
 {
   "editor.formatOnSave": true,
-  "prettier.printWidth": 100,
-  "prettier.singleQuote": true,
   "search.exclude": {
     "**/node_modules": true,
     "**/bower_components": true,
