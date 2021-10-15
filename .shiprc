@@ -3,5 +3,5 @@
     "src/version.js": [],
     "README.md": []
   },
-  "postbump": "npm run build && git add -f dist/ && node scripts/jsdocs.js"
+  "postbump": "npm run build && node scripts/jsdocs.js"
 }
