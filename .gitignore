@@ -10,7 +10,7 @@ lib-cov
 *.out
 *.pid
 *.gz
-
+  
 pids
 logs
 results
@@ -24,7 +24,6 @@ release
 .DS_Store
 
 build
-dist
 
 .gitignore
 coverage
