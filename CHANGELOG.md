@@ -1,9 +1,23 @@
+## [v9.17.0](https://github.com/auth0/auth0.js/tree/v9.17.0) (2021-10-15)
+
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.4...v9.17.0)
+
+**Added**
+
+- Add `xRequestLanguage`, which sends X-Request-Language header to `/passwordless/start` [\#1210](https://github.com/auth0/auth0.js/pull/1210) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
+**Fixed**
+
+- Check window object only if it is options.hash is not set [\#1209](https://github.com/auth0/auth0.js/pull/1209) ([FDiskas](https://github.com/FDiskas))
 
 ## [v9.16.4](https://github.com/auth0/auth0.js/tree/v9.16.4) (2021-08-26)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.3...v9.16.4)
 
 **Fixed**
+
 - Fix: Passwordless Verify [\#1202](https://github.com/auth0/auth0.js/pull/1202) ([seanaye](https://github.com/seanaye))
+
 ## [v9.16.3](https://github.com/auth0/auth0.js/tree/v9.16.3) (2021-08-24)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.2...v9.16.3)
@@ -885,7 +899,7 @@ var auth0 = new auth0.WebAuth({
 And if you ever need to perform an `xhr` request to Auth0 Authentication API, `WebAuth` exposes an instance of `AuthenticationAPI`
 
 ```js
-auth0.client.userInfo(accessToken, function(error, userInfo) {
+auth0.client.userInfo(accessToken, function (error, userInfo) {
   // User information or error
 });
 ```

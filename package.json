@@ -1,6 +1,6 @@
 {
   "name": "auth0-js",
-  "version": "9.16.4",
+  "version": "9.17.0",
   "description": "Auth0 headless browser sdk",
   "author": "Auth0",
   "license": "MIT",
@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "base64-js": "^1.5.1",
-    "idtoken-verifier": "^2.2.1",
+    "idtoken-verifier": "^2.2.2",
     "js-cookie": "^2.2.0",
     "qs": "^6.10.1",
     "superagent": "^5.3.1",
