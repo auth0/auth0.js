@@ -228,7 +228,7 @@ context('TransactionManager', function() {
           lastUsedConnection: 'lastUsedConnection'
         });
       });
-      it('stores state with expires option equal to 30 mins', function() {
+      it('stores state with expires option equal to 30 mins by default', function () {
         this.tm.generateTransaction(
           'appState',
           'providedState',
@@ -243,7 +243,26 @@ context('TransactionManager', function() {
           expires: times.MINUTES_30
         });
       });
-      it('stores the organization ID when given', function() {
+      it('stores state with expires option equal to X mins if passed in', function () {
+        this.tm = new TransactionManager({
+          domain: 'myapp.auth0.com',
+          stateExpiration: 60 //minutes
+        });
+        this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null
+        );
+        expect(Storage.prototype.setItem.calledOnce).to.be(true);
+        expect(typeof Storage.prototype.setItem.lastCall.args[2]).to.be(
+          'object'
+        );
+        expect(Storage.prototype.setItem.lastCall.args[2]).to.be.eql({
+          expires: 1 / 24 //days
+        });
+      });
+      it('stores the organization ID when given', function () {
         this.tm.generateTransaction(
           'appState',
           'providedState',
