@@ -35,6 +35,7 @@ function defaultClock() {
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {Number} [options.leeway] number of seconds to account for clock skew when validating time-based claims in ID tokens. Defaults to 60 seconds.
  * @param {Number} [options.maxAge] maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server.
+ * @param {Number} [options.stateExpiration] number of minutes for the stored state to be kept. Defaults to 30 minutes.
  * @param {String} [options.organization] the Id of an organization to log in to
  * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
  * @param {Array} [options.plugins]
@@ -89,6 +90,11 @@ function WebAuth(options) {
         optional: true,
         type: 'number',
         message: 'maxAge is not valid'
+      },
+      stateExpiration: {
+        optional: true,
+        type: 'number',
+        message: 'stateExpiration is not valid'
       },
       _disableDeprecationWarnings: {
         optional: true,
