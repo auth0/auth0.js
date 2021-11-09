@@ -1,4 +1,10 @@
-## [v9.17.0](https://github.com/auth0/auth0.js/tree/v9.17.0) (2021-10-15)
+# Change Log
+
+## [v9.18.0](https://github.com/auth0/auth0.js/tree/v9.18.0) (2021-11-09)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.17.0...v9.18.0)
+
+**Added**
+- Make state expiration configurable [\#1217](https://github.com/auth0/auth0.js/pull/1217) ([aedelbro](https://github.com/aedelbro))
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.4...v9.17.0)
 

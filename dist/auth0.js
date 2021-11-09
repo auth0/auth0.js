@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.17.0
+ * auth0-js v9.18.0
  * Author: Auth0
- * Date: 2021-10-15
+ * Date: 2021-11-09
  * License: MIT
  */
 
@@ -4593,7 +4593,7 @@
 	  decode: decode$1
 	};
 
-	var version = { raw: '9.17.0' };
+	var version = { raw: '9.18.0' };
 
 	var toString = Object.prototype.toString;
 
@@ -5671,6 +5671,8 @@
 	  var transaction = options.transaction || {};
 	  this.namespace = transaction.namespace || DEFAULT_NAMESPACE;
 	  this.keyLength = transaction.keyLength || 32;
+	  // Passed option is in minutes, convert to days
+	  this.stateExpiration = options.stateExpiration ? (options.stateExpiration / 60 / 24) : MINUTES_30;
 	  this.storage = new Storage(options);
 	  this.options = options;
 	}
@@ -5730,7 +5732,7 @@
 	    }
 
 	    this.storage.setItem(this.namespace + state, transactionPayload, {
-	      expires: MINUTES_30
+	      expires: this.stateExpiration
 	    });
 	  }
 
@@ -7440,6 +7442,7 @@
 	 * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
 	 * @param {Number} [options.leeway] number of seconds to account for clock skew when validating time-based claims in ID tokens. Defaults to 60 seconds.
 	 * @param {Number} [options.maxAge] maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server.
+	 * @param {Number} [options.stateExpiration] number of minutes for the stored state to be kept. Defaults to 30 minutes.
 	 * @param {String} [options.organization] the Id of an organization to log in to
 	 * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
 	 * @param {Array} [options.plugins]
@@ -7494,6 +7497,11 @@
 	        optional: true,
 	        type: 'number',
 	        message: 'maxAge is not valid'
+	      },
+	      stateExpiration: {
+	        optional: true,
+	        type: 'number',
+	        message: 'stateExpiration is not valid'
 	      },
 	      _disableDeprecationWarnings: {
 	        optional: true,
