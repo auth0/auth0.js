@@ -75,6 +75,7 @@ class SilentAuthenticationHandler {
     };
   }
 
+  // eslint-disable-next-line class-methods-use-this
   getCallbackHandler(callback, usePostMessage) {
     return function (eventData) {
       var callbackValue;

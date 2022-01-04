@@ -1,8 +1,8 @@
 import urljoin from 'url-join';
 
-import objectHelper from '../helper/object.js';
-import RequestBuilder from '../helper/request-builder.js';
-import responseHandler from '../helper/response-handler.js';
+import objectHelper from '../helper/object';
+import RequestBuilder from '../helper/request-builder';
+import responseHandler from '../helper/response-handler';
 import windowHelper from '../helper/window';
 import TransactionManager from './transaction-manager';
 
@@ -44,6 +44,7 @@ class UsernamePassword {
       .end(responseHandler(cb));
   }
 
+  // eslint-disable-next-line class-methods-use-this
   callback(formHtml) {
     var div;
     var form;
