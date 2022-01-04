@@ -1,18 +1,19 @@
 import version from '../version';
 
-function PluginHandler(webAuth, plugins) {
-  this.plugins = plugins;
+class PluginHandler {
+  constructor (webAuth, plugins) {
+    this.plugins = plugins;
 
-  for (var a = 0; a < this.plugins.length; a++) {
-    if (this.plugins[a].version !== version.raw) {
-      var pluginName = '';
+    for (var a = 0; a < this.plugins.length; a++) {
+      if (this.plugins[a].version !== version.raw) {
+        var pluginName = '';
 
-      if (this.plugins[a].constructor && this.plugins[a].constructor.name) {
-        pluginName = this.plugins[a].constructor.name;
-      }
+        if (this.plugins[a].constructor && this.plugins[a].constructor.name) {
+          pluginName = this.plugins[a].constructor.name;
+        }
 
-      throw new Error(
-        'Plugin ' +
+        throw new Error(
+          'Plugin ' +
           pluginName +
           ' version (' +
           this.plugins[a].version +
@@ -20,21 +21,23 @@ function PluginHandler(webAuth, plugins) {
           'is not compatible with the SDK version (' +
           version.raw +
           ')'
-      );
+        );
+      }
+
+      this.plugins[a].setWebAuth(webAuth);
+    }
+  }
+
+  get(extensibilityPoint) {
+    for (var a = 0; a < this.plugins.length; a++) {
+      if (this.plugins[a].supports(extensibilityPoint)) {
+        return this.plugins[a].init();
+      }
     }
 
-    this.plugins[a].setWebAuth(webAuth);
+    return null;
   }
 }
 
-PluginHandler.prototype.get = function(extensibilityPoint) {
-  for (var a = 0; a < this.plugins.length; a++) {
-    if (this.plugins[a].supports(extensibilityPoint)) {
-      return this.plugins[a].init();
-    }
-  }
-
-  return null;
-};
 
 export default PluginHandler;

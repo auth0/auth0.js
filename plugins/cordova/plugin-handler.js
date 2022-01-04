@@ -1,18 +1,21 @@
 import urljoin from 'url-join';
 import PopupHandler from './popup-handler';
 
-function PluginHandler(webAuth) {
-  this.webAuth = webAuth;
+class PluginHandler {
+  constructor (webAuth) {
+    this.webAuth = webAuth;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  processParams(params) {
+    params.redirectUri = urljoin('https://' + params.domain, 'mobile');
+    delete params.owp;
+    return params;
+  }
+
+  getPopupHandler() {
+    return new PopupHandler(this.webAuth);
+  }
 }
-
-PluginHandler.prototype.processParams = function(params) {
-  params.redirectUri = urljoin('https://' + params.domain, 'mobile');
-  delete params.owp;
-  return params;
-};
-
-PluginHandler.prototype.getPopupHandler = function() {
-  return new PopupHandler(this.webAuth);
-};
 
 export default PluginHandler;

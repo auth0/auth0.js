@@ -5,91 +5,90 @@ import * as times from '../helper/times';
 
 var DEFAULT_NAMESPACE = 'com.auth0.auth.';
 
-function TransactionManager(options) {
-  var transaction = options.transaction || {};
-  this.namespace = transaction.namespace || DEFAULT_NAMESPACE;
-  this.keyLength = transaction.keyLength || 32;
-  // Passed option is in minutes, convert to days
-  this.stateExpiration = options.stateExpiration ? (options.stateExpiration / 60 / 24) : times.MINUTES_30;
-  this.storage = new Storage(options);
-  this.options = options;
-}
-
-TransactionManager.prototype.process = function(options) {
-  if (!options.responseType) {
-    throw new Error('responseType is required');
-  }
-  var lastUsedConnection = options.realm || options.connection;
-  var responseTypeIncludesIdToken =
-    options.responseType.indexOf('id_token') !== -1;
-
-  var transaction = this.generateTransaction(
-    options.appState,
-    options.state,
-    options.nonce,
-    lastUsedConnection,
-    responseTypeIncludesIdToken,
-    options.organization
-  );
-
-  if (!options.state) {
-    options.state = transaction.state;
+class TransactionManager {
+  constructor (options) {
+    var transaction = options.transaction || {};
+    this.namespace = transaction.namespace || DEFAULT_NAMESPACE;
+    this.keyLength = transaction.keyLength || 32;
+    // Passed option is in minutes, convert to days
+    this.stateExpiration = options.stateExpiration ? (options.stateExpiration / 60 / 24) : times.MINUTES_30;
+    this.storage = new Storage(options);
+    this.options = options;
   }
 
-  if (responseTypeIncludesIdToken && !options.nonce) {
-    options.nonce = transaction.nonce;
-  }
+  process(options) {
+    if (!options.responseType) {
+      throw new Error('responseType is required');
+    }
+    var lastUsedConnection = options.realm || options.connection;
+    var responseTypeIncludesIdToken = options.responseType.indexOf('id_token') !== -1;
 
-  return options;
-};
+    var transaction = this.generateTransaction(
+      options.appState,
+      options.state,
+      options.nonce,
+      lastUsedConnection,
+      responseTypeIncludesIdToken,
+      options.organization
+    );
 
-TransactionManager.prototype.generateTransaction = function(
-  appState,
-  state,
-  nonce,
-  lastUsedConnection,
-  generateNonce,
-  organization
-) {
-  state = state || random.randomString(this.keyLength);
-  nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
-
-  var isHostedLoginPage =
-    windowHelper.getWindow().location.host === this.options.domain;
-
-  if (!isHostedLoginPage) {
-    var transactionPayload = {
-      nonce: nonce,
-      appState: appState,
-      state: state,
-      lastUsedConnection: lastUsedConnection
-    };
-
-    if (organization) {
-      transactionPayload.organization = organization;
+    if (!options.state) {
+      options.state = transaction.state;
     }
 
-    this.storage.setItem(this.namespace + state, transactionPayload, {
-      expires: this.stateExpiration
-    });
+    if (responseTypeIncludesIdToken && !options.nonce) {
+      options.nonce = transaction.nonce;
+    }
+
+    return options;
   }
 
-  return {
-    state: state,
-    nonce: nonce
-  };
-};
+  generateTransaction(appState,
+    state,
+    nonce,
+    lastUsedConnection,
+    generateNonce,
+    organization
+  ) {
+    state = state || random.randomString(this.keyLength);
+    nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
 
-TransactionManager.prototype.getStoredTransaction = function(state) {
-  var transactionData;
+    var isHostedLoginPage = windowHelper.getWindow().location.host === this.options.domain;
 
-  transactionData = this.storage.getItem(this.namespace + state);
-  this.clearTransaction(state);
-  return transactionData;
-};
+    if (!isHostedLoginPage) {
+      var transactionPayload = {
+        nonce: nonce,
+        appState: appState,
+        state: state,
+        lastUsedConnection: lastUsedConnection
+      };
 
-TransactionManager.prototype.clearTransaction = function(state) {
-  this.storage.removeItem(this.namespace + state);
-};
+      if (organization) {
+        transactionPayload.organization = organization;
+      }
+
+      this.storage.setItem(this.namespace + state, transactionPayload, {
+        expires: this.stateExpiration
+      });
+    }
+
+    return {
+      state: state,
+      nonce: nonce
+    };
+  }
+
+  getStoredTransaction(state) {
+    var transactionData;
+
+    transactionData = this.storage.getItem(this.namespace + state);
+    this.clearTransaction(state);
+    return transactionData;
+  }
+
+  clearTransaction(state) {
+    this.storage.removeItem(this.namespace + state);
+  }
+}
 
 export default TransactionManager;

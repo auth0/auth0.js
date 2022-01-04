@@ -1,11 +1,11 @@
-function DummyStorage() {}
+/* eslint-disable class-methods-use-this */
 
-DummyStorage.prototype.getItem = function() {
-  return null;
-};
-
-DummyStorage.prototype.removeItem = function() {};
-
-DummyStorage.prototype.setItem = function() {};
+class DummyStorage {
+  getItem() {
+    return null;
+  }
+  removeItem() { }
+  setItem() { }
+}
 
 export default DummyStorage;

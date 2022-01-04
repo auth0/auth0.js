@@ -1,23 +1,25 @@
 import version from '../../src/version';
 
-function MockPlugin(configuration) {
-  configuration = configuration || {};
+class MockPlugin {
+  constructor (configuration) {
+    configuration = configuration || {};
 
-  this.version = configuration.version || version.raw;
-  this.handler = configuration.handler || null;
-  this.extensibilityPoints = configuration.extensibilityPoints || [];
+    this.version = configuration.version || version.raw;
+    this.handler = configuration.handler || null;
+    this.extensibilityPoints = configuration.extensibilityPoints || [];
+  }
+
+  supports(extensibilityPoint) {
+    return this.extensibilityPoints.indexOf(extensibilityPoint) > -1;
+  }
+
+  setWebAuth(webAuth) {
+    this.webAuth = webAuth;
+  }
+
+  init() {
+    return this.handler;
+  }
 }
-
-MockPlugin.prototype.supports = function(extensibilityPoint) {
-  return this.extensibilityPoints.indexOf(extensibilityPoint) > -1;
-};
-
-MockPlugin.prototype.setWebAuth = function(webAuth) {
-  this.webAuth = webAuth;
-};
-
-MockPlugin.prototype.init = function() {
-  return this.handler;
-};
 
 module.exports = MockPlugin;
