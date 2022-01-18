@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.18.1](https://github.com/auth0/auth0.js/tree/v9.18.1) (2022-01-14)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.18.0...v9.18.1)
+
+**Fixed**
+- Set sameSite to 'none' for cookies when using HTTPS [\#1229](https://github.com/auth0/auth0.js/pull/1229) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v9.18.0](https://github.com/auth0/auth0.js/tree/v9.18.0) (2021-11-09)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.17.0...v9.18.0)
 
