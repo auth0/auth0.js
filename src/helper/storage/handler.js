@@ -5,10 +5,12 @@ import Warn from '../warn';
 
 function StorageHandler(options) {
   this.warn = new Warn({});
-  this.storage = new CookieStorage();
+  this.storage = new CookieStorage(options);
+
   if (options.__tryLocalStorageFirst !== true) {
     return;
   }
+
   try {
     // some browsers throw an error when trying to access localStorage
     // when localStorage is disabled.
@@ -22,7 +24,7 @@ function StorageHandler(options) {
   }
 }
 
-StorageHandler.prototype.failover = function() {
+StorageHandler.prototype.failover = function () {
   if (this.storage instanceof DummyStorage) {
     this.warn.warning('DummyStorage: ignore failover');
     return;
@@ -35,7 +37,7 @@ StorageHandler.prototype.failover = function() {
   }
 };
 
-StorageHandler.prototype.getItem = function(key) {
+StorageHandler.prototype.getItem = function (key) {
   try {
     return this.storage.getItem(key);
   } catch (e) {
@@ -45,7 +47,7 @@ StorageHandler.prototype.getItem = function(key) {
   }
 };
 
-StorageHandler.prototype.removeItem = function(key) {
+StorageHandler.prototype.removeItem = function (key) {
   try {
     return this.storage.removeItem(key);
   } catch (e) {
@@ -55,7 +57,7 @@ StorageHandler.prototype.removeItem = function(key) {
   }
 };
 
-StorageHandler.prototype.setItem = function(key, value, options) {
+StorageHandler.prototype.setItem = function (key, value, options) {
   try {
     return this.storage.setItem(key, value, options);
   } catch (e) {

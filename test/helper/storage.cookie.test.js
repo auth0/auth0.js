@@ -4,12 +4,14 @@ import sinon from 'sinon';
 
 import CookieStorage from '../../src/helper/storage/cookie';
 import windowHandler from '../../src/helper/window';
+import Cookies from 'js-cookie';
 
-var cookieStorage = new CookieStorage();
 const KEY = 'foo';
 const VALUE = 'bar';
 
 describe('storage.cookies', function () {
+  let cookieStorage;
+
   beforeEach(function () {
     sinon.stub(CookieLibrary, 'get').callsFake(function (key) {
       expect(key).to.be(KEY);
@@ -22,6 +24,8 @@ describe('storage.cookies', function () {
     sinon.stub(CookieLibrary, 'remove').callsFake(function (key) {
       expect(key).to.be(KEY);
     });
+
+    cookieStorage = new CookieStorage({ legacySameSiteCookie: true });
   });
   afterEach(function () {
     CookieLibrary.get.restore();
@@ -33,10 +37,30 @@ describe('storage.cookies', function () {
       const value = cookieStorage.getItem(KEY);
       expect(value).to.be(VALUE);
     });
+
+    it('should fall back to the compatibility cookie if the main one isnt available', () => {
+      CookieLibrary.get.restore();
+
+      sinon.stub(CookieLibrary, 'get').callsFake(key => {
+        switch (key) {
+          case `_${KEY}_compat`:
+            return VALUE;
+          default:
+            return undefined;
+        }
+      });
+
+      const value = cookieStorage.getItem(KEY);
+      expect(value).to.be(VALUE);
+    });
   });
   describe('removeItem', function () {
     it('calls Cookie.remove', function (done) {
+      CookieLibrary.remove.restore();
+      sinon.stub(CookieLibrary, 'remove').callsFake();
       cookieStorage.removeItem(KEY);
+      expect(Cookies.remove.firstCall.args).to.be.eql(['foo']);
+      expect(Cookies.remove.secondCall.args).to.be.eql(['_foo_compat']);
       done();
     });
   });
@@ -75,7 +99,7 @@ describe('storage.cookies', function () {
       ]);
     });
 
-    it('sets the secure flag on cookies when using the https protocol', function () {
+    it('sets the secure flag on cookies when using the https protocol, and saves legacy compatibility cookie', function () {
       windowHandler.getWindow.restore();
       sinon.stub(windowHandler, 'getWindow').callsFake(function () {
         return {
@@ -84,6 +108,40 @@ describe('storage.cookies', function () {
           }
         };
       });
+
+      CookieLibrary.set.restore();
+      sinon.stub(CookieLibrary, 'set').callsFake(() => {});
+
+      cookieStorage.setItem(KEY, VALUE, { expires: 2, test: true });
+
+      expect(CookieLibrary.set.firstCall.args).to.be.eql([
+        '_foo_compat',
+        'bar',
+        { expires: 2, test: true, secure: true }
+      ]);
+
+      expect(CookieLibrary.set.secondCall.args).to.be.eql([
+        'foo',
+        'bar',
+        { expires: 2, test: true, secure: true, sameSite: 'none' }
+      ]);
+    });
+
+    it('does not save a legacy compat cookie when legacySameSiteCookie: false', function () {
+      cookieStorage = new CookieStorage();
+
+      windowHandler.getWindow.restore();
+
+      sinon.stub(windowHandler, 'getWindow').callsFake(function () {
+        return {
+          location: {
+            protocol: 'https:'
+          }
+        };
+      });
+
+      CookieLibrary.set.restore();
+      sinon.stub(CookieLibrary, 'set').callsFake(() => {});
 
       cookieStorage.setItem(KEY, VALUE, { expires: 2, test: true });
 

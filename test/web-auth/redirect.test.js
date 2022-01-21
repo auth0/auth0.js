@@ -9,21 +9,20 @@ import RequestBuilder from '../../src/helper/request-builder';
 import CrossOriginAuthentication from '../../src/web-auth/cross-origin-authentication';
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 import TransactionManager from '../../src/web-auth/transaction-manager';
-import objectHelper from '../../src/helper/object';
 
-describe('auth0.WebAuth.redirect', function() {
-  before(function() {
+describe('auth0.WebAuth.redirect', function () {
+  before(function () {
     sinon
       .stub(TransactionManager.prototype, 'generateTransaction')
-      .callsFake(function(appState, state, nonce) {
+      .callsFake(function (appState, state, nonce) {
         return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
       });
   });
-  after(function() {
+  after(function () {
     TransactionManager.prototype.generateTransaction.restore();
   });
-  context('signup', function() {
-    before(function() {
+  context('signup', function () {
+    before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -33,12 +32,12 @@ describe('auth0.WebAuth.redirect', function() {
       });
     });
 
-    afterEach(function() {
+    afterEach(function () {
       request.post.restore();
     });
 
-    it('should call db-connection signup with all the options', function(done) {
-      sinon.stub(request, 'post').callsFake(function(url) {
+    it('should call db-connection signup with all the options', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         expect(url).to.be('https://me.auth0.com/dbconnections/signup');
         return new RequestMock({
           body: {
@@ -50,7 +49,7 @@ describe('auth0.WebAuth.redirect', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          cb: function (cb) {
             cb(null, {
               body: {
                 email_verified: false,
@@ -67,7 +66,7 @@ describe('auth0.WebAuth.redirect', function() {
           email: 'me@example.com',
           password: '123456'
         },
-        function(err, data) {
+        function (err, data) {
           expect(err).to.be(null);
           expect(data).to.eql({
             emailVerified: false,
@@ -79,8 +78,8 @@ describe('auth0.WebAuth.redirect', function() {
     });
   });
 
-  context('login', function() {
-    before(function() {
+  context('login', function () {
+    before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -89,7 +88,7 @@ describe('auth0.WebAuth.redirect', function() {
         _sendTelemetry: false
       });
     });
-    afterEach(function() {
+    afterEach(function () {
       if (CrossOriginAuthentication.prototype.login.restore) {
         CrossOriginAuthentication.prototype.login.restore();
       }
@@ -97,24 +96,24 @@ describe('auth0.WebAuth.redirect', function() {
         CrossOriginAuthentication.prototype.callback.restore();
       }
     });
-    it('should call CrossOriginAuthentication.login', function(done) {
+    it('should call CrossOriginAuthentication.login', function (done) {
       var inputOptions = { foo: 'bar', connection: 'realm' };
       var expectedOptions = { foo: 'bar', realm: 'realm' };
       sinon
         .stub(CrossOriginAuthentication.prototype, 'login')
-        .callsFake(function(options, cb) {
+        .callsFake(function (options, cb) {
           expect(options).to.be.eql(expectedOptions);
           expect(cb()).to.be('cb');
           done();
         });
-      this.auth0.redirect.loginWithCredentials(inputOptions, function() {
+      this.auth0.redirect.loginWithCredentials(inputOptions, function () {
         return 'cb';
       });
     });
   });
 
-  context('signup and login', function() {
-    before(function() {
+  context('signup and login', function () {
+    before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -122,10 +121,10 @@ describe('auth0.WebAuth.redirect', function() {
         responseType: 'token',
         _sendTelemetry: false
       });
-      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function () {
         return {
           crypto: {
-            getRandomValues: function() {
+            getRandomValues: function () {
               return [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
             }
           }
@@ -133,16 +132,16 @@ describe('auth0.WebAuth.redirect', function() {
       });
     });
 
-    afterEach(function() {
+    afterEach(function () {
       request.post.restore();
     });
 
-    after(function() {
+    after(function () {
       windowHelper.getWindow.restore();
     });
 
-    it('should call db-connection signup with all the options', function(done) {
-      sinon.stub(request, 'post').callsFake(function(url) {
+    it('should call db-connection signup with all the options', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         if (url !== 'https://me.auth0.com/dbconnections/signup') {
           throw new Error('Invalid URL');
         }
@@ -157,7 +156,7 @@ describe('auth0.WebAuth.redirect', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          cb: function (cb) {
             cb(null, {
               body: {
                 _id: '...',
@@ -168,7 +167,7 @@ describe('auth0.WebAuth.redirect', function() {
           }
         });
       });
-      sinon.stub(this.auth0, 'login').callsFake(function(options, cb) {
+      sinon.stub(this.auth0, 'login').callsFake(function (options, cb) {
         expect(options).to.be.eql({
           email: 'me@example.com',
           password: '123456',
@@ -186,8 +185,8 @@ describe('auth0.WebAuth.redirect', function() {
       });
     });
 
-    it('should propagate signup errors', function(done) {
-      sinon.stub(request, 'post').callsFake(function(url) {
+    it('should propagate signup errors', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         expect(url).to.be('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
@@ -200,7 +199,7 @@ describe('auth0.WebAuth.redirect', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          cb: function (cb) {
             cb({
               response: {
                 statusCode: 400,
@@ -221,7 +220,7 @@ describe('auth0.WebAuth.redirect', function() {
           password: '123456',
           scope: 'openid'
         },
-        function(err, data) {
+        function (err, data) {
           expect(data).to.be(undefined);
           expect(err).to.eql({
             original: {
@@ -243,8 +242,8 @@ describe('auth0.WebAuth.redirect', function() {
     });
   });
 
-  context('passwordlessVerify', function() {
-    before(function() {
+  context('passwordlessVerify', function () {
+    before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -253,13 +252,13 @@ describe('auth0.WebAuth.redirect', function() {
       });
     });
 
-    afterEach(function() {
+    afterEach(function () {
       request.post.restore();
       windowHelper.redirect.restore();
     });
 
-    it('should verify the code and redirect to the passwordless verify page', function(done) {
-      sinon.stub(windowHelper, 'redirect').callsFake(function(url) {
+    it('should verify the code and redirect to the passwordless verify page', function (done) {
+      sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
         expect(url).to.be(
           'https://me.auth0.com/passwordless/verify_redirect?client_id=test-client-id&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&auth0Client=' +
             encodeURIComponent(telemetryInfo)
@@ -267,7 +266,7 @@ describe('auth0.WebAuth.redirect', function() {
         done();
       });
 
-      sinon.stub(request, 'post').callsFake(function(url) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         expect(url).to.be('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
@@ -280,7 +279,7 @@ describe('auth0.WebAuth.redirect', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
+          cb: function (cb) {
             cb(null, {
               body: {}
             });
@@ -295,12 +294,12 @@ describe('auth0.WebAuth.redirect', function() {
           phoneNumber: '123456',
           verificationCode: 'abc'
         },
-        function(err) {}
+        function (err) {}
       );
     });
 
-    it('should verify the code and redirect to the passwordless verify page (using global client ID)', function(done) {
-      sinon.stub(windowHelper, 'redirect').callsFake(function(url) {
+    it('should verify the code and redirect to the passwordless verify page (using global client ID)', function (done) {
+      sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
         expect(url).to.be(
           'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&auth0Client=' +
             encodeURIComponent(telemetryInfo)
@@ -308,7 +307,7 @@ describe('auth0.WebAuth.redirect', function() {
         done();
       });
 
-      sinon.stub(request, 'post').callsFake(function(url) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         expect(url).to.be('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
@@ -321,7 +320,7 @@ describe('auth0.WebAuth.redirect', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
+          cb: function (cb) {
             cb(null, {
               body: {}
             });
@@ -335,13 +334,13 @@ describe('auth0.WebAuth.redirect', function() {
           phoneNumber: '123456',
           verificationCode: 'abc'
         },
-        function(err) {}
+        function (err) {}
       );
     });
   });
 
-  context('passwordlessVerify without telemetry', function() {
-    before(function() {
+  context('passwordlessVerify without telemetry', function () {
+    before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -351,20 +350,20 @@ describe('auth0.WebAuth.redirect', function() {
       });
     });
 
-    afterEach(function() {
+    afterEach(function () {
       request.post.restore();
       windowHelper.redirect.restore();
     });
 
-    it('should verify the code and redirect to the passwordless verify page', function(done) {
-      sinon.stub(windowHelper, 'redirect').callsFake(function(url) {
+    it('should verify the code and redirect to the passwordless verify page', function (done) {
+      sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
         expect(url).to.be(
           'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState'
         );
         done();
       });
 
-      sinon.stub(request, 'post').callsFake(function(url) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         expect(url).to.be('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
@@ -376,7 +375,7 @@ describe('auth0.WebAuth.redirect', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          cb: function (cb) {
             cb(null, {
               body: {}
             });
@@ -390,12 +389,12 @@ describe('auth0.WebAuth.redirect', function() {
           phoneNumber: '123456',
           verificationCode: 'abc'
         },
-        function(err) {}
+        function (err) {}
       );
     });
   });
-  context('passwordlessVerify with error', function() {
-    before(function() {
+  context('passwordlessVerify with error', function () {
+    before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -405,12 +404,12 @@ describe('auth0.WebAuth.redirect', function() {
       });
     });
 
-    afterEach(function() {
+    afterEach(function () {
       request.post.restore();
     });
 
-    it('should verify the code and redirect to the passwordless verify page', function(done) {
-      sinon.stub(request, 'post').callsFake(function(url) {
+    it('should verify the code and redirect to the passwordless verify page', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         expect(url).to.be('https://me.auth0.com/passwordless/verify');
         return new RequestMock({
           body: {
@@ -422,7 +421,7 @@ describe('auth0.WebAuth.redirect', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          cb: function (cb) {
             cb({
               error: 'some_error_code',
               error_description: 'Some error description'
@@ -437,7 +436,7 @@ describe('auth0.WebAuth.redirect', function() {
           phoneNumber: '123456',
           verificationCode: 'abc'
         },
-        function(err) {
+        function (err) {
           expect(err).to.eql({
             original: {
               error: 'some_error_code',
@@ -452,8 +451,8 @@ describe('auth0.WebAuth.redirect', function() {
     });
   });
 
-  describe('authenticate', function() {
-    beforeEach(function() {
+  describe('authenticate', function () {
+    beforeEach(function () {
       global.window = { location: '' };
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
@@ -463,16 +462,16 @@ describe('auth0.WebAuth.redirect', function() {
       });
     });
 
-    it('should check that responseType is present', function() {
+    it('should check that responseType is present', function () {
       var _this = this;
-      expect(function() {
+      expect(function () {
         _this.auth0.authorize({ connection: 'facebook' });
-      }).to.throwException(function(e) {
+      }).to.throwException(function (e) {
         expect(e.message).to.be('responseType option is required');
       });
     });
 
-    it('should redirect to authorize', function() {
+    it('should redirect to authorize', function () {
       this.auth0.authorize({
         responseType: 'code',
         connection: 'facebook',
@@ -484,7 +483,7 @@ describe('auth0.WebAuth.redirect', function() {
       );
     });
 
-    it('should redirect to logout', function() {
+    it('should redirect to logout', function () {
       this.auth0.logout({ redirect_to: 'http://example.com/logout' });
       expect(global.window.location).to.be(
         'https://me.auth0.com/v2/logout?client_id=...&redirect_to=http%3A%2F%2Fexample.com%2Flogout'
