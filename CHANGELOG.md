@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.19.0](https://github.com/auth0/auth0.js/tree/v9.19.0) (2022-01-25)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.18.1...v9.19.0)
+
+**Added**
+- Add compatibility cookie for SameSite, with option to turn it off [\#1232](https://github.com/auth0/auth0.js/pull/1232) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v9.18.1](https://github.com/auth0/auth0.js/tree/v9.18.1) (2022-01-14)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.18.0...v9.18.1)
 
