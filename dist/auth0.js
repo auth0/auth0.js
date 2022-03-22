@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.19.0
  * Author: Auth0
- * Date: 2022-01-25
+ * Date: 2022-03-22
  * License: MIT
  */
 
@@ -7710,6 +7710,18 @@
 	      )
 	    );
 	  }
+	  if (
+	    responseTypes.length > 0 &&
+	    responseTypes.indexOf('code') !== -1 &&
+	    !parsedQs.hasOwnProperty('code')
+	  ) {
+	    return cb(
+	      error.buildResponse(
+	        'invalid_hash',
+	        'response_type contains `code`, but the parsed hash does not contain a `code` property'
+	      )
+	    );
+	  }
 	  return this.validateAuthenticationResponse(options, parsedQs, cb);
 	};
 
@@ -7904,7 +7916,8 @@
 	    state: qsParams.state || null,
 	    expiresIn: qsParams.expires_in ? parseInt(qsParams.expires_in, 10) : null,
 	    tokenType: qsParams.token_type || null,
-	    scope: qsParams.scope || null
+	    scope: qsParams.scope || null,
+	    code: qsParams.code || null
 	  };
 	}
 
