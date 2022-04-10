@@ -1,5 +1,5 @@
 {
-  "extends": ["eslint:recommended", "auth0-base/prettier"],
+  "extends": ["eslint:recommended"],
   "plugins": ["compat"],
   "env": {
     "browser": true,
