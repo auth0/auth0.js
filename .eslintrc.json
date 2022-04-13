@@ -1,9 +1,10 @@
 {
-  "extends": ["eslint:recommended", "auth0-base/prettier"],
+  "extends": ["eslint:recommended", "prettier"],
   "plugins": ["compat"],
   "env": {
     "browser": true,
-    "mocha": true
+    "mocha": true,
+    "node": true
   },
   "parser": "@babel/eslint-parser",
   "rules": {
