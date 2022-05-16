@@ -43,7 +43,7 @@ From [npm](https://npmjs.org):
 npm install auth0-js
 ```
 
-After installing the `auth0-js` module using [npm](https://npmjs.org), you'll need bundle it up along with all of its dependencies, or import it using:
+After installing the `auth0-js` module using [npm](https://npmjs.org), you'll need to bundle it up along with all of its dependencies, or import it using:
 
 ```
 import auth0 from 'auth0-js';
