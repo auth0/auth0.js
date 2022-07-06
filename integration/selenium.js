@@ -97,7 +97,7 @@ export async function setupDriver(callback) {
 
     capabilities.forEach(capability =>
       promises.push(
-        new Promise(res => {
+        new Promise((res, rej) => {
           // Note: this is just for displaying in the console as the tests are running.
           const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
 
@@ -116,9 +116,8 @@ export async function setupDriver(callback) {
                 })
                 .catch(err => {
                   console.error(err);
-                })
-                .finally(() => {
                   driver.quit();
+                  rej(err);
                 });
             })
             .catch(e => {
@@ -130,7 +129,6 @@ export async function setupDriver(callback) {
     );
 
     try {
-      console.log(promises.length);
       await Promise.all(promises);
     } finally {
       console.log('Stopping');
