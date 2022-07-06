@@ -62,16 +62,19 @@ const startBrowserStackLocal = () =>
     const bsLocal = new browserstack.Local();
 
     bsLocal.start({ force: true }, err => {
-      if (err) return rej(err);
+      if (err) {
+        console.log(err);
+        return rej(err);
+      }
       console.log('BrowserStack local started', bsLocal.isRunning());
       res(bsLocal);
     });
   });
 
 export async function setupDriver(callback) {
-  const runTests = (driver, browser) =>
+  const runTests = (driver, browser) => {
     // eslint-disable-next-line compat/compat
-    new Promise(res => {
+    return new Promise(res => {
       callback(
         () => ({
           start: async () => {
@@ -84,6 +87,7 @@ export async function setupDriver(callback) {
         res
       );
     });
+  };
 
   const builder = new webdriver.Builder();
   const bsLocal = await startBrowserStackLocal();
@@ -105,10 +109,17 @@ export async function setupDriver(callback) {
             .usingServer(server)
             .build()
             .then(driver => {
-              runTests(driver, browser).then(() => {
-                driver.quit();
-                res();
-              });
+              runTests(driver, browser)
+                .then(() => {
+                  driver.quit();
+                  res();
+                })
+                .catch(err => {
+                  console.error(err);
+                })
+                .finally(() => {
+                  driver.quit();
+                });
             })
             .catch(e => {
               bsLocal.stop(() => console.log('BrowserStack local stopped'));
@@ -134,9 +145,16 @@ export async function setupDriver(callback) {
       browserName = 'Chrome Headless';
     }
 
-    const driver = await builder.build();
-
-    await runTests(driver, browserName);
-    await driver.quit();
+    try {
+      const driver = await builder.build();
+      await runTests(driver, browserName);
+      await driver.quit();
+    } catch (e) {
+      console.log(e);
+    } finally {
+      bsLocal.stop(() => {
+        console.log('BrowserStack local stopped');
+      });
+    }
   }
 }
