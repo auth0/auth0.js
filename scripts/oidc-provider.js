@@ -6,7 +6,10 @@ const config = {
     {
       client_id: 'testing',
       application_type: 'web',
-      redirect_uris: ['http://127.0.0.1:3000/test.html'],
+      redirect_uris: [
+        'http://127.0.0.1:3000/test.html',
+        'http://bs-local:3000/test.html'
+      ],
       token_endpoint_auth_method: 'none',
       grant_types: ['implicit', 'authorization_code'],
       response_types: ['id_token token', 'id_token', 'code']
