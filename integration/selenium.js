@@ -29,8 +29,8 @@ const capabilities = [
     os: 'Windows',
     os_version: '10',
     browser_version: 'latest'
-  },
-  {
+  }
+  /*{
     browserName: 'firefox',
     os: 'Windows',
     os_version: '10',
@@ -53,7 +53,7 @@ const capabilities = [
     os: 'Windows',
     os_version: '10',
     browser_version: '11'
-  }
+  }*/
 ];
 
 const startBrowserStackLocal = () =>
