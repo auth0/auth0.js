@@ -22,7 +22,6 @@ If you want to read the full API documentation of auth0.js, see [here](https://a
 - [Passwordless Login](#passwordless-login)
 - [Organizations](#organizations)
 - [Documentation](#documentation)
-- [Migration](#migration)
 - [Develop](#develop)
 - [Issue Reporting](#issue-reporting)
 - [Author](#author)
@@ -102,7 +101,7 @@ auth0.authorize({
 
 Parses a URL hash fragment to extract the result of an Auth0 authentication response.
 
-**Note:** This method requires that your tokens are signed with **RS256**. Please check our [Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide#switching-from-hs256-to-rs256) for more information.
+**Note:** This method requires that your tokens are signed with **RS256** - please read [our documentation on signing algorithms](https://auth0.com/docs/get-started/applications/signing-algorithms) for more information.
 
 ```js
 auth0.parseHash({ hash: window.location.hash }, function (err, authResult) {
@@ -297,13 +296,7 @@ if (organization && invitation) {
 
 ## Documentation
 
-For a complete reference and examples please check our [docs](https://auth0.com/docs/libraries/auth0js).
-
-## Migration
-
-If you need help migrating to v9, please refer to the [v9 Migration Guide](https://auth0.com/docs/libraries/auth0js/v9/migration-guide).
-
-If you need help migrating to v8, please refer to the [v8 Migration Guide](https://auth0.com/docs/libraries/auth0js/v8/migration-guide).
+For a complete reference and examples please check [our docs](https://auth0.com/docs/libraries/auth0js).
 
 ## Develop
 
