@@ -1,0 +1,7 @@
+dist/
+docs/
+example/
+integration/
+test/
+CHANGELOG.md
+README.md
