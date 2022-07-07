@@ -1,10 +1,13 @@
 version: 2.1
 orbs:
   ship: auth0/ship@0.2.0
+executors:
+  docker-executor:
+    docker:
+      - image: cimg/node:lts
 jobs:
   build:
-    docker:
-      - image: circleci/node:12-browsers
+    executor: docker-executor
     environment:
       LANG: en_US.UTF-8
     steps:

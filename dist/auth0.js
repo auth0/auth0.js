@@ -7464,7 +7464,7 @@
 	 * @param {String} [options.organization] the Id of an organization to log in to
 	 * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
 	 * @param {Array} [options.plugins]
-	 * @param {Boolean} [options.legacySameSiteCookie] set this to `false` to disable the legacy compatibility cookie that is created for older browsers that don't support the SameSite attribute (defaults to `true`)
+	 * @param {Boolean} [options.legacySameSiteCookie] set this to `false` to disable the legacy compatibility cookie that is created for older browsers that don't support the SameSite attribute (defaults to `true`). **Note**: this setting only has an effect when running on an HTTPS domain; if HTTP is used, no legacy cookies are created regardless of this setting.
 	 * @param {Number} [options._timesToRetryFailedRequests] Number of times to retry a failed request, according to {@link https://github.com/visionmedia/superagent/blob/master/lib/request-base.js}
 	 * @see {@link https://auth0.com/docs/api/authentication}
 	 */

@@ -70,7 +70,7 @@
     "@babel/register": "^7.15.3",
     "babel-plugin-istanbul": "^6.0.0",
     "browserstack-local": "^1.4.8",
-    "chromedriver": "^92.0.2",
+    "chromedriver": "^103.0.0",
     "codecov": "^3.8.3",
     "concurrently": "^6.2.2",
     "cross-env": "^7.0.3",
