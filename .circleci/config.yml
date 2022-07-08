@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   ship: auth0/ship@0.2.0
+  codecov: codecov/codecov@3
 executors:
   docker-executor:
     docker:
@@ -29,9 +30,6 @@ jobs:
             MOCHA_FILE: junit/test-results.xml
           when: always
       - run:
-          name: Generate Coverage
-          command: npm run ci:coverage
-      - run:
           name: BrowserStack tests
           command: npm run test:e2e:browserstack
       - store_artifacts:
@@ -40,6 +38,7 @@ jobs:
           path: junit
       - store_test_results:
           path: junit
+      - codecov/upload
 
 workflows:
   build-and-test:
