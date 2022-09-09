@@ -1,5 +1,15 @@
 # Change Log
 
+## [v9.19.1](https://github.com/auth0/auth0.js/tree/v9.19.1) (2022-09-09)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.19.0...v9.19.1)
+
+**Changed**
+- Clean up old/missing library migration links [\#1256](https://github.com/auth0/auth0.js/pull/1256) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- Clarify usage of legacySameSiteCookie in readme [\#1255](https://github.com/auth0/auth0.js/pull/1255) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
+**Security**
+- Security: Bump dev dependencies and update lockfile [\#1244](https://github.com/auth0/auth0.js/pull/1244) ([evansims](https://github.com/evansims))
+
 ## [v9.19.0](https://github.com/auth0/auth0.js/tree/v9.19.0) (2022-01-25)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.18.1...v9.19.0)
 
