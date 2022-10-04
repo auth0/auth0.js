@@ -82,7 +82,7 @@
     "istanbul": "^0.4.5",
     "jsdoc": "^3.6.8",
     "jsdoc-to-markdown": "7.0.0",
-    "jsdom": "^15.1.1",
+    "jsdom": "^16.5.0",
     "jsdom-global": "^3.0.2",
     "jsonwebtoken": "^8.5.1",
     "lint-staged": "^11.1.2",
