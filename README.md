@@ -77,6 +77,8 @@ var auth0 = new auth0.Management({
 
 ## API reference
 
+Read the full API documentation of auth0.js in our [API documentation](https://auth0.github.io/auth0.js/index.html).
+
 ### auth0.webAuth
 
 #### constructor(options)
