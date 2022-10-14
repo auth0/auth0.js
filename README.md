@@ -77,172 +77,42 @@ var auth0 = new auth0.Management({
 
 ## API reference
 
-Read the full API documentation of auth0.js in our [API documentation](https://auth0.github.io/auth0.js/index.html).
-
 ### auth0.webAuth
 
-#### constructor(options)
-
-**Parameters**
-
-All parameters can be considered optional unless otherwise stated.
-
-| Option                        | Type              | Description                                                                                                                                                                                                                                                                              |
-| :---------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `domain`                      | string (required) | Your Auth0 account domain such as `'example.auth0.com'` or `'example.eu.auth0.com'`.                                                                                                                                                                                                     |
-| `clientID`                    | string (required) | The Client ID found on your Application settings page.                                                                                                                                                                                                                                   |
-| `redirectUri`                 | string            | The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be added to the "Allowed Callback URLs" in your Auth0 Application's settings.                                                                                                    |
-| `scope`                       | string            | The default scope used for all authorization requests.                                                                                                                                                                                                                                   |
-| `audience`                    | string            | The default audience, used if requesting access to an API.                                                                                                                                                                                                                               |
-| `responseType`                | string            | Response type for all authentication requests. It can be any space separated list of the values `code`, `token`, `id_token`. **If you don't provide a global `responseType`, you will have to provide a `responseType` for each method that you use**.                                   |
-| `responseMode`                | string            | The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. |
-| `_disableDeprecationWarnings` | boolean           | Indicates if deprecation warnings should be output to the browser console, defaults to `false`.                                                                                                                                                                                          |
-| `maxAge`                      | number            | Used during token validation. Specifies the maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. If the elapsed time is greater than this value, the token is considered invalid and the user must be re-authenticated.  |
-| `leeway`                      | number            | Used during ID token validation. Specifies the number of seconds to account for clock skew when validating time-based claims such as `iat` and `exp`. The default is 60 seconds.                                                                                                         |
-| `organization`                | string            | The ID of the Organization to log in to (see [Organizations](#organizations))                                                                                                                                                                                                            |
-| `invitation`                  | string            | The ID of the user invitation to accept. This is usually used in conjunction with the `organization` parameter, and should be parsed from an invitation URL. (see [Organizations](#organizations))                                                                                       |
-
-#### authorize(options)
-
-Redirects to the `/authorize` endpoint to start an authentication/authorization transaction. Auth0 will call back to your application with the results at the specified `redirectUri`.
-
-**Note:** The default scope for this method is `openid profile email`.
-
-```js
-auth0.authorize({
-  audience: 'https://mystore.com/api/v2',
-  scope: 'read:order write:order',
-  responseType: 'token',
-  redirectUri: 'https://example.com/auth/callback'
-});
-```
-
-#### parseHash(options, callback)
-
-Parses a URL hash fragment to extract the result of an Auth0 authentication response.
-
-**Note:** This method requires that your tokens are signed with **RS256** - please read [our documentation on signing algorithms](https://auth0.com/docs/get-started/applications/signing-algorithms) for more information.
-
-```js
-auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
-  if (err) {
-    return console.log(err);
-  }
-
-  // The contents of authResult depend on which authentication parameters were used.
-  // It can include the following:
-  // authResult.accessToken - access token for the API specified by `audience`
-  // authResult.expiresIn - string with the access token's expiration time in seconds
-  // authResult.idToken - ID token JWT containing user profile information
-
-  auth0.client.userInfo(authResult.accessToken, function(err, user) {
-    // Now you have the user's information
-  });
-});
-```
-
-#### checkSession(options, callback)
-
-Allows you to acquire a new token from Auth0 for a user who already has an SSO session established against Auth0 for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
-
-Everything happens inside an iframe, so it will not reload your application or redirect away from it.
-
-```js
-auth0.checkSession(
-  {
-    audience: 'https://mystore.com/api/v2',
-    scope: 'read:order write:order'
-  },
-  function(err, authResult) {
-    // Authentication tokens or error
-  }
-);
-```
-
-The contents of `authResult` are identical to those returned by `parseHash()`.
-
-**Important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `checkSession`.
-
-**Important:** Because there is no redirect in this method, `responseType: 'code'` is not supported and will throw an error.
-
-Remember to add the URL where the authorization request originates from to the Allowed Web Origins list of your Auth0 Application in the [Dashboard](https://manage.auth0.com/) under your Applications's **Settings**.
-
-#### client.login(options, callback)
-
-Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
-
-```js
-auth0.client.login(
-  {
-    realm: 'Username-Password-Authentication', //connection name or HRD domain
-    username: 'info@auth0.com',
-    password: 'areallystrongpassword',
-    audience: 'https://mystore.com/api/v2',
-    scope: 'read:order write:order'
-  },
-  function(err, authResult) {
-    // Auth tokens in the result or an error
-  }
-);
-```
-
-The contents of `authResult` are identical to those returned by `parseHash()`.
-
-**onRedirecting hook**
-
-When using `login` to log in using a username and password, Auth0.js initially makes a call to Auth0 to get a login ticket, before sending that login ticket to the `/authorize` endpoint to be exchanged for tokens. You are able to specify an `onRedirecting` hook here to handle when Auth0.js is about to redirect to the `/authorize` endpoint, for the purposes of executing some custom code (analytics, etc).
-
-To do this, specify the `onRedirecting` function in the options and ensure that the `done` callback is called when you are finished executing your custom code. Otherwise, authentication will be blocked.
-
-```js
-auth0.client.login(
-  {
-    realm: 'Username-Password-Authentication', //connection name or HRD domain
-    username: 'info@auth0.com',
-    password: 'areallystrongpassword',
-    onRedirecting: function(done) {
-      // Your custom code here
-      done();
-    }
-  },
-  function(err, authResult) {
-    // Auth tokens in the result or an error
-  }
-);
-```
+- [constructor](https://auth0.github.io/auth0.js/WebAuth.html#WebAuth)
+- [authorize(options)](https://auth0.github.io/auth0.js/WebAuth.html#authorize)
+- [changePassword(options)](https://auth0.github.io/auth0.js/WebAuth.html#changePassword)
+- [checkSession(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#checkSession)
+- [login(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#login)
+- [logout(options)](https://auth0.github.io/auth0.js/WebAuth.html#logout)
+- [parseHash(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#parseHash)
+- [passwordlessLogin(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#passwordlessLogin)
+- [passwordlessStart(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#passwordlessStart)
+- [passwordlessVerify(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#passwordlessVerify)
+- [renderCaptcha(element, options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#renderCaptcha)
+- [renewAuth(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#renewAuth)
+- [signup(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#signup)
+- [signupAndAuthorize(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#signupAndAuthorize)
+- [validateAuthenticationResponse(options, parsedHash, callback)](https://auth0.github.io/auth0.js/WebAuth.html#validateAuthenticationResponse)
 
 ### auth0.Authentication
 
-#### buildAuthorizeUrl(options)
-
-Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction. [https://auth0.com/docs/api/authentication#database-ad-ldap-passive-](https://auth0.com/docs/api/authentication#database-ad-ldap-passive-)
-
-#### buildLogoutUrl(options)
-
-Builds and returns the Logout url in order to initialize a new authN/authZ transaction. [https://auth0.com/docs/api/authentication#logout](https://auth0.com/docs/api/authentication#logout)
-
-#### loginWithDefaultDirectory(options, cb)
-
-Makes a call to the `oauth/token` endpoint with `password` grant type. [https://auth0.com/docs/api-auth/grant/password](https://auth0.com/docs/api-auth/grant/password)
-
-#### login(options, cb)
-
-Makes a call to the `oauth/token` endpoint with `https://auth0.com/oauth/grant-type/password-realm` grant type.
-
-#### oauthToken(options, cb)
-
-Makes a call to the `oauth/token` endpoint.
-
-#### userInfo(token, cb)
-
-Makes a call to the `/userinfo` endpoint and returns the user profile.
+- [buildAuthorizeUrl(options)](http://localhost:8080/Authentication.html#buildAuthorizeUrl)
+- [buildLogoutUrl(options)](http://localhost:8080/Authentication.html#buildLogoutUrl)
+- [delegation(options, callback)](http://localhost:8080/Authentication.html#delegation)
+- [getChallenge(callback)](http://localhost:8080/Authentication.html#getChallenge)
+- [getSSOData(withActiveDirectories, callback)](http://localhost:8080/Authentication.html#getSSOData)
+- [login(options, callback)](http://localhost:8080/Authentication.html#login)
+- [loginWithDefaultDirectory(options, callback)](http://localhost:8080/Authentication.html#loginWithDefaultDirectory)
+- [loginWithResourceOwner(options, callback)](http://localhost:8080/Authentication.html#loginWithResourceOwner)
+- [userInfo(token, callback)](http://localhost:8080/Authentication.html#userInfo)
 
 ### auth0.Management
 
-- **getUser(userId, cb)**: Returns the user profile. [https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id)
-- **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metadata. It will patch the user metadata with the attributes sent. [https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
-- **patchUserAttributes(userId, user, cb)**: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to [https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
-- **linkUser(userId, secondaryUserToken, cb)**: Link two users. [https://auth0.com/docs/api/management/v2#!/Users/post_identities](https://auth0.com/docs/api/management/v2#!/Users/post_identities)
+- [getUser(userId, callback)](http://localhost:8080/Management.html#getUser)
+- [linkUser(userId, secondaryUserId, callback)](http://localhost:8080/Management.html#linkUser)
+- [patchUserAttributes(userId, user, callback)](http://localhost:8080/Management.html#patchUserAttributes)
+- [patchUserMetadata(userId, userMetadata, callback)](http://localhost:8080/Management.html#patchUserMetadata)
 
 ## Feedback
 

@@ -2,6 +2,7 @@
 
 - [Passwordless Login](#passwordless-login)
 - [Organizations](#organizations)
+- [WebAuth.client.login(options, callback)](#webauthclientloginoptions-callback)
 
 ## Passwordless Login
 
@@ -45,4 +46,53 @@ if (organization && invitation) {
     invitation: params.get('invitation')
   });
 }
+```
+
+## WebAuth.client.login(options, callback)
+
+Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
+
+```js
+var auth0 = new auth0.WebAuth({
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  clientID: '{YOUR_AUTH0_CLIENT_ID}'
+});
+
+auth0.client.login(
+  {
+    realm: 'Username-Password-Authentication', //connection name or HRD domain
+    username: 'info@auth0.com',
+    password: 'areallystrongpassword',
+    audience: 'https://mystore.com/api/v2',
+    scope: 'read:order write:order'
+  },
+  function(err, authResult) {
+    // Auth tokens in the result or an error
+  }
+);
+```
+
+The contents of `authResult` are identical to those returned by `parseHash()`.
+
+**onRedirecting hook**
+
+When using `login` to log in using a username and password, Auth0.js initially makes a call to Auth0 to get a login ticket, before sending that login ticket to the `/authorize` endpoint to be exchanged for tokens. You are able to specify an `onRedirecting` hook here to handle when Auth0.js is about to redirect to the `/authorize` endpoint, for the purposes of executing some custom code (analytics, etc).
+
+To do this, specify the `onRedirecting` function in the options and ensure that the `done` callback is called when you are finished executing your custom code. Otherwise, authentication will be blocked.
+
+```js
+auth0.client.login(
+  {
+    realm: 'Username-Password-Authentication', //connection name or HRD domain
+    username: 'info@auth0.com',
+    password: 'areallystrongpassword',
+    onRedirecting: function(done) {
+      // Your custom code here
+      done();
+    }
+  },
+  function(err, authResult) {
+    // Auth tokens in the result or an error
+  }
+);
 ```
