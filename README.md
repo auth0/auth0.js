@@ -1,33 +1,24 @@
-![](https://cdn.auth0.com/resources/oss-source-large-2x.png)
-
-# auth0.js
-
-[![Build Status][circleci-image]][circleci-url]
-[![NPM version][npm-image]][npm-url]
-[![Coverage][codecov-image]][codecov-url]
-[![License][license-image]][license-url]
-[![Downloads][downloads-image]][downloads-url]
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js?ref=badge_shield)
+# auth0-js
 
 Client Side JavaScript toolkit for Auth0 API.
 
-If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html).
+![Release](https://img.shields.io/github/v/release/auth0/auth0.js)
+[![Codecov](https://img.shields.io/codecov/c/github/auth0/auth0.js)](https://codecov.io/gh/auth0/auth0.js)
+![Downloads](https://img.shields.io/npm/dw/auth0-js)
+[![License](https://img.shields.io/:license-MIT-blue.svg?style=flat)](https://opensource.org/licenses/MIT)
+[![CircleCI](https://img.shields.io/circleci/build/github/auth0/auth0.js)](https://circleci.com/gh/auth0/auth0.js)
 
-## Index
+:books: [Documentation](#documentation) - :rocket: [Getting Started](#getting-started) - :computer: [API Reference](#api-reference) - :speech_balloon: [Feedback](#feedback)
 
-- [Install](#install)
-- [auth0.WebAuth](#auth0webauth)
-- [auth0.Authentication](#auth0authentication)
-- [auth0.Management](#auth0management)
-- [Passwordless Login](#passwordless-login)
-- [Organizations](#organizations)
-- [Documentation](#documentation)
-- [Develop](#develop)
-- [Issue Reporting](#issue-reporting)
-- [Author](#author)
-- [License](#license)
+## Documentation
 
-## Install
+- [Library docs](https://auth0.com/docs/libraries/auth0js) - a complete reference and examples.
+- [Examples](./EXAMPLES.md) - code samples for common auth0-js authentication scenario's.
+- [Docs site](https://www.auth0.com/docs) - explore our docs site and learn more about Auth0.
+
+## Getting started
+
+### Installation
 
 From CDN:
 
@@ -44,15 +35,15 @@ npm install auth0-js
 
 After installing the `auth0-js` module using [npm](https://npmjs.org), you'll need to bundle it up along with all of its dependencies, or import it using:
 
-```
+```js
 import auth0 from 'auth0-js';
 ```
 
-## auth0.WebAuth
+### Configure the SDK
+
+#### auth0.WebAuth
 
 Provides support for all the authentication flows.
-
-### Initialize
 
 ```js
 var auth0 = new auth0.WebAuth({
@@ -60,6 +51,34 @@ var auth0 = new auth0.WebAuth({
   clientID: '{YOUR_AUTH0_CLIENT_ID}'
 });
 ```
+
+#### auth0.Authentication
+
+Provides an API client for the Auth0 Authentication API.
+
+```js
+var auth0 = new auth0.Authentication({
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  clientID: '{YOUR_AUTH0_CLIENT_ID}'
+});
+```
+
+#### auth0.Management
+
+Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an `access_token` with the `https://YOUR_DOMAIN.auth0.com/api/v2/` audience to make this work. For more information, read [the user management section of the Auth0.js documentation](https://auth0.com/docs/libraries/auth0js/v9#user-management).
+
+```js
+var auth0 = new auth0.Management({
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  token: '{ACCESS_TOKEN_FROM_THE_USER}'
+});
+```
+
+## API reference
+
+### auth0.webAuth
+
+#### constructor(options)
 
 **Parameters**
 
@@ -79,8 +98,6 @@ All parameters can be considered optional unless otherwise stated.
 | `leeway`                      | number            | Used during ID token validation. Specifies the number of seconds to account for clock skew when validating time-based claims such as `iat` and `exp`. The default is 60 seconds.                                                                                                         |
 | `organization`                | string            | The ID of the Organization to log in to (see [Organizations](#organizations))                                                                                                                                                                                                            |
 | `invitation`                  | string            | The ID of the user invitation to accept. This is usually used in conjunction with the `organization` parameter, and should be parsed from an invitation URL. (see [Organizations](#organizations))                                                                                       |
-
-### API
 
 #### authorize(options)
 
@@ -104,7 +121,7 @@ Parses a URL hash fragment to extract the result of an Auth0 authentication resp
 **Note:** This method requires that your tokens are signed with **RS256** - please read [our documentation on signing algorithms](https://auth0.com/docs/get-started/applications/signing-algorithms) for more information.
 
 ```js
-auth0.parseHash({ hash: window.location.hash }, function (err, authResult) {
+auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
   if (err) {
     return console.log(err);
   }
@@ -115,7 +132,7 @@ auth0.parseHash({ hash: window.location.hash }, function (err, authResult) {
   // authResult.expiresIn - string with the access token's expiration time in seconds
   // authResult.idToken - ID token JWT containing user profile information
 
-  auth0.client.userInfo(authResult.accessToken, function (err, user) {
+  auth0.client.userInfo(authResult.accessToken, function(err, user) {
     // Now you have the user's information
   });
 });
@@ -133,7 +150,7 @@ auth0.checkSession(
     audience: 'https://mystore.com/api/v2',
     scope: 'read:order write:order'
   },
-  function (err, authResult) {
+  function(err, authResult) {
     // Authentication tokens or error
   }
 );
@@ -160,7 +177,7 @@ auth0.client.login(
     audience: 'https://mystore.com/api/v2',
     scope: 'read:order write:order'
   },
-  function (err, authResult) {
+  function(err, authResult) {
     // Auth tokens in the result or an error
   }
 );
@@ -180,31 +197,18 @@ auth0.client.login(
     realm: 'Username-Password-Authentication', //connection name or HRD domain
     username: 'info@auth0.com',
     password: 'areallystrongpassword',
-    onRedirecting: function (done) {
+    onRedirecting: function(done) {
       // Your custom code here
       done();
     }
   },
-  function (err, authResult) {
+  function(err, authResult) {
     // Auth tokens in the result or an error
   }
 );
 ```
 
-## auth0.Authentication
-
-Provides an API client for the Auth0 Authentication API.
-
-### Initialize
-
-```js
-var auth0 = new auth0.Authentication({
-  domain: '{YOUR_AUTH0_DOMAIN}',
-  clientID: '{YOUR_AUTH0_CLIENT_ID}'
-});
-```
-
-### API
+### auth0.Authentication
 
 #### buildAuthorizeUrl(options)
 
@@ -230,120 +234,39 @@ Makes a call to the `oauth/token` endpoint.
 
 Makes a call to the `/userinfo` endpoint and returns the user profile.
 
-## auth0.Management
-
-Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an `access_token` with the `https://YOUR_DOMAIN.auth0.com/api/v2/` audience to make this work. For more information, read [the user management section of the Auth0.js documentation](https://auth0.com/docs/libraries/auth0js/v9#user-management).
-
-### Initialize
-
-```js
-var auth0 = new auth0.Management({
-  domain: '{YOUR_AUTH0_DOMAIN}',
-  token: '{ACCESS_TOKEN_FROM_THE_USER}'
-});
-```
-
-### API
+### auth0.Management
 
 - **getUser(userId, cb)**: Returns the user profile. [https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id)
 - **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metadata. It will patch the user metadata with the attributes sent. [https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
 - **patchUserAttributes(userId, user, cb)**: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to [https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
 - **linkUser(userId, secondaryUserToken, cb)**: Link two users. [https://auth0.com/docs/api/management/v2#!/Users/post_identities](https://auth0.com/docs/api/management/v2#!/Users/post_identities)
 
-## Passwordless Login
+## Feedback
 
-For information on how to implement Passwordless Login with this SDK, please read [Passwordless Login on Auth0 Docs](https://auth0.com/docs/libraries/auth0js#passwordless-login).
+### Contributing
 
-## Organizations
+We appreciate feedback and contribution to this repo! Before you get started, please see the following:
 
-[Organizations](https://auth0.com/docs/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
+- [Auth0's general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md)
+- [Auth0's code of conduct guidelines](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md)
 
-### Log in to an organization
+### Raise an issue
 
-To log in to a specific organization, pass the ID of the organization as the `organization` parameter when creating the `WebAuth` client:
+To provide feedback or report a bug, please [raise an issue on our issue tracker](https://github.com/auth0/auth0.js/issues).
 
-```js
-var webAuth = new WebAuth({
-  domain: '{YOUR_AUTH0_DOMAIN}',
-  clientID: '{YOUR_AUTH0_CLIENT_ID}',
-  organization: '{YOUR_AUTH0_ORGANIZATION_ID}'
-});
-```
+### Vulnerability Reporting
 
-You can also specify an organization when calling `authorize`:
+Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy) details the procedure for disclosing security issues.
 
-```js
-webAuth.authorize({
-  organization: '{YOUR_AUTH0_ORGANIZATION_ID}'
-});
-```
+---
 
-### Accept user invitations
-
-Accept a user invitation through the SDK by creating a route within your application that can handle the user invitation URL, and log the user in by passing the `organization` and `invitation` parameters from this URL. You can either use `authorize` or `popup.authorize` as needed.
-
-```js
-var url = new URL(invitationUrl)
-var params = new URLSearchParams(url.search);
-
-if (organization && invitation) {
-  webAuth.authorize({
-    organization: params.get('organization')
-    invitation: params.get('invitation')
-  });
-}
-```
-
-## Documentation
-
-For a complete reference and examples please check [our docs](https://auth0.com/docs/libraries/auth0js).
-
-## Develop
-
-Run `npm install` to set up the environment.
-
-Run `npm start` to point your browser to [`https://localhost:3000/`](https://localhost:3000/) to verify the example page works.
-
-Run `npm test` to run the test suite.
-
-Run `npm run ci:test` to run the tests that ci runs.
-
-Run `npm run test:watch` to run the test suite while you work.
-
-Run `npm run test:coverage` to run the test suite with coverage report.
-
-Run `npm run lint` to run the linter and check code styles.
-
-Run `npm install && npm run build && npm run test:es-check:es5 && npm run test:es-check:es2015:module` to check for JS incompatibility.
-
-See [.circleci/config.yml](.circleci/config.yml) for additional checks that might be run as part of
-[circleci integration tests](https://circleci.com/).
-
-## Issue Reporting
-
-If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
-
-For auth0 related questions/support please use the [Support Center](https://support.auth0.com).
-
-## Author
-
-[Auth0](https://auth0.com)
-
-## License
-
-This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more info.
-
-<!-- Vaaaaarrrrsss -->
-
-[npm-image]: https://img.shields.io/npm/v/auth0-js.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/auth0-js
-[circleci-image]: https://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&style=flat-square
-[circleci-url]: https://circleci.com/gh/auth0/auth0.js
-[codecov-image]: https://img.shields.io/codecov/c/github/auth0/auth0.js/master.svg?style=flat-square
-[codecov-url]: https://codecov.io/github/auth0/auth0.js?branch=master
-[license-image]: https://img.shields.io/npm/l/auth0-js.svg?style=flat-square
-[license-url]: #license
-[downloads-image]: https://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
-[downloads-url]: https://npmjs.org/package/auth0-js
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js?ref=badge_large)
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="./auth0_light_mode.png"   width="150">
+    <source media="(prefers-color-scheme: dark)" srcset="./auth0_dark_mode.png" width="150">
+    <img alt="Auth0 Logo" src="./auth0_light_mode.png" width="150">
+  </picture>
+</p>
+<p align="center">Auth0 is an easy to implement, adaptable authentication and authorization platform. To learn more checkout <a href="https://auth0.com/why-auth0">Why Auth0?</a></p>
+<p align="center">
+This project is licensed under the MIT license. See the <a href="./LICENSE"> LICENSE</a> file for more info.</p>
