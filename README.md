@@ -13,6 +13,7 @@ Client Side JavaScript toolkit for Auth0 API.
 ## Documentation
 
 - [Library docs](https://auth0.com/docs/libraries/auth0js) - a complete reference and examples.
+- [Sample App](./example/) - a sample application integrated with Auth0.
 - [Examples](./EXAMPLES.md) - code samples for common auth0-js authentication scenario's.
 - [Docs site](https://www.auth0.com/docs) - explore our docs site and learn more about Auth0.
 
