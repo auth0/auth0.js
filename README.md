@@ -2,7 +2,7 @@
 
 Client Side JavaScript toolkit for Auth0 API.
 
-![Release](https://img.shields.io/github/v/release/auth0/auth0.js)
+![Release](https://img.shields.io/npm/v/auth0-js)
 [![Codecov](https://img.shields.io/codecov/c/github/auth0/auth0.js)](https://codecov.io/gh/auth0/auth0.js)
 ![Downloads](https://img.shields.io/npm/dw/auth0-js)
 [![License](https://img.shields.io/:license-MIT-blue.svg?style=flat)](https://opensource.org/licenses/MIT)
