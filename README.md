@@ -1,6 +1,4 @@
-# auth0-js
-
-Client Side JavaScript toolkit for Auth0 API.
+![](./banner.png)
 
 ![Release](https://img.shields.io/npm/v/auth0-js)
 [![Codecov](https://img.shields.io/codecov/c/github/auth0/auth0.js)](https://codecov.io/gh/auth0/auth0.js)
