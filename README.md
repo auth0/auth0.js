@@ -1,4 +1,4 @@
-![](https://cdn.auth0.com/website/sdks/banners/auth0-js-banner.png)
+![Client Side JavaScript toolkot for Auth0 API](https://cdn.auth0.com/website/sdks/banners/auth0-js-banner.png)
 
 ![Release](https://img.shields.io/npm/v/auth0-js)
 [![Codecov](https://img.shields.io/codecov/c/github/auth0/auth0.js)](https://codecov.io/gh/auth0/auth0.js)
