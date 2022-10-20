@@ -12,7 +12,12 @@
   "templates": {
     "cleverLinks": false,
     "monospaceLinks": true,
-    "useLongnameInNav": false
+    "useLongnameInNav": false,
+    "default": {
+      "staticFiles": {
+        "include": ["./banner.png"]
+      }
+    }
   },
   "opts": {
     "destination": "./out/",

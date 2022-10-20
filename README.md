@@ -1,33 +1,23 @@
-![](https://cdn.auth0.com/resources/oss-source-large-2x.png)
+![Client Side JavaScript toolkot for Auth0 API](https://cdn.auth0.com/website/sdks/banners/auth0-js-banner.png)
 
-# auth0.js
+![Release](https://img.shields.io/npm/v/auth0-js)
+[![Codecov](https://img.shields.io/codecov/c/github/auth0/auth0.js)](https://codecov.io/gh/auth0/auth0.js)
+![Downloads](https://img.shields.io/npm/dw/auth0-js)
+[![License](https://img.shields.io/:license-MIT-blue.svg?style=flat)](https://opensource.org/licenses/MIT)
+[![CircleCI](https://img.shields.io/circleci/build/github/auth0/auth0.js)](https://circleci.com/gh/auth0/auth0.js)
 
-[![Build Status][circleci-image]][circleci-url]
-[![NPM version][npm-image]][npm-url]
-[![Coverage][codecov-image]][codecov-url]
-[![License][license-image]][license-url]
-[![Downloads][downloads-image]][downloads-url]
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js?ref=badge_shield)
+📚 [Documentation](#documentation) - 🚀 [Getting Started](#getting-started) - 💻 [API Reference](#api-reference) - 💬 [Feedback](#feedback)
 
-Client Side JavaScript toolkit for Auth0 API.
+## Documentation
 
-If you want to read the full API documentation of auth0.js, see [here](https://auth0.github.io/auth0.js/index.html).
+- [Library docs](https://auth0.com/docs/libraries/auth0js) - a complete reference and examples.
+- [Sample App](https://github.com/auth0/auth0.js/blob/master/example/) - a sample application integrated with Auth0.
+- [Examples](https://github.com/auth0/auth0.js/blob/master/EXAMPLES.md) - code samples for common auth0-js authentication scenario's.
+- [Docs site](https://www.auth0.com/docs) - explore our docs site and learn more about Auth0.
 
-## Index
+## Getting started
 
-- [Install](#install)
-- [auth0.WebAuth](#auth0webauth)
-- [auth0.Authentication](#auth0authentication)
-- [auth0.Management](#auth0management)
-- [Passwordless Login](#passwordless-login)
-- [Organizations](#organizations)
-- [Documentation](#documentation)
-- [Develop](#develop)
-- [Issue Reporting](#issue-reporting)
-- [Author](#author)
-- [License](#license)
-
-## Install
+### Installation
 
 From CDN:
 
@@ -44,15 +34,15 @@ npm install auth0-js
 
 After installing the `auth0-js` module using [npm](https://npmjs.org), you'll need to bundle it up along with all of its dependencies, or import it using:
 
-```
+```js
 import auth0 from 'auth0-js';
 ```
 
-## auth0.WebAuth
+### Configure the SDK
+
+#### auth0.WebAuth
 
 Provides support for all the authentication flows.
-
-### Initialize
 
 ```js
 var auth0 = new auth0.WebAuth({
@@ -61,141 +51,9 @@ var auth0 = new auth0.WebAuth({
 });
 ```
 
-**Parameters**
-
-All parameters can be considered optional unless otherwise stated.
-
-| Option                        | Type              | Description                                                                                                                                                                                                                                                                              |
-| :---------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `domain`                      | string (required) | Your Auth0 account domain such as `'example.auth0.com'` or `'example.eu.auth0.com'`.                                                                                                                                                                                                     |
-| `clientID`                    | string (required) | The Client ID found on your Application settings page.                                                                                                                                                                                                                                   |
-| `redirectUri`                 | string            | The URL where Auth0 will call back to with the result of a successful or failed authentication. It must be added to the "Allowed Callback URLs" in your Auth0 Application's settings.                                                                                                    |
-| `scope`                       | string            | The default scope used for all authorization requests.                                                                                                                                                                                                                                   |
-| `audience`                    | string            | The default audience, used if requesting access to an API.                                                                                                                                                                                                                               |
-| `responseType`                | string            | Response type for all authentication requests. It can be any space separated list of the values `code`, `token`, `id_token`. **If you don't provide a global `responseType`, you will have to provide a `responseType` for each method that you use**.                                   |
-| `responseMode`                | string            | The default responseMode used, defaults to `'fragment'`. The `parseHash` method can be used to parse authentication responses using fragment response mode. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. |
-| `_disableDeprecationWarnings` | boolean           | Indicates if deprecation warnings should be output to the browser console, defaults to `false`.                                                                                                                                                                                          |
-| `maxAge`                      | number            | Used during token validation. Specifies the maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. If the elapsed time is greater than this value, the token is considered invalid and the user must be re-authenticated.  |
-| `leeway`                      | number            | Used during ID token validation. Specifies the number of seconds to account for clock skew when validating time-based claims such as `iat` and `exp`. The default is 60 seconds.                                                                                                         |
-| `organization`                | string            | The ID of the Organization to log in to (see [Organizations](#organizations))                                                                                                                                                                                                            |
-| `invitation`                  | string            | The ID of the user invitation to accept. This is usually used in conjunction with the `organization` parameter, and should be parsed from an invitation URL. (see [Organizations](#organizations))                                                                                       |
-
-### API
-
-#### authorize(options)
-
-Redirects to the `/authorize` endpoint to start an authentication/authorization transaction. Auth0 will call back to your application with the results at the specified `redirectUri`.
-
-**Note:** The default scope for this method is `openid profile email`.
-
-```js
-auth0.authorize({
-  audience: 'https://mystore.com/api/v2',
-  scope: 'read:order write:order',
-  responseType: 'token',
-  redirectUri: 'https://example.com/auth/callback'
-});
-```
-
-#### parseHash(options, callback)
-
-Parses a URL hash fragment to extract the result of an Auth0 authentication response.
-
-**Note:** This method requires that your tokens are signed with **RS256** - please read [our documentation on signing algorithms](https://auth0.com/docs/get-started/applications/signing-algorithms) for more information.
-
-```js
-auth0.parseHash({ hash: window.location.hash }, function (err, authResult) {
-  if (err) {
-    return console.log(err);
-  }
-
-  // The contents of authResult depend on which authentication parameters were used.
-  // It can include the following:
-  // authResult.accessToken - access token for the API specified by `audience`
-  // authResult.expiresIn - string with the access token's expiration time in seconds
-  // authResult.idToken - ID token JWT containing user profile information
-
-  auth0.client.userInfo(authResult.accessToken, function (err, user) {
-    // Now you have the user's information
-  });
-});
-```
-
-#### checkSession(options, callback)
-
-Allows you to acquire a new token from Auth0 for a user who already has an SSO session established against Auth0 for your domain. If the user is not authenticated, the authentication result will be empty and you'll receive an error like this: `{error: 'login_required'}`.The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
-
-Everything happens inside an iframe, so it will not reload your application or redirect away from it.
-
-```js
-auth0.checkSession(
-  {
-    audience: 'https://mystore.com/api/v2',
-    scope: 'read:order write:order'
-  },
-  function (err, authResult) {
-    // Authentication tokens or error
-  }
-);
-```
-
-The contents of `authResult` are identical to those returned by `parseHash()`.
-
-**Important:** If you're not using the hosted login page to do social logins, you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `checkSession`.
-
-**Important:** Because there is no redirect in this method, `responseType: 'code'` is not supported and will throw an error.
-
-Remember to add the URL where the authorization request originates from to the Allowed Web Origins list of your Auth0 Application in the [Dashboard](https://manage.auth0.com/) under your Applications's **Settings**.
-
-#### client.login(options, callback)
-
-Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
-
-```js
-auth0.client.login(
-  {
-    realm: 'Username-Password-Authentication', //connection name or HRD domain
-    username: 'info@auth0.com',
-    password: 'areallystrongpassword',
-    audience: 'https://mystore.com/api/v2',
-    scope: 'read:order write:order'
-  },
-  function (err, authResult) {
-    // Auth tokens in the result or an error
-  }
-);
-```
-
-The contents of `authResult` are identical to those returned by `parseHash()`.
-
-**onRedirecting hook**
-
-When using `login` to log in using a username and password, Auth0.js initially makes a call to Auth0 to get a login ticket, before sending that login ticket to the `/authorize` endpoint to be exchanged for tokens. You are able to specify an `onRedirecting` hook here to handle when Auth0.js is about to redirect to the `/authorize` endpoint, for the purposes of executing some custom code (analytics, etc).
-
-To do this, specify the `onRedirecting` function in the options and ensure that the `done` callback is called when you are finished executing your custom code. Otherwise, authentication will be blocked.
-
-```js
-auth0.client.login(
-  {
-    realm: 'Username-Password-Authentication', //connection name or HRD domain
-    username: 'info@auth0.com',
-    password: 'areallystrongpassword',
-    onRedirecting: function (done) {
-      // Your custom code here
-      done();
-    }
-  },
-  function (err, authResult) {
-    // Auth tokens in the result or an error
-  }
-);
-```
-
-## auth0.Authentication
+#### auth0.Authentication
 
 Provides an API client for the Auth0 Authentication API.
-
-### Initialize
 
 ```js
 var auth0 = new auth0.Authentication({
@@ -204,37 +62,9 @@ var auth0 = new auth0.Authentication({
 });
 ```
 
-### API
-
-#### buildAuthorizeUrl(options)
-
-Builds and returns the `/authorize` url in order to initialize a new authN/authZ transaction. [https://auth0.com/docs/api/authentication#database-ad-ldap-passive-](https://auth0.com/docs/api/authentication#database-ad-ldap-passive-)
-
-#### buildLogoutUrl(options)
-
-Builds and returns the Logout url in order to initialize a new authN/authZ transaction. [https://auth0.com/docs/api/authentication#logout](https://auth0.com/docs/api/authentication#logout)
-
-#### loginWithDefaultDirectory(options, cb)
-
-Makes a call to the `oauth/token` endpoint with `password` grant type. [https://auth0.com/docs/api-auth/grant/password](https://auth0.com/docs/api-auth/grant/password)
-
-#### login(options, cb)
-
-Makes a call to the `oauth/token` endpoint with `https://auth0.com/oauth/grant-type/password-realm` grant type.
-
-#### oauthToken(options, cb)
-
-Makes a call to the `oauth/token` endpoint.
-
-#### userInfo(token, cb)
-
-Makes a call to the `/userinfo` endpoint and returns the user profile.
-
-## auth0.Management
+#### auth0.Management
 
 Provides an API Client for the Auth0 Management API (only methods meant to be used from the client with the user token). You should use an `access_token` with the `https://YOUR_DOMAIN.auth0.com/api/v2/` audience to make this work. For more information, read [the user management section of the Auth0.js documentation](https://auth0.com/docs/libraries/auth0js/v9#user-management).
-
-### Initialize
 
 ```js
 var auth0 = new auth0.Management({
@@ -243,107 +73,71 @@ var auth0 = new auth0.Management({
 });
 ```
 
-### API
+## API reference
 
-- **getUser(userId, cb)**: Returns the user profile. [https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id)
-- **patchUserMetadata(userId, userMetadata, cb)**: Updates the user metadata. It will patch the user metadata with the attributes sent. [https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
-- **patchUserAttributes(userId, user, cb)**: Updates the user attributes. It will patch the root attributes that the server allows it. To check what attributes can be patched, go to [https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id](https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id)
-- **linkUser(userId, secondaryUserToken, cb)**: Link two users. [https://auth0.com/docs/api/management/v2#!/Users/post_identities](https://auth0.com/docs/api/management/v2#!/Users/post_identities)
+### auth0.webAuth
 
-## Passwordless Login
+- [constructor](https://auth0.github.io/auth0.js/WebAuth.html#WebAuth)
+- [authorize(options)](https://auth0.github.io/auth0.js/WebAuth.html#authorize)
+- [changePassword(options)](https://auth0.github.io/auth0.js/WebAuth.html#changePassword)
+- [checkSession(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#checkSession)
+- [login(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#login)
+- [logout(options)](https://auth0.github.io/auth0.js/WebAuth.html#logout)
+- [parseHash(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#parseHash)
+- [passwordlessLogin(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#passwordlessLogin)
+- [passwordlessStart(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#passwordlessStart)
+- [passwordlessVerify(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#passwordlessVerify)
+- [renderCaptcha(element, options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#renderCaptcha)
+- [renewAuth(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#renewAuth)
+- [signup(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#signup)
+- [signupAndAuthorize(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#signupAndAuthorize)
+- [validateAuthenticationResponse(options, parsedHash, callback)](https://auth0.github.io/auth0.js/WebAuth.html#validateAuthenticationResponse)
 
-For information on how to implement Passwordless Login with this SDK, please read [Passwordless Login on Auth0 Docs](https://auth0.com/docs/libraries/auth0js#passwordless-login).
+### auth0.Authentication
 
-## Organizations
+- [buildAuthorizeUrl(options)](http://localhost:8080/Authentication.html#buildAuthorizeUrl)
+- [buildLogoutUrl(options)](http://localhost:8080/Authentication.html#buildLogoutUrl)
+- [delegation(options, callback)](http://localhost:8080/Authentication.html#delegation)
+- [getChallenge(callback)](http://localhost:8080/Authentication.html#getChallenge)
+- [getSSOData(withActiveDirectories, callback)](http://localhost:8080/Authentication.html#getSSOData)
+- [login(options, callback)](http://localhost:8080/Authentication.html#login)
+- [loginWithDefaultDirectory(options, callback)](http://localhost:8080/Authentication.html#loginWithDefaultDirectory)
+- [loginWithResourceOwner(options, callback)](http://localhost:8080/Authentication.html#loginWithResourceOwner)
+- [userInfo(token, callback)](http://localhost:8080/Authentication.html#userInfo)
 
-[Organizations](https://auth0.com/docs/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
+### auth0.Management
 
-### Log in to an organization
+- [getUser(userId, callback)](http://localhost:8080/Management.html#getUser)
+- [linkUser(userId, secondaryUserId, callback)](http://localhost:8080/Management.html#linkUser)
+- [patchUserAttributes(userId, user, callback)](http://localhost:8080/Management.html#patchUserAttributes)
+- [patchUserMetadata(userId, userMetadata, callback)](http://localhost:8080/Management.html#patchUserMetadata)
 
-To log in to a specific organization, pass the ID of the organization as the `organization` parameter when creating the `WebAuth` client:
+## Feedback
 
-```js
-var webAuth = new WebAuth({
-  domain: '{YOUR_AUTH0_DOMAIN}',
-  clientID: '{YOUR_AUTH0_CLIENT_ID}',
-  organization: '{YOUR_AUTH0_ORGANIZATION_ID}'
-});
-```
+### Contributing
 
-You can also specify an organization when calling `authorize`:
+We appreciate feedback and contribution to this repo! Before you get started, please see the following:
 
-```js
-webAuth.authorize({
-  organization: '{YOUR_AUTH0_ORGANIZATION_ID}'
-});
-```
+- [Auth0's general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md)
+- [Auth0's code of conduct guidelines](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md)
 
-### Accept user invitations
+### Raise an issue
 
-Accept a user invitation through the SDK by creating a route within your application that can handle the user invitation URL, and log the user in by passing the `organization` and `invitation` parameters from this URL. You can either use `authorize` or `popup.authorize` as needed.
+To provide feedback or report a bug, please [raise an issue on our issue tracker](https://github.com/auth0/auth0.js/issues).
 
-```js
-var url = new URL(invitationUrl)
-var params = new URLSearchParams(url.search);
+### Vulnerability Reporting
 
-if (organization && invitation) {
-  webAuth.authorize({
-    organization: params.get('organization')
-    invitation: params.get('invitation')
-  });
-}
-```
+Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy) details the procedure for disclosing security issues.
 
-## Documentation
+---
 
-For a complete reference and examples please check [our docs](https://auth0.com/docs/libraries/auth0js).
-
-## Develop
-
-Run `npm install` to set up the environment.
-
-Run `npm start` to point your browser to [`https://localhost:3000/`](https://localhost:3000/) to verify the example page works.
-
-Run `npm test` to run the test suite.
-
-Run `npm run ci:test` to run the tests that ci runs.
-
-Run `npm run test:watch` to run the test suite while you work.
-
-Run `npm run test:coverage` to run the test suite with coverage report.
-
-Run `npm run lint` to run the linter and check code styles.
-
-Run `npm install && npm run build && npm run test:es-check:es5 && npm run test:es-check:es2015:module` to check for JS incompatibility.
-
-See [.circleci/config.yml](.circleci/config.yml) for additional checks that might be run as part of
-[circleci integration tests](https://circleci.com/).
-
-## Issue Reporting
-
-If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
-
-For auth0 related questions/support please use the [Support Center](https://support.auth0.com).
-
-## Author
-
-[Auth0](https://auth0.com)
-
-## License
-
-This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more info.
-
-<!-- Vaaaaarrrrsss -->
-
-[npm-image]: https://img.shields.io/npm/v/auth0-js.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/auth0-js
-[circleci-image]: https://img.shields.io/circleci/project/github/auth0/auth0.js.svg?branch=master&style=flat-square
-[circleci-url]: https://circleci.com/gh/auth0/auth0.js
-[codecov-image]: https://img.shields.io/codecov/c/github/auth0/auth0.js/master.svg?style=flat-square
-[codecov-url]: https://codecov.io/github/auth0/auth0.js?branch=master
-[license-image]: https://img.shields.io/npm/l/auth0-js.svg?style=flat-square
-[license-url]: #license
-[downloads-image]: https://img.shields.io/npm/dm/auth0-js.svg?style=flat-square
-[downloads-url]: https://npmjs.org/package/auth0-js
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fauth0%2Fauth0.js?ref=badge_large)
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png"   width="150">
+    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_dark_mode.png" width="150">
+    <img alt="Auth0 Logo" src="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png" width="150">
+  </picture>
+</p>
+<p align="center">Auth0 is an easy to implement, adaptable authentication and authorization platform. To learn more checkout <a href="https://auth0.com/why-auth0">Why Auth0?</a></p>
+<p align="center">
+This project is licensed under the MIT license. See the <a href="https://github.com/auth0/auth0.js/blob/master/LICENSE"> LICENSE</a> file for more info.</p>
