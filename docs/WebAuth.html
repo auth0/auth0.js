@@ -1185,7 +1185,7 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
 
             
 
-            <td class="description last"><p>scopes to be requested during Auth. e.g. <code>openid email</code></p></td>
+            <td class="description last"><p>scopes to be requested during Auth. e.g. <code>openid email</code>. Defaults to <code>openid profile email</code>.</p></td>
         </tr>
 
     
@@ -1365,7 +1365,7 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line738">line 738</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line778">line 778</a>
     </li></ul></dd>
     
 
@@ -1399,6 +1399,16 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
 
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>auth0.authorize({
+  audience: 'https://mystore.com/api/v2',
+  scope: 'read:order write:order',
+  responseType: 'token',
+  redirectUri: 'https://example.com/auth/callback'
+});</code></pre>
 
 
 
@@ -1604,7 +1614,7 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line668">line 668</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line708">line 708</a>
     </li></ul></dd>
     
 
@@ -1656,6 +1666,17 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
 
 <div class="description">
     <p>Renews an existing session on Auth0's servers using <code>response_mode=web_message</code></p>
+<p>Allows you to acquire a new token from Auth0 for a user who already
+has an SSO session established against Auth0 for your domain.
+If the user is not authenticated, the authentication result will be empty
+and you'll receive an error like this: <code>{error: 'login_required'}</code>.
+The method accepts any valid OAuth2 parameters that would normally be sent to <code>/authorize</code>.</p>
+<p>Everything happens inside an iframe, so it will not reload your application or redirect away from it.</p>
+<p><strong>Important:</strong> If you're not using the hosted login page to do social logins,
+you have to use your own <a href="https://manage.auth0.com/#/connections/social">social connection keys</a>.
+If you use Auth0's dev keys, you'll always get <code>login_required</code> as an error when calling <code>checkSession</code>.</p>
+<p><strong>Important:</strong> Because there is no redirect in this method, <code>responseType: 'code'</code> is not supported and will throw an error.
+Remember to add the URL where the authorization request originates from to the Allowed Web Origins list of your Auth0 Application in the <a href="https://manage.auth0.com/">Dashboard</a> under your Applications's <strong>Settings</strong>.</p>
 </div>
 
 
@@ -2050,7 +2071,7 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line602">line 602</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line618">line 618</a>
     </li></ul></dd>
     
 
@@ -2084,6 +2105,17 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
 
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>auth0.checkSession({
+  audience: 'https://mystore.com/api/v2',
+  scope: 'read:order write:order'
+},
+function(err, authResult) {
+  // Authentication tokens or error
+});</code></pre>
 
 
 
@@ -2147,7 +2179,7 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line948">line 948</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line995">line 995</a>
     </li></ul></dd>
     
 
@@ -2235,7 +2267,7 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line959">line 959</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1006">line 1006</a>
     </li></ul></dd>
     
 
@@ -2595,7 +2627,7 @@ After the redirect to <code>redirectUri</code>, use <code>parseHash</code> to re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line835">line 835</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line882">line 882</a>
     </li></ul></dd>
     
 
@@ -2883,7 +2915,7 @@ After the redirect to <code>redirectUri</code>, use <code>parseHash</code> to re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line969">line 969</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1016">line 1016</a>
     </li></ul></dd>
     
 
@@ -3243,6 +3275,23 @@ Tokens signed with other algorithms will not be accepted.</p>
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
+  if (err) {
+    return console.log(err);
+  }
+  // The contents of authResult depend on which authentication parameters were used.
+  // It can include the following:
+  // authResult.accessToken - access token for the API specified by `audience`
+  // authResult.expiresIn - string with the access token's expiration time in seconds
+  // authResult.idToken - ID token JWT containing user profile information
+  auth0.client.userInfo(authResult.accessToken, function(err, user) {
+    // Now you have the user's information
+  });
+});</code></pre>
+
+
 
         
             
@@ -3516,7 +3565,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line891">line 891</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line938">line 938</a>
     </li></ul></dd>
     
 
@@ -3898,7 +3947,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line683">line 683</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line723">line 723</a>
     </li></ul></dd>
     
 
@@ -4252,7 +4301,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line994">line 994</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1041">line 1041</a>
     </li></ul></dd>
     
 
@@ -4697,7 +4746,7 @@ This function can only be used in the context of a Classic Universal Login Page.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1059">line 1059</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1106">line 1106</a>
     </li></ul></dd>
     
 
@@ -5303,7 +5352,7 @@ Watch out! If you're not using the hosted login page to do social logins, you ha
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line520">line 520</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line536">line 536</a>
     </li></ul></dd>
     
 
@@ -5756,7 +5805,7 @@ Watch out! If you're not using the hosted login page to do social logins, you ha
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line717">line 717</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line757">line 757</a>
     </li></ul></dd>
     
 
@@ -6019,7 +6068,7 @@ The login will be done using /oauth/token with password-realm grant type.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line793">line 793</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line840">line 840</a>
     </li></ul></dd>
     
 
@@ -6342,7 +6391,7 @@ Tokens signed with other algorithms will not be accepted.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line291">line 291</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line307">line 307</a>
     </li></ul></dd>
     
 
@@ -6394,7 +6443,7 @@ Tokens signed with other algorithms will not be accepted.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Fri Sep 09 2022 11:16:45 GMT+0100 (British Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Thu Oct 20 2022 12:02:43 GMT+0200 (Central European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>
