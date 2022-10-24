@@ -95,22 +95,22 @@ var auth0 = new auth0.Management({
 
 ### auth0.Authentication
 
-- [buildAuthorizeUrl(options)](http://localhost:8080/Authentication.html#buildAuthorizeUrl)
-- [buildLogoutUrl(options)](http://localhost:8080/Authentication.html#buildLogoutUrl)
-- [delegation(options, callback)](http://localhost:8080/Authentication.html#delegation)
-- [getChallenge(callback)](http://localhost:8080/Authentication.html#getChallenge)
-- [getSSOData(withActiveDirectories, callback)](http://localhost:8080/Authentication.html#getSSOData)
-- [login(options, callback)](http://localhost:8080/Authentication.html#login)
-- [loginWithDefaultDirectory(options, callback)](http://localhost:8080/Authentication.html#loginWithDefaultDirectory)
-- [loginWithResourceOwner(options, callback)](http://localhost:8080/Authentication.html#loginWithResourceOwner)
-- [userInfo(token, callback)](http://localhost:8080/Authentication.html#userInfo)
+- [buildAuthorizeUrl(options)](https://auth0.github.io/auth0.js/Authentication.html#buildAuthorizeUrl)
+- [buildLogoutUrl(options)](https://auth0.github.io/auth0.js/Authentication.html#buildLogoutUrl)
+- [delegation(options, callback)](https://auth0.github.io/auth0.js/Authentication.html#delegation)
+- [getChallenge(callback)](https://auth0.github.io/auth0.js/Authentication.html#getChallenge)
+- [getSSOData(withActiveDirectories, callback)](https://auth0.github.io/auth0.js/Authentication.html#getSSOData)
+- [login(options, callback)](https://auth0.github.io/auth0.js/Authentication.html#login)
+- [loginWithDefaultDirectory(options, callback)](https://auth0.github.io/auth0.js/Authentication.html#loginWithDefaultDirectory)
+- [loginWithResourceOwner(options, callback)](https://auth0.github.io/auth0.js/Authentication.html#loginWithResourceOwner)
+- [userInfo(token, callback)](https://auth0.github.io/auth0.js/Authentication.html#userInfo)
 
 ### auth0.Management
 
-- [getUser(userId, callback)](http://localhost:8080/Management.html#getUser)
-- [linkUser(userId, secondaryUserId, callback)](http://localhost:8080/Management.html#linkUser)
-- [patchUserAttributes(userId, user, callback)](http://localhost:8080/Management.html#patchUserAttributes)
-- [patchUserMetadata(userId, userMetadata, callback)](http://localhost:8080/Management.html#patchUserMetadata)
+- [getUser(userId, callback)](https://auth0.github.io/auth0.js/Management.html#getUser)
+- [linkUser(userId, secondaryUserId, callback)](https://auth0.github.io/auth0.js/Management.html#linkUser)
+- [patchUserAttributes(userId, user, callback)](https://auth0.github.io/auth0.js/Management.html#patchUserAttributes)
+- [patchUserMetadata(userId, userMetadata, callback)](https://auth0.github.io/auth0.js/Management.html#patchUserMetadata)
 
 ## Feedback
 
