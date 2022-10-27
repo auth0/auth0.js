@@ -252,12 +252,19 @@ Popup.prototype.authorize = function(options, cb) {
  * @param {credentialsCallback} cb
  * @memberof Popup.prototype
  */
-Popup.prototype.loginWithCredentials = function(options, cb) {
+Popup.prototype.loginWithCredentials = function (options, cb) {
   options.realm = options.realm || options.connection;
   options.popup = true;
   options = objectHelper
-    .merge(this.baseOptions, ['redirectUri', 'responseType', 'state', 'nonce'])
+    .merge(this.baseOptions, [
+      'redirectUri',
+      'responseType',
+      'state',
+      'nonce',
+      'timeout'
+    ])
     .with(objectHelper.blacklist(options, ['popupHandler', 'connection']));
+
   options = this.transactionManager.process(options);
   this.crossOriginAuthentication.login(options, cb);
 };
