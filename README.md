@@ -23,7 +23,7 @@ From CDN:
 
 ```html
 <!-- Latest patch release -->
-<script src="https://cdn.auth0.com/js/auth0/9.19.1/auth0.min.js"></script>
+<script src="https://cdn.auth0.com/js/auth0/9.19.2/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org):
