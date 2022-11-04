@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.19.1
+ * auth0-js v9.19.2
  * Author: Auth0
- * Date: 2022-09-09
+ * Date: 2022-11-04
  * License: MIT
  */
 
@@ -4746,7 +4746,7 @@
 	  decode: decode$1
 	};
 
-	var version = { raw: '9.19.1' };
+	var version = { raw: '9.19.2' };
 
 	var toString = Object.prototype.toString;
 
@@ -7017,12 +7017,19 @@
 	 * @param {credentialsCallback} cb
 	 * @memberof Popup.prototype
 	 */
-	Popup.prototype.loginWithCredentials = function(options, cb) {
+	Popup.prototype.loginWithCredentials = function (options, cb) {
 	  options.realm = options.realm || options.connection;
 	  options.popup = true;
 	  options = objectHelper
-	    .merge(this.baseOptions, ['redirectUri', 'responseType', 'state', 'nonce'])
+	    .merge(this.baseOptions, [
+	      'redirectUri',
+	      'responseType',
+	      'state',
+	      'nonce',
+	      'timeout'
+	    ])
 	    .with(objectHelper.blacklist(options, ['popupHandler', 'connection']));
+
 	  options = this.transactionManager.process(options);
 	  this.crossOriginAuthentication.login(options, cb);
 	};
@@ -7789,6 +7796,22 @@
 	 * If the {@link userInfo} call fails, the {@link userInfo} error will be passed to the callback.
 	 * Tokens signed with other algorithms will not be accepted.
 	 *
+	 * @example
+	 * auth0.parseHash({ hash: window.location.hash }, function(err, authResult) {
+	 *   if (err) {
+	 *     return console.log(err);
+	 *   }
+
+	 *   // The contents of authResult depend on which authentication parameters were used.
+	 *   // It can include the following:
+	 *   // authResult.accessToken - access token for the API specified by `audience`
+	 *   // authResult.expiresIn - string with the access token's expiration time in seconds
+	 *   // authResult.idToken - ID token JWT containing user profile information
+
+	 *   auth0.client.userInfo(authResult.accessToken, function(err, user) {
+	 *     // Now you have the user's information
+	 *   });
+	 *});
 	 * @method parseHash
 	 * @param {Object} options
 	 * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
@@ -8180,6 +8203,30 @@
 	/**
 	 * Renews an existing session on Auth0's servers using `response_mode=web_message`
 	 *
+	 * Allows you to acquire a new token from Auth0 for a user who already
+	 * has an SSO session established against Auth0 for your domain. 
+	 * If the user is not authenticated, the authentication result will be empty 
+	 * and you'll receive an error like this: `{error: 'login_required'}`.
+	 * The method accepts any valid OAuth2 parameters that would normally be sent to `/authorize`.
+	 * 
+	 * Everything happens inside an iframe, so it will not reload your application or redirect away from it.
+	 * 
+	 * **Important:** If you're not using the hosted login page to do social logins, 
+	 * you have to use your own [social connection keys](https://manage.auth0.com/#/connections/social). 
+	 * If you use Auth0's dev keys, you'll always get `login_required` as an error when calling `checkSession`.
+	 *
+	 * **Important:** Because there is no redirect in this method, `responseType: 'code'` is not supported and will throw an error.
+
+	 * Remember to add the URL where the authorization request originates from to the Allowed Web Origins list of your Auth0 Application in the [Dashboard](https://manage.auth0.com/) under your Applications's **Settings**.
+	 * @example
+	 * auth0.checkSession({
+	 *   audience: 'https://mystore.com/api/v2',
+	 *   scope: 'read:order write:order'
+	 * },
+	 * function(err, authResult) {
+	 *   // Authentication tokens or error
+	 * });
+	 * 
 	 * @method checkSession
 	 * @param {Object} [options]
 	 * @param {String} [options.clientID] the Client ID found on your Application settings page
@@ -8317,6 +8364,13 @@
 	 * Redirects to the hosted login page (`/authorize`) in order to start a new authN/authZ transaction.
 	 * After that, you'll have to use the {@link parseHash} function at the specified `redirectUri`.
 	 *
+	 * @example
+	 * auth0.authorize({
+	 *   audience: 'https://mystore.com/api/v2',
+	 *   scope: 'read:order write:order',
+	 *   responseType: 'token',
+	 *   redirectUri: 'https://example.com/auth/callback'
+	 *});
 	 * @method authorize
 	 * @param {Object} [options]
 	 * @param {String} [options.clientID] the Client ID found on your Application settings page
@@ -8325,7 +8379,7 @@
 	 * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. The `query` value is only supported when `responseType` is `code`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
 	 * @param {String} [options.state] value used to mitigate XSRF attacks. {@link https://auth0.com/docs/protocols/oauth2/oauth-state}
 	 * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
-	 * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
+	 * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`. Defaults to `openid profile email`.
 	 * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
 	 * @param {String} [options.organization] the Id of an organization to log in to
 	 * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
