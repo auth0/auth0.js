@@ -1,5 +1,15 @@
 # Change Log
 
+## [v9.19.2](https://github.com/auth0/auth0.js/tree/v9.19.2) (2022-11-04)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.19.1...v9.19.2)
+
+**Changed**
+- Regenerate API docs using new readme [\#1271](https://github.com/auth0/auth0.js/pull/1271) ([frederikprijck](https://github.com/frederikprijck))
+- Update readme based on the internal redesign [\#1269](https://github.com/auth0/auth0.js/pull/1269) ([frederikprijck](https://github.com/frederikprijck))
+
+**Fixed**
+- support timeout option in Popup.loginWithCredentials [\#1273](https://github.com/auth0/auth0.js/pull/1273) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v9.19.1](https://github.com/auth0/auth0.js/tree/v9.19.1) (2022-09-09)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.19.0...v9.19.1)
 
