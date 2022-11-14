@@ -201,4 +201,63 @@ function render(auth0Client, element, options, callback) {
   };
 }
 
-export default { render: render };
+/**
+ *
+ * Renders the passwordless captcha challenge in the provided element.
+ *
+ * @param {Authentication} auth0Client The challenge response from the authentication server
+ * @param {HTMLElement} element The element where the captcha needs to be rendered
+ * @param {Object} options The configuration options for the captcha
+ * @param {Object} [options.templates] An object containaing templates for each captcha provider
+ * @param {Function} [options.templates.auth0] template function receiving the challenge and returning an string
+ * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning an string
+ * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning an string
+ * @param {String} [options.lang=en] the ISO code of the language for recaptcha*
+ * @param {Function} [callback] an optional callback function
+ * @ignore
+ */
+function renderPasswordless(auth0Client, element, options, callback) {
+  options = object.merge(defaults).with(options || {});
+
+  function load(done) {
+    done = done || noop;
+    auth0Client.getPasswordlessChallenge(function(err, challenge) {
+      if (err) {
+        element.innerHTML = options.templates.error(err);
+        return done(err);
+      }
+      if (!challenge.required) {
+        element.style.display = 'none';
+        element.innerHTML = '';
+        return;
+      }
+      element.style.display = '';
+      if (challenge.provider === AUTH0_PROVIDER) {
+        handleAuth0Provider(element, options, challenge, load);
+      } else if (
+        challenge.provider === RECAPTCHA_V2_PROVIDER ||
+        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER
+      ) {
+        handleRecaptchaProvider(element, options, challenge);
+      }
+      done();
+    });
+  }
+
+  function getValue() {
+    var captchaInput = element.querySelector('input[name="captcha"]');
+    if (!captchaInput) {
+      return;
+    }
+    return captchaInput.value;
+  }
+
+  load(callback);
+
+  return {
+    reload: load,
+    getValue: getValue,
+  };
+}
+
+export default { render: render, renderPasswordless };

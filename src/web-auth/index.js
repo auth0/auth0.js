@@ -1123,4 +1123,24 @@ WebAuth.prototype.renderCaptcha = function (element, options, callback) {
   return captcha.render(this.client, element, options, callback);
 };
 
+/**
+ *
+ * Renders the passwordless captcha challenge in the provided element.
+ * This function can only be used in the context of a Classic Universal Login Page.
+ *
+ * @method renderPasswordlessCaptcha
+ * @param {HTMLElement} element The element where the captcha needs to be rendered
+ * @param {Object} options The configuration options for the captcha
+ * @param {Object} [options.templates] An object containaing templates for each captcha provider
+ * @param {Function} [options.templates.auth0] template function receiving the challenge and returning an string
+ * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning an string
+ * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning an string
+ * @param {String} [options.lang=en] the ISO code of the language for recaptcha
+ * @param {Function} [callback] An optional completion callback
+ * @memberof WebAuth.prototype
+ */
+WebAuth.prototype.renderPasswordlessCaptcha = function (element, options, callback) {
+  return captcha.render(this.client, element, options, callback);
+};
+
 export default WebAuth;
