@@ -221,4 +221,27 @@ PasswordlessAuthentication.prototype.verify = function(options, cb) {
     .end(responseHandler(cb));
 };
 
+/**
+ * Makes a call to the `/passwordless/challenge` endpoint
+ * and returns the challenge (captcha) if necessary.
+ *
+ * @method getChallenge
+ * @param {callback} cb
+ * @memberof PasswordlessAuthentication.prototype
+ */
+PasswordlessAuthentication.prototype.getChallenge = function(cb) {
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  if (!this.baseOptions.state) {
+    return cb();
+  }
+
+  var url = urljoin(this.baseOptions.rootUrl, 'passwordless', 'challenge');
+
+  return this.request
+    .post(url)
+    .send({ state: this.baseOptions.state })
+    .end(responseHandler(cb, { ignoreCasing: true }));
+};
+
 export default PasswordlessAuthentication;

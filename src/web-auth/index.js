@@ -1140,7 +1140,7 @@ WebAuth.prototype.renderCaptcha = function (element, options, callback) {
  * @memberof WebAuth.prototype
  */
 WebAuth.prototype.renderPasswordlessCaptcha = function (element, options, callback) {
-  return captcha.render(this.client, element, options, callback);
+  return captcha.renderPasswordless(this.client, element, options, callback);
 };
 
 export default WebAuth;
