@@ -221,7 +221,7 @@ function renderPasswordless(auth0Client, element, options, callback) {
 
   function load(done) {
     done = done || noop;
-    auth0Client.getPasswordlessChallenge(function(err, challenge) {
+    auth0Client.passwordless.getChallenge(function(err, challenge) {
       if (err) {
         element.innerHTML = options.templates.error(err);
         return done(err);
@@ -260,4 +260,4 @@ function renderPasswordless(auth0Client, element, options, callback) {
   };
 }
 
-export default { render: render, renderPasswordless };
+export default { render: render, renderPasswordless: renderPasswordless };
