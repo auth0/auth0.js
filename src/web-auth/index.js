@@ -728,6 +728,7 @@ WebAuth.prototype.changePassword = function (options, cb) {
  * @param {String} options.send what will be sent via email which could be `link` or `code`. For SMS `code` is the only one valid
  * @param {String} [options.phoneNumber] phone number where to send the `code`. This parameter is mutually exclusive with `email`
  * @param {String} [options.email] email where to send the `code` or `link`. This parameter is mutually exclusive with `phoneNumber`
+ * @param {String} [options.captcha] the attempted solution for the captcha, if one was presented
  * @param {String} options.connection name of the passwordless connection
  * @param {Object} [options.authParams] additional Auth parameters when using `link`
  * @param {Object} [options.xRequestLanguage] value for the X-Request-Language header. If not set, the language is detected using the client browser.
