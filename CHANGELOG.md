@@ -1,41 +1,61 @@
 # Change Log
 
+## [v9.20.0](https://github.com/auth0/auth0.js/tree/v9.20.0) (2022-12-13)
+
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.19.2...v9.20.0)
+
+**Added**
+
+- Support Captcha challenge for passwordless login [\#1277](https://github.com/auth0/auth0.js/pull/1277) ([DominickBattistini](https://github.com/DominickBattistini))
+
 ## [v9.19.2](https://github.com/auth0/auth0.js/tree/v9.19.2) (2022-11-04)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.19.1...v9.19.2)
 
 **Changed**
+
 - Regenerate API docs using new readme [\#1271](https://github.com/auth0/auth0.js/pull/1271) ([frederikprijck](https://github.com/frederikprijck))
 - Update readme based on the internal redesign [\#1269](https://github.com/auth0/auth0.js/pull/1269) ([frederikprijck](https://github.com/frederikprijck))
 
 **Fixed**
+
 - support timeout option in Popup.loginWithCredentials [\#1273](https://github.com/auth0/auth0.js/pull/1273) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 ## [v9.19.1](https://github.com/auth0/auth0.js/tree/v9.19.1) (2022-09-09)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.19.0...v9.19.1)
 
 **Changed**
+
 - Clean up old/missing library migration links [\#1256](https://github.com/auth0/auth0.js/pull/1256) ([stevehobbsdev](https://github.com/stevehobbsdev))
 - Clarify usage of legacySameSiteCookie in readme [\#1255](https://github.com/auth0/auth0.js/pull/1255) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 **Security**
+
 - Security: Bump dev dependencies and update lockfile [\#1244](https://github.com/auth0/auth0.js/pull/1244) ([evansims](https://github.com/evansims))
 
 ## [v9.19.0](https://github.com/auth0/auth0.js/tree/v9.19.0) (2022-01-25)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.18.1...v9.19.0)
 
 **Added**
+
 - Add compatibility cookie for SameSite, with option to turn it off [\#1232](https://github.com/auth0/auth0.js/pull/1232) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 ## [v9.18.1](https://github.com/auth0/auth0.js/tree/v9.18.1) (2022-01-14)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.18.0...v9.18.1)
 
 **Fixed**
+
 - Set sameSite to 'none' for cookies when using HTTPS [\#1229](https://github.com/auth0/auth0.js/pull/1229) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 ## [v9.18.0](https://github.com/auth0/auth0.js/tree/v9.18.0) (2021-11-09)
+
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.17.0...v9.18.0)
 
 **Added**
+
 - Make state expiration configurable [\#1217](https://github.com/auth0/auth0.js/pull/1217) ([aedelbro](https://github.com/aedelbro))
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.16.4...v9.17.0)
