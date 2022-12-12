@@ -3243,4 +3243,33 @@ describe('auth0.WebAuth', function() {
       expect(result).to.equal(captcha);
     });
   });
+
+    context('passwordless captcha rendering', function() {
+    it('should call the captcha rendering function', function() {
+      const element = {};
+      const options = {};
+      const captcha = {};
+      const renderStub = sinon.stub().returns(captcha);
+      const callback = function() {};
+
+      var { default: ProxiedWebAuth } = proxyquire('../../src/web-auth', {
+        './captcha': { default: { renderPasswordless: renderStub } }
+      });
+
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6'
+      });
+
+      const result = webAuth.renderPasswordlessCaptcha(element, options, callback);
+
+      expect(renderStub.called).to.be.ok();
+      expect(renderStub.args[0][0]).to.be.equal(webAuth.client);
+      expect(renderStub.args[0][1]).to.be.equal(element);
+      expect(renderStub.args[0][2]).to.be.equal(options);
+      expect(renderStub.args[0][3]).to.be.equal(callback);
+      expect(result).to.equal(captcha);
+    });
+  });
 });

@@ -728,6 +728,7 @@ WebAuth.prototype.changePassword = function (options, cb) {
  * @param {String} options.send what will be sent via email which could be `link` or `code`. For SMS `code` is the only one valid
  * @param {String} [options.phoneNumber] phone number where to send the `code`. This parameter is mutually exclusive with `email`
  * @param {String} [options.email] email where to send the `code` or `link`. This parameter is mutually exclusive with `phoneNumber`
+ * @param {String} [options.captcha] the attempted solution for the captcha, if one was presented
  * @param {String} options.connection name of the passwordless connection
  * @param {Object} [options.authParams] additional Auth parameters when using `link`
  * @param {Object} [options.xRequestLanguage] value for the X-Request-Language header. If not set, the language is detected using the client browser.
@@ -1121,6 +1122,26 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
  */
 WebAuth.prototype.renderCaptcha = function (element, options, callback) {
   return captcha.render(this.client, element, options, callback);
+};
+
+/**
+ *
+ * Renders the passwordless captcha challenge in the provided element.
+ * This function can only be used in the context of a Classic Universal Login Page.
+ *
+ * @method renderPasswordlessCaptcha
+ * @param {HTMLElement} element The element where the captcha needs to be rendered
+ * @param {Object} options The configuration options for the captcha
+ * @param {Object} [options.templates] An object containaing templates for each captcha provider
+ * @param {Function} [options.templates.auth0] template function receiving the challenge and returning an string
+ * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning an string
+ * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning an string
+ * @param {String} [options.lang=en] the ISO code of the language for recaptcha
+ * @param {Function} [callback] An optional completion callback
+ * @memberof WebAuth.prototype
+ */
+WebAuth.prototype.renderPasswordlessCaptcha = function (element, options, callback) {
+  return captcha.renderPasswordless(this.client, element, options, callback);
 };
 
 export default WebAuth;
