@@ -1365,7 +1365,7 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line778">line 778</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line779">line 779</a>
     </li></ul></dd>
     
 
@@ -2179,7 +2179,7 @@ function(err, authResult) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line995">line 995</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line996">line 996</a>
     </li></ul></dd>
     
 
@@ -2267,7 +2267,7 @@ function(err, authResult) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1006">line 1006</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1007">line 1007</a>
     </li></ul></dd>
     
 
@@ -2627,7 +2627,7 @@ After the redirect to <code>redirectUri</code>, use <code>parseHash</code> to re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line882">line 882</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line883">line 883</a>
     </li></ul></dd>
     
 
@@ -2915,7 +2915,7 @@ After the redirect to <code>redirectUri</code>, use <code>parseHash</code> to re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1016">line 1016</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1017">line 1017</a>
     </li></ul></dd>
     
 
@@ -3565,7 +3565,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line938">line 938</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line939">line 939</a>
     </li></ul></dd>
     
 
@@ -3780,6 +3780,39 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
             
 
             <td class="description last"><p>email where to send the <code>code</code> or <code>link</code>. This parameter is mutually exclusive with <code>phoneNumber</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>captcha</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>the attempted solution for the captcha, if one was presented</p></td>
         </tr>
 
     
@@ -4301,7 +4334,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1041">line 1041</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1042">line 1042</a>
     </li></ul></dd>
     
 
@@ -4746,7 +4779,452 @@ This function can only be used in the context of a Classic Universal Login Page.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1106">line 1106</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1107">line 1107</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="renderPasswordlessCaptcha"><span class="type-signature"></span>renderPasswordlessCaptcha<span class="signature">(element, options, callback<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Renders the passwordless captcha challenge in the provided element.
+This function can only be used in the context of a Classic Universal Login Page.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>element</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">HTMLElement</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The element where the captcha needs to be rendered</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The configuration options for the captcha</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>templates</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>An object containaing templates for each captcha provider</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>auth0</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>template function receiving the challenge and returning an string</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recaptcha_v2</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>template function receiving the challenge and returning an string</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recaptcha_enterprise</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>template function receiving the challenge and returning an string</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lang</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    en
+                
+                </td>
+            
+
+            <td class="description last"><p>the ISO code of the language for recaptcha</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional completion callback</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1127">line 1127</a>
     </li></ul></dd>
     
 
@@ -5805,7 +6283,7 @@ Watch out! If you're not using the hosted login page to do social logins, you ha
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line757">line 757</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line758">line 758</a>
     </li></ul></dd>
     
 
@@ -6068,7 +6546,7 @@ The login will be done using /oauth/token with password-realm grant type.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line840">line 840</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line841">line 841</a>
     </li></ul></dd>
     
 
@@ -6443,7 +6921,7 @@ Tokens signed with other algorithms will not be accepted.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Fri Nov 04 2022 09:43:17 GMT+0000 (Greenwich Mean Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Tue Dec 13 2022 10:49:32 GMT+0000 (Greenwich Mean Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.19.2
+ * auth0-js v9.20.0
  * Author: Auth0
- * Date: 2022-11-04
+ * Date: 2022-12-13
  * License: MIT
  */
 
@@ -4746,7 +4746,7 @@
 	  decode: decode$1
 	};
 
-	var version = { raw: '9.19.2' };
+	var version = { raw: '9.20.0' };
 
 	var toString = Object.prototype.toString;
 
@@ -7601,7 +7601,66 @@
 	  };
 	}
 
-	var captcha = { render: render };
+	/**
+	 *
+	 * Renders the passwordless captcha challenge in the provided element.
+	 *
+	 * @param {Authentication} auth0Client The challenge response from the authentication server
+	 * @param {HTMLElement} element The element where the captcha needs to be rendered
+	 * @param {Object} options The configuration options for the captcha
+	 * @param {Object} [options.templates] An object containaing templates for each captcha provider
+	 * @param {Function} [options.templates.auth0] template function receiving the challenge and returning an string
+	 * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning an string
+	 * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning an string
+	 * @param {String} [options.lang=en] the ISO code of the language for recaptcha*
+	 * @param {Function} [callback] an optional callback function
+	 * @ignore
+	 */
+	function renderPasswordless(auth0Client, element, options, callback) {
+	  options = objectHelper.merge(defaults$2).with(options || {});
+
+	  function load(done) {
+	    done = done || noop;
+	    auth0Client.passwordless.getChallenge(function(err, challenge) {
+	      if (err) {
+	        element.innerHTML = options.templates.error(err);
+	        return done(err);
+	      }
+	      if (!challenge.required) {
+	        element.style.display = 'none';
+	        element.innerHTML = '';
+	        return;
+	      }
+	      element.style.display = '';
+	      if (challenge.provider === AUTH0_PROVIDER) {
+	        handleAuth0Provider(element, options, challenge, load);
+	      } else if (
+	        challenge.provider === RECAPTCHA_V2_PROVIDER ||
+	        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER
+	      ) {
+	        handleRecaptchaProvider(element, options, challenge);
+	      }
+	      done();
+	    });
+	  }
+
+	  function getValue() {
+	    var captchaInput = element.querySelector('input[name="captcha"]');
+	    if (!captchaInput) {
+	      return;
+	    }
+	    return captchaInput.value;
+	  }
+
+	  load(callback);
+
+	  return {
+	    reload: load,
+	    getValue: getValue,
+	  };
+	}
+
+	var captcha = { render: render, renderPasswordless: renderPasswordless };
 
 	function defaultClock() {
 	  return new Date();
@@ -8313,6 +8372,7 @@
 	 * @param {String} options.send what will be sent via email which could be `link` or `code`. For SMS `code` is the only one valid
 	 * @param {String} [options.phoneNumber] phone number where to send the `code`. This parameter is mutually exclusive with `email`
 	 * @param {String} [options.email] email where to send the `code` or `link`. This parameter is mutually exclusive with `phoneNumber`
+	 * @param {String} [options.captcha] the attempted solution for the captcha, if one was presented
 	 * @param {String} options.connection name of the passwordless connection
 	 * @param {Object} [options.authParams] additional Auth parameters when using `link`
 	 * @param {Object} [options.xRequestLanguage] value for the X-Request-Language header. If not set, the language is detected using the client browser.
@@ -8708,6 +8768,26 @@
 	  return captcha.render(this.client, element, options, callback);
 	};
 
+	/**
+	 *
+	 * Renders the passwordless captcha challenge in the provided element.
+	 * This function can only be used in the context of a Classic Universal Login Page.
+	 *
+	 * @method renderPasswordlessCaptcha
+	 * @param {HTMLElement} element The element where the captcha needs to be rendered
+	 * @param {Object} options The configuration options for the captcha
+	 * @param {Object} [options.templates] An object containaing templates for each captcha provider
+	 * @param {Function} [options.templates.auth0] template function receiving the challenge and returning an string
+	 * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning an string
+	 * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning an string
+	 * @param {String} [options.lang=en] the ISO code of the language for recaptcha
+	 * @param {Function} [callback] An optional completion callback
+	 * @memberof WebAuth.prototype
+	 */
+	WebAuth.prototype.renderPasswordlessCaptcha = function (element, options, callback) {
+	  return captcha.renderPasswordless(this.client, element, options, callback);
+	};
+
 	function PasswordlessAuthentication(request, options) {
 	  this.baseOptions = options;
 	  this.request = request;
@@ -8922,6 +9002,29 @@
 	    .post(url)
 	    .send(cleanOption)
 	    .end(wrapCallback(cb));
+	};
+
+	/**
+	 * Makes a call to the `/passwordless/challenge` endpoint
+	 * and returns the challenge (captcha) if necessary.
+	 *
+	 * @method getChallenge
+	 * @param {callback} cb
+	 * @memberof PasswordlessAuthentication.prototype
+	 */
+	PasswordlessAuthentication.prototype.getChallenge = function(cb) {
+	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+	  if (!this.baseOptions.state) {
+	    return cb();
+	  }
+
+	  var url = urlJoin(this.baseOptions.rootUrl, 'passwordless', 'challenge');
+
+	  return this.request
+	    .post(url)
+	    .send({ state: this.baseOptions.state })
+	    .end(wrapCallback(cb, { ignoreCasing: true }));
 	};
 
 	function DBConnection(request, options) {
