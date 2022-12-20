@@ -1,5 +1,5 @@
 {
-  "name": "auth0-js",
+  "name": "@paymentsense/auth0-js",
   "version": "9.20.0",
   "description": "Auth0 headless browser sdk",
   "author": "Auth0",
@@ -49,7 +49,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/auth0/auth0.js"
+    "url": "git://github.com/dojo-engineering-dev/auth0.js"
   },
   "dependencies": {
     "base64-js": "^1.5.1",
