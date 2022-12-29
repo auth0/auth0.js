@@ -329,7 +329,7 @@ Authentication.prototype.loginWithDefaultDirectory = function(options, cb) {
  * @param {String} options.password the password of the user that will perform Auth
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
- * @param {Object} options.realm the HRD domain or the connection name where the user belongs to. e.g. `Username-Password-Authentication`
+ * @param {String} options.realm the HRD domain or the connection name where the user belongs to. e.g. `Username-Password-Authentication`
  * @param {tokenCallback} cb function called with the result of the request
  * @see Requires [`http://auth0.com/oauth/grant-type/password-realm` grant]{@link https://auth0.com/docs/api-auth/grant/password#realm-support}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  * @memberof Authentication.prototype
