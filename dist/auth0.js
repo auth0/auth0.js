@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.20.0
+ * auth0-js v9.20.1
  * Author: Auth0
- * Date: 2022-12-13
+ * Date: 2023-01-12
  * License: MIT
  */
 
@@ -4746,7 +4746,7 @@
 	  decode: decode$1
 	};
 
-	var version = { raw: '9.20.0' };
+	var version = { raw: '9.20.1' };
 
 	var toString = Object.prototype.toString;
 
@@ -9463,7 +9463,7 @@
 	 * @param {String} options.password the password of the user that will perform Auth
 	 * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
 	 * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
-	 * @param {Object} options.realm the HRD domain or the connection name where the user belongs to. e.g. `Username-Password-Authentication`
+	 * @param {String} options.realm the HRD domain or the connection name where the user belongs to. e.g. `Username-Password-Authentication`
 	 * @param {tokenCallback} cb function called with the result of the request
 	 * @see Requires [`http://auth0.com/oauth/grant-type/password-realm` grant]{@link https://auth0.com/docs/api-auth/grant/password#realm-support}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
 	 * @memberof Authentication.prototype
