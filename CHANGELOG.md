@@ -1,5 +1,17 @@
 # Change Log
 
+## [v9.20.1](https://github.com/auth0/auth0.js/tree/v9.20.1) (2023-01-12)
+
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.20.0...v9.20.1)
+
+**Fixed**
+
+- Updated jsdocs for Authentication#login [\#1284](https://github.com/auth0/auth0.js/pull/1284) ([siddtheone](https://github.com/siddtheone))
+
+**Security**
+
+- Bump jsonwebtoken from 8.5.1 to 9.0.0 [\#1282](https://github.com/auth0/auth0.js/pull/1282) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v9.20.0](https://github.com/auth0/auth0.js/tree/v9.20.0) (2022-12-13)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.19.2...v9.20.0)
