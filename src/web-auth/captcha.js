@@ -153,6 +153,7 @@ function handleRecaptchaProvider(element, options, challenge) {
  * @param {Function} [options.templates.auth0] template function receiving the challenge and returning an string
  * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning an string
  * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning an string
+ * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha*
  * @param {Function} [callback] an optional callback function
  * @ignore
@@ -212,6 +213,7 @@ function render(auth0Client, element, options, callback) {
  * @param {Function} [options.templates.auth0] template function receiving the challenge and returning an string
  * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning an string
  * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning an string
+ * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha*
  * @param {Function} [callback] an optional callback function
  * @ignore
