@@ -90,7 +90,7 @@
     "mocha": "^9.2.0",
     "mocha-junit-reporter": "^2.0.2",
     "nyc": "^15.1.0",
-    "oidc-provider": "^7.8.0",
+    "oidc-provider": "^8.1.0",
     "prettier": "^2.4.1",
     "pretty-quick": "^3.1.1",
     "proxyquire": "^2.1.1",
