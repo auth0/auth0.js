@@ -1,5 +1,14 @@
 # Change Log
 
+## [v9.20.2](https://github.com/auth0/auth0.js/tree/v9.20.2) (2023-02-28)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.20.1...v9.20.2)
+
+**Fixed**
+- fix(docs): document `error()` option for `renderCaptcha()` [\#1290](https://github.com/auth0/auth0.js/pull/1290) ([pmalouin](https://github.com/pmalouin))
+
+**Security**
+- chore: update superagent to 7.1.5 [\#1296](https://github.com/auth0/auth0.js/pull/1296) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v9.20.1](https://github.com/auth0/auth0.js/tree/v9.20.1) (2023-01-12)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.20.0...v9.20.1)
