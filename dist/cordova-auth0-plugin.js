@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.20.1
+ * auth0-js v9.20.2
  * Author: Auth0
- * Date: 2023-01-12
+ * Date: 2023-02-28
  * License: MIT
  */
 
@@ -11,7 +11,7 @@
   (global = global || self, global.CordovaAuth0Plugin = factory());
 }(this, (function () { 'use strict';
 
-  var version = { raw: '9.20.1' };
+  var version = { raw: '9.20.2' };
 
   var toString = Object.prototype.toString;
 
@@ -621,6 +621,8 @@
   	'%AsyncIteratorPrototype%': needsEval,
   	'%Atomics%': typeof Atomics === 'undefined' ? undefined$1 : Atomics,
   	'%BigInt%': typeof BigInt === 'undefined' ? undefined$1 : BigInt,
+  	'%BigInt64Array%': typeof BigInt64Array === 'undefined' ? undefined$1 : BigInt64Array,
+  	'%BigUint64Array%': typeof BigUint64Array === 'undefined' ? undefined$1 : BigUint64Array,
   	'%Boolean%': Boolean,
   	'%DataView%': typeof DataView === 'undefined' ? undefined$1 : DataView,
   	'%Date%': Date,
@@ -675,6 +677,14 @@
   	'%WeakRef%': typeof WeakRef === 'undefined' ? undefined$1 : WeakRef,
   	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined$1 : WeakSet
   };
+
+  try {
+  	null.error; // eslint-disable-line no-unused-expressions
+  } catch (e) {
+  	// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
+  	var errorProto = getProto(getProto(e));
+  	INTRINSICS['%Error.prototype%'] = errorProto;
+  }
 
   var doEval = function doEval(name) {
   	var value;
@@ -817,7 +827,7 @@
   		throw new $TypeError('"allowMissing" argument must be a boolean');
   	}
 
-  	if ($exec(/^%?[^%]*%?$/g, name) === null) {
+  	if ($exec(/^%?[^%]*%?$/, name) === null) {
   		throw new $SyntaxError('`%` may not be present anywhere but at the beginning and end of the intrinsic name');
   	}
   	var parts = stringToPath(name);
@@ -1165,16 +1175,20 @@
       }
       if (isMap(obj)) {
           var mapParts = [];
-          mapForEach.call(obj, function (value, key) {
-              mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
-          });
+          if (mapForEach) {
+              mapForEach.call(obj, function (value, key) {
+                  mapParts.push(inspect(key, obj, true) + ' => ' + inspect(value, obj));
+              });
+          }
           return collectionOf('Map', mapSize.call(obj), mapParts, indent);
       }
       if (isSet(obj)) {
           var setParts = [];
-          setForEach.call(obj, function (value) {
-              setParts.push(inspect(value, obj));
-          });
+          if (setForEach) {
+              setForEach.call(obj, function (value) {
+                  setParts.push(inspect(value, obj));
+              });
+          }
           return collectionOf('Set', setSize.call(obj), setParts, indent);
       }
       if (isWeakMap(obj)) {
