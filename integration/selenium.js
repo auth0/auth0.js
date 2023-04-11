@@ -36,27 +36,35 @@ const capabilities = [
   }
   /*{
     browserName: 'firefox',
-    os: 'Windows',
-    os_version: '10',
-    browser_version: 'latest'
+    browserVersion: 'latest',
+    'bstack:options': {
+      os: 'Windows',
+      osVersion: '10'
+    }
   },
   {
     browserName: 'edge',
-    os: 'Windows',
-    os_version: '10',
-    browser_version: 'latest'
+    browserVersion: 'latest',
+    'bstack:options': {
+      os: 'Windows',
+      osVersion: '10'
+    }
   },
   {
     browserName: 'safari',
-    os: 'OS X',
-    os_version: 'Big Sur',
-    browser_version: 'latest'
+    browserVersion: 'latest',
+    'bstack:options': {
+      os: 'OS X',
+      osVersion: 'Bug Sur'
+    }
   },
   {
     browserName: 'internet explorer',
-    os: 'Windows',
-    os_version: '10',
-    browser_version: '11'
+    browserVersion: '11',
+    'bstack:options': {
+      os: 'Windows',
+      osVersion: '10'
+    }
   }*/
 ];
 
