@@ -26,7 +26,7 @@ const commonCapabilities = {
 const capabilities = [
   {
     browserName: 'chrome',
-    platform: 'Windows 10'
+    platform: 'Windows 10',
     browserVersion: 'latest'
   }
   /*{
