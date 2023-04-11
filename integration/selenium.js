@@ -90,9 +90,9 @@ export async function setupDriver(callback) {
   };
 
   const builder = new webdriver.Builder();
-  const bsLocal = await startBrowserStackLocal();
 
   if (process.env.BROWSERSTACK === 'true') {
+    const bsLocal = await startBrowserStackLocal();
     const promises = [];
 
     capabilities.forEach(capability =>
@@ -143,16 +143,15 @@ export async function setupDriver(callback) {
       browserName = 'Chrome Headless';
     }
 
+    let driver;
     try {
-      const driver = await builder.build();
+      driver = await builder.build();
       await runTests(driver, browserName);
       await driver.quit();
     } catch (e) {
       console.log(e);
     } finally {
-      bsLocal.stop(() => {
-        console.log('BrowserStack local stopped');
-      });
+      driver.quit();
     }
   }
 }
