@@ -11,48 +11,60 @@ const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
 const server = `http://${username}:${accessKey}@hub-cloud.browserstack.com/wd/hub`;
 
-const build = process.env.CIRCLECI
+const buildName = process.env.CIRCLECI
   ? `${process.env.CIRCLE_BRANCH} ${process.env.CIRCLE_BUILD_NUM}`
   : 'Local run';
 
 const commonCapabilities = {
   resolution: '1920x1080',
-  name: 'Auth0.js Acceptance Test',
-  'browserstack.local': 'true',
-  project: 'Auth0.js',
-  build
+  'bstack:options': {
+    sessionName: 'Auth0.js Acceptance Test',
+    projectName: 'Auth0.js',
+    local: 'true',
+    buildName
+  }
 };
 
 const capabilities = [
   {
     browserName: 'chrome',
-    os: 'Windows',
-    os_version: '10',
-    browser_version: 'latest'
+    browserVersion: 'latest',
+    'bstack:options': {
+      os: 'Windows',
+      osVersion: '10'
+    }
   }
   /*{
     browserName: 'firefox',
-    os: 'Windows',
-    os_version: '10',
-    browser_version: 'latest'
+    browserVersion: 'latest',
+    'bstack:options': {
+      os: 'Windows',
+      osVersion: '10'
+    }
   },
   {
     browserName: 'edge',
-    os: 'Windows',
-    os_version: '10',
-    browser_version: 'latest'
+    browserVersion: 'latest',
+    'bstack:options': {
+      os: 'Windows',
+      osVersion: '10'
+    }
   },
   {
     browserName: 'safari',
-    os: 'OS X',
-    os_version: 'Big Sur',
-    browser_version: 'latest'
+    browserVersion: 'latest',
+    'bstack:options': {
+      os: 'OS X',
+      osVersion: 'Bug Sur'
+    }
   },
   {
     browserName: 'internet explorer',
-    os: 'Windows',
-    os_version: '10',
-    browser_version: '11'
+    browserVersion: '11',
+    'bstack:options': {
+      os: 'Windows',
+      osVersion: '10'
+    }
   }*/
 ];
 
@@ -90,21 +102,25 @@ export async function setupDriver(callback) {
   };
 
   const builder = new webdriver.Builder();
-  const bsLocal = await startBrowserStackLocal();
 
   if (process.env.BROWSERSTACK === 'true') {
+    const bsLocal = await startBrowserStackLocal();
     const promises = [];
 
     capabilities.forEach(capability =>
       promises.push(
         new Promise((res, rej) => {
           // Note: this is just for displaying in the console as the tests are running.
-          const browser = `${capability.browserName} ${capability.browser_version} ${capability.os} ${capability.os_version}`;
+          const browser = `${capability.browserName} ${capability.browserVersion} ${capability.platform}`;
 
           builder
             .withCapabilities({
               ...capability,
-              ...commonCapabilities
+              ...commonCapabilities,
+              'bstack:options': {
+                ...capability['bstack:options'],
+                ...commonCapabilities['bstack:options']
+              }
             })
             .usingServer(server)
             .build()
@@ -143,16 +159,15 @@ export async function setupDriver(callback) {
       browserName = 'Chrome Headless';
     }
 
+    let driver;
     try {
-      const driver = await builder.build();
+      driver = await builder.build();
       await runTests(driver, browserName);
       await driver.quit();
     } catch (e) {
       console.log(e);
     } finally {
-      bsLocal.stop(() => {
-        console.log('BrowserStack local stopped');
-      });
+      driver.quit();
     }
   }
 }
