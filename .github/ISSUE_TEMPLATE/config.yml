@@ -1,10 +1,10 @@
 blank_issues_enabled: false
 contact_links:
   - name: Auth0 Community
-    url: https://community.auth0.com/c/sdks/auth0js/59
+    url: https://community.auth0.com
     about: Discuss this SDK in the Auth0 Community forums
   - name: Library Documentation
-    url: https://auth0.com/docs/libraries/auth0js/v9
+    url: https://auth0.com/docs/libraries/auth0js
     about: Read the library docs on Auth0.com
   - name: Auth0.js API docs
     url: https://auth0.github.io/auth0.js/index.html
