@@ -40,6 +40,10 @@ CookieStorage.prototype.setItem = function (key, value, options) {
     }
   }
 
+  if (this._options.cookieDomain) {
+    params.domain = this._options.cookieDomain;
+  }
+
   Cookie.set(key, value, params);
 };
 

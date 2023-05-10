@@ -110,7 +110,7 @@ describe('storage.cookies', function () {
       });
 
       CookieLibrary.set.restore();
-      sinon.stub(CookieLibrary, 'set').callsFake(() => {});
+      sinon.stub(CookieLibrary, 'set').callsFake(() => { });
 
       cookieStorage.setItem(KEY, VALUE, { expires: 2, test: true });
 
@@ -141,7 +141,7 @@ describe('storage.cookies', function () {
       });
 
       CookieLibrary.set.restore();
-      sinon.stub(CookieLibrary, 'set').callsFake(() => {});
+      sinon.stub(CookieLibrary, 'set').callsFake(() => { });
 
       cookieStorage.setItem(KEY, VALUE, { expires: 2, test: true });
 
@@ -149,6 +149,22 @@ describe('storage.cookies', function () {
         'foo',
         'bar',
         { expires: 2, test: true, secure: true, sameSite: 'none' }
+      ]);
+    });
+
+    it('calls Cookie.set with a domain when cookieDomain is present', function () {
+      const DOMAIN = '.example.com';
+      cookieStorage = new CookieStorage({
+        legacySameSiteCookie: true,
+        cookieDomain: DOMAIN
+      });
+
+      cookieStorage.setItem(KEY, VALUE);
+
+      expect(CookieLibrary.set.firstCall.args).to.be.eql([
+        'foo',
+        'bar',
+        { expires: 1, domain: DOMAIN },
       ]);
     });
   });

@@ -40,6 +40,7 @@ function defaultClock() {
  * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
  * @param {Array} [options.plugins]
  * @param {Boolean} [options.legacySameSiteCookie] set this to `false` to disable the legacy compatibility cookie that is created for older browsers that don't support the SameSite attribute (defaults to `true`)
+ * @param {String} [options.cookieDomain]  The domain the cookie is accessible from. If not set, the cookie is scoped to the current domain, including the subdomain. To keep a user logged in across multiple subdomains set this to your top-level domain and prefixed with a `.` (eg: `.example.com`).
  * @param {Number} [options._timesToRetryFailedRequests] Number of times to retry a failed request, according to {@link https://github.com/visionmedia/superagent/blob/master/lib/request-base.js}
  * @see {@link https://auth0.com/docs/api/authentication}
  */
@@ -398,10 +399,10 @@ WebAuth.prototype.validateAuthenticationResponse = function (
             return callback(
               error.invalidToken(
                 'Organization Id (org_id) claim value mismatch in the ID token; expected "' +
-                  transactionOrganization +
-                  '", found "' +
-                  payload.org_id +
-                  '"'
+                transactionOrganization +
+                '", found "' +
+                payload.org_id +
+                '"'
               )
             );
           }
