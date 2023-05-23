@@ -59,8 +59,24 @@ describe('storage.cookies', function () {
       CookieLibrary.remove.restore();
       sinon.stub(CookieLibrary, 'remove').callsFake();
       cookieStorage.removeItem(KEY);
-      expect(Cookies.remove.firstCall.args).to.be.eql(['foo']);
-      expect(Cookies.remove.secondCall.args).to.be.eql(['_foo_compat']);
+      expect(Cookies.remove.firstCall.args).to.be.eql(['foo', {}]);
+      expect(Cookies.remove.secondCall.args).to.be.eql(['_foo_compat', {}]);
+      done();
+    });
+
+    it('calls Cookie.remove with a domain when cookieDomain is present', function (done) {
+      CookieLibrary.remove.restore();
+      sinon.stub(CookieLibrary, 'remove').callsFake();
+
+      const DOMAIN = '.example.com';
+      cookieStorage = new CookieStorage({
+        legacySameSiteCookie: true,
+        cookieDomain: DOMAIN
+      });
+      cookieStorage.removeItem(KEY);
+
+      expect(Cookies.remove.firstCall.args).to.be.eql(['foo', { domain: DOMAIN }]);
+      expect(Cookies.remove.secondCall.args).to.be.eql(['_foo_compat', { domain: DOMAIN }]);
       done();
     });
   });

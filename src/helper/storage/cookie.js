@@ -17,8 +17,12 @@ CookieStorage.prototype.getItem = function (key) {
 };
 
 CookieStorage.prototype.removeItem = function (key) {
-  Cookie.remove(key);
-  Cookie.remove(buildCompatCookieKey(key));
+  const params = {};
+  if (this._options.cookieDomain) {
+    params.domain = this._options.cookieDomain;
+  }
+  Cookie.remove(key, params);
+  Cookie.remove(buildCompatCookieKey(key), params);
 };
 
 CookieStorage.prototype.setItem = function (key, value, options) {
