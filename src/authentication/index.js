@@ -24,6 +24,7 @@ import DBConnection from './db-connection';
  * @param {String} [options.responseMode] how the Auth response is encoded and redirected back to the client. Supported values are `query`, `fragment` and `form_post`. {@link https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#ResponseModes}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {String} [options.cookieDomain]  The domain the cookie is accessible from. If not set, the cookie is scoped to the current domain, including the subdomain. To keep a user logged in across multiple subdomains set this to your top-level domain and prefixed with a `.` (eg: `.example.com`).
  * @see {@link https://auth0.com/docs/api/authentication}
  */
 function Authentication(auth0, options) {
@@ -91,7 +92,7 @@ function Authentication(auth0, options) {
 
   this.baseOptions.rootUrl =
     this.baseOptions.domain &&
-    this.baseOptions.domain.toLowerCase().indexOf('http') === 0
+      this.baseOptions.domain.toLowerCase().indexOf('http') === 0
       ? this.baseOptions.domain
       : 'https://' + this.baseOptions.domain;
 
@@ -126,7 +127,7 @@ function Authentication(auth0, options) {
  * @see {@link https://auth0.com/docs/api/authentication#social}
  * @memberof Authentication.prototype
  */
-Authentication.prototype.buildAuthorizeUrl = function(options) {
+Authentication.prototype.buildAuthorizeUrl = function (options) {
   var params;
   var qString;
 
@@ -164,7 +165,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
       nonce: {
         type: 'string',
         message: 'nonce option is required',
-        condition: function(o) {
+        condition: function (o) {
           return (
             o.responseType.indexOf('code') === -1 &&
             o.responseType.indexOf('id_token') !== -1
@@ -225,7 +226,7 @@ Authentication.prototype.buildAuthorizeUrl = function(options) {
  * @see {@link https://auth0.com/docs/api/authentication#logout}
  * @memberof Authentication.prototype
  */
-Authentication.prototype.buildLogoutUrl = function(options) {
+Authentication.prototype.buildLogoutUrl = function (options) {
   var params;
   var qString;
 
@@ -295,7 +296,7 @@ Authentication.prototype.buildLogoutUrl = function(options) {
  * @see Requires [`password` grant]{@link https://auth0.com/docs/api-auth/grant/password}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  * @memberof Authentication.prototype
  */
-Authentication.prototype.loginWithDefaultDirectory = function(options, cb) {
+Authentication.prototype.loginWithDefaultDirectory = function (options, cb) {
   assert.check(
     options,
     { type: 'object', message: 'options parameter is not valid' },
@@ -334,7 +335,7 @@ Authentication.prototype.loginWithDefaultDirectory = function(options, cb) {
  * @see Requires [`http://auth0.com/oauth/grant-type/password-realm` grant]{@link https://auth0.com/docs/api-auth/grant/password#realm-support}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  * @memberof Authentication.prototype
  */
-Authentication.prototype.login = function(options, cb) {
+Authentication.prototype.login = function (options, cb) {
   assert.check(
     options,
     { type: 'object', message: 'options parameter is not valid' },
@@ -366,7 +367,7 @@ Authentication.prototype.login = function(options, cb) {
  * @method oauthToken
  * @private
  */
-Authentication.prototype.oauthToken = function(options, cb) {
+Authentication.prototype.oauthToken = function (options, cb) {
   var url;
   var body;
 
@@ -427,7 +428,7 @@ Authentication.prototype.oauthToken = function(options, cb) {
  * @param {tokenCallback} cb function called with the result of the request
  * @memberof Authentication.prototype
  */
-Authentication.prototype.loginWithResourceOwner = function(options, cb) {
+Authentication.prototype.loginWithResourceOwner = function (options, cb) {
   var url;
   var body;
 
@@ -471,7 +472,7 @@ Authentication.prototype.loginWithResourceOwner = function(options, cb) {
  * @param {Function} cb
  * @memberof Authentication.prototype
  */
-Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
+Authentication.prototype.getSSOData = function (withActiveDirectories, cb) {
   /* istanbul ignore if  */
   if (!this.auth0) {
     this.auth0 = new WebAuth(this.baseOptions);
@@ -495,7 +496,7 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
       connection: ssodataInformation.lastUsedConnection,
       timeout: 5000
     },
-    function(err, result) {
+    function (err, result) {
       if (err) {
         if (err.error === 'login_required') {
           return cb(null, { sso: false });
@@ -543,7 +544,7 @@ Authentication.prototype.getSSOData = function(withActiveDirectories, cb) {
  * @see   {@link https://auth0.com/docs/api/authentication#get-user-info}
  * @memberof Authentication.prototype
  */
-Authentication.prototype.userInfo = function(accessToken, cb) {
+Authentication.prototype.userInfo = function (accessToken, cb) {
   var url;
 
   assert.check(accessToken, {
@@ -568,7 +569,7 @@ Authentication.prototype.userInfo = function(accessToken, cb) {
  * @param {callback} cb
  * @memberof Authentication.prototype
  */
-Authentication.prototype.getChallenge = function(cb) {
+Authentication.prototype.getChallenge = function (cb) {
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   if (!this.baseOptions.state) {
@@ -607,7 +608,7 @@ Authentication.prototype.getChallenge = function(cb) {
  * @see Requires [http://auth0.com/oauth/grant-type/password-realm]{@link https://auth0.com/docs/api-auth/grant/password#realm-support}. For more information, read {@link https://auth0.com/docs/clients/client-grant-types}.
  * @memberof Authentication.prototype
  */
-Authentication.prototype.delegation = function(options, cb) {
+Authentication.prototype.delegation = function (options, cb) {
   var url;
   var body;
 
@@ -640,7 +641,7 @@ Authentication.prototype.delegation = function(options, cb) {
  * @param {Function} cb
  * @memberof Authentication.prototype
  */
-Authentication.prototype.getUserCountry = function(cb) {
+Authentication.prototype.getUserCountry = function (cb) {
   var url;
 
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });

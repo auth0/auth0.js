@@ -59,8 +59,24 @@ describe('storage.cookies', function () {
       CookieLibrary.remove.restore();
       sinon.stub(CookieLibrary, 'remove').callsFake();
       cookieStorage.removeItem(KEY);
-      expect(Cookies.remove.firstCall.args).to.be.eql(['foo']);
-      expect(Cookies.remove.secondCall.args).to.be.eql(['_foo_compat']);
+      expect(Cookies.remove.firstCall.args).to.be.eql(['foo', {}]);
+      expect(Cookies.remove.secondCall.args).to.be.eql(['_foo_compat', {}]);
+      done();
+    });
+
+    it('calls Cookie.remove with a domain when cookieDomain is present', function (done) {
+      CookieLibrary.remove.restore();
+      sinon.stub(CookieLibrary, 'remove').callsFake();
+
+      const DOMAIN = '.example.com';
+      cookieStorage = new CookieStorage({
+        legacySameSiteCookie: true,
+        cookieDomain: DOMAIN
+      });
+      cookieStorage.removeItem(KEY);
+
+      expect(Cookies.remove.firstCall.args).to.be.eql(['foo', { domain: DOMAIN }]);
+      expect(Cookies.remove.secondCall.args).to.be.eql(['_foo_compat', { domain: DOMAIN }]);
       done();
     });
   });
@@ -110,7 +126,7 @@ describe('storage.cookies', function () {
       });
 
       CookieLibrary.set.restore();
-      sinon.stub(CookieLibrary, 'set').callsFake(() => {});
+      sinon.stub(CookieLibrary, 'set').callsFake(() => { });
 
       cookieStorage.setItem(KEY, VALUE, { expires: 2, test: true });
 
@@ -141,7 +157,7 @@ describe('storage.cookies', function () {
       });
 
       CookieLibrary.set.restore();
-      sinon.stub(CookieLibrary, 'set').callsFake(() => {});
+      sinon.stub(CookieLibrary, 'set').callsFake(() => { });
 
       cookieStorage.setItem(KEY, VALUE, { expires: 2, test: true });
 
@@ -149,6 +165,22 @@ describe('storage.cookies', function () {
         'foo',
         'bar',
         { expires: 2, test: true, secure: true, sameSite: 'none' }
+      ]);
+    });
+
+    it('calls Cookie.set with a domain when cookieDomain is present', function () {
+      const DOMAIN = '.example.com';
+      cookieStorage = new CookieStorage({
+        legacySameSiteCookie: true,
+        cookieDomain: DOMAIN
+      });
+
+      cookieStorage.setItem(KEY, VALUE);
+
+      expect(CookieLibrary.set.firstCall.args).to.be.eql([
+        'foo',
+        'bar',
+        { expires: 1, domain: DOMAIN },
       ]);
     });
   });
