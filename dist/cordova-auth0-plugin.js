@@ -1,5 +1,5 @@
 /**
- * auth0-js v9.20.2
+ * auth0-js v9.21.0
  * Author: Auth0
  * Date: 2023-05-24
  * License: MIT
@@ -11,7 +11,7 @@
   (global = global || self, global.CordovaAuth0Plugin = factory());
 }(this, (function () { 'use strict';
 
-  var version = { raw: '9.20.2' };
+  var version = { raw: '9.21.0' };
 
   var toString = Object.prototype.toString;
 
