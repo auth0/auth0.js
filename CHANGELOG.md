@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.21.0](https://github.com/auth0/auth0.js/tree/v9.21.0) (2023-05-24)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.20.2...v9.21.0)
+
+**Added**
+- Add cookieDomain option [\#1304](https://github.com/auth0/auth0.js/pull/1304) ([telmaantunes](https://github.com/telmaantunes))
+
 ## [v9.20.2](https://github.com/auth0/auth0.js/tree/v9.20.2) (2023-02-28)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.20.1...v9.20.2)
 
