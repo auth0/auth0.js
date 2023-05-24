@@ -17,7 +17,7 @@ CookieStorage.prototype.getItem = function (key) {
 };
 
 CookieStorage.prototype.removeItem = function (key) {
-  const params = {};
+  var params = {};
   if (this._options.cookieDomain) {
     params.domain = this._options.cookieDomain;
   }
