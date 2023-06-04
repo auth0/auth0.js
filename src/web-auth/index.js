@@ -496,7 +496,8 @@ function buildParseHashResponse(qsParams, appState, token) {
     state: qsParams.state || null,
     expiresIn: qsParams.expires_in ? parseInt(qsParams.expires_in, 10) : null,
     tokenType: qsParams.token_type || null,
-    scope: qsParams.scope || null
+    scope: qsParams.scope || null,
+    code: qsParams.code || null
   };
 }
 
