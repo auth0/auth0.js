@@ -38,7 +38,7 @@ var defaults = {
       return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
     },
     hcaptcha: function() {
-      return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
+      return '<div class="hcaptcha" ></div><input type="hidden" name="captcha" />';
     },
     error: function() {
       return '<div class="error" style="color: red;">Error getting the bot detection challenge. Please contact the system administrator.</div>';
@@ -56,7 +56,7 @@ function handleAuth0Provider(element, options, challenge, load) {
     });
 }
 
-function globalForRecaptchaProvider(provider) {
+function globalForCaptchaProvider(provider) {
   switch (provider) {
     case RECAPTCHA_V2_PROVIDER:
       return window.grecaptcha;
@@ -71,7 +71,7 @@ function globalForRecaptchaProvider(provider) {
   }
 }
 
-function scriptForRecaptchaProvider(provider, lang, callback) {
+function scriptForCaptchaProvider(provider, lang, callback) {
   switch (provider) {
     case RECAPTCHA_V2_PROVIDER:
       return (
@@ -100,14 +100,26 @@ function scriptForRecaptchaProvider(provider, lang, callback) {
   }
 }
 
-function injectRecaptchaScript(element, opts, callback) {
-  var callbackName = 'recaptchaCallback_' + Math.floor(Math.random() * 1000001);
+function injectCaptchaScript(element, opts, callback) {
+  var providerName;
+    switch (opts.provider) {
+    case RECAPTCHA_ENTERPRISE_PROVIDER:
+      providerName = 'recaptcha';
+      break;
+    case RECAPTCHA_V2_PROVIDER:
+      providerName = 'recaptcha';
+      break;
+    case HCAPTCHA_PROVIDER:
+      providerName = 'hcaptcha';
+      break;
+  }
+  var callbackName = providerName + 'Callback_' + Math.floor(Math.random() * 1000001);
   window[callbackName] = function() {
     delete window[callbackName];
     callback();
   };
   var script = window.document.createElement('script');
-  script.src = scriptForRecaptchaProvider(
+  script.src = scriptForCaptchaProvider(
     opts.provider,
     opts.lang,
     callbackName
@@ -116,7 +128,7 @@ function injectRecaptchaScript(element, opts, callback) {
   window.document.body.appendChild(script);
 }
 
-function handleRecaptchaProvider(element, options, challenge) {
+function handleCaptchaProvider(element, options, challenge) {
   var widgetId =
     element.hasAttribute('data-wid') && element.getAttribute('data-wid');
 
@@ -127,20 +139,32 @@ function handleRecaptchaProvider(element, options, challenge) {
 
   if (widgetId) {
     setValue();
-    globalForRecaptchaProvider(challenge.provider).reset(widgetId);
+    globalForCaptchaProvider(challenge.provider).reset(widgetId);
     return;
   }
 
   element.innerHTML = options.templates[challenge.provider](challenge);
 
-  var recaptchaDiv = element.querySelector('.recaptcha');
+  var captchaClass;
+  switch (challenge.provider) {
+    case RECAPTCHA_ENTERPRISE_PROVIDER:
+      captchaClass = '.recaptcha';
+      break;
+    case RECAPTCHA_V2_PROVIDER:
+      captchaClass = '.recaptcha';
+      break;
+    case HCAPTCHA_PROVIDER:
+      captchaClass = '.hcaptcha';
+      break;
+  }
+  var captchaDiv = element.querySelector(captchaClass);
 
-  injectRecaptchaScript(
+  injectCaptchaScript(
     element,
     { lang: options.lang, provider: challenge.provider },
     function() {
-      var global = globalForRecaptchaProvider(challenge.provider);
-      widgetId = global.render(recaptchaDiv, {
+      var global = globalForCaptchaProvider(challenge.provider);
+      widgetId = global.render(captchaDiv, {
         callback: setValue,
         'expired-callback': function() {
           setValue();
@@ -194,7 +218,7 @@ function render(auth0Client, element, options, callback) {
         challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
         challenge.provider === HCAPTCHA_PROVIDER
       ) {
-        handleRecaptchaProvider(element, options, challenge);
+        handleCaptchaProvider(element, options, challenge);
       }
       done();
     });
@@ -256,7 +280,7 @@ function renderPasswordless(auth0Client, element, options, callback) {
         challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
         challenge.provider === HCAPTCHA_PROVIDER
       ) {
-        handleRecaptchaProvider(element, options, challenge);
+        handleCaptchaProvider(element, options, challenge);
       }
       done();
     });
