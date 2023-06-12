@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.21.0
  * Author: Auth0
- * Date: 2023-05-24
+ * Date: 2023-06-07
  * License: MIT
  */
 
@@ -154,6 +154,16 @@
 		return shams();
 	};
 
+	var test = {
+		foo: {}
+	};
+
+	var $Object = Object;
+
+	var hasProto = function hasProto() {
+		return { __proto__: test }.foo === test.foo && !({ __proto__: null } instanceof $Object);
+	};
+
 	/* eslint no-invalid-this: 1 */
 
 	var ERROR_MESSAGE = 'Function.prototype.bind called on incompatible ';
@@ -252,18 +262,23 @@
 		: throwTypeError;
 
 	var hasSymbols$1 = hasSymbols();
+	var hasProto$1 = hasProto();
 
-	var getProto = Object.getPrototypeOf || function (x) { return x.__proto__; }; // eslint-disable-line no-proto
+	var getProto = Object.getPrototypeOf || (
+		hasProto$1
+			? function (x) { return x.__proto__; } // eslint-disable-line no-proto
+			: null
+	);
 
 	var needsEval = {};
 
-	var TypedArray = typeof Uint8Array === 'undefined' ? undefined$1 : getProto(Uint8Array);
+	var TypedArray = typeof Uint8Array === 'undefined' || !getProto ? undefined$1 : getProto(Uint8Array);
 
 	var INTRINSICS = {
 		'%AggregateError%': typeof AggregateError === 'undefined' ? undefined$1 : AggregateError,
 		'%Array%': Array,
 		'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined$1 : ArrayBuffer,
-		'%ArrayIteratorPrototype%': hasSymbols$1 ? getProto([][Symbol.iterator]()) : undefined$1,
+		'%ArrayIteratorPrototype%': hasSymbols$1 && getProto ? getProto([][Symbol.iterator]()) : undefined$1,
 		'%AsyncFromSyncIteratorPrototype%': undefined$1,
 		'%AsyncFunction%': needsEval,
 		'%AsyncGenerator%': needsEval,
@@ -293,10 +308,10 @@
 		'%Int32Array%': typeof Int32Array === 'undefined' ? undefined$1 : Int32Array,
 		'%isFinite%': isFinite,
 		'%isNaN%': isNaN,
-		'%IteratorPrototype%': hasSymbols$1 ? getProto(getProto([][Symbol.iterator]())) : undefined$1,
+		'%IteratorPrototype%': hasSymbols$1 && getProto ? getProto(getProto([][Symbol.iterator]())) : undefined$1,
 		'%JSON%': typeof JSON === 'object' ? JSON : undefined$1,
 		'%Map%': typeof Map === 'undefined' ? undefined$1 : Map,
-		'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols$1 ? undefined$1 : getProto(new Map()[Symbol.iterator]()),
+		'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols$1 || !getProto ? undefined$1 : getProto(new Map()[Symbol.iterator]()),
 		'%Math%': Math,
 		'%Number%': Number,
 		'%Object%': Object,
@@ -309,10 +324,10 @@
 		'%Reflect%': typeof Reflect === 'undefined' ? undefined$1 : Reflect,
 		'%RegExp%': RegExp,
 		'%Set%': typeof Set === 'undefined' ? undefined$1 : Set,
-		'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols$1 ? undefined$1 : getProto(new Set()[Symbol.iterator]()),
+		'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols$1 || !getProto ? undefined$1 : getProto(new Set()[Symbol.iterator]()),
 		'%SharedArrayBuffer%': typeof SharedArrayBuffer === 'undefined' ? undefined$1 : SharedArrayBuffer,
 		'%String%': String,
-		'%StringIteratorPrototype%': hasSymbols$1 ? getProto(''[Symbol.iterator]()) : undefined$1,
+		'%StringIteratorPrototype%': hasSymbols$1 && getProto ? getProto(''[Symbol.iterator]()) : undefined$1,
 		'%Symbol%': hasSymbols$1 ? Symbol : undefined$1,
 		'%SyntaxError%': $SyntaxError,
 		'%ThrowTypeError%': ThrowTypeError,
@@ -328,12 +343,14 @@
 		'%WeakSet%': typeof WeakSet === 'undefined' ? undefined$1 : WeakSet
 	};
 
-	try {
-		null.error; // eslint-disable-line no-unused-expressions
-	} catch (e) {
-		// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
-		var errorProto = getProto(getProto(e));
-		INTRINSICS['%Error.prototype%'] = errorProto;
+	if (getProto) {
+		try {
+			null.error; // eslint-disable-line no-unused-expressions
+		} catch (e) {
+			// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
+			var errorProto = getProto(getProto(e));
+			INTRINSICS['%Error.prototype%'] = errorProto;
+		}
 	}
 
 	var doEval = function doEval(name) {
@@ -351,7 +368,7 @@
 			}
 		} else if (name === '%AsyncIteratorPrototype%') {
 			var gen = doEval('%AsyncGenerator%');
-			if (gen) {
+			if (gen && getProto) {
 				value = getProto(gen.prototype);
 			}
 		}
@@ -1544,7 +1561,6 @@
 	};
 
 	var isArray$2 = Array.isArray;
-	var split = String.prototype.split;
 	var push = Array.prototype.push;
 	var pushToArray = function (arr, valueOrArray) {
 	    push.apply(arr, isArray$2(valueOrArray) ? valueOrArray : [valueOrArray]);
@@ -1646,14 +1662,6 @@
 	    if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
 	        if (encoder) {
 	            var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, 'key', format);
-	            if (generateArrayPrefix === 'comma' && encodeValuesOnly) {
-	                var valuesArray = split.call(String(obj), ',');
-	                var valuesJoined = '';
-	                for (var i = 0; i < valuesArray.length; ++i) {
-	                    valuesJoined += (i === 0 ? '' : ',') + formatter(encoder(valuesArray[i], defaults.encoder, charset, 'value', format));
-	                }
-	                return [formatter(keyValue) + (commaRoundTrip && isArray$2(obj) && valuesArray.length === 1 ? '[]' : '') + '=' + valuesJoined];
-	            }
 	            return [formatter(keyValue) + '=' + formatter(encoder(obj, defaults.encoder, charset, 'value', format))];
 	        }
 	        return [formatter(prefix) + '=' + formatter(String(obj))];
@@ -1668,6 +1676,9 @@
 	    var objKeys;
 	    if (generateArrayPrefix === 'comma' && isArray$2(obj)) {
 	        // we need to join elements in
+	        if (encodeValuesOnly && encoder) {
+	            obj = utils.maybeMap(obj, encoder);
+	        }
 	        objKeys = [{ value: obj.length > 0 ? obj.join(',') || null : void undefined }];
 	    } else if (isArray$2(filter)) {
 	        objKeys = filter;
@@ -1700,7 +1711,7 @@
 	            commaRoundTrip,
 	            strictNullHandling,
 	            skipNulls,
-	            encoder,
+	            generateArrayPrefix === 'comma' && encodeValuesOnly && isArray$2(obj) ? null : encoder,
 	            filter,
 	            sort,
 	            allowDots,
@@ -1897,7 +1908,8 @@
 	var charsetSentinel = 'utf8=%E2%9C%93'; // encodeURIComponent('✓')
 
 	var parseValues = function parseQueryStringValues(str, options) {
-	    var obj = {};
+	    var obj = { __proto__: null };
+
 	    var cleanStr = options.ignoreQueryPrefix ? str.replace(/^\?/, '') : str;
 	    var limit = options.parameterLimit === Infinity ? undefined : options.parameterLimit;
 	    var parts = cleanStr.split(options.delimiter, limit);
@@ -3125,7 +3137,7 @@
 
 	  if (typeof value === 'boolean') {
 	    value = String(value);
-	  } //fix https://github.com/visionmedia/superagent/issues/1680
+	  } // fix https://github.com/visionmedia/superagent/issues/1680
 
 
 	  if (options) this._getFormData().append(name, value, options);else this._getFormData().append(name, value);
@@ -3704,32 +3716,8 @@
 	 */
 
 	request.getXHR = function () {
-	  if (root.XMLHttpRequest && (!root.location || root.location.protocol !== 'file:' || !root.ActiveXObject)) {
+	  if (root.XMLHttpRequest && (!root.location || root.location.protocol !== 'file:')) {
 	    return new XMLHttpRequest();
-	  }
-
-	  try {
-	    return new ActiveXObject('Microsoft.XMLHTTP');
-	  } catch (_unused) {
-	    /**/
-	  }
-
-	  try {
-	    return new ActiveXObject('Msxml2.XMLHTTP.6.0');
-	  } catch (_unused2) {
-	    /**/
-	  }
-
-	  try {
-	    return new ActiveXObject('Msxml2.XMLHTTP.3.0');
-	  } catch (_unused3) {
-	    /**/
-	  }
-
-	  try {
-	    return new ActiveXObject('Msxml2.XMLHTTP');
-	  } catch (_unused4) {
-	    /**/
 	  }
 
 	  throw new Error('Browser-only version of superagent could not find XHR');
@@ -4117,7 +4105,7 @@
 	    if (new_error) {
 	      new_error.original = error;
 	      new_error.response = res;
-	      new_error.status = res.status;
+	      new_error.status = new_error.status || res.status;
 	      self.callback(new_error, res);
 	    } else {
 	      self.callback(null, res);
@@ -4405,7 +4393,7 @@
 
 	    try {
 	      status = xhr.status;
-	    } catch (_unused5) {
+	    } catch (_unused) {
 	      status = 0;
 	    }
 
@@ -4437,7 +4425,7 @@
 	      if (xhr.upload) {
 	        xhr.upload.addEventListener('progress', handleProgress.bind(null, 'upload'));
 	      }
-	    } catch (_unused6) {// Accessing xhr.upload fails in IE from a web worker, so just pretend it doesn't exist.
+	    } catch (_unused2) {// Accessing xhr.upload fails in IE from a web worker, so just pretend it doesn't exist.
 	      // Reported here:
 	      // https://connect.microsoft.com/IE/feedback/details/837245/xmlhttprequest-upload-throws-invalid-argument-when-used-from-web-worker-context
 	    }
@@ -7553,6 +7541,7 @@
 
 	var RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
 	var RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
+	var HCAPTCHA_PROVIDER = 'hcaptcha';
 	var AUTH0_PROVIDER = 'auth0';
 
 	var defaults$2 = {
@@ -7583,6 +7572,9 @@
 	    recaptcha_enterprise: function() {
 	      return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
 	    },
+	    hcaptcha: function() {
+	      return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
+	    },
 	    error: function() {
 	      return '<div class="error" style="color: red;">Error getting the bot detection challenge. Please contact the system administrator.</div>';
 	    }
@@ -7605,6 +7597,8 @@
 	      return window.grecaptcha;
 	    case RECAPTCHA_ENTERPRISE_PROVIDER:
 	      return window.grecaptcha.enterprise;
+	    case HCAPTCHA_PROVIDER:
+	      return window.hcaptcha
 	    /* istanbul ignore next */
 
 	    default:
@@ -7624,6 +7618,13 @@
 	    case RECAPTCHA_ENTERPRISE_PROVIDER:
 	      return (
 	        'https://www.recaptcha.net/recaptcha/enterprise.js?render=explicit&hl=' +
+	        lang +
+	        '&onload=' +
+	        callback
+	      );
+	    case HCAPTCHA_PROVIDER:
+	      return (
+	        'https://js.hcaptcha.com/1/api.js?hl=' +
 	        lang +
 	        '&onload=' +
 	        callback
@@ -7700,6 +7701,7 @@
 	 * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
+	 * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for recaptcha
 	 * @param {Function} [callback] an optional callback function
@@ -7707,7 +7709,6 @@
 	 */
 	function render(auth0Client, element, options, callback) {
 	  options = objectHelper.merge(defaults$2).with(options || {});
-
 	  function load(done) {
 	    done = done || noop;
 	    auth0Client.getChallenge(function(err, challenge) {
@@ -7725,7 +7726,8 @@
 	        handleAuth0Provider(element, options, challenge, load);
 	      } else if (
 	        challenge.provider === RECAPTCHA_V2_PROVIDER ||
-	        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER
+	        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
+	        challenge.provider === HCAPTCHA_PROVIDER
 	      ) {
 	        handleRecaptchaProvider(element, options, challenge);
 	      }
@@ -7760,6 +7762,7 @@
 	 * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
+	 * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string 
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for recaptcha
 	 * @param {Function} [callback] an optional callback function
@@ -7785,7 +7788,8 @@
 	        handleAuth0Provider(element, options, challenge, load);
 	      } else if (
 	        challenge.provider === RECAPTCHA_V2_PROVIDER ||
-	        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER
+	        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
+	        challenge.provider === HCAPTCHA_PROVIDER
 	      ) {
 	        handleRecaptchaProvider(element, options, challenge);
 	      }
@@ -8910,6 +8914,7 @@
 	 * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
+	 * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string 
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for recaptcha
 	 * @param {Function} [callback] An optional completion callback
@@ -8931,6 +8936,7 @@
 	 * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
+	 * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string 
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for recaptcha
 	 * @param {Function} [callback] An optional completion callback
