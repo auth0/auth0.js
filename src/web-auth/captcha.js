@@ -6,6 +6,7 @@ var noop = function() {};
 
 var RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
 var RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
+var HCAPTCHA_PROVIDER = 'hcaptcha';
 var AUTH0_PROVIDER = 'auth0';
 
 var defaults = {
@@ -36,6 +37,9 @@ var defaults = {
     recaptcha_enterprise: function() {
       return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
     },
+    hcaptcha: function() {
+      return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
+    },
     error: function() {
       return '<div class="error" style="color: red;">Error getting the bot detection challenge. Please contact the system administrator.</div>';
     }
@@ -58,6 +62,8 @@ function globalForRecaptchaProvider(provider) {
       return window.grecaptcha;
     case RECAPTCHA_ENTERPRISE_PROVIDER:
       return window.grecaptcha.enterprise;
+    case HCAPTCHA_PROVIDER:
+      return window.hcaptcha
     /* istanbul ignore next */
 
     default:
@@ -77,6 +83,13 @@ function scriptForRecaptchaProvider(provider, lang, callback) {
     case RECAPTCHA_ENTERPRISE_PROVIDER:
       return (
         'https://www.recaptcha.net/recaptcha/enterprise.js?render=explicit&hl=' +
+        lang +
+        '&onload=' +
+        callback
+      );
+    case HCAPTCHA_PROVIDER:
+      return (
+        'https://js.hcaptcha.com/1/api.js?hl=' +
         lang +
         '&onload=' +
         callback
@@ -153,6 +166,7 @@ function handleRecaptchaProvider(element, options, challenge) {
  * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
  * @param {Function} [callback] an optional callback function
@@ -160,7 +174,6 @@ function handleRecaptchaProvider(element, options, challenge) {
  */
 function render(auth0Client, element, options, callback) {
   options = object.merge(defaults).with(options || {});
-
   function load(done) {
     done = done || noop;
     auth0Client.getChallenge(function(err, challenge) {
@@ -178,7 +191,8 @@ function render(auth0Client, element, options, callback) {
         handleAuth0Provider(element, options, challenge, load);
       } else if (
         challenge.provider === RECAPTCHA_V2_PROVIDER ||
-        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER
+        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
+        challenge.provider === HCAPTCHA_PROVIDER
       ) {
         handleRecaptchaProvider(element, options, challenge);
       }
@@ -213,6 +227,7 @@ function render(auth0Client, element, options, callback) {
  * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string 
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
  * @param {Function} [callback] an optional callback function
@@ -238,7 +253,8 @@ function renderPasswordless(auth0Client, element, options, callback) {
         handleAuth0Provider(element, options, challenge, load);
       } else if (
         challenge.provider === RECAPTCHA_V2_PROVIDER ||
-        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER
+        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
+        challenge.provider === HCAPTCHA_PROVIDER
       ) {
         handleRecaptchaProvider(element, options, challenge);
       }
