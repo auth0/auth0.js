@@ -178,12 +178,36 @@ describe('captcha rendering', function () {
 
   const RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
   const RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
+  const HCAPTCHA_PROVIDER = 'hcaptcha';
 
-  [RECAPTCHA_V2_PROVIDER,RECAPTCHA_ENTERPRISE_PROVIDER].forEach(provider => {
+
+  [RECAPTCHA_V2_PROVIDER,RECAPTCHA_ENTERPRISE_PROVIDER, HCAPTCHA_PROVIDER].forEach(provider => {
     const getScript = () => {
       switch(provider) {
         case RECAPTCHA_V2_PROVIDER: return 'api.js';
+        case HCAPTCHA_PROVIDER: return 'api.js';
         case RECAPTCHA_ENTERPRISE_PROVIDER: return 'enterprise.js';
+      }
+    }
+    const getHostname = () => {
+      switch (provider) {
+        case RECAPTCHA_V2_PROVIDER: return 'recaptcha.net';
+        case RECAPTCHA_ENTERPRISE_PROVIDER: return 'recaptcha.net';
+        case HCAPTCHA_PROVIDER: return 'hcaptcha.com';
+      }
+    }
+    const getSubdomain = () => {
+      switch (provider) {
+        case RECAPTCHA_V2_PROVIDER: return 'www';
+        case RECAPTCHA_ENTERPRISE_PROVIDER: return 'www';
+        case HCAPTCHA_PROVIDER: return 'js';
+      }
+    }
+    const getPath = () => {
+      switch (provider) {
+        case RECAPTCHA_V2_PROVIDER: return 'recaptcha';
+        case RECAPTCHA_ENTERPRISE_PROVIDER: return 'recaptcha';
+        case HCAPTCHA_PROVIDER: return '1';
       }
     }
     const setMockGlobal = (mock) => {
@@ -192,7 +216,11 @@ describe('captcha rendering', function () {
           window.grecaptcha = mock;
           break;
         case RECAPTCHA_ENTERPRISE_PROVIDER:
-          window.grecaptcha = {enterprise:mock}
+          window.grecaptcha = { enterprise: mock };
+          break;
+        case HCAPTCHA_PROVIDER:
+          window.hcaptcha = mock;
+          break;
       }
     }
     describe(`when challenge is required and provider is ${provider}`, function () {
@@ -215,7 +243,7 @@ describe('captcha rendering', function () {
           }
         };
         c = captcha.render(mockClient, element);
-        recaptchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match('recaptcha.net'));
+        recaptchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match(getHostname()));
         scriptOnLoadCallback = window[url.parse(recaptchaScript.src, true).query.onload];
       });
   
@@ -226,8 +254,8 @@ describe('captcha rendering', function () {
       it('should inject the recaptcha script', function () {
         expect(recaptchaScript.async).to.be.ok();
         const scriptUrl = url.parse(recaptchaScript.src, true);
-        expect(scriptUrl.hostname).to.equal('www.recaptcha.net');
-        expect(scriptUrl.pathname).to.equal(`/recaptcha/${getScript()}`);
+        expect(scriptUrl.hostname).to.equal(`${getSubdomain()}.${getHostname()}`);
+        expect(scriptUrl.pathname).to.equal(`/${getPath()}/${getScript()}`);
         expect(scriptUrl.query.hl).to.equal('en');
         expect(scriptUrl.query).to.have.property('onload');
       });
@@ -475,12 +503,35 @@ describe('passwordless captcha rendering', function () {
 
   const RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
   const RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
+  const HCAPTCHA_PROVIDER = 'hcaptcha';
 
-  [RECAPTCHA_V2_PROVIDER,RECAPTCHA_ENTERPRISE_PROVIDER].forEach(provider => {
+  [RECAPTCHA_V2_PROVIDER,RECAPTCHA_ENTERPRISE_PROVIDER, HCAPTCHA_PROVIDER].forEach(provider => {
     const getScript = () => {
       switch(provider) {
         case RECAPTCHA_V2_PROVIDER: return 'api.js';
+        case HCAPTCHA_PROVIDER: return 'api.js';
         case RECAPTCHA_ENTERPRISE_PROVIDER: return 'enterprise.js';
+      }
+    }
+    const getHostname = () => {
+      switch (provider) {
+        case RECAPTCHA_V2_PROVIDER: return 'recaptcha.net';
+        case RECAPTCHA_ENTERPRISE_PROVIDER: return 'recaptcha.net';
+        case HCAPTCHA_PROVIDER: return 'hcaptcha.com';
+      }
+    }
+    const getSubdomain = () => {
+      switch (provider) {
+        case RECAPTCHA_V2_PROVIDER: return 'www';
+        case RECAPTCHA_ENTERPRISE_PROVIDER: return 'www';
+        case HCAPTCHA_PROVIDER: return 'js';
+      }
+    }
+    const getPath = () => {
+      switch (provider) {
+        case RECAPTCHA_V2_PROVIDER: return 'recaptcha';
+        case RECAPTCHA_ENTERPRISE_PROVIDER: return 'recaptcha';
+        case HCAPTCHA_PROVIDER: return '1';
       }
     }
     const setMockGlobal = (mock) => {
@@ -489,7 +540,11 @@ describe('passwordless captcha rendering', function () {
           window.grecaptcha = mock;
           break;
         case RECAPTCHA_ENTERPRISE_PROVIDER:
-          window.grecaptcha = {enterprise:mock}
+          window.grecaptcha = { enterprise: mock };
+          break;
+        case HCAPTCHA_PROVIDER:
+          window.hcaptcha = mock;
+          break;
       }
     }
     describe(`when challenge is required and provider is ${provider}`, function () {
@@ -514,7 +569,7 @@ describe('passwordless captcha rendering', function () {
           }
         };
         c = captcha.renderPasswordless(mockClient, element);
-        recaptchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match('recaptcha.net'));
+        recaptchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match(getHostname()));
         scriptOnLoadCallback = window[url.parse(recaptchaScript.src, true).query.onload];
       });
   
@@ -525,8 +580,8 @@ describe('passwordless captcha rendering', function () {
       it('should inject the recaptcha script', function () {
         expect(recaptchaScript.async).to.be.ok();
         const scriptUrl = url.parse(recaptchaScript.src, true);
-        expect(scriptUrl.hostname).to.equal('www.recaptcha.net');
-        expect(scriptUrl.pathname).to.equal(`/recaptcha/${getScript()}`);
+        expect(scriptUrl.hostname).to.equal(`${getSubdomain()}.${getHostname()}`);
+        expect(scriptUrl.pathname).to.equal(`/${getPath()}/${getScript()}`);
         expect(scriptUrl.query.hl).to.equal('en');
         expect(scriptUrl.query).to.have.property('onload');
       });
