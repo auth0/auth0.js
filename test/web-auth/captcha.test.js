@@ -179,14 +179,16 @@ describe('captcha rendering', function () {
   const RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
   const RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
   const HCAPTCHA_PROVIDER = 'hcaptcha';
+  const FRIENDLY_CAPTCHA_PROVIDER = 'friendly_captcha';
 
 
-  [RECAPTCHA_V2_PROVIDER,RECAPTCHA_ENTERPRISE_PROVIDER, HCAPTCHA_PROVIDER].forEach(provider => {
+  [RECAPTCHA_V2_PROVIDER,RECAPTCHA_ENTERPRISE_PROVIDER, HCAPTCHA_PROVIDER, FRIENDLY_CAPTCHA_PROVIDER].forEach(provider => {
     const getScript = () => {
       switch(provider) {
         case RECAPTCHA_V2_PROVIDER: return 'api.js';
         case HCAPTCHA_PROVIDER: return 'api.js';
         case RECAPTCHA_ENTERPRISE_PROVIDER: return 'enterprise.js';
+        case FRIENDLY_CAPTCHA_PROVIDER: return 'widget.min.js';
       }
     }
     const getHostname = () => {
@@ -194,6 +196,7 @@ describe('captcha rendering', function () {
         case RECAPTCHA_V2_PROVIDER: return 'recaptcha.net';
         case RECAPTCHA_ENTERPRISE_PROVIDER: return 'recaptcha.net';
         case HCAPTCHA_PROVIDER: return 'hcaptcha.com';
+        case FRIENDLY_CAPTCHA_PROVIDER: return 'jsdelivr.net';
       }
     }
     const getSubdomain = () => {
@@ -201,6 +204,7 @@ describe('captcha rendering', function () {
         case RECAPTCHA_V2_PROVIDER: return 'www';
         case RECAPTCHA_ENTERPRISE_PROVIDER: return 'www';
         case HCAPTCHA_PROVIDER: return 'js';
+        case FRIENDLY_CAPTCHA_PROVIDER: return 'cdn';
       }
     }
     const getPath = () => {
@@ -208,6 +212,7 @@ describe('captcha rendering', function () {
         case RECAPTCHA_V2_PROVIDER: return 'recaptcha';
         case RECAPTCHA_ENTERPRISE_PROVIDER: return 'recaptcha';
         case HCAPTCHA_PROVIDER: return '1';
+        case FRIENDLY_CAPTCHA_PROVIDER: return 'npm/friendly-challenge@0.9.12'
       }
     }
     const setMockGlobal = (mock) => {
@@ -221,6 +226,9 @@ describe('captcha rendering', function () {
         case HCAPTCHA_PROVIDER:
           window.hcaptcha = mock;
           break;
+        case FRIENDLY_CAPTCHA_PROVIDER:
+          window.friendlyChallenge = mock;
+          break;
       }
     }
     describe(`when challenge is required and provider is ${provider}`, function () {
@@ -231,7 +239,7 @@ describe('captcha rendering', function () {
         siteKey: 'blabla sitekey'
       };
   
-      let c, recaptchaScript, scriptOnLoadCallback, element;
+      let c, captchaScript, scriptOnLoadCallback, element;
   
       beforeEach(() => {
         const { window } = new JSDOM('<body><div class="captcha" /></body>');
@@ -243,8 +251,11 @@ describe('captcha rendering', function () {
           }
         };
         c = captcha.render(mockClient, element);
-        recaptchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match(getHostname()));
-        scriptOnLoadCallback = window[url.parse(recaptchaScript.src, true).query.onload];
+        captchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match(getHostname()));
+        scriptOnLoadCallback = window[url.parse(captchaScript.src, true).query.onload];
+        if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
+          scriptOnLoadCallback = captchaScript.onload;
+        }
       });
   
       afterEach(function () {
@@ -252,28 +263,37 @@ describe('captcha rendering', function () {
       });
   
       it('should inject the recaptcha script', function () {
-        expect(recaptchaScript.async).to.be.ok();
-        const scriptUrl = url.parse(recaptchaScript.src, true);
+        expect(captchaScript.async).to.be.ok();
+        const scriptUrl = url.parse(captchaScript.src, true);
         expect(scriptUrl.hostname).to.equal(`${getSubdomain()}.${getHostname()}`);
         expect(scriptUrl.pathname).to.equal(`/${getPath()}/${getScript()}`);
-        expect(scriptUrl.query.hl).to.equal('en');
-        expect(scriptUrl.query).to.have.property('onload');
+        if (provider !== FRIENDLY_CAPTCHA_PROVIDER) {
+          expect(scriptUrl.query.hl).to.equal('en');
+          expect(scriptUrl.query).to.have.property('onload');
+        }
       });
   
       describe('after captcha is loaded', function () {
         let renderOptions;
         let renderElement;
-        let reseted = false;
+        let resetted = false;
   
         beforeEach(function () {
-          reseted = false;      
+          resetted = false;
+          class fcWidget {
+            constructor(element, options) {
+              renderOptions = options;
+              renderElement = element;
+            }
+          }
           setMockGlobal({
             render(element, options) {
               renderElement = element;
               renderOptions = options;
               return 0;
             },
-            reset() { reseted = true; }
+            reset() { resetted = true; },
+            WidgetInstance: fcWidget
           });
           scriptOnLoadCallback();
         });
@@ -285,37 +305,50 @@ describe('captcha rendering', function () {
         it('should set the value on the input when the user completes the captcha', function () {
           const mockToken = 'token xxxxxx';
           const input = element.querySelector('input[name="captcha"]');
-          renderOptions.callback(mockToken)
+          if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
+            renderOptions.doneCallback(mockToken)
+          } else {
+            renderOptions.callback(mockToken)
+          }
           expect(input.value).to.equal(mockToken);
         });
   
-  
         it('should return the value when calling getValue()', function () {
           const mockToken = 'token xxxxxx';
-          renderOptions.callback(mockToken)
+          if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
+            renderOptions.doneCallback(mockToken)
+          } else {
+            renderOptions.callback(mockToken)
+          }
           expect(c.getValue()).to.equal(mockToken);
         });
-  
-        it('should clean the value when the token expires', function () {
-          const input = element.querySelector('input[name="captcha"]');
-          input.value = 'expired token';
-          renderOptions['expired-callback']()
-          expect(input.value).to.equal('');
-        });
+
+        if (provider !== FRIENDLY_CAPTCHA_PROVIDER) {
+          it('should clean the value when the token expires', function () {
+            const input = element.querySelector('input[name="captcha"]');
+            input.value = 'expired token';
+            renderOptions['expired-callback']()
+            expect(input.value).to.equal('');
+          });
+          
+          it('should clean the value and reset when reloading', function () {
+            const input = element.querySelector('input[name="captcha"]');
+            input.value = 'old token';
+            c.reload();
+            expect(input.value).to.equal('');
+            expect(resetted).to.be.ok();
+          });
+        }
   
         it('should clean the value when there is an error', function () {
           const input = element.querySelector('input[name="captcha"]');
           input.value = 'expired token';
-          renderOptions['error-callback']()
+          if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
+            renderOptions.errorCallback()
+          } else {
+            renderOptions['error-callback']()
+          }          
           expect(input.value).to.equal('');
-        });
-  
-        it('should clean the value and reset when reloading', function () {
-          const input = element.querySelector('input[name="captcha"]');
-          input.value = 'old token';
-          c.reload();
-          expect(input.value).to.equal('');
-          expect(reseted).to.be.ok();
         });
   
       });
@@ -504,13 +537,15 @@ describe('passwordless captcha rendering', function () {
   const RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
   const RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
   const HCAPTCHA_PROVIDER = 'hcaptcha';
+  const FRIENDLY_CAPTCHA_PROVIDER = 'friendly_captcha';
 
-  [RECAPTCHA_V2_PROVIDER,RECAPTCHA_ENTERPRISE_PROVIDER, HCAPTCHA_PROVIDER].forEach(provider => {
+  [RECAPTCHA_V2_PROVIDER,RECAPTCHA_ENTERPRISE_PROVIDER, HCAPTCHA_PROVIDER, FRIENDLY_CAPTCHA_PROVIDER].forEach(provider => {
     const getScript = () => {
       switch(provider) {
         case RECAPTCHA_V2_PROVIDER: return 'api.js';
         case HCAPTCHA_PROVIDER: return 'api.js';
         case RECAPTCHA_ENTERPRISE_PROVIDER: return 'enterprise.js';
+        case FRIENDLY_CAPTCHA_PROVIDER: return 'widget.min.js';
       }
     }
     const getHostname = () => {
@@ -518,6 +553,7 @@ describe('passwordless captcha rendering', function () {
         case RECAPTCHA_V2_PROVIDER: return 'recaptcha.net';
         case RECAPTCHA_ENTERPRISE_PROVIDER: return 'recaptcha.net';
         case HCAPTCHA_PROVIDER: return 'hcaptcha.com';
+        case FRIENDLY_CAPTCHA_PROVIDER: return 'jsdelivr.net';
       }
     }
     const getSubdomain = () => {
@@ -525,6 +561,7 @@ describe('passwordless captcha rendering', function () {
         case RECAPTCHA_V2_PROVIDER: return 'www';
         case RECAPTCHA_ENTERPRISE_PROVIDER: return 'www';
         case HCAPTCHA_PROVIDER: return 'js';
+        case FRIENDLY_CAPTCHA_PROVIDER: return 'cdn';
       }
     }
     const getPath = () => {
@@ -532,6 +569,7 @@ describe('passwordless captcha rendering', function () {
         case RECAPTCHA_V2_PROVIDER: return 'recaptcha';
         case RECAPTCHA_ENTERPRISE_PROVIDER: return 'recaptcha';
         case HCAPTCHA_PROVIDER: return '1';
+        case FRIENDLY_CAPTCHA_PROVIDER: return 'npm/friendly-challenge@0.9.12';
       }
     }
     const setMockGlobal = (mock) => {
@@ -545,6 +583,9 @@ describe('passwordless captcha rendering', function () {
         case HCAPTCHA_PROVIDER:
           window.hcaptcha = mock;
           break;
+        case FRIENDLY_CAPTCHA_PROVIDER:
+          window.friendlyChallenge = mock;
+          break;
       }
     }
     describe(`when challenge is required and provider is ${provider}`, function () {
@@ -555,7 +596,7 @@ describe('passwordless captcha rendering', function () {
         siteKey: 'blabla sitekey'
       };
   
-      let c, recaptchaScript, scriptOnLoadCallback, element;
+      let c, captchaScript, scriptOnLoadCallback, element;
   
       beforeEach(() => {
         const { window } = new JSDOM('<body><div class="captcha" /></body>');
@@ -569,8 +610,11 @@ describe('passwordless captcha rendering', function () {
           }
         };
         c = captcha.renderPasswordless(mockClient, element);
-        recaptchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match(getHostname()));
-        scriptOnLoadCallback = window[url.parse(recaptchaScript.src, true).query.onload];
+        captchaScript = [...window.document.querySelectorAll('script')].find(s => s.src.match(getHostname()));
+        scriptOnLoadCallback = window[url.parse(captchaScript.src, true).query.onload];
+        if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
+          scriptOnLoadCallback = captchaScript.onload;
+        }
       });
   
       afterEach(function () {
@@ -578,28 +622,37 @@ describe('passwordless captcha rendering', function () {
       });
   
       it('should inject the recaptcha script', function () {
-        expect(recaptchaScript.async).to.be.ok();
-        const scriptUrl = url.parse(recaptchaScript.src, true);
+        expect(captchaScript.async).to.be.ok();
+        const scriptUrl = url.parse(captchaScript.src, true);
         expect(scriptUrl.hostname).to.equal(`${getSubdomain()}.${getHostname()}`);
         expect(scriptUrl.pathname).to.equal(`/${getPath()}/${getScript()}`);
-        expect(scriptUrl.query.hl).to.equal('en');
-        expect(scriptUrl.query).to.have.property('onload');
+        if (provider !== FRIENDLY_CAPTCHA_PROVIDER) {
+          expect(scriptUrl.query.hl).to.equal('en');
+          expect(scriptUrl.query).to.have.property('onload');
+        }
       });
   
       describe('after captcha is loaded', function () {
         let renderOptions;
         let renderElement;
-        let reseted = false;
+        let resetted = false;
   
         beforeEach(function () {
-          reseted = false;      
+          resetted = false;
+          class fcWidget {
+            constructor(element, options) {
+              renderOptions = options;
+              renderElement = element;
+            }
+          }
           setMockGlobal({
             render(element, options) {
               renderElement = element;
               renderOptions = options;
               return 0;
             },
-            reset() { reseted = true; }
+            reset() { resetted = true; },
+            WidgetInstance: fcWidget
           });
           scriptOnLoadCallback();
         });
@@ -611,37 +664,50 @@ describe('passwordless captcha rendering', function () {
         it('should set the value on the input when the user completes the captcha', function () {
           const mockToken = 'token xxxxxx';
           const input = element.querySelector('input[name="captcha"]');
-          renderOptions.callback(mockToken)
+          if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
+            renderOptions.doneCallback(mockToken)
+          } else {
+            renderOptions.callback(mockToken)
+          }
           expect(input.value).to.equal(mockToken);
         });
   
-  
         it('should return the value when calling getValue()', function () {
           const mockToken = 'token xxxxxx';
-          renderOptions.callback(mockToken)
+          if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
+            renderOptions.doneCallback(mockToken)
+          } else {
+            renderOptions.callback(mockToken)
+          }
           expect(c.getValue()).to.equal(mockToken);
         });
   
-        it('should clean the value when the token expires', function () {
-          const input = element.querySelector('input[name="captcha"]');
-          input.value = 'expired token';
-          renderOptions['expired-callback']()
-          expect(input.value).to.equal('');
-        });
+        if (provider !== FRIENDLY_CAPTCHA_PROVIDER) {
+          it('should clean the value when the token expires', function () {
+            const input = element.querySelector('input[name="captcha"]');
+            input.value = 'expired token';
+            renderOptions['expired-callback']()
+            expect(input.value).to.equal('');
+          });
+          
+          it('should clean the value and reset when reloading', function () {
+            const input = element.querySelector('input[name="captcha"]');
+            input.value = 'old token';
+            c.reload();
+            expect(input.value).to.equal('');
+            expect(resetted).to.be.ok();
+          });   
+        }
   
         it('should clean the value when there is an error', function () {
           const input = element.querySelector('input[name="captcha"]');
           input.value = 'expired token';
-          renderOptions['error-callback']()
+          if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
+            renderOptions.errorCallback()
+          } else {
+            renderOptions['error-callback']()
+          }  
           expect(input.value).to.equal('');
-        });
-  
-        it('should clean the value and reset when reloading', function () {
-          const input = element.querySelector('input[name="captcha"]');
-          input.value = 'old token';
-          c.reload();
-          expect(input.value).to.equal('');
-          expect(reseted).to.be.ok();
         });
   
       });
