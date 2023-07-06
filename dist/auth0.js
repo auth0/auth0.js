@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.21.0
  * Author: Auth0
- * Date: 2023-06-30
+ * Date: 2023-07-06
  * License: MIT
  */
 
@@ -7720,7 +7720,7 @@
 	    function() {
 	      var global = globalForCaptchaProvider(challenge.provider);
 	      if (challenge.provider === FRIENDLY_CAPTCHA_PROVIDER) {
-	        var widgetInstance = new global.WidgetInstance(captchaDiv, {
+	        new global.WidgetInstance(captchaDiv, {
 	          sitekey: challenge.siteKey,
 	          language: options.lang,
 	          doneCallback: function(solution) {

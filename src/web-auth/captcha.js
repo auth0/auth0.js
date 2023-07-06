@@ -185,7 +185,7 @@ function handleCaptchaProvider(element, options, challenge) {
     function() {
       var global = globalForCaptchaProvider(challenge.provider);
       if (challenge.provider === FRIENDLY_CAPTCHA_PROVIDER) {
-        var widgetInstance = new global.WidgetInstance(captchaDiv, {
+        new global.WidgetInstance(captchaDiv, {
           sitekey: challenge.siteKey,
           language: options.lang,
           doneCallback: function(solution) {
