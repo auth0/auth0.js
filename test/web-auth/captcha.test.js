@@ -285,6 +285,7 @@ describe('captcha rendering', function () {
               renderOptions = options;
               renderElement = element;
             }
+            reset() { resetted = true; }
           }
           setMockGlobal({
             render(element, options) {
@@ -329,16 +330,16 @@ describe('captcha rendering', function () {
             input.value = 'expired token';
             renderOptions['expired-callback']()
             expect(input.value).to.equal('');
-          });
-          
-          it('should clean the value and reset when reloading', function () {
-            const input = element.querySelector('input[name="captcha"]');
-            input.value = 'old token';
-            c.reload();
-            expect(input.value).to.equal('');
-            expect(resetted).to.be.ok();
-          });
+          });          
         }
+
+        it('should clean the value and reset when reloading', function () {
+          const input = element.querySelector('input[name="captcha"]');
+          input.value = 'old token';
+          c.reload();
+          expect(input.value).to.equal('');
+          expect(resetted).to.be.ok();
+        });
   
         it('should clean the value when there is an error', function () {
           const input = element.querySelector('input[name="captcha"]');
@@ -644,6 +645,7 @@ describe('passwordless captcha rendering', function () {
               renderOptions = options;
               renderElement = element;
             }
+            reset() { resetted = true; }
           }
           setMockGlobal({
             render(element, options) {
@@ -688,16 +690,16 @@ describe('passwordless captcha rendering', function () {
             input.value = 'expired token';
             renderOptions['expired-callback']()
             expect(input.value).to.equal('');
-          });
-          
-          it('should clean the value and reset when reloading', function () {
-            const input = element.querySelector('input[name="captcha"]');
-            input.value = 'old token';
-            c.reload();
-            expect(input.value).to.equal('');
-            expect(resetted).to.be.ok();
-          });   
+          });  
         }
+
+        it('should clean the value and reset when reloading', function () {
+          const input = element.querySelector('input[name="captcha"]');
+          input.value = 'old token';
+          c.reload();
+          expect(input.value).to.equal('');
+          expect(resetted).to.be.ok();
+        });   
   
         it('should clean the value when there is an error', function () {
           const input = element.querySelector('input[name="captcha"]');
