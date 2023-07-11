@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.21.0
  * Author: Auth0
- * Date: 2023-07-06
+ * Date: 2023-07-10
  * License: MIT
  */
 
@@ -7687,11 +7687,15 @@
 	    input.value = value || '';
 	  }
 
-	  if (widgetId) {
+	  if (widgetId && challenge.provider !== FRIENDLY_CAPTCHA_PROVIDER) {
 	    setValue();
-	    if (challenge.provider !== FRIENDLY_CAPTCHA_PROVIDER) {
-	      globalForCaptchaProvider(challenge.provider).reset(widgetId);
-	    }
+	    globalForCaptchaProvider(challenge.provider).reset(widgetId);
+	    return;
+	  }
+
+	  if (window.auth0FCInstance && challenge.provider === FRIENDLY_CAPTCHA_PROVIDER) {
+	    setValue();
+	    window.auth0FCInstance.reset();
 	    return;
 	  }
 
@@ -7720,7 +7724,7 @@
 	    function() {
 	      var global = globalForCaptchaProvider(challenge.provider);
 	      if (challenge.provider === FRIENDLY_CAPTCHA_PROVIDER) {
-	        new global.WidgetInstance(captchaDiv, {
+	        window.auth0FCInstance = new global.WidgetInstance(captchaDiv, {
 	          sitekey: challenge.siteKey,
 	          language: options.lang,
 	          doneCallback: function(solution) {
