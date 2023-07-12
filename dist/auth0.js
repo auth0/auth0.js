@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.21.0
  * Author: Auth0
- * Date: 2023-05-24
+ * Date: 2023-07-12
  * License: MIT
  */
 
@@ -8180,22 +8180,36 @@
 	      if (!validationError) {
 	        // Verify the organization
 	        if (transactionOrganization) {
-	          if (!payload.org_id) {
+	          const organizationClaim =
+	            transactionOrganization.indexOf('org_') === 0
+	              ? 'org_id'
+	              : 'org_name';
+
+	          if (!payload[organizationClaim]) {
 	            return callback(
 	              error.invalidToken(
-	                'Organization Id (org_id) claim must be a string present in the ID token'
+	                `Organization (${organizationClaim}) claim must be a string present in the ID token`
 	              )
 	            );
 	          }
 
-	          if (payload.org_id !== transactionOrganization) {
+	          const expectedOrganization =
+	            organizationClaim === 'org_id'
+	              ? transactionOrganization
+	              : transactionOrganization.toLowerCase();
+	          const organizationClaimValue =
+	            organizationClaim === 'org_id'
+	              ? payload[organizationClaim]
+	              : payload[organizationClaim].toLowerCase();
+
+	          if (organizationClaimValue !== expectedOrganization) {
 	            return callback(
 	              error.invalidToken(
-	                'Organization Id (org_id) claim value mismatch in the ID token; expected "' +
-	                transactionOrganization +
-	                '", found "' +
-	                payload.org_id +
-	                '"'
+	                `Organization (${organizationClaim}) claim value mismatch in the ID token; expected "` +
+	                  expectedOrganization +
+	                  '", found "' +
+	                  organizationClaimValue +
+	                  '"'
 	              )
 	            );
 	          }
@@ -8936,7 +8950,11 @@
 	 * @param {Function} [callback] An optional completion callback
 	 * @memberof WebAuth.prototype
 	 */
-	WebAuth.prototype.renderPasswordlessCaptcha = function (element, options, callback) {
+	WebAuth.prototype.renderPasswordlessCaptcha = function (
+	  element,
+	  options,
+	  callback
+	) {
 	  return captcha.renderPasswordless(this.client, element, options, callback);
 	};
 

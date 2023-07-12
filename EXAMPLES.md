@@ -14,13 +14,13 @@ For information on how to implement Passwordless Login with this SDK, please rea
 
 ### Log in to an organization
 
-To log in to a specific organization, pass the ID of the organization as the `organization` parameter when creating the `WebAuth` client:
+To log in to a specific organization, pass the ID, or name, of the organization as the `organization` parameter when creating the `WebAuth` client:
 
 ```js
 var webAuth = new WebAuth({
   domain: '{YOUR_AUTH0_DOMAIN}',
   clientID: '{YOUR_AUTH0_CLIENT_ID}',
-  organization: '{YOUR_AUTH0_ORGANIZATION_ID}'
+  organization: '{YOUR_AUTH0_ORGANIZATION_ID_OR_NAME}'
 });
 ```
 
@@ -28,7 +28,7 @@ You can also specify an organization when calling `authorize`:
 
 ```js
 webAuth.authorize({
-  organization: '{YOUR_AUTH0_ORGANIZATION_ID}'
+  organization: '{YOUR_AUTH0_ORGANIZATION_ID_OR_NAME}'
 });
 ```
 
@@ -66,7 +66,7 @@ auth0.client.login(
     audience: 'https://mystore.com/api/v2',
     scope: 'read:order write:order'
   },
-  function(err, authResult) {
+  function (err, authResult) {
     // Auth tokens in the result or an error
   }
 );
@@ -86,12 +86,12 @@ auth0.client.login(
     realm: 'Username-Password-Authentication', //connection name or HRD domain
     username: 'info@auth0.com',
     password: 'areallystrongpassword',
-    onRedirecting: function(done) {
+    onRedirecting: function (done) {
       // Your custom code here
       done();
     }
   },
-  function(err, authResult) {
+  function (err, authResult) {
     // Auth tokens in the result or an error
   }
 );
