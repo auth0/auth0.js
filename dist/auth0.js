@@ -8180,42 +8180,49 @@
 	      if (!validationError) {
 	        // Verify the organization
 	        if (transactionOrganization) {
-	          var organizationClaim =
-	            transactionOrganization.indexOf('org_') === 0
-	              ? 'org_id'
-	              : 'org_name';
+	          if (transactionOrganization.indexOf('org_') === 0) {
+	            if (!payload.org_id) {
+	              return callback(
+	                error.invalidToken(
+	                  'Organization Id (org_id) claim must be a string present in the ID token'
+	                )
+	              );
+	            }
 
-	          if (!payload[organizationClaim]) {
-	            return callback(
-	              error.invalidToken(
-	                'Organization (' +
-	                  organizationClaim +
-	                  ') claim must be a string present in the ID token'
-	              )
-	            );
-	          }
+	            if (payload.org_id !== transactionOrganization) {
+	              return callback(
+	                error.invalidToken(
+	                  'Organization Id (org_id) claim value mismatch in the ID token; expected "' +
+	                    transactionOrganization +
+	                    '", found "' +
+	                    payload.org_id +
+	                    '"'
+	                )
+	              );
+	            }
+	          } else {
+	            if (!payload.org_name) {
+	              return callback(
+	                error.invalidToken(
+	                  'Organization Name (org_name) claim must be a string present in the ID token'
+	                )
+	              );
+	            }
 
-	          var expectedOrganization =
-	            organizationClaim === 'org_id'
-	              ? transactionOrganization
-	              : transactionOrganization.toLowerCase();
-	          var organizationClaimValue =
-	            organizationClaim === 'org_id'
-	              ? payload[organizationClaim]
-	              : payload[organizationClaim].toLowerCase();
-
-	          if (organizationClaimValue !== expectedOrganization) {
-	            return callback(
-	              error.invalidToken(
-	                'Organization (' +
-	                  organizationClaim +
-	                  ') claim value mismatch in the ID token; expected "' +
-	                  expectedOrganization +
-	                  '", found "' +
-	                  organizationClaimValue +
-	                  '"'
-	              )
-	            );
+	            if (
+	              payload.org_name.toLowerCase() !==
+	              transactionOrganization.toLowerCase()
+	            ) {
+	              return callback(
+	                error.invalidToken(
+	                  'Organization Name (org_name) claim value mismatch in the ID token; expected "' +
+	                    transactionOrganization +
+	                    '", found "' +
+	                    payload.org_name +
+	                    '"'
+	                )
+	              );
+	            }
 	          }
 	        }
 

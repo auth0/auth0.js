@@ -647,7 +647,7 @@ describe('auth0.WebAuth', function () {
           function (err, data) {
             expect(err).not.to.be(null);
             expect(err.errorDescription).to.eql(
-              'Organization (org_id) claim must be a string present in the ID token'
+              'Organization Id (org_id) claim must be a string present in the ID token'
             );
 
             done();
@@ -689,7 +689,7 @@ describe('auth0.WebAuth', function () {
           function (err, data) {
             expect(err).not.to.be(null);
             expect(err.errorDescription).to.eql(
-              'Organization (org_name) claim must be a string present in the ID token'
+              'Organization Name (org_name) claim must be a string present in the ID token'
             );
 
             done();
@@ -726,7 +726,7 @@ describe('auth0.WebAuth', function () {
             expect(err).not.to.be(null);
 
             expect(err.errorDescription).to.eql(
-              `Organization (org_id) claim value mismatch in the ID token; expected "org_123", found "org_456"`
+              `Organization Id (org_id) claim value mismatch in the ID token; expected "org_123", found "org_456"`
             );
 
             done();
@@ -769,7 +769,7 @@ describe('auth0.WebAuth', function () {
             expect(err).not.to.be(null);
 
             expect(err.errorDescription).to.eql(
-              `Organization (org_name) claim value mismatch in the ID token; expected "organization123", found "organization456"`
+              `Organization Name (org_name) claim value mismatch in the ID token; expected "organization123", found "organization456"`
             );
 
             done();
