@@ -387,7 +387,7 @@ WebAuth.prototype.validateAuthenticationResponse = function (
       if (!validationError) {
         // Verify the organization
         if (transactionOrganization) {
-          const organizationClaim =
+          var organizationClaim =
             transactionOrganization.indexOf('org_') === 0
               ? 'org_id'
               : 'org_name';
@@ -395,16 +395,18 @@ WebAuth.prototype.validateAuthenticationResponse = function (
           if (!payload[organizationClaim]) {
             return callback(
               error.invalidToken(
-                `Organization (${organizationClaim}) claim must be a string present in the ID token`
+                'Organization (' +
+                  organizationClaim +
+                  ') claim must be a string present in the ID token'
               )
             );
           }
 
-          const expectedOrganization =
+          var expectedOrganization =
             organizationClaim === 'org_id'
               ? transactionOrganization
               : transactionOrganization.toLowerCase();
-          const organizationClaimValue =
+          var organizationClaimValue =
             organizationClaim === 'org_id'
               ? payload[organizationClaim]
               : payload[organizationClaim].toLowerCase();
@@ -412,7 +414,9 @@ WebAuth.prototype.validateAuthenticationResponse = function (
           if (organizationClaimValue !== expectedOrganization) {
             return callback(
               error.invalidToken(
-                `Organization (${organizationClaim}) claim value mismatch in the ID token; expected "` +
+                'Organization (' +
+                  organizationClaim +
+                  ') claim value mismatch in the ID token; expected "' +
                   expectedOrganization +
                   '", found "' +
                   organizationClaimValue +

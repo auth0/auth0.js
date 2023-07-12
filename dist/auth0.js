@@ -7829,7 +7829,7 @@
 	 * @param {Number} [options.leeway] number of seconds to account for clock skew when validating time-based claims in ID tokens. Defaults to 60 seconds.
 	 * @param {Number} [options.maxAge] maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server.
 	 * @param {Number} [options.stateExpiration] number of minutes for the stored state to be kept. Defaults to 30 minutes.
-	 * @param {String} [options.organization] the Id of an organization to log in to
+	 * @param {String} [options.organization] the id or name of an organization to log in to
 	 * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
 	 * @param {Array} [options.plugins]
 	 * @param {Boolean} [options.legacySameSiteCookie] set this to `false` to disable the legacy compatibility cookie that is created for older browsers that don't support the SameSite attribute (defaults to `true`)
@@ -8180,7 +8180,7 @@
 	      if (!validationError) {
 	        // Verify the organization
 	        if (transactionOrganization) {
-	          const organizationClaim =
+	          var organizationClaim =
 	            transactionOrganization.indexOf('org_') === 0
 	              ? 'org_id'
 	              : 'org_name';
@@ -8188,16 +8188,18 @@
 	          if (!payload[organizationClaim]) {
 	            return callback(
 	              error.invalidToken(
-	                `Organization (${organizationClaim}) claim must be a string present in the ID token`
+	                'Organization (' +
+	                  organizationClaim +
+	                  ') claim must be a string present in the ID token'
 	              )
 	            );
 	          }
 
-	          const expectedOrganization =
+	          var expectedOrganization =
 	            organizationClaim === 'org_id'
 	              ? transactionOrganization
 	              : transactionOrganization.toLowerCase();
-	          const organizationClaimValue =
+	          var organizationClaimValue =
 	            organizationClaim === 'org_id'
 	              ? payload[organizationClaim]
 	              : payload[organizationClaim].toLowerCase();
@@ -8205,7 +8207,9 @@
 	          if (organizationClaimValue !== expectedOrganization) {
 	            return callback(
 	              error.invalidToken(
-	                `Organization (${organizationClaim}) claim value mismatch in the ID token; expected "` +
+	                'Organization (' +
+	                  organizationClaim +
+	                  ') claim value mismatch in the ID token; expected "' +
 	                  expectedOrganization +
 	                  '", found "' +
 	                  organizationClaimValue +
@@ -8605,7 +8609,7 @@
 	 * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
 	 * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`. Defaults to `openid profile email`.
 	 * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
-	 * @param {String} [options.organization] the Id of an organization to log in to
+	 * @param {String} [options.organization] the id or name of an organization to log in to
 	 * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
 	 * @param {Object} [options.appState] any values that you want back on the authentication response
 	 * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
