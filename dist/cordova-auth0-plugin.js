@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.21.0
  * Author: Auth0
- * Date: 2023-07-12
+ * Date: 2023-07-13
  * License: MIT
  */
 
@@ -504,6 +504,16 @@
   	return shams();
   };
 
+  var test = {
+  	foo: {}
+  };
+
+  var $Object = Object;
+
+  var hasProto = function hasProto() {
+  	return { __proto__: test }.foo === test.foo && !({ __proto__: null } instanceof $Object);
+  };
+
   /* eslint no-invalid-this: 1 */
 
   var ERROR_MESSAGE = 'Function.prototype.bind called on incompatible ';
@@ -602,18 +612,23 @@
   	: throwTypeError;
 
   var hasSymbols$1 = hasSymbols();
+  var hasProto$1 = hasProto();
 
-  var getProto = Object.getPrototypeOf || function (x) { return x.__proto__; }; // eslint-disable-line no-proto
+  var getProto = Object.getPrototypeOf || (
+  	hasProto$1
+  		? function (x) { return x.__proto__; } // eslint-disable-line no-proto
+  		: null
+  );
 
   var needsEval = {};
 
-  var TypedArray = typeof Uint8Array === 'undefined' ? undefined$1 : getProto(Uint8Array);
+  var TypedArray = typeof Uint8Array === 'undefined' || !getProto ? undefined$1 : getProto(Uint8Array);
 
   var INTRINSICS = {
   	'%AggregateError%': typeof AggregateError === 'undefined' ? undefined$1 : AggregateError,
   	'%Array%': Array,
   	'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined$1 : ArrayBuffer,
-  	'%ArrayIteratorPrototype%': hasSymbols$1 ? getProto([][Symbol.iterator]()) : undefined$1,
+  	'%ArrayIteratorPrototype%': hasSymbols$1 && getProto ? getProto([][Symbol.iterator]()) : undefined$1,
   	'%AsyncFromSyncIteratorPrototype%': undefined$1,
   	'%AsyncFunction%': needsEval,
   	'%AsyncGenerator%': needsEval,
@@ -643,10 +658,10 @@
   	'%Int32Array%': typeof Int32Array === 'undefined' ? undefined$1 : Int32Array,
   	'%isFinite%': isFinite,
   	'%isNaN%': isNaN,
-  	'%IteratorPrototype%': hasSymbols$1 ? getProto(getProto([][Symbol.iterator]())) : undefined$1,
+  	'%IteratorPrototype%': hasSymbols$1 && getProto ? getProto(getProto([][Symbol.iterator]())) : undefined$1,
   	'%JSON%': typeof JSON === 'object' ? JSON : undefined$1,
   	'%Map%': typeof Map === 'undefined' ? undefined$1 : Map,
-  	'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols$1 ? undefined$1 : getProto(new Map()[Symbol.iterator]()),
+  	'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols$1 || !getProto ? undefined$1 : getProto(new Map()[Symbol.iterator]()),
   	'%Math%': Math,
   	'%Number%': Number,
   	'%Object%': Object,
@@ -659,10 +674,10 @@
   	'%Reflect%': typeof Reflect === 'undefined' ? undefined$1 : Reflect,
   	'%RegExp%': RegExp,
   	'%Set%': typeof Set === 'undefined' ? undefined$1 : Set,
-  	'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols$1 ? undefined$1 : getProto(new Set()[Symbol.iterator]()),
+  	'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols$1 || !getProto ? undefined$1 : getProto(new Set()[Symbol.iterator]()),
   	'%SharedArrayBuffer%': typeof SharedArrayBuffer === 'undefined' ? undefined$1 : SharedArrayBuffer,
   	'%String%': String,
-  	'%StringIteratorPrototype%': hasSymbols$1 ? getProto(''[Symbol.iterator]()) : undefined$1,
+  	'%StringIteratorPrototype%': hasSymbols$1 && getProto ? getProto(''[Symbol.iterator]()) : undefined$1,
   	'%Symbol%': hasSymbols$1 ? Symbol : undefined$1,
   	'%SyntaxError%': $SyntaxError,
   	'%ThrowTypeError%': ThrowTypeError,
@@ -678,12 +693,14 @@
   	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined$1 : WeakSet
   };
 
-  try {
-  	null.error; // eslint-disable-line no-unused-expressions
-  } catch (e) {
-  	// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
-  	var errorProto = getProto(getProto(e));
-  	INTRINSICS['%Error.prototype%'] = errorProto;
+  if (getProto) {
+  	try {
+  		null.error; // eslint-disable-line no-unused-expressions
+  	} catch (e) {
+  		// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
+  		var errorProto = getProto(getProto(e));
+  		INTRINSICS['%Error.prototype%'] = errorProto;
+  	}
   }
 
   var doEval = function doEval(name) {
@@ -701,7 +718,7 @@
   		}
   	} else if (name === '%AsyncIteratorPrototype%') {
   		var gen = doEval('%AsyncGenerator%');
-  		if (gen) {
+  		if (gen && getProto) {
   			value = getProto(gen.prototype);
   		}
   	}
@@ -1894,7 +1911,6 @@
   };
 
   var isArray$3 = Array.isArray;
-  var split = String.prototype.split;
   var push = Array.prototype.push;
   var pushToArray = function (arr, valueOrArray) {
       push.apply(arr, isArray$3(valueOrArray) ? valueOrArray : [valueOrArray]);
@@ -1996,14 +2012,6 @@
       if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
           if (encoder) {
               var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, 'key', format);
-              if (generateArrayPrefix === 'comma' && encodeValuesOnly) {
-                  var valuesArray = split.call(String(obj), ',');
-                  var valuesJoined = '';
-                  for (var i = 0; i < valuesArray.length; ++i) {
-                      valuesJoined += (i === 0 ? '' : ',') + formatter(encoder(valuesArray[i], defaults.encoder, charset, 'value', format));
-                  }
-                  return [formatter(keyValue) + (commaRoundTrip && isArray$3(obj) && valuesArray.length === 1 ? '[]' : '') + '=' + valuesJoined];
-              }
               return [formatter(keyValue) + '=' + formatter(encoder(obj, defaults.encoder, charset, 'value', format))];
           }
           return [formatter(prefix) + '=' + formatter(String(obj))];
@@ -2018,6 +2026,9 @@
       var objKeys;
       if (generateArrayPrefix === 'comma' && isArray$3(obj)) {
           // we need to join elements in
+          if (encodeValuesOnly && encoder) {
+              obj = utils.maybeMap(obj, encoder);
+          }
           objKeys = [{ value: obj.length > 0 ? obj.join(',') || null : void undefined }];
       } else if (isArray$3(filter)) {
           objKeys = filter;
@@ -2050,7 +2061,7 @@
               commaRoundTrip,
               strictNullHandling,
               skipNulls,
-              encoder,
+              generateArrayPrefix === 'comma' && encodeValuesOnly && isArray$3(obj) ? null : encoder,
               filter,
               sort,
               allowDots,
@@ -2247,7 +2258,8 @@
   var charsetSentinel = 'utf8=%E2%9C%93'; // encodeURIComponent('✓')
 
   var parseValues = function parseQueryStringValues(str, options) {
-      var obj = {};
+      var obj = { __proto__: null };
+
       var cleanStr = options.ignoreQueryPrefix ? str.replace(/^\?/, '') : str;
       var limit = options.parameterLimit === Infinity ? undefined : options.parameterLimit;
       var parts = cleanStr.split(options.delimiter, limit);
