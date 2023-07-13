@@ -1,5 +1,15 @@
 # Change Log
 
+## [v9.22.0](https://github.com/auth0/auth0.js/tree/v9.22.0) (2023-07-13)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.21.0...v9.22.0)
+
+**Added**
+- Added support for hCaptcha and Friendly Captcha [\#1312](https://github.com/auth0/auth0.js/pull/1312) ([DominickBattistini](https://github.com/DominickBattistini))
+- Support Organization Name [\#1313](https://github.com/auth0/auth0.js/pull/1313) ([frederikprijck](https://github.com/frederikprijck))
+
+**Security**
+- Security: Update Dependencies [\#1310](https://github.com/auth0/auth0.js/pull/1310) ([evansims](https://github.com/evansims))
+
 ## [v9.21.0](https://github.com/auth0/auth0.js/tree/v9.21.0) (2023-05-24)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.20.2...v9.21.0)
 
