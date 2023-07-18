@@ -417,7 +417,7 @@ WebAuth.prototype.validateAuthenticationResponse = function (
             }
 
             if (
-              payload.org_name.toLowerCase() !==
+              payload.org_name !==
               transactionOrganization.toLowerCase()
             ) {
               return callback(
