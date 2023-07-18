@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.22.1](https://github.com/auth0/auth0.js/tree/v9.22.1) (2023-07-18)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.22.0...v9.22.1)
+
+**Changed**
+- Do not lowercase org_name claim [\#1315](https://github.com/auth0/auth0.js/pull/1315) ([frederikprijck](https://github.com/frederikprijck))
+
 ## [v9.22.0](https://github.com/auth0/auth0.js/tree/v9.22.0) (2023-07-13)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.21.0...v9.22.0)
 
