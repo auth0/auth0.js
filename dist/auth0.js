@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.22.0
+ * auth0-js v9.22.1
  * Author: Auth0
- * Date: 2023-07-13
+ * Date: 2023-07-18
  * License: MIT
  */
 
@@ -4897,7 +4897,7 @@
 	  decode: decode$1
 	};
 
-	var version = { raw: '9.22.0' };
+	var version = { raw: '9.22.1' };
 
 	var toString = Object.prototype.toString;
 
@@ -8303,7 +8303,7 @@
 	            }
 
 	            if (
-	              payload.org_name.toLowerCase() !==
+	              payload.org_name !==
 	              transactionOrganization.toLowerCase()
 	            ) {
 	              return callback(
