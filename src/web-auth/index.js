@@ -1145,7 +1145,7 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
  * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string 
  * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string 
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
- * @param {String} [options.lang=en] the ISO code of the language for recaptcha
+ * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
  * @param {Function} [callback] An optional completion callback
  * @memberof WebAuth.prototype
  */
@@ -1168,7 +1168,7 @@ WebAuth.prototype.renderCaptcha = function (element, options, callback) {
  * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string 
  * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string 
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
- * @param {String} [options.lang=en] the ISO code of the language for recaptcha
+ * @param {String} [options.lang=en] the ISO code of the language for captcha provider
  * @param {Function} [callback] An optional completion callback
  * @memberof WebAuth.prototype
  */
