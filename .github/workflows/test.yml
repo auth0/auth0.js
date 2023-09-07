@@ -19,7 +19,7 @@ concurrency:
 
 env:
   NODE_VERSION: 18
-  CACHE_KEY: '${{ github.event.pull_request.head.sha || github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}'
+  CACHE_KEY: '${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}'
 
 jobs:
   build:
