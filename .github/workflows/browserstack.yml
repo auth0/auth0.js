@@ -1,0 +1,85 @@
+name: Build and Test
+
+on:
+  merge_group:
+  workflow_dispatch:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+env:
+  NODE_VERSION: 18
+  CACHE_KEY: '${{ github.event.pull_request.head.sha || github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}'
+
+jobs:
+  authorize:
+    name: Authorize
+    environment: ${{ github.actor != 'dependabot[bot]' && github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'external' || 'internal' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
+
+  build:
+    needs: authorize # Require approval before running on forked pull requests
+
+    name: Build Package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+      - name: Build package
+        uses: ./.github/actions/build
+        with:
+          node: ${{ env.NODE_VERSION }}
+
+      - name: Save build artifacts
+        uses: actions/cache/save@v3
+        with:
+          path: .
+          key: ${{ env.CACHE_KEY }}
+
+  browserstack:
+    needs: build # Only run if unit tests pass
+
+    name: BrowserStack Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Restore build artifacts
+        uses: actions/cache/restore@v3
+        with:
+          path: .
+          key: ${{ env.CACHE_KEY }}
+
+      - name: Run tests
+        shell: bash
+        run: npm run test:e2e:browserstack
+        env:
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}

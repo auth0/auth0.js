@@ -7,24 +7,10 @@ on:
         description: The branch to release from
         required: true
         default: master
-      release-type:
-        description: The type of release to publish
+      version:
+        description: The version being published. This should be a valid semver version, such as `1.0.0`.
         required: true
-        default: stable
-        type: choice
-        options:
-          - stable
-          - beta
-          - alpha
-      version-number:
-        description: The version number to publish. For pre-releases, do not include the release type or prerelease number, as these will be appended automatically when applicable.
-        required: true
-        default: '1.0.0'
-        type: string
-      prerelease-number:
-        description: For pre-releases, please identify the release number (i.e. 1 for beta.1, 2 for beta.2, etc.) Ignored for stable releases.
-        required: true
-        default: '1'
+        default: ''
         type: string
       dry-run:
         type: boolean
@@ -44,16 +30,14 @@ jobs:
   configure:
     name: Validate input parameters
     runs-on: ubuntu-latest
-    environment: release
 
     outputs:
       vtag: ${{ steps.vtag.outputs.vtag }} # The fully constructed release tag to use for publishing
-      release-suffix: ${{ steps.release-suffix.outputs.release-suffix }} # The release suffix to use for pre-releases, if applicable
       dry-run: ${{ steps.dry-run.outputs.dry-run }} # The dry-run flag to use for publishing, if applicable
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.event.inputs.branch }}
@@ -66,23 +50,13 @@ jobs:
           echo "dry-run=--dry-run" >> $GITHUB_ENV
           echo "dry-run=--dry-run" >> $GITHUB_OUTPUT
 
-      # Build the release suffix for pre-releases using the type and prerelease number, if applicable. Produces something like `-beta.1` for a beta, or `-alpha.1` for an alpha.
-      - id: release-suffix
-        if: ${{ github.event.inputs.release-type != 'stable' }}
-        name: Build release suffix
-        run: |
-          echo "release-suffix=-${{ github.event.inputs.release-type }}.${{ github.event.inputs.prerelease-number }}" >> $GITHUB_ENV
-          echo "release-suffix=-${{ github.event.inputs.release-type }}.${{ github.event.inputs.prerelease-number }}" >> $GITHUB_OUTPUT
-
       # Build the tag string from package.json version and release suffix. Produces something like `1.0.0-beta.1` for a beta, or `1.0.0` for a stable release.
       - name: Build tag
         id: vtag
         run: |
-          PACKAGE_VERSION="${{ github.event.inputs.version-number }}"
-          PACKAGE_SUFFIX="${{ steps.release-suffix.outputs.release-suffix }}"
-          VTAG="${PACKAGE_VERSION}${PACKAGE_SUFFIX}"
-          echo "vtag=${VTAG}" >> $GITHUB_ENV
-          echo "vtag=${VTAG}" >> $GITHUB_OUTPUT
+          PACKAGE_VERSION="${{ github.event.inputs.version }}"
+          echo "vtag=${PACKAGE_VERSION}" >> $GITHUB_ENV
+          echo "vtag=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
 
       # Ensure tag does not already exist.
       - name: Validate version
@@ -111,11 +85,11 @@ jobs:
 
     name: Publish to NPM
     runs-on: ubuntu-latest
-    environment: release
+    environment: 'release'
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.event.inputs.branch }}
@@ -141,11 +115,11 @@ jobs:
 
     name: Publish to GitHub Packages
     runs-on: ubuntu-latest
-    environment: release
+    environment: 'release'
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v3
