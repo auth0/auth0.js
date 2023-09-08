@@ -1,0 +1,122 @@
+name: Build and Test
+
+on:
+  merge_group:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+env:
+  NODE_VERSION: 18
+  CACHE_KEY: '${{ github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}'
+
+jobs:
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build package
+        uses: ./.github/actions/build
+        with:
+          node: ${{ env.NODE_VERSION }}
+
+      - name: Save build artifacts
+        uses: actions/cache/save@v3
+        with:
+          path: .
+          key: ${{ env.CACHE_KEY }}
+
+  unit:
+    needs: build # Require build to complete before running tests
+
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Restore build artifacts
+        uses: actions/cache/restore@v3
+        with:
+          path: .
+          key: ${{ env.CACHE_KEY }}
+
+      - name: Run tests
+        run: npm run ci:test
+        env:
+          MOCHA_FILE: junit/test-results.xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # pin@3.1.4
+
+  compatibility:
+    needs: build # Require build to complete before running tests
+
+    name: Compatibility Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Restore build artifacts
+        uses: actions/cache/restore@v3
+        with:
+          path: .
+          key: ${{ env.CACHE_KEY }}
+
+      - name: Run tests
+        run: npm run test:es-check:es5 && npm run test:es-check:es2015:module
+
+  lint:
+    needs: build # Require build to complete before running tests
+
+    name: Lint Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Restore build artifacts
+        uses: actions/cache/restore@v3
+        with:
+          path: .
+          key: ${{ env.CACHE_KEY }}
+
+      - name: Run tests
+        run: npm run lint
