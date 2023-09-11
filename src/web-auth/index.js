@@ -416,10 +416,7 @@ WebAuth.prototype.validateAuthenticationResponse = function (
               );
             }
 
-            if (
-              payload.org_name !==
-              transactionOrganization.toLowerCase()
-            ) {
+            if (payload.org_name !== transactionOrganization.toLowerCase()) {
               return callback(
                 error.invalidToken(
                   'Organization Name (org_name) claim value mismatch in the ID token; expected "' +
@@ -921,6 +918,7 @@ WebAuth.prototype.signupAndAuthorize = function (options, cb) {
  * @param {String} [options.email] Email (mutually exclusive with username)
  * @param {String} [options.password] Password
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
+ * @param {String} [options.captcha] the attempted solution for the captcha, if one was presented
  * @param {onRedirectingCallback} [options.onRedirecting] Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  * @memberof WebAuth.prototype
@@ -1142,8 +1140,8 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
  * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string 
- * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string 
+ * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
  * @param {Function} [callback] An optional completion callback
@@ -1165,8 +1163,8 @@ WebAuth.prototype.renderCaptcha = function (element, options, callback) {
  * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string 
- * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string 
+ * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
  * @param {Function} [callback] An optional completion callback
