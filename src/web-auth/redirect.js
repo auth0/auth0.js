@@ -35,7 +35,7 @@ function Redirect(auth0, options) {
  * @memberof Redirect.prototype
  * @memberof Redirect.prototype
  */
-Redirect.prototype.loginWithCredentials = function(options, cb) {
+Redirect.prototype.loginWithCredentials = function (options, cb) {
   options.realm = options.realm || options.connection;
   delete options.connection;
   this.crossOriginAuthentication.login(options, cb);
@@ -49,13 +49,14 @@ Redirect.prototype.loginWithCredentials = function(options, cb) {
  * @param {String} options.email user email address
  * @param {String} options.password user password
  * @param {String} options.connection name of the connection where the user will be created
+ * @param {String} [options.captcha] the attempted solution for the captcha, if one was presented
  * @param {crossOriginLoginCallback} cb
  * @memberof Redirect.prototype
  */
-Redirect.prototype.signupAndLogin = function(options, cb) {
+Redirect.prototype.signupAndLogin = function (options, cb) {
   var _this = this;
 
-  return this.webAuth.client.dbConnection.signup(options, function(err) {
+  return this.webAuth.client.dbConnection.signup(options, function (err) {
     if (err) {
       return cb(err);
     }
