@@ -48,6 +48,42 @@ if (organization && invitation) {
 }
 ```
 
+### Storing the organization
+
+When working with organizations, you might want to store the organization to ensure subsequent renewals of tokens using `checkSession` do not lose the context of the last used organization.
+
+```js
+auth0.parseHash({}, ({ idTokenPayload }) => {
+  var organization = idTokenPayload.org_id || idTokenPayload.org_name;
+
+  // store organization somewhere that persists across page-refreshes
+  // - localstorage
+  // - cookie
+  localStorage.setItem('app_organization', organization);
+});
+```
+
+With the organization stored in a persistent storage, you want to ensure it's always pulled in from there when calling `checkSession`:
+
+```js
+webAuth.checkSessions(
+  {
+    organization: localStorage.setItem('app_organization')
+  },
+  () => {}
+);
+```
+
+Additionally, you also want to ensure to read the last used organization when instantiating `WebAuth` on every subsequent page refresh.
+
+```js
+var webAuth = new WebAuth({
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  clientID: '{YOUR_AUTH0_CLIENT_ID}',
+  organization: localStorage.setItem('app_organization')
+});
+```
+
 ## WebAuth.client.login(options, callback)
 
 Authenticates a user with username and password in a realm using `/oauth/token`. This will not initialize a SSO session at Auth0, hence can not be used along with silent authentication.
