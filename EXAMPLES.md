@@ -65,15 +65,18 @@ auth0.parseHash({}, ({ idTokenPayload }) => {
 
 With the organization stored in a persistent storage, you want to ensure it's always pulled in from there when calling `checkSession`:
 
-```
-webAuth.checkSessions({
-  organization: localStorage.setItem('app_organization')
-}, () => {})
+```js
+webAuth.checkSessions(
+  {
+    organization: localStorage.setItem('app_organization')
+  },
+  () => {}
+);
 ```
 
 Additionally, you also want to ensure to read the last used organization when instantiating `WebAuth` on every subsequent page refresh.
 
-```
+```js
 var webAuth = new WebAuth({
   domain: '{YOUR_AUTH0_DOMAIN}',
   clientID: '{YOUR_AUTH0_CLIENT_ID}',
