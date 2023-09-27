@@ -3044,6 +3044,22 @@ describe('auth0.WebAuth', function () {
       });
       this.auth0.checkSession({}, function (err, data) {});
     });
+
+    it('inits IframeHandler with organization', function (done) {
+      sinon.stub(IframeHandler.prototype, 'init').callsFake(function () {
+        expect(this.url).to.be(
+          'https://me.auth0.com/authorize?client_id=...&response_type=token&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&organization=org_123&from=transaction-manager&response_mode=web_message&prompt=none'
+        );
+        expect(this.eventListenerType).to.be('message');
+        expect(this.timeout).to.be(60000);
+        done();
+      });
+      this.auth0.checkSession(
+        { organization: 'org_123' },
+        function (err, data) {}
+      );
+    });
+
     it('uses custom timeout when provided', function (done) {
       var timeout = 1;
       sinon.stub(IframeHandler.prototype, 'init').callsFake(function () {
