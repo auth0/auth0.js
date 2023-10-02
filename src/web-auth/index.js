@@ -1146,10 +1146,18 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
  * @param {Function} [callback] An optional completion callback
+ * @param {Object} [arkoseConfig] An optional configuration object for arkose captcha
+ * @param {String} [arkoseConfig.onCompleted] function fired after Arkose challenge is completed
+ * @param {String} [arkoseConfig.onError] nction fired after Arkose encounters an error with the error passed as first argument
  * @memberof WebAuth.prototype
  */
-WebAuth.prototype.renderCaptcha = function (element, options, callback) {
-  return captcha.render(this.client, element, options, callback);
+WebAuth.prototype.renderCaptcha = function (
+  element,
+  options,
+  callback,
+  arkoseConfig
+) {
+  return captcha.render(this.client, element, options, callback, arkoseConfig);
 };
 
 /**
@@ -1169,14 +1177,24 @@ WebAuth.prototype.renderCaptcha = function (element, options, callback) {
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
  * @param {Function} [callback] An optional completion callback
+ * @param {Object} [arkoseConfig] An optional configuration object for arkose captcha
+ * @param {String} [arkoseConfig.onCompleted] function fired after Arkose challenge is completed
+ * @param {String} [arkoseConfig.onError] function fired after Arkose encounters an error with the error passed as first argument
  * @memberof WebAuth.prototype
  */
 WebAuth.prototype.renderPasswordlessCaptcha = function (
   element,
   options,
-  callback
+  callback,
+  arkoseConfig
 ) {
-  return captcha.renderPasswordless(this.client, element, options, callback);
+  return captcha.renderPasswordless(
+    this.client,
+    element,
+    options,
+    callback,
+    arkoseConfig
+  );
 };
 
 export default WebAuth;
