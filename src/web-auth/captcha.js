@@ -137,7 +137,7 @@ function loadScript(url, attributes) {
     }
   }
   script.src = url;
-  document.body.appendChild(script);
+  window.document.body.appendChild(script);
 }
 
 function removeScript(url) {
