@@ -550,7 +550,7 @@ describe('captcha rendering', function () {
         expect(runSpy.calledOnce).to.be.ok();
       });
 
-      it('should call user provider config callbacks on execution', function () {
+      it('should call user provided config callbacks on execution', function () {
         configOptions.onCompleted({ token: 'token' });
         configOptions.onError({ error: 'error' });
         expect(onSolvedSpy.calledOnce).to.be.ok();
@@ -1081,7 +1081,7 @@ describe('passwordless captcha rendering', function () {
         expect(runSpy.calledOnce).to.be.ok();
       });
 
-      it('should call user provider config callbacks on execution', function () {
+      it('should call user provided config callbacks on execution', function () {
         configOptions.onCompleted({ token: 'token' });
         configOptions.onError({ error: 'error' });
         expect(onSolvedSpy.calledOnce).to.be.ok();
