@@ -7570,7 +7570,6 @@
 	var FRIENDLY_CAPTCHA_PROVIDER = 'friendly_captcha';
 	var ARKOSE_PROVIDER = 'arkose';
 	var AUTH0_PROVIDER = 'auth0';
-	var TIMEOUT_MS = 500;
 	var MAX_RETRY = 3;
 
 	var defaults$2 = {
@@ -7731,6 +7730,7 @@
 	        return;
 	      }
 	      removeScript(scriptSrc);
+	      // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
 	      setValue('BYPASS_CAPTCHA');
 	    };
 	    window[callbackName] = function (arkose) {
@@ -7749,7 +7749,7 @@
 	  loadScript(scriptSrc, attributes);
 	}
 
-	function handleCaptchaProvider(element, options, challenge, arkoseConfig) {
+	function handleCaptchaProvider(element, options, challenge) {
 	  var widgetId =
 	    element.hasAttribute('data-wid') && element.getAttribute('data-wid');
 
@@ -7813,15 +7813,10 @@
 	      if (challenge.provider === ARKOSE_PROVIDER) {
 	        var retryCount = 0;
 	        arkose.setConfig({
-	          onReady: function () {
-	            if (arkoseConfig && arkoseConfig.onReady) {
-	              arkoseConfig.onReady();
-	            }
-	          },
 	          onCompleted: function (response) {
 	            setValue(response.token);
-	            if (arkoseConfig && arkoseConfig.onCompleted) {
-	              arkoseConfig.onCompleted();
+	            if (options.callbacks && options.callbacks.onSolved) {
+	              options.callbacks.onSolved();
 	            }
 	          },
 	          onError: function (response) {
@@ -7831,13 +7826,14 @@
 	              // To ensure reset is successful, we need to set a timeout here
 	              setTimeout(function () {
 	                arkose.run();
-	              }, TIMEOUT_MS);
+	              }, 500);
 	              retryCount++;
 	            } else {
+	              // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
 	              setValue('BYPASS_CAPTCHA');
 	            }
-	            if (arkoseConfig && arkoseConfig.onError) {
-	              arkoseConfig.onError(response.error);
+	            if (options.callbacks && options.callbacks.onError) {
+	              options.callbacks.onError(response.error);
 	            }
 	          }
 	        });
@@ -7889,10 +7885,13 @@
 	 * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for recaptcha
-	 * @param {Function} [callback] an optional callback function
+	 * @param {Object} [options.callbacks] An optional object containaing callbacks called after captcha events (only for Arkose captcha provider)
+	 * @param {Function} [options.callbacks.onSolved] An optional callback called after the captcha is solved (only for Arkose captcha provider)
+	 * @param {Function} [options.callbacks.onError] An optional callback called after the captcha encounters an error with the error passed as the first argument (only for Arkose captcha provider)
+	 * @param {Function} [callback] An optional callback called after captcha is loaded
 	 * @ignore
 	 */
-	function render(auth0Client, element, options, callback, arkoseConfig) {
+	function render(auth0Client, element, options, callback) {
 	  options = objectHelper.merge(defaults$2).with(options || {});
 	  function load(done) {
 	    done = done || noop;
@@ -7916,7 +7915,7 @@
 	        challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
 	        challenge.provider === ARKOSE_PROVIDER
 	      ) {
-	        handleCaptchaProvider(element, options, challenge, arkoseConfig);
+	        handleCaptchaProvider(element, options, challenge);
 	      }
 	      done();
 	    });
@@ -7954,18 +7953,14 @@
 	 * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for recaptcha
-	 * @param {Function} [callback] an optional callback function
+	 * @param {Object} [options.callbacks] An optional object containaing callbacks called after captcha events (only for Arkose captcha provider)
+	 * @param {Function} [options.callbacks.onSolved] An optional callback called after the captcha is solved (only for Arkose captcha provider)
+	 * @param {Function} [options.callbacks.onError] An optional callback called after the captcha encounters an error with the error passed as the first argument (only for Arkose captcha provider)
+	 * @param {Function} [callback] An optional callback called after captcha is loaded
 	 * @ignore
 	 */
-	function renderPasswordless(
-	  auth0Client,
-	  element,
-	  options,
-	  callback,
-	  arkoseConfig
-	) {
+	function renderPasswordless(auth0Client, element, options, callback) {
 	  options = objectHelper.merge(defaults$2).with(options || {});
-
 	  function load(done) {
 	    done = done || noop;
 	    auth0Client.passwordless.getChallenge(function (err, challenge) {
@@ -7988,7 +7983,7 @@
 	        challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
 	        challenge.provider === ARKOSE_PROVIDER
 	      ) {
-	        handleCaptchaProvider(element, options, challenge, arkoseConfig);
+	        handleCaptchaProvider(element, options, challenge);
 	      }
 	      done();
 	    });
@@ -9140,19 +9135,14 @@
 	 * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
-	 * @param {Function} [callback] An optional completion callback
-	 * @param {Object} [arkoseConfig] An optional configuration object for arkose captcha
-	 * @param {String} [arkoseConfig.onCompleted] function fired after Arkose challenge is completed
-	 * @param {String} [arkoseConfig.onError] nction fired after Arkose encounters an error with the error passed as first argument
+	 * @param {Object} [options.callbacks] An optional object containaing callbacks called after captcha events (only for Arkose captcha provider)
+	 * @param {Function} [options.callbacks.onSolved] An optional callback called after the captcha is solved (only for Arkose captcha provider)
+	 * @param {Function} [options.callbacks.onError] An optional callback called after the captcha encounters an error with the error passed as the first argument (only for Arkose captcha provider)
+	 * @param {Function} [callback] An optional callback called after captcha is loaded
 	 * @memberof WebAuth.prototype
 	 */
-	WebAuth.prototype.renderCaptcha = function (
-	  element,
-	  options,
-	  callback,
-	  arkoseConfig
-	) {
-	  return captcha.render(this.client, element, options, callback, arkoseConfig);
+	WebAuth.prototype.renderCaptcha = function (element, options, callback) {
+	  return captcha.render(this.client, element, options, callback);
 	};
 
 	/**
@@ -9171,25 +9161,18 @@
 	 * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
-	 * @param {Function} [callback] An optional completion callback
-	 * @param {Object} [arkoseConfig] An optional configuration object for arkose captcha
-	 * @param {String} [arkoseConfig.onCompleted] function fired after Arkose challenge is completed
-	 * @param {String} [arkoseConfig.onError] function fired after Arkose encounters an error with the error passed as first argument
+	 * @param {Object} [options.callbacks] An optional object containaing callbacks called after captcha events (only for Arkose captcha provider)
+	 * @param {Function} [options.callbacks.onSolved] An optional callback called after the captcha is solved (only for Arkose captcha provider)
+	 * @param {Function} [options.callbacks.onError] An optional callback called after the captcha encounters an error with the error passed as the first argument (only for Arkose captcha provider)
+	 * @param {Function} [callback] An optional callback called after captcha is loaded
 	 * @memberof WebAuth.prototype
 	 */
 	WebAuth.prototype.renderPasswordlessCaptcha = function (
 	  element,
 	  options,
-	  callback,
-	  arkoseConfig
+	  callback
 	) {
-	  return captcha.renderPasswordless(
-	    this.client,
-	    element,
-	    options,
-	    callback,
-	    arkoseConfig
-	  );
+	  return captcha.renderPasswordless(this.client, element, options, callback);
 	};
 
 	function PasswordlessAuthentication(request, options) {

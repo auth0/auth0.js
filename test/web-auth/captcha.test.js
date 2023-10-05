@@ -409,10 +409,9 @@ describe('captcha rendering', function () {
       arkoseCallback,
       scriptErrorCallback,
       arkose,
-      arkoseConfig,
+      options,
       element,
-      onReadySpy,
-      onCompletedSpy,
+      onSolvedSpy,
       onErrorSpy;
     beforeEach(() => {
       const { window } = new JSDOM('<body><div class="captcha" /></body>');
@@ -423,21 +422,15 @@ describe('captcha rendering', function () {
           cb(null, challenge);
         }
       };
-      arkoseConfig = {
-        onReady() {},
-        onCompleted() {},
-        onError() {}
+      options = {
+        callbacks: {
+          onSolved() {},
+          onError() {}
+        }
       };
-      onReadySpy = sinon.spy(arkoseConfig, 'onReady');
-      onCompletedSpy = sinon.spy(arkoseConfig, 'onCompleted');
-      onErrorSpy = sinon.spy(arkoseConfig, 'onError');
-      c = captcha.render(
-        mockClient,
-        element,
-        undefined,
-        undefined,
-        arkoseConfig
-      );
+      onSolvedSpy = sinon.spy(options.callbacks, 'onSolved');
+      onErrorSpy = sinon.spy(options.callbacks, 'onError');
+      c = captcha.render(mockClient, element, options);
       captchaScript = [...window.document.querySelectorAll('script')].find(s =>
         s.src.match('arkoselabs.com')
       );
@@ -508,7 +501,6 @@ describe('captcha rendering', function () {
 
       it('should setup captcha config', function () {
         expect(setConfigSpy.calledOnce).to.be.ok();
-        expect(configOptions).to.have.property('onReady');
         expect(configOptions).to.have.property('onCompleted');
         expect(configOptions).to.have.property('onError');
       });
@@ -559,11 +551,9 @@ describe('captcha rendering', function () {
       });
 
       it('should call user provider config callbacks on execution', function () {
-        configOptions.onReady();
         configOptions.onCompleted({ token: 'token' });
         configOptions.onError({ error: 'error' });
-        expect(onReadySpy.called).to.be.ok();
-        expect(onCompletedSpy.calledOnce).to.be.ok();
+        expect(onSolvedSpy.calledOnce).to.be.ok();
         expect(onErrorSpy.calledOnce).to.be.ok();
         expect(onErrorSpy.getCall(0).args[0]).to.be('error');
       });
@@ -980,10 +970,9 @@ describe('passwordless captcha rendering', function () {
       captchaScript,
       arkoseCallback,
       arkose,
-      arkoseConfig,
+      options,
       element,
-      onReadySpy,
-      onCompletedSpy,
+      onSolvedSpy,
       onErrorSpy;
     beforeEach(() => {
       const { window } = new JSDOM('<body><div class="captcha" /></body>');
@@ -994,21 +983,15 @@ describe('passwordless captcha rendering', function () {
           cb(null, challenge);
         }
       };
-      arkoseConfig = {
-        onReady() {},
-        onCompleted() {},
-        onError() {}
+      options = {
+        callbacks: {
+          onSolved() {},
+          onError() {}
+        }
       };
-      onReadySpy = sinon.spy(arkoseConfig, 'onReady');
-      onCompletedSpy = sinon.spy(arkoseConfig, 'onCompleted');
-      onErrorSpy = sinon.spy(arkoseConfig, 'onError');
-      c = captcha.render(
-        mockClient,
-        element,
-        undefined,
-        undefined,
-        arkoseConfig
-      );
+      onSolvedSpy = sinon.spy(options.callbacks, 'onSolved');
+      onErrorSpy = sinon.spy(options.callbacks, 'onError');
+      c = captcha.render(mockClient, element, options);
       captchaScript = [...window.document.querySelectorAll('script')].find(s =>
         s.src.match('arkoselabs.com')
       );
@@ -1049,7 +1032,6 @@ describe('passwordless captcha rendering', function () {
 
       it('should setup captcha config', function () {
         expect(setConfigSpy.calledOnce).to.be.ok();
-        expect(configOptions).to.have.property('onReady');
         expect(configOptions).to.have.property('onCompleted');
         expect(configOptions).to.have.property('onError');
       });
@@ -1100,11 +1082,9 @@ describe('passwordless captcha rendering', function () {
       });
 
       it('should call user provider config callbacks on execution', function () {
-        configOptions.onReady();
         configOptions.onCompleted({ token: 'token' });
         configOptions.onError({ error: 'error' });
-        expect(onReadySpy.called).to.be.ok();
-        expect(onCompletedSpy.calledOnce).to.be.ok();
+        expect(onSolvedSpy.calledOnce).to.be.ok();
         expect(onErrorSpy.calledOnce).to.be.ok();
         expect(onErrorSpy.getCall(0).args[0]).to.be('error');
       });
