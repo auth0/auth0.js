@@ -7828,7 +7828,7 @@
 	              setValue();
 	              arkose.reset();
 	              // To ensure reset is successful, we need to set a timeout here
-	              setTimeout(() => {
+	              setTimeout(function () {
 	                arkose.run();
 	              }, TIMEOUT_MS);
 	              retryCount++;
