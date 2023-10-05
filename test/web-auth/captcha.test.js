@@ -939,6 +939,7 @@ describe('passwordless captcha rendering', function () {
     let c,
       captchaScript,
       arkoseCallback,
+      scriptErrorCallback,
       arkose,
       arkoseConfig,
       element,
@@ -973,6 +974,7 @@ describe('passwordless captcha rendering', function () {
         s.src.match('arkoselabs.com')
       );
       arkoseCallback = window[captchaScript.getAttribute('data-callback')];
+      scriptErrorCallback = captchaScript.onerror;
     });
 
     afterEach(function () {
@@ -989,6 +991,21 @@ describe('passwordless captcha rendering', function () {
         `/${'v2'}/${challenge.siteKey}/${'api.js'}`
       );
       expect(arkoseCallback).to.be.a('function');
+    });
+
+    it('should reinject the captcha script on error', function () {
+      expect(scriptErrorCallback).to.be.a('function');
+      scriptErrorCallback();
+      captchaScript = [...window.document.querySelectorAll('script')].find(s =>
+        s.src.match('arkoselabs.com')
+      );
+      const scriptUrl = url.parse(captchaScript.src, true);
+      expect(scriptUrl.hostname).to.equal(
+        `${challenge.clientSubdomain}.${'arkoselabs.com'}`
+      );
+      expect(scriptUrl.pathname).to.equal(
+        `/${'v2'}/${challenge.siteKey}/${'api.js'}`
+      );
     });
 
     describe('after captcha is loaded', function () {

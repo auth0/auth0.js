@@ -12,7 +12,6 @@ var ARKOSE_PROVIDER = 'arkose';
 var AUTH0_PROVIDER = 'auth0';
 var TIMEOUT_MS = 500;
 var MAX_RETRY = 3;
-var retryCount = 0;
 
 var defaults = {
   lang: 'en',
@@ -162,6 +161,7 @@ function injectCaptchaScript(element, opts, callback, setValue) {
     opts.siteKey
   );
   if (opts.provider === ARKOSE_PROVIDER) {
+    var retryCount = 0;
     attributes['data-callback'] = callbackName;
     attributes['onerror'] = function () {
       if (retryCount < MAX_RETRY) {
@@ -251,6 +251,7 @@ function handleCaptchaProvider(element, options, challenge, arkoseConfig) {
     function (arkose) {
       var global = globalForCaptchaProvider(challenge.provider);
       if (challenge.provider === ARKOSE_PROVIDER) {
+        var retryCount = 0;
         arkose.setConfig({
           onReady: function () {
             if (arkoseConfig && arkoseConfig.onReady) {
