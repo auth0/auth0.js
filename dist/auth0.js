@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.22.1
  * Author: Auth0
- * Date: 2023-10-02
+ * Date: 2023-10-04
  * License: MIT
  */
 
@@ -7758,18 +7758,23 @@
 	    input.value = value || '';
 	  }
 
-	  if (widgetId && challenge.provider !== FRIENDLY_CAPTCHA_PROVIDER) {
-	    setValue();
-	    globalForCaptchaProvider(challenge.provider).reset(widgetId);
-	    return;
-	  }
-
 	  if (
-	    window.auth0FCInstance &&
-	    challenge.provider === FRIENDLY_CAPTCHA_PROVIDER
+	    challenge.provider === FRIENDLY_CAPTCHA_PROVIDER &&
+	    window.auth0FCInstance
 	  ) {
 	    setValue();
 	    window.auth0FCInstance.reset();
+	    return;
+	  } else if (
+	    challenge.provider === ARKOSE_PROVIDER &&
+	    globalForCaptchaProvider(challenge.provider)
+	  ) {
+	    setValue();
+	    globalForCaptchaProvider(challenge.provider).reset();
+	    return;
+	  } else if (widgetId) {
+	    setValue();
+	    globalForCaptchaProvider(challenge.provider).reset(widgetId);
 	    return;
 	  }
 
@@ -7807,13 +7812,32 @@
 	      var global = globalForCaptchaProvider(challenge.provider);
 	      if (challenge.provider === ARKOSE_PROVIDER) {
 	        arkose.setConfig({
+	          onReady: function () {
+	            if (arkoseConfig && arkoseConfig.onReady) {
+	              arkoseConfig.onReady();
+	            }
+	          },
 	          onCompleted: function (response) {
 	            setValue(response.token);
-	            arkoseConfig.onCompleted();
+	            if (arkoseConfig && arkoseConfig.onCompleted) {
+	              arkoseConfig.onCompleted();
+	            }
 	          },
 	          onError: function (response) {
-	            setValue();
-	            arkoseConfig.onError(response.error);
+	            if (retryCount < MAX_RETRY) {
+	              setValue();
+	              arkose.reset();
+	              // To ensure reset is successful, we need to set a timeout here
+	              setTimeout(() => {
+	                arkose.run();
+	              }, TIMEOUT_MS);
+	              retryCount++;
+	            } else {
+	              setValue('BYPASS_CAPTCHA');
+	            }
+	            if (arkoseConfig && arkoseConfig.onError) {
+	              arkoseConfig.onError(response.error);
+	            }
 	          }
 	        });
 	      } else if (challenge.provider === FRIENDLY_CAPTCHA_PROVIDER) {
@@ -7846,9 +7870,7 @@
 	}
 
 	function runArkose() {
-	  setTimeout(function () {
-	    globalForCaptchaProvider(ARKOSE_PROVIDER).run();
-	  }, TIMEOUT_MS);
+	  globalForCaptchaProvider(ARKOSE_PROVIDER).run();
 	}
 
 	/**
@@ -7869,7 +7891,7 @@
 	 * @param {Function} [callback] an optional callback function
 	 * @ignore
 	 */
-	function render(auth0Client, element, options, callback) {
+	function render(auth0Client, element, options, callback, arkoseConfig) {
 	  options = objectHelper.merge(defaults$2).with(options || {});
 	  function load(done) {
 	    done = done || noop;
@@ -7893,7 +7915,7 @@
 	        challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
 	        challenge.provider === ARKOSE_PROVIDER
 	      ) {
-	        handleCaptchaProvider(element, options, challenge);
+	        handleCaptchaProvider(element, options, challenge, arkoseConfig);
 	      }
 	      done();
 	    });
@@ -7934,7 +7956,13 @@
 	 * @param {Function} [callback] an optional callback function
 	 * @ignore
 	 */
-	function renderPasswordless(auth0Client, element, options, callback) {
+	function renderPasswordless(
+	  auth0Client,
+	  element,
+	  options,
+	  callback,
+	  arkoseConfig
+	) {
 	  options = objectHelper.merge(defaults$2).with(options || {});
 
 	  function load(done) {
@@ -7959,7 +7987,7 @@
 	        challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
 	        challenge.provider === ARKOSE_PROVIDER
 	      ) {
-	        handleCaptchaProvider(element, options, challenge);
+	        handleCaptchaProvider(element, options, challenge, arkoseConfig);
 	      }
 	      done();
 	    });

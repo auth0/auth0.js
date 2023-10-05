@@ -198,18 +198,23 @@ function handleCaptchaProvider(element, options, challenge, arkoseConfig) {
     input.value = value || '';
   }
 
-  if (widgetId && challenge.provider !== FRIENDLY_CAPTCHA_PROVIDER) {
-    setValue();
-    globalForCaptchaProvider(challenge.provider).reset(widgetId);
-    return;
-  }
-
   if (
-    window.auth0FCInstance &&
-    challenge.provider === FRIENDLY_CAPTCHA_PROVIDER
+    challenge.provider === FRIENDLY_CAPTCHA_PROVIDER &&
+    window.auth0FCInstance
   ) {
     setValue();
     window.auth0FCInstance.reset();
+    return;
+  } else if (
+    challenge.provider === ARKOSE_PROVIDER &&
+    globalForCaptchaProvider(challenge.provider)
+  ) {
+    setValue();
+    globalForCaptchaProvider(challenge.provider).reset();
+    return;
+  } else if (widgetId) {
+    setValue();
+    globalForCaptchaProvider(challenge.provider).reset(widgetId);
     return;
   }
 
@@ -247,13 +252,32 @@ function handleCaptchaProvider(element, options, challenge, arkoseConfig) {
       var global = globalForCaptchaProvider(challenge.provider);
       if (challenge.provider === ARKOSE_PROVIDER) {
         arkose.setConfig({
+          onReady: function () {
+            if (arkoseConfig && arkoseConfig.onReady) {
+              arkoseConfig.onReady();
+            }
+          },
           onCompleted: function (response) {
             setValue(response.token);
-            arkoseConfig.onCompleted();
+            if (arkoseConfig && arkoseConfig.onCompleted) {
+              arkoseConfig.onCompleted();
+            }
           },
           onError: function (response) {
-            setValue();
-            arkoseConfig.onError(response.error);
+            if (retryCount < MAX_RETRY) {
+              setValue();
+              arkose.reset();
+              // To ensure reset is successful, we need to set a timeout here
+              setTimeout(() => {
+                arkose.run();
+              }, TIMEOUT_MS);
+              retryCount++;
+            } else {
+              setValue('BYPASS_CAPTCHA');
+            }
+            if (arkoseConfig && arkoseConfig.onError) {
+              arkoseConfig.onError(response.error);
+            }
           }
         });
       } else if (challenge.provider === FRIENDLY_CAPTCHA_PROVIDER) {
@@ -286,9 +310,7 @@ function handleCaptchaProvider(element, options, challenge, arkoseConfig) {
 }
 
 function runArkose() {
-  setTimeout(function () {
-    globalForCaptchaProvider(ARKOSE_PROVIDER).run();
-  }, TIMEOUT_MS);
+  globalForCaptchaProvider(ARKOSE_PROVIDER).run();
 }
 
 /**
@@ -309,7 +331,7 @@ function runArkose() {
  * @param {Function} [callback] an optional callback function
  * @ignore
  */
-function render(auth0Client, element, options, callback) {
+function render(auth0Client, element, options, callback, arkoseConfig) {
   options = object.merge(defaults).with(options || {});
   function load(done) {
     done = done || noop;
@@ -333,7 +355,7 @@ function render(auth0Client, element, options, callback) {
         challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
         challenge.provider === ARKOSE_PROVIDER
       ) {
-        handleCaptchaProvider(element, options, challenge);
+        handleCaptchaProvider(element, options, challenge, arkoseConfig);
       }
       done();
     });
@@ -374,7 +396,13 @@ function render(auth0Client, element, options, callback) {
  * @param {Function} [callback] an optional callback function
  * @ignore
  */
-function renderPasswordless(auth0Client, element, options, callback) {
+function renderPasswordless(
+  auth0Client,
+  element,
+  options,
+  callback,
+  arkoseConfig
+) {
   options = object.merge(defaults).with(options || {});
 
   function load(done) {
@@ -399,7 +427,7 @@ function renderPasswordless(auth0Client, element, options, callback) {
         challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
         challenge.provider === ARKOSE_PROVIDER
       ) {
-        handleCaptchaProvider(element, options, challenge);
+        handleCaptchaProvider(element, options, challenge, arkoseConfig);
       }
       done();
     });
