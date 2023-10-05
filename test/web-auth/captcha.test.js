@@ -297,7 +297,7 @@ describe('captcha rendering', function () {
         delete global.window;
       });
 
-      it('should inject the recaptcha script', function () {
+      it('should inject the captcha script', function () {
         expect(captchaScript.async).to.be.ok();
         const scriptUrl = url.parse(captchaScript.src, true);
         expect(scriptUrl.hostname).to.equal(
@@ -407,6 +407,7 @@ describe('captcha rendering', function () {
     let c,
       captchaScript,
       arkoseCallback,
+      scriptErrorCallback,
       arkose,
       arkoseConfig,
       element,
@@ -441,6 +442,7 @@ describe('captcha rendering', function () {
         s.src.match('arkoselabs.com')
       );
       arkoseCallback = window[captchaScript.getAttribute('data-callback')];
+      scriptErrorCallback = captchaScript.onerror;
     });
 
     afterEach(function () {
@@ -457,6 +459,35 @@ describe('captcha rendering', function () {
         `/${'v2'}/${challenge.siteKey}/${'api.js'}`
       );
       expect(arkoseCallback).to.be.a('function');
+    });
+
+    it('should reinject the captcha script on error', function () {
+      expect(scriptErrorCallback).to.be.a('function');
+      scriptErrorCallback();
+      captchaScript = [...window.document.querySelectorAll('script')].find(s =>
+        s.src.match('arkoselabs.com')
+      );
+      const scriptUrl = url.parse(captchaScript.src, true);
+      expect(scriptUrl.hostname).to.equal(
+        `${challenge.clientSubdomain}.${'arkoselabs.com'}`
+      );
+      expect(scriptUrl.pathname).to.equal(
+        `/${'v2'}/${challenge.siteKey}/${'api.js'}`
+      );
+    });
+
+    it('should remove script and set bypass token after more than 3 errors', function () {
+      const input = element.querySelector('input[name="captcha"]');
+      input.value = '';
+      for (let i = 0; i < 4; i++) {
+        scriptErrorCallback();
+      }
+      expect(
+        [...window.document.querySelectorAll('script')].find(s =>
+          s.src.match('arkoselabs.com')
+        )
+      ).to.equal(undefined);
+      expect(input.value).to.not.equal('');
     });
 
     describe('after captcha is loaded', function () {
@@ -511,6 +542,15 @@ describe('captcha rendering', function () {
         expect(input.value).to.equal('');
         expect(resetSpy.calledOnce).to.be.ok();
         expect(runSpy.calledOnce).to.be.ok();
+      });
+
+      it('should set bypass token after more than 3 errors', function () {
+        const input = element.querySelector('input[name="captcha"]');
+        input.value = '';
+        for (let i = 0; i < 4; i++) {
+          configOptions.onError({ error: 'error' });
+        }
+        expect(input.value).to.not.equal('');
       });
 
       it('should run arkose when calling runArkose()', function () {
@@ -829,7 +869,7 @@ describe('passwordless captcha rendering', function () {
         delete global.window;
       });
 
-      it('should inject the recaptcha script', function () {
+      it('should inject the captcha script', function () {
         expect(captchaScript.async).to.be.ok();
         const scriptUrl = url.parse(captchaScript.src, true);
         expect(scriptUrl.hostname).to.equal(
@@ -939,7 +979,6 @@ describe('passwordless captcha rendering', function () {
     let c,
       captchaScript,
       arkoseCallback,
-      scriptErrorCallback,
       arkose,
       arkoseConfig,
       element,
@@ -974,7 +1013,6 @@ describe('passwordless captcha rendering', function () {
         s.src.match('arkoselabs.com')
       );
       arkoseCallback = window[captchaScript.getAttribute('data-callback')];
-      scriptErrorCallback = captchaScript.onerror;
     });
 
     afterEach(function () {
@@ -991,21 +1029,6 @@ describe('passwordless captcha rendering', function () {
         `/${'v2'}/${challenge.siteKey}/${'api.js'}`
       );
       expect(arkoseCallback).to.be.a('function');
-    });
-
-    it('should reinject the captcha script on error', function () {
-      expect(scriptErrorCallback).to.be.a('function');
-      scriptErrorCallback();
-      captchaScript = [...window.document.querySelectorAll('script')].find(s =>
-        s.src.match('arkoselabs.com')
-      );
-      const scriptUrl = url.parse(captchaScript.src, true);
-      expect(scriptUrl.hostname).to.equal(
-        `${challenge.clientSubdomain}.${'arkoselabs.com'}`
-      );
-      expect(scriptUrl.pathname).to.equal(
-        `/${'v2'}/${challenge.siteKey}/${'api.js'}`
-      );
     });
 
     describe('after captcha is loaded', function () {
@@ -1060,6 +1083,15 @@ describe('passwordless captcha rendering', function () {
         expect(input.value).to.equal('');
         expect(resetSpy.calledOnce).to.be.ok();
         expect(runSpy.calledOnce).to.be.ok();
+      });
+
+      it('should set bypass token after more than 3 errors', function () {
+        const input = element.querySelector('input[name="captcha"]');
+        input.value = '';
+        for (let i = 0; i < 4; i++) {
+          configOptions.onError({ error: 'error' });
+        }
+        expect(input.value).to.not.equal('');
       });
 
       it('should run arkose when calling runArkose()', function () {
