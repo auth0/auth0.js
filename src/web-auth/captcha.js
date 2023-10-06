@@ -2,18 +2,20 @@
 import Authentication from '../authentication';
 import object from '../helper/object';
 
-var noop = function() {};
+var noop = function () {};
 
 var RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
 var RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
 var HCAPTCHA_PROVIDER = 'hcaptcha';
 var FRIENDLY_CAPTCHA_PROVIDER = 'friendly_captcha';
+var ARKOSE_PROVIDER = 'arkose';
 var AUTH0_PROVIDER = 'auth0';
+var MAX_RETRY = 3;
 
 var defaults = {
   lang: 'en',
   templates: {
-    auth0: function(challenge) {
+    auth0: function (challenge) {
       var message =
         challenge.type === 'code'
           ? 'Enter the code shown above'
@@ -32,19 +34,22 @@ var defaults = {
         '" />'
       );
     },
-    recaptcha_v2: function() {
+    recaptcha_v2: function () {
       return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
     },
-    recaptcha_enterprise: function() {
+    recaptcha_enterprise: function () {
       return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
     },
-    hcaptcha: function() {
+    hcaptcha: function () {
       return '<div class="hcaptcha" ></div><input type="hidden" name="captcha" />';
     },
     friendly_captcha: function () {
       return '<div class="friendly-captcha" ></div><input type="hidden" name="captcha" />';
     },
-    error: function() {
+    arkose: function () {
+      return '<div class="arkose" ></div><input type="hidden" name="captcha" />';
+    },
+    error: function () {
       return '<div class="error" style="color: red;">Error getting the bot detection challenge. Please contact the system administrator.</div>';
     }
   }
@@ -54,7 +59,7 @@ function handleAuth0Provider(element, options, challenge, load) {
   element.innerHTML = options.templates[challenge.provider](challenge);
   element
     .querySelector('.captcha-reload')
-    .addEventListener('click', function(e) {
+    .addEventListener('click', function (e) {
       e.preventDefault();
       load();
     });
@@ -67,17 +72,24 @@ function globalForCaptchaProvider(provider) {
     case RECAPTCHA_ENTERPRISE_PROVIDER:
       return window.grecaptcha.enterprise;
     case HCAPTCHA_PROVIDER:
-      return window.hcaptcha
+      return window.hcaptcha;
     case FRIENDLY_CAPTCHA_PROVIDER:
-      return window.friendlyChallenge
+      return window.friendlyChallenge;
+    case ARKOSE_PROVIDER:
+      return window.arkose;
     /* istanbul ignore next */
-
     default:
       throw new Error('Unknown captcha provider');
   }
 }
 
-function scriptForCaptchaProvider(provider, lang, callback) {
+function scriptForCaptchaProvider(
+  provider,
+  lang,
+  callback,
+  clientSubdomain,
+  siteKey
+) {
   switch (provider) {
     case RECAPTCHA_V2_PROVIDER:
       return (
@@ -95,52 +107,86 @@ function scriptForCaptchaProvider(provider, lang, callback) {
       );
     case HCAPTCHA_PROVIDER:
       return (
-        'https://js.hcaptcha.com/1/api.js?hl=' +
-        lang +
-        '&onload=' +
-        callback
+        'https://js.hcaptcha.com/1/api.js?hl=' + lang + '&onload=' + callback
       );
     case FRIENDLY_CAPTCHA_PROVIDER:
       return 'https://cdn.jsdelivr.net/npm/friendly-challenge@0.9.12/widget.min.js';
+    case ARKOSE_PROVIDER:
+      return (
+        'https://' +
+        clientSubdomain +
+        '.arkoselabs.com/v2/' +
+        siteKey +
+        '/api.js'
+      );
     /* istanbul ignore next */
     default:
       throw new Error('Unknown captcha provider');
   }
 }
 
-function injectCaptchaScript(element, opts, callback) {
-  var providerName;
-  switch (opts.provider) {
-    case RECAPTCHA_ENTERPRISE_PROVIDER:
-      providerName = 'recaptcha';
-      break;
-    case RECAPTCHA_V2_PROVIDER:
-      providerName = 'recaptcha';
-      break;
-    case HCAPTCHA_PROVIDER:
-      providerName = 'hcaptcha';
-      break;
-    case FRIENDLY_CAPTCHA_PROVIDER:
-      providerName = 'friendly_captcha';
-      break;
-  }
-  var callbackName = providerName + 'Callback_' + Math.floor(Math.random() * 1000001);
-  window[callbackName] = function() {
-    delete window[callbackName];
-    callback();
-  };
+function loadScript(url, attributes) {
   var script = window.document.createElement('script');
-  script.src = scriptForCaptchaProvider(
+  for (var attr in attributes) {
+    if (attr.startsWith('data-')) {
+      script.dataset[attr.replace('data-', '')] = attributes[attr];
+    } else {
+      script[attr] = attributes[attr];
+    }
+  }
+  script.src = url;
+  window.document.body.appendChild(script);
+}
+
+function removeScript(url) {
+  var scripts = window.document.querySelectorAll('script[src="' + url + '"]');
+  scripts.forEach(function (script) {
+    script.remove();
+  });
+}
+
+function injectCaptchaScript(element, opts, callback, setValue) {
+  var callbackName =
+    opts.provider + 'Callback_' + Math.floor(Math.random() * 1000001);
+  var attributes = {
+    async: true,
+    defer: true
+  };
+  var scriptSrc = scriptForCaptchaProvider(
     opts.provider,
     opts.lang,
-    callbackName
+    callbackName,
+    opts.clientSubdomain,
+    opts.siteKey
   );
-  script.async = true;
-  script.defer = true;
-  if (opts.provider === FRIENDLY_CAPTCHA_PROVIDER) {
-    script.onload = window[callbackName];
+  if (opts.provider === ARKOSE_PROVIDER) {
+    var retryCount = 0;
+    attributes['data-callback'] = callbackName;
+    attributes['onerror'] = function () {
+      if (retryCount < MAX_RETRY) {
+        removeScript(scriptSrc);
+        loadScript(scriptSrc, attributes);
+        retryCount++;
+        return;
+      }
+      removeScript(scriptSrc);
+      // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
+      setValue('BYPASS_CAPTCHA');
+    };
+    window[callbackName] = function (arkose) {
+      window.arkose = arkose;
+      callback(arkose);
+    };
+  } else {
+    window[callbackName] = function () {
+      delete window[callbackName];
+      callback();
+    };
+    if (opts.provider === FRIENDLY_CAPTCHA_PROVIDER) {
+      attributes['onload'] = window[callbackName];
+    }
   }
-  window.document.body.appendChild(script);
+  loadScript(scriptSrc, attributes);
 }
 
 function handleCaptchaProvider(element, options, challenge) {
@@ -152,15 +198,23 @@ function handleCaptchaProvider(element, options, challenge) {
     input.value = value || '';
   }
 
-  if (widgetId && challenge.provider !== FRIENDLY_CAPTCHA_PROVIDER) {
-    setValue();
-    globalForCaptchaProvider(challenge.provider).reset(widgetId);
-    return;
-  }
-
-  if (window.auth0FCInstance && challenge.provider === FRIENDLY_CAPTCHA_PROVIDER) {
+  if (
+    challenge.provider === FRIENDLY_CAPTCHA_PROVIDER &&
+    window.auth0FCInstance
+  ) {
     setValue();
     window.auth0FCInstance.reset();
+    return;
+  } else if (
+    challenge.provider === ARKOSE_PROVIDER &&
+    globalForCaptchaProvider(challenge.provider)
+  ) {
+    setValue();
+    globalForCaptchaProvider(challenge.provider).reset();
+    return;
+  } else if (widgetId) {
+    setValue();
+    globalForCaptchaProvider(challenge.provider).reset(widgetId);
     return;
   }
 
@@ -180,40 +234,80 @@ function handleCaptchaProvider(element, options, challenge) {
     case FRIENDLY_CAPTCHA_PROVIDER:
       captchaClass = '.friendly-captcha';
       break;
+    case ARKOSE_PROVIDER:
+      captchaClass = '.arkose';
+      break;
   }
   var captchaDiv = element.querySelector(captchaClass);
 
   injectCaptchaScript(
     element,
-    { lang: options.lang, provider: challenge.provider },
-    function() {
+    {
+      lang: options.lang,
+      provider: challenge.provider,
+      clientSubdomain: challenge.clientSubdomain,
+      siteKey: challenge.siteKey
+    },
+    function (arkose) {
       var global = globalForCaptchaProvider(challenge.provider);
-      if (challenge.provider === FRIENDLY_CAPTCHA_PROVIDER) {
+      if (challenge.provider === ARKOSE_PROVIDER) {
+        var retryCount = 0;
+        arkose.setConfig({
+          onCompleted: function (response) {
+            setValue(response.token);
+            if (options.callbacks && options.callbacks.onSolved) {
+              options.callbacks.onSolved();
+            }
+          },
+          onError: function (response) {
+            if (retryCount < MAX_RETRY) {
+              setValue();
+              arkose.reset();
+              // To ensure reset is successful, we need to set a timeout here
+              setTimeout(function () {
+                arkose.run();
+              }, 500);
+              retryCount++;
+            } else {
+              // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
+              setValue('BYPASS_CAPTCHA');
+            }
+            if (options.callbacks && options.callbacks.onError) {
+              options.callbacks.onError(response.error);
+            }
+          }
+        });
+      } else if (challenge.provider === FRIENDLY_CAPTCHA_PROVIDER) {
         window.auth0FCInstance = new global.WidgetInstance(captchaDiv, {
           sitekey: challenge.siteKey,
           language: options.lang,
-          doneCallback: function(solution) {
+          doneCallback: function (solution) {
             setValue(solution);
           },
-          errorCallback: function() {
+          errorCallback: function () {
             setValue();
-          },
+          }
         });
       } else {
         widgetId = global.render(captchaDiv, {
           callback: setValue,
-          'expired-callback': function() {
+          'expired-callback': function () {
             setValue();
           },
-          'error-callback': function() {
+          'error-callback': function () {
             setValue();
           },
           sitekey: challenge.siteKey
         });
         element.setAttribute('data-wid', widgetId);
       }
-    }
+    },
+    setValue
   );
+}
+
+function runArkose() {
+  globalForCaptchaProvider(ARKOSE_PROVIDER).run();
 }
 
 /**
@@ -223,7 +317,7 @@ function handleCaptchaProvider(element, options, challenge) {
  * @param {Authentication} auth0Client The challenge response from the authentication server
  * @param {HTMLElement} element The element where the captcha needs to be rendered
  * @param {Object} options The configuration options for the captcha
- * @param {Object} [options.templates] An object containaing templates for each captcha provider
+ * @param {Object} [options.templates] An object containing templates for each captcha provider
  * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
@@ -231,14 +325,17 @@ function handleCaptchaProvider(element, options, challenge) {
  * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
- * @param {Function} [callback] an optional callback function
+ * @param {Object} [options.callbacks] An optional object containing callbacks called after captcha events (only for Arkose captcha provider)
+ * @param {Function} [options.callbacks.onSolved] An optional callback called after the captcha is solved (only for Arkose captcha provider)
+ * @param {Function} [options.callbacks.onError] An optional callback called after the captcha encounters an error with the error passed as the first argument (only for Arkose captcha provider)
+ * @param {Function} [callback] An optional callback called after captcha is loaded
  * @ignore
  */
 function render(auth0Client, element, options, callback) {
   options = object.merge(defaults).with(options || {});
   function load(done) {
     done = done || noop;
-    auth0Client.getChallenge(function(err, challenge) {
+    auth0Client.getChallenge(function (err, challenge) {
       if (err) {
         element.innerHTML = options.templates.error(err);
         return done(err);
@@ -255,71 +352,8 @@ function render(auth0Client, element, options, callback) {
         challenge.provider === RECAPTCHA_V2_PROVIDER ||
         challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
         challenge.provider === HCAPTCHA_PROVIDER ||
-        challenge.provider === FRIENDLY_CAPTCHA_PROVIDER
-      ) {
-        handleCaptchaProvider(element, options, challenge);
-      }
-      done();
-    });
-  }
-
-  function getValue() {
-    var captchaInput = element.querySelector('input[name="captcha"]');
-    if (!captchaInput) {
-      return;
-    }
-    return captchaInput.value;
-  }
-
-  load(callback);
-
-  return {
-    reload: load,
-    getValue: getValue
-  };
-}
-
-/**
- *
- * Renders the passwordless captcha challenge in the provided element.
- *
- * @param {Authentication} auth0Client The challenge response from the authentication server
- * @param {HTMLElement} element The element where the captcha needs to be rendered
- * @param {Object} options The configuration options for the captcha
- * @param {Object} [options.templates] An object containaing templates for each captcha provider
- * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string 
- * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
- * @param {String} [options.lang=en] the ISO code of the language for recaptcha
- * @param {Function} [callback] an optional callback function
- * @ignore
- */
-function renderPasswordless(auth0Client, element, options, callback) {
-  options = object.merge(defaults).with(options || {});
-
-  function load(done) {
-    done = done || noop;
-    auth0Client.passwordless.getChallenge(function(err, challenge) {
-      if (err) {
-        element.innerHTML = options.templates.error(err);
-        return done(err);
-      }
-      if (!challenge.required) {
-        element.style.display = 'none';
-        element.innerHTML = '';
-        return;
-      }
-      element.style.display = '';
-      if (challenge.provider === AUTH0_PROVIDER) {
-        handleAuth0Provider(element, options, challenge, load);
-      } else if (
-        challenge.provider === RECAPTCHA_V2_PROVIDER ||
-        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
-        challenge.provider === HCAPTCHA_PROVIDER ||
-        challenge.provider === FRIENDLY_CAPTCHA_PROVIDER
+        challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
+        challenge.provider === ARKOSE_PROVIDER
       ) {
         handleCaptchaProvider(element, options, challenge);
       }
@@ -340,6 +374,75 @@ function renderPasswordless(auth0Client, element, options, callback) {
   return {
     reload: load,
     getValue: getValue,
+    runArkose: runArkose
+  };
+}
+
+/**
+ *
+ * Renders the passwordless captcha challenge in the provided element.
+ *
+ * @param {Authentication} auth0Client The challenge response from the authentication server
+ * @param {HTMLElement} element The element where the captcha needs to be rendered
+ * @param {Object} options The configuration options for the captcha
+ * @param {Object} [options.templates] An object containing templates for each captcha provider
+ * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
+ * @param {String} [options.lang=en] the ISO code of the language for recaptcha
+ * @param {Object} [options.callbacks] An optional object containing callbacks called after captcha events (only for Arkose captcha provider)
+ * @param {Function} [options.callbacks.onSolved] An optional callback called after the captcha is solved (only for Arkose captcha provider)
+ * @param {Function} [options.callbacks.onError] An optional callback called after the captcha encounters an error with the error passed as the first argument (only for Arkose captcha provider)
+ * @param {Function} [callback] An optional callback called after captcha is loaded
+ * @ignore
+ */
+function renderPasswordless(auth0Client, element, options, callback) {
+  options = object.merge(defaults).with(options || {});
+  function load(done) {
+    done = done || noop;
+    auth0Client.passwordless.getChallenge(function (err, challenge) {
+      if (err) {
+        element.innerHTML = options.templates.error(err);
+        return done(err);
+      }
+      if (!challenge.required) {
+        element.style.display = 'none';
+        element.innerHTML = '';
+        return;
+      }
+      element.style.display = '';
+      if (challenge.provider === AUTH0_PROVIDER) {
+        handleAuth0Provider(element, options, challenge, load);
+      } else if (
+        challenge.provider === RECAPTCHA_V2_PROVIDER ||
+        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
+        challenge.provider === HCAPTCHA_PROVIDER ||
+        challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
+        challenge.provider === ARKOSE_PROVIDER
+      ) {
+        handleCaptchaProvider(element, options, challenge);
+      }
+      done();
+    });
+  }
+
+  function getValue() {
+    var captchaInput = element.querySelector('input[name="captcha"]');
+    if (!captchaInput) {
+      return;
+    }
+    return captchaInput.value;
+  }
+
+  load(callback);
+
+  return {
+    reload: load,
+    getValue: getValue,
+    runArkose: runArkose
   };
 }
 
