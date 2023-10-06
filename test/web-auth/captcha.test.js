@@ -3,7 +3,6 @@ import url from 'url';
 import sinon from 'sinon';
 import captcha from '../../src/web-auth/captcha';
 import expect from 'expect.js';
-import { config } from 'yargs';
 
 describe('captcha rendering', function () {
   describe('when challenge is not required', function () {
