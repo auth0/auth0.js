@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.23.0](https://github.com/auth0/auth0.js/tree/v9.23.0) (2023-10-06)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.22.1...v9.23.0)
+
+**Added**
+- [IAMRISK-2602] Add support for Arkose [\#1341](https://github.com/auth0/auth0.js/pull/1341) ([srijonsaha](https://github.com/srijonsaha))
+
 ## [v9.22.1](https://github.com/auth0/auth0.js/tree/v9.22.1) (2023-07-18)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.22.0...v9.22.1)
 
