@@ -303,7 +303,7 @@ function handleCaptchaProvider(element, options, challenge) {
   );
 }
 
-async function triggerCaptcha(callback) {
+function triggerCaptcha(callback) {
   globalForCaptchaProvider(ARKOSE_PROVIDER).run();
   captchaSolved = callback;
 }
