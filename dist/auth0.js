@@ -7885,11 +7885,9 @@
 	 * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
+	 * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for recaptcha
-	 * @param {Object} [options.callbacks] An optional object containing callbacks called after captcha events (only for Arkose captcha provider)
-	 * @param {Function} [options.callbacks.onSolved] An optional callback called after the captcha is solved (only for Arkose captcha provider)
-	 * @param {Function} [options.callbacks.onError] An optional callback called after the captcha encounters an error with the error passed as the first argument (only for Arkose captcha provider)
 	 * @param {Function} [callback] An optional callback called after captcha is loaded
 	 * @ignore
 	 */
@@ -7954,11 +7952,9 @@
 	 * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
+	 * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for recaptcha
-	 * @param {Object} [options.callbacks] An optional object containing callbacks called after captcha events (only for Arkose captcha provider)
-	 * @param {Function} [options.callbacks.onSolved] An optional callback called after the captcha is solved (only for Arkose captcha provider)
-	 * @param {Function} [options.callbacks.onError] An optional callback called after the captcha encounters an error with the error passed as the first argument (only for Arkose captcha provider)
 	 * @param {Function} [callback] An optional callback called after captcha is loaded
 	 * @ignore
 	 */
@@ -9137,11 +9133,9 @@
 	 * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
+	 * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
-	 * @param {Object} [options.callbacks] An optional object containing callbacks called after captcha events (only for Arkose captcha provider)
-	 * @param {Function} [options.callbacks.onSolved] An optional callback called after the captcha is solved (only for Arkose captcha provider)
-	 * @param {Function} [options.callbacks.onError] An optional callback called after the captcha encounters an error with the error passed as the first argument (only for Arkose captcha provider)
 	 * @param {Function} [callback] An optional callback called after captcha is loaded
 	 * @memberof WebAuth.prototype
 	 */
@@ -9163,11 +9157,9 @@
 	 * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
+	 * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
-	 * @param {Object} [options.callbacks] An optional object containing callbacks called after captcha events (only for Arkose captcha provider)
-	 * @param {Function} [options.callbacks.onSolved] An optional callback called after the captcha is solved (only for Arkose captcha provider)
-	 * @param {Function} [options.callbacks.onError] An optional callback called after the captcha encounters an error with the error passed as the first argument (only for Arkose captcha provider)
 	 * @param {Function} [callback] An optional callback called after captcha is loaded
 	 * @memberof WebAuth.prototype
 	 */
