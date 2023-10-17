@@ -3,6 +3,7 @@ import Authentication from '../authentication';
 import object from '../helper/object';
 
 var noop = function () {};
+var captchaSolved = noop;
 
 var RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
 var RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
@@ -161,6 +162,7 @@ function injectCaptchaScript(element, opts, callback, setValue) {
   );
   if (opts.provider === ARKOSE_PROVIDER) {
     var retryCount = 0;
+    window.requiresTrigger = true;
     attributes['data-callback'] = callbackName;
     attributes['onerror'] = function () {
       if (retryCount < MAX_RETRY) {
@@ -255,9 +257,7 @@ function handleCaptchaProvider(element, options, challenge) {
         arkose.setConfig({
           onCompleted: function (response) {
             setValue(response.token);
-            if (options.callbacks && options.callbacks.onSolved) {
-              options.callbacks.onSolved();
-            }
+            captchaSolved();
           },
           onError: function (response) {
             if (retryCount < MAX_RETRY) {
@@ -271,9 +271,6 @@ function handleCaptchaProvider(element, options, challenge) {
             } else {
               // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
               setValue('BYPASS_CAPTCHA');
-            }
-            if (options.callbacks && options.callbacks.onError) {
-              options.callbacks.onError(response.error);
             }
           }
         });
@@ -306,8 +303,15 @@ function handleCaptchaProvider(element, options, challenge) {
   );
 }
 
-function runArkose() {
+async function triggerCaptcha() {
   globalForCaptchaProvider(ARKOSE_PROVIDER).run();
+  return new Promise(resolve => {
+    captchaSolved = resolve;
+  });
+}
+
+function requiresTrigger() {
+  return window.requiresTrigger || false;
 }
 
 /**
@@ -374,7 +378,8 @@ function render(auth0Client, element, options, callback) {
   return {
     reload: load,
     getValue: getValue,
-    runArkose: runArkose
+    triggerCaptcha: triggerCaptcha,
+    requiresTrigger: requiresTrigger
   };
 }
 
@@ -442,7 +447,8 @@ function renderPasswordless(auth0Client, element, options, callback) {
   return {
     reload: load,
     getValue: getValue,
-    runArkose: runArkose
+    triggerCaptcha: triggerCaptcha,
+    requiresTrigger: requiresTrigger
   };
 }
 
