@@ -403,15 +403,7 @@ describe('captcha rendering', function () {
       clientSubdomain: 'client-api'
     };
 
-    let c,
-      captchaScript,
-      arkoseCallback,
-      scriptErrorCallback,
-      arkose,
-      options,
-      element,
-      onSolvedSpy,
-      onErrorSpy;
+    let c, captchaScript, arkoseCallback, scriptErrorCallback, arkose, element;
     beforeEach(() => {
       const { window } = new JSDOM('<body><div class="captcha" /></body>');
       element = window.document.querySelector('.captcha');
@@ -421,15 +413,7 @@ describe('captcha rendering', function () {
           cb(null, challenge);
         }
       };
-      options = {
-        callbacks: {
-          onSolved() {},
-          onError() {}
-        }
-      };
-      onSolvedSpy = sinon.spy(options.callbacks, 'onSolved');
-      onErrorSpy = sinon.spy(options.callbacks, 'onError');
-      c = captcha.render(mockClient, element, options);
+      c = captcha.render(mockClient, element);
       captchaScript = [...window.document.querySelectorAll('script')].find(s =>
         s.src.match('arkoselabs.com')
       );
@@ -544,17 +528,22 @@ describe('captcha rendering', function () {
         expect(input.value).to.not.equal('');
       });
 
-      it('should run arkose when calling runArkose()', function () {
-        c.runArkose();
+      it('should return true for requiresTrigger()', function () {
+        expect(c.requiresTrigger()).to.be.ok();
+      });
+
+      it('should run arkose when calling triggerCaptcha()', function () {
+        c.triggerCaptcha();
         expect(runSpy.calledOnce).to.be.ok();
       });
 
-      it('should call user provided config callbacks on execution', function () {
+      it('should call callback when the user completes the captcha', function () {
+        let called = false;
+        c.triggerCaptcha(function () {
+          called = true;
+        });
         configOptions.onCompleted({ token: 'token' });
-        configOptions.onError({ error: 'error' });
-        expect(onSolvedSpy.calledOnce).to.be.ok();
-        expect(onErrorSpy.calledOnce).to.be.ok();
-        expect(onErrorSpy.getCall(0).args[0]).to.be('error');
+        expect(called).to.be.ok();
       });
     });
   });
@@ -965,14 +954,7 @@ describe('passwordless captcha rendering', function () {
       clientSubdomain: 'client-api'
     };
 
-    let c,
-      captchaScript,
-      arkoseCallback,
-      arkose,
-      options,
-      element,
-      onSolvedSpy,
-      onErrorSpy;
+    let c, captchaScript, arkoseCallback, arkose, element;
     beforeEach(() => {
       const { window } = new JSDOM('<body><div class="captcha" /></body>');
       element = window.document.querySelector('.captcha');
@@ -982,15 +964,7 @@ describe('passwordless captcha rendering', function () {
           cb(null, challenge);
         }
       };
-      options = {
-        callbacks: {
-          onSolved() {},
-          onError() {}
-        }
-      };
-      onSolvedSpy = sinon.spy(options.callbacks, 'onSolved');
-      onErrorSpy = sinon.spy(options.callbacks, 'onError');
-      c = captcha.render(mockClient, element, options);
+      c = captcha.render(mockClient, element);
       captchaScript = [...window.document.querySelectorAll('script')].find(s =>
         s.src.match('arkoselabs.com')
       );
@@ -1075,17 +1049,22 @@ describe('passwordless captcha rendering', function () {
         expect(input.value).to.not.equal('');
       });
 
-      it('should run arkose when calling runArkose()', function () {
-        c.runArkose();
+      it('should return true for requiresTrigger()', function () {
+        expect(c.requiresTrigger()).to.be.ok();
+      });
+
+      it('should run arkose when calling triggerCaptcha()', function () {
+        c.triggerCaptcha();
         expect(runSpy.calledOnce).to.be.ok();
       });
 
-      it('should call user provided config callbacks on execution', function () {
+      it('should call callback when the user completes the captcha', function () {
+        let called = false;
+        c.triggerCaptcha(function () {
+          called = true;
+        });
         configOptions.onCompleted({ token: 'token' });
-        configOptions.onError({ error: 'error' });
-        expect(onSolvedSpy.calledOnce).to.be.ok();
-        expect(onErrorSpy.calledOnce).to.be.ok();
-        expect(onErrorSpy.getCall(0).args[0]).to.be('error');
+        expect(called).to.be.ok();
       });
     });
   });

@@ -259,7 +259,7 @@ function handleCaptchaProvider(element, options, challenge) {
             setValue(response.token);
             captchaSolved();
           },
-          onError: function (response) {
+          onError: function () {
             if (retryCount < MAX_RETRY) {
               setValue();
               arkose.reset();
@@ -303,11 +303,9 @@ function handleCaptchaProvider(element, options, challenge) {
   );
 }
 
-async function triggerCaptcha() {
+async function triggerCaptcha(callback) {
   globalForCaptchaProvider(ARKOSE_PROVIDER).run();
-  return new Promise(resolve => {
-    captchaSolved = resolve;
-  });
+  captchaSolved = callback;
 }
 
 function requiresTrigger() {

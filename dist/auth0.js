@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.23.0
  * Author: Auth0
- * Date: 2023-10-06
+ * Date: 2023-10-17
  * License: MIT
  */
 
@@ -7563,6 +7563,7 @@
 	// eslint-disable-next-line no-unused-vars
 
 	var noop = function () {};
+	var captchaSolved = noop;
 
 	var RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
 	var RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
@@ -7721,6 +7722,7 @@
 	  );
 	  if (opts.provider === ARKOSE_PROVIDER) {
 	    var retryCount = 0;
+	    window.requiresTrigger = true;
 	    attributes['data-callback'] = callbackName;
 	    attributes['onerror'] = function () {
 	      if (retryCount < MAX_RETRY) {
@@ -7815,11 +7817,9 @@
 	        arkose.setConfig({
 	          onCompleted: function (response) {
 	            setValue(response.token);
-	            if (options.callbacks && options.callbacks.onSolved) {
-	              options.callbacks.onSolved();
-	            }
+	            captchaSolved();
 	          },
-	          onError: function (response) {
+	          onError: function () {
 	            if (retryCount < MAX_RETRY) {
 	              setValue();
 	              arkose.reset();
@@ -7831,9 +7831,6 @@
 	            } else {
 	              // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
 	              setValue('BYPASS_CAPTCHA');
-	            }
-	            if (options.callbacks && options.callbacks.onError) {
-	              options.callbacks.onError(response.error);
 	            }
 	          }
 	        });
@@ -7866,8 +7863,13 @@
 	  );
 	}
 
-	function runArkose() {
+	async function triggerCaptcha(callback) {
 	  globalForCaptchaProvider(ARKOSE_PROVIDER).run();
+	  captchaSolved = callback;
+	}
+
+	function requiresTrigger() {
+	  return window.requiresTrigger || false;
 	}
 
 	/**
@@ -7934,7 +7936,8 @@
 	  return {
 	    reload: load,
 	    getValue: getValue,
-	    runArkose: runArkose
+	    triggerCaptcha: triggerCaptcha,
+	    requiresTrigger: requiresTrigger
 	  };
 	}
 
@@ -8002,7 +8005,8 @@
 	  return {
 	    reload: load,
 	    getValue: getValue,
-	    runArkose: runArkose
+	    triggerCaptcha: triggerCaptcha,
+	    requiresTrigger: requiresTrigger
 	  };
 	}
 
