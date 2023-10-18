@@ -1147,6 +1147,11 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
  * @param {Function} [callback] An optional callback called after captcha is loaded
+ * @returns {Object} An object containing the methods reload, getValue, triggerCaptcha and requiresTrigger.
+ * - reload loads the captcha again
+ * - getValue returns the captcha response
+ * - requiresTrigger after the captcha is loaded, returns true if the provider requires a trigger (Arkose)
+ * - triggerCaptcha after the captcha is loaded, will run the captcha for providers that require a trigger (Arkose)
  * @memberof WebAuth.prototype
  */
 WebAuth.prototype.renderCaptcha = function (element, options, callback) {
@@ -1171,6 +1176,11 @@ WebAuth.prototype.renderCaptcha = function (element, options, callback) {
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
  * @param {Function} [callback] An optional callback called after captcha is loaded
+ * @returns {Object} An object containing the methods reload, getValue, triggerCaptcha and requiresTrigger.
+ * - reload loads the captcha again
+ * - getValue returns the captcha response
+ * - requiresTrigger after the captcha is loaded, returns true if the provider requires a trigger (Arkose)
+ * - triggerCaptcha after the captcha is loaded, will run the captcha for providers that require a trigger (Arkose)
  * @memberof WebAuth.prototype
  */
 WebAuth.prototype.renderPasswordlessCaptcha = function (

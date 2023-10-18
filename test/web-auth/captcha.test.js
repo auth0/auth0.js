@@ -391,6 +391,10 @@ describe('captcha rendering', function () {
           }
           expect(input.value).to.equal('');
         });
+
+        it('should return false for requiresTrigger()', function () {
+          expect(c.requiresTrigger()).to.equal(false);
+        });
       });
     });
   });
@@ -941,6 +945,10 @@ describe('passwordless captcha rendering', function () {
             renderOptions['error-callback']();
           }
           expect(input.value).to.equal('');
+        });
+
+        it('should return false for requiresTrigger()', function () {
+          expect(c.requiresTrigger()).to.equal(false);
         });
       });
     });
