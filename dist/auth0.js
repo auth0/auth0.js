@@ -1,5 +1,5 @@
 /**
- * auth0-js v9.23.0
+ * auth0-js v9.23.1
  * Author: Auth0
  * Date: 2023-10-19
  * License: MIT
@@ -4897,7 +4897,7 @@
 	  decode: decode$1
 	};
 
-	var version = { raw: '9.23.0' };
+	var version = { raw: '9.23.1' };
 
 	var toString = Object.prototype.toString;
 
