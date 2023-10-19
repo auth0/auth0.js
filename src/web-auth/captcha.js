@@ -320,7 +320,7 @@ function handleCaptchaProvider(element, options, challenge) {
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
  * @param {Function} [callback] An optional callback called after captcha is loaded
  * - first parameter will be an error if one occured while loading
- * - second parameter will be an object containg a callback to trigger the captcha (only if Arkose is the provider)
+ * - second parameter will be an object containing a callback to trigger the captcha (only if Arkose is the provider)
  * @ignore
  */
 function render(auth0Client, element, options, callback) {
@@ -396,7 +396,7 @@ function render(auth0Client, element, options, callback) {
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
  * @param {Function} [callback] An optional callback called after captcha is loaded
  * - first parameter will be an error if one occured while loading
- * - second parameter will be an object containg a callback to trigger the captcha (only if Arkose is the provider)
+ * - second parameter will be an object containing a callback to trigger the captcha (only if Arkose is the provider)
  * @ignore
  */
 function renderPasswordless(auth0Client, element, options, callback) {

@@ -1148,7 +1148,7 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
  * @param {Function} [callback] An optional callback called after captcha is loaded
  * - first parameter will be an error if one occured while loading
- * - second parameter will be an object containg a callback to trigger the captcha (only if Arkose is the provider)
+ * - second parameter will be an object containing a callback to trigger the captcha (only if Arkose is the provider)
  * @memberof WebAuth.prototype
  */
 WebAuth.prototype.renderCaptcha = function (element, options, callback) {
@@ -1174,7 +1174,7 @@ WebAuth.prototype.renderCaptcha = function (element, options, callback) {
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
  * @param {Function} [callback] An optional callback called after captcha is loaded
  * - first parameter will be an error if one occured while loading
- * - second parameter will be an object containg a callback to trigger the captcha (only if Arkose is the provider)
+ * - second parameter will be an object containing a callback to trigger the captcha (only if Arkose is the provider)
  * @memberof WebAuth.prototype
  */
 WebAuth.prototype.renderPasswordlessCaptcha = function (
