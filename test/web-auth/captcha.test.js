@@ -973,14 +973,16 @@ describe('passwordless captcha rendering', function () {
       element = window.document.querySelector('.captcha');
       global.window = window;
       const mockClient = {
-        getChallenge(cb) {
-          cb(null, challenge);
+        passwordless: {
+          getChallenge(cb) {
+            cb(null, challenge);
+          }
         }
       };
       doneCallback = (err, apis) => {
         triggerCaptcha = apis.triggerCaptcha;
       };
-      c = captcha.render(mockClient, element, null, doneCallback);
+      c = captcha.renderPasswordless(mockClient, element, null, doneCallback);
       captchaScript = [...window.document.querySelectorAll('script')].find(s =>
         s.src.match('arkoselabs.com')
       );
