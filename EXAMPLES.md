@@ -66,7 +66,7 @@ auth0.parseHash({}, ({ idTokenPayload }) => {
 With the organization stored in a persistent storage, you want to ensure it's always pulled in from there when calling `checkSession`:
 
 ```js
-webAuth.checkSessions(
+webAuth.checkSession(
   {
     organization: localStorage.setItem('app_organization')
   },
