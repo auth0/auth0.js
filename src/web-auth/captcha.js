@@ -193,7 +193,6 @@ function injectCaptchaScript(element, opts, callback, setValue) {
 function handleCaptchaProvider(element, options, challenge) {
   var widgetId =
     element.hasAttribute('data-wid') && element.getAttribute('data-wid');
-  window.provider = challenge.provider;
 
   function setValue(value) {
     var input = element.querySelector('input[name="captcha"]');
@@ -303,17 +302,6 @@ function handleCaptchaProvider(element, options, challenge) {
   );
 }
 
-function triggerCaptcha(callback) {
-  if (requiresTrigger()) {
-    globalForCaptchaProvider(ARKOSE_PROVIDER).run();
-    captchaSolved = callback;
-  }
-}
-
-function requiresTrigger() {
-  return window.provider === ARKOSE_PROVIDER;
-}
-
 /**
  *
  * Renders the captcha challenge in the provided element.
@@ -361,13 +349,16 @@ function render(auth0Client, element, options, callback) {
       ) {
         handleCaptchaProvider(element, options, challenge);
       }
-      function triggerCaptcha(solvedCallback) {
-        globalForCaptchaProvider(challenge.provider).run();
-        captchaSolved = solvedCallback;
+      if (challenge.provider === ARKOSE_PROVIDER) {
+        done(null, {
+          triggerCaptcha: function (solvedCallback) {
+            globalForCaptchaProvider(challenge.provider).run();
+            captchaSolved = solvedCallback;
+          }
+        });
+      } else {
+        done();
       }
-      done(null, {
-        ...(challenge.provider === ARKOSE_PROVIDER && { triggerCaptcha })
-      });
     });
   }
 
@@ -383,9 +374,7 @@ function render(auth0Client, element, options, callback) {
 
   return {
     reload: load,
-    getValue: getValue,
-    requiresTrigger: requiresTrigger,
-    triggerCaptcha: triggerCaptcha
+    getValue: getValue
   };
 }
 
@@ -436,13 +425,16 @@ function renderPasswordless(auth0Client, element, options, callback) {
       ) {
         handleCaptchaProvider(element, options, challenge);
       }
-      function triggerCaptcha(solvedCallback) {
-        globalForCaptchaProvider(challenge.provider).run();
-        captchaSolved = solvedCallback;
+      if (challenge.provider === ARKOSE_PROVIDER) {
+        done(null, {
+          triggerCaptcha: function (solvedCallback) {
+            globalForCaptchaProvider(challenge.provider).run();
+            captchaSolved = solvedCallback;
+          }
+        });
+      } else {
+        done();
       }
-      done(null, {
-        ...(challenge.provider === ARKOSE_PROVIDER && { triggerCaptcha })
-      });
     });
   }
 
@@ -458,9 +450,7 @@ function renderPasswordless(auth0Client, element, options, callback) {
 
   return {
     reload: load,
-    getValue: getValue,
-    requiresTrigger: requiresTrigger,
-    triggerCaptcha: triggerCaptcha
+    getValue: getValue
   };
 }
 

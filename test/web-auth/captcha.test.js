@@ -92,7 +92,7 @@ describe('captcha rendering', function () {
 
     it('should call the optional callback', function () {
       expect(callbackStub.called).to.be.ok();
-      expect(callbackStub.args[0][0]).to.equal(null);
+      expect(callbackStub.args[0]).to.be.empty();
     });
 
     it('should show the element', function () {
@@ -646,7 +646,7 @@ describe('passwordless captcha rendering', function () {
 
     it('should call the optional callback', function () {
       expect(callbackStub.called).to.be.ok();
-      expect(callbackStub.args[0][0]).to.equal(null);
+      expect(callbackStub.args[0]).to.be.empty();
     });
 
     it('should show the element', function () {
