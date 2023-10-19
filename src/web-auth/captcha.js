@@ -331,11 +331,8 @@ function requiresTrigger() {
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
  * @param {Function} [callback] An optional callback called after captcha is loaded
- * @returns {Object} An object containing the methods reload, getValue, triggerCaptcha and requiresTrigger.
- * - reload loads the captcha again
- * - getValue returns the captcha response
- * - requiresTrigger after the captcha is loaded, returns true if the provider requires a trigger (Arkose)
- * - triggerCaptcha after the captcha is loaded, will run the captcha for providers that require a trigger (Arkose)
+ * - first parameter will be an error if one occured while loading
+ * - second parameter will be an object containg a callback to trigger the captcha (only if Arkose is the provider)
  * @ignore
  */
 function render(auth0Client, element, options, callback) {
@@ -364,7 +361,13 @@ function render(auth0Client, element, options, callback) {
       ) {
         handleCaptchaProvider(element, options, challenge);
       }
-      done();
+      function triggerCaptcha(solvedCallback) {
+        globalForCaptchaProvider(challenge.provider).run();
+        captchaSolved = solvedCallback;
+      }
+      done(null, {
+        ...(challenge.provider === ARKOSE_PROVIDER && { triggerCaptcha })
+      });
     });
   }
 
@@ -403,11 +406,8 @@ function render(auth0Client, element, options, callback) {
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
  * @param {Function} [callback] An optional callback called after captcha is loaded
- * @returns {Object} An object containing the methods reload, getValue, triggerCaptcha and requiresTrigger.
- * - reload loads the captcha again
- * - getValue returns the captcha response
- * - requiresTrigger after the captcha is loaded, returns true if the provider requires a trigger (Arkose)
- * - triggerCaptcha after the captcha is loaded, will run the captcha for providers that require a trigger (Arkose)
+ * - first parameter will be an error if one occured while loading
+ * - second parameter will be an object containg a callback to trigger the captcha (only if Arkose is the provider)
  * @ignore
  */
 function renderPasswordless(auth0Client, element, options, callback) {
@@ -436,7 +436,13 @@ function renderPasswordless(auth0Client, element, options, callback) {
       ) {
         handleCaptchaProvider(element, options, challenge);
       }
-      done();
+      function triggerCaptcha(solvedCallback) {
+        globalForCaptchaProvider(challenge.provider).run();
+        captchaSolved = solvedCallback;
+      }
+      done(null, {
+        ...(challenge.provider === ARKOSE_PROVIDER && { triggerCaptcha })
+      });
     });
   }
 
