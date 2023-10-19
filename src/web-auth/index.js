@@ -1130,6 +1130,13 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
 };
 
 /**
+ * @callback doneCallback
+ * @param {Error} [err] Error returned if request to get captcha challenge fails
+ * @param {Object} [apis] An object containing a callback to trigger the captcha (only if Arkose is the provider)
+ * @param {Function} [apis.triggerCaptcha] Triggers the captcha with the first parameter as a callback to be fired after it's solved
+ */
+
+/**
  *
  * Renders the captcha challenge in the provided element.
  * This function can only be used in the context of a Classic Universal Login Page.
@@ -1146,9 +1153,7 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
  * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
- * @param {Function} [callback] An optional callback called after captcha is loaded
- * - first parameter will be an error if one occured while loading
- * - second parameter will be an object containing a callback to trigger the captcha (only if Arkose is the provider)
+ * @param {doneCallback} [callback] An optional callback called after captcha is loaded
  * @memberof WebAuth.prototype
  */
 WebAuth.prototype.renderCaptcha = function (element, options, callback) {
@@ -1172,9 +1177,7 @@ WebAuth.prototype.renderCaptcha = function (element, options, callback) {
  * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
- * @param {Function} [callback] An optional callback called after captcha is loaded
- * - first parameter will be an error if one occured while loading
- * - second parameter will be an object containing a callback to trigger the captcha (only if Arkose is the provider)
+ * @param {doneCallback} [callback] An optional callback called after captcha is loaded
  * @memberof WebAuth.prototype
  */
 WebAuth.prototype.renderPasswordlessCaptcha = function (
