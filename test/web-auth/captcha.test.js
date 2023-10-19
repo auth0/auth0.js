@@ -407,11 +407,10 @@ describe('captcha rendering', function () {
       captchaScript,
       arkoseCallback,
       scriptErrorCallback,
+      doneCallback,
+      triggerCaptcha,
       arkose,
-      options,
-      element,
-      onSolvedSpy,
-      onErrorSpy;
+      element;
     beforeEach(() => {
       const { window } = new JSDOM('<body><div class="captcha" /></body>');
       element = window.document.querySelector('.captcha');
@@ -421,15 +420,10 @@ describe('captcha rendering', function () {
           cb(null, challenge);
         }
       };
-      options = {
-        callbacks: {
-          onSolved() {},
-          onError() {}
-        }
+      doneCallback = (err, apis) => {
+        triggerCaptcha = apis.triggerCaptcha;
       };
-      onSolvedSpy = sinon.spy(options.callbacks, 'onSolved');
-      onErrorSpy = sinon.spy(options.callbacks, 'onError');
-      c = captcha.render(mockClient, element, options);
+      c = captcha.render(mockClient, element, null, doneCallback);
       captchaScript = [...window.document.querySelectorAll('script')].find(s =>
         s.src.match('arkoselabs.com')
       );
@@ -451,6 +445,7 @@ describe('captcha rendering', function () {
         `/${'v2'}/${challenge.siteKey}/${'api.js'}`
       );
       expect(arkoseCallback).to.be.a('function');
+      expect(triggerCaptcha).to.be.a('function');
     });
 
     it('should reinject the captcha script on error', function () {
@@ -544,17 +539,18 @@ describe('captcha rendering', function () {
         expect(input.value).to.not.equal('');
       });
 
-      it('should run arkose when calling runArkose()', function () {
-        c.runArkose();
+      it('should run arkose when calling function passed by the done callback', function () {
+        triggerCaptcha();
         expect(runSpy.calledOnce).to.be.ok();
       });
 
-      it('should call user provided config callbacks on execution', function () {
+      it('should call callback when the user completes the captcha', function () {
+        let called = false;
+        triggerCaptcha(function () {
+          called = true;
+        });
         configOptions.onCompleted({ token: 'token' });
-        configOptions.onError({ error: 'error' });
-        expect(onSolvedSpy.calledOnce).to.be.ok();
-        expect(onErrorSpy.calledOnce).to.be.ok();
-        expect(onErrorSpy.getCall(0).args[0]).to.be('error');
+        expect(called).to.be.ok();
       });
     });
   });
@@ -968,29 +964,25 @@ describe('passwordless captcha rendering', function () {
     let c,
       captchaScript,
       arkoseCallback,
+      doneCallback,
+      triggerCaptcha,
       arkose,
-      options,
-      element,
-      onSolvedSpy,
-      onErrorSpy;
+      element;
     beforeEach(() => {
       const { window } = new JSDOM('<body><div class="captcha" /></body>');
       element = window.document.querySelector('.captcha');
       global.window = window;
       const mockClient = {
-        getChallenge(cb) {
-          cb(null, challenge);
+        passwordless: {
+          getChallenge(cb) {
+            cb(null, challenge);
+          }
         }
       };
-      options = {
-        callbacks: {
-          onSolved() {},
-          onError() {}
-        }
+      doneCallback = (err, apis) => {
+        triggerCaptcha = apis.triggerCaptcha;
       };
-      onSolvedSpy = sinon.spy(options.callbacks, 'onSolved');
-      onErrorSpy = sinon.spy(options.callbacks, 'onError');
-      c = captcha.render(mockClient, element, options);
+      c = captcha.renderPasswordless(mockClient, element, null, doneCallback);
       captchaScript = [...window.document.querySelectorAll('script')].find(s =>
         s.src.match('arkoselabs.com')
       );
@@ -1011,6 +1003,7 @@ describe('passwordless captcha rendering', function () {
         `/${'v2'}/${challenge.siteKey}/${'api.js'}`
       );
       expect(arkoseCallback).to.be.a('function');
+      expect(triggerCaptcha).to.be.a('function');
     });
 
     describe('after captcha is loaded', function () {
@@ -1075,17 +1068,18 @@ describe('passwordless captcha rendering', function () {
         expect(input.value).to.not.equal('');
       });
 
-      it('should run arkose when calling runArkose()', function () {
-        c.runArkose();
+      it('should run arkose when calling function passed by the done callback', function () {
+        triggerCaptcha();
         expect(runSpy.calledOnce).to.be.ok();
       });
 
-      it('should call user provided config callbacks on execution', function () {
+      it('should call callback when the user completes the captcha', function () {
+        let called = false;
+        triggerCaptcha(function () {
+          called = true;
+        });
         configOptions.onCompleted({ token: 'token' });
-        configOptions.onError({ error: 'error' });
-        expect(onSolvedSpy.calledOnce).to.be.ok();
-        expect(onErrorSpy.calledOnce).to.be.ok();
-        expect(onErrorSpy.getCall(0).args[0]).to.be('error');
+        expect(called).to.be.ok();
       });
     });
   });
