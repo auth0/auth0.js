@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.23.1](https://github.com/auth0/auth0.js/tree/v9.23.1) (2023-10-19)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.23.0...v9.23.1)
+
+**Changed**
+- [IAMRISK-2817] Update API for Arkose to use a callback based API [\#1349](https://github.com/auth0/auth0.js/pull/1349) ([srijonsaha](https://github.com/srijonsaha))
+
 ## [v9.23.0](https://github.com/auth0/auth0.js/tree/v9.23.0) (2023-10-06)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.22.1...v9.23.0)
 
