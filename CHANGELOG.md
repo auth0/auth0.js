@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.23.2](https://github.com/auth0/auth0.js/tree/v9.23.2) (2023-10-27)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.23.1...v9.23.2)
+
+**Security**
+- Bump crypto-js from 4.1.1 to 4.2.0 [\#1354](https://github.com/auth0/auth0.js/pull/1354) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v9.23.1](https://github.com/auth0/auth0.js/tree/v9.23.1) (2023-10-19)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.23.0...v9.23.1)
 
