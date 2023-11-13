@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.23.3](https://github.com/auth0/auth0.js/tree/v9.23.3) (2023-11-13)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.23.2...v9.23.3)
+
+**Security**
+- Bump idtoken-verifier from 2.2.2 to 2.2.4 [\#1362](https://github.com/auth0/auth0.js/pull/1362) ([cgetzen](https://github.com/cgetzen))
+
 ## [v9.23.2](https://github.com/auth0/auth0.js/tree/v9.23.2) (2023-10-27)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.23.1...v9.23.2)
 
