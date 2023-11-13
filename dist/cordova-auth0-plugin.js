@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.23.2
+ * auth0-js v9.23.3
  * Author: Auth0
- * Date: 2023-10-27
+ * Date: 2023-11-13
  * License: MIT
  */
 
@@ -11,7 +11,7 @@
   (global = global || self, global.CordovaAuth0Plugin = factory());
 }(this, (function () { 'use strict';
 
-  var version = { raw: '9.23.2' };
+  var version = { raw: '9.23.3' };
 
   var toString = Object.prototype.toString;
 
@@ -517,43 +517,75 @@
   /* eslint no-invalid-this: 1 */
 
   var ERROR_MESSAGE = 'Function.prototype.bind called on incompatible ';
-  var slice = Array.prototype.slice;
   var toStr = Object.prototype.toString;
+  var max = Math.max;
   var funcType = '[object Function]';
+
+  var concatty = function concatty(a, b) {
+      var arr = [];
+
+      for (var i = 0; i < a.length; i += 1) {
+          arr[i] = a[i];
+      }
+      for (var j = 0; j < b.length; j += 1) {
+          arr[j + a.length] = b[j];
+      }
+
+      return arr;
+  };
+
+  var slicy = function slicy(arrLike, offset) {
+      var arr = [];
+      for (var i = offset || 0, j = 0; i < arrLike.length; i += 1, j += 1) {
+          arr[j] = arrLike[i];
+      }
+      return arr;
+  };
+
+  var joiny = function (arr, joiner) {
+      var str = '';
+      for (var i = 0; i < arr.length; i += 1) {
+          str += arr[i];
+          if (i + 1 < arr.length) {
+              str += joiner;
+          }
+      }
+      return str;
+  };
 
   var implementation = function bind(that) {
       var target = this;
-      if (typeof target !== 'function' || toStr.call(target) !== funcType) {
+      if (typeof target !== 'function' || toStr.apply(target) !== funcType) {
           throw new TypeError(ERROR_MESSAGE + target);
       }
-      var args = slice.call(arguments, 1);
+      var args = slicy(arguments, 1);
 
       var bound;
       var binder = function () {
           if (this instanceof bound) {
               var result = target.apply(
                   this,
-                  args.concat(slice.call(arguments))
+                  concatty(args, arguments)
               );
               if (Object(result) === result) {
                   return result;
               }
               return this;
-          } else {
-              return target.apply(
-                  that,
-                  args.concat(slice.call(arguments))
-              );
           }
+          return target.apply(
+              that,
+              concatty(args, arguments)
+          );
+
       };
 
-      var boundLength = Math.max(0, target.length - args.length);
+      var boundLength = max(0, target.length - args.length);
       var boundArgs = [];
       for (var i = 0; i < boundLength; i++) {
-          boundArgs.push('$' + i);
+          boundArgs[i] = '$' + i;
       }
 
-      bound = Function('binder', 'return function (' + boundArgs.join(',') + '){ return binder.apply(this,arguments); }')(binder);
+      bound = Function('binder', 'return function (' + joiny(boundArgs, ',') + '){ return binder.apply(this,arguments); }')(binder);
 
       if (target.prototype) {
           var Empty = function Empty() {};
