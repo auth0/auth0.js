@@ -192,12 +192,14 @@ describe('captcha rendering', function () {
   const HCAPTCHA_PROVIDER = 'hcaptcha';
   const FRIENDLY_CAPTCHA_PROVIDER = 'friendly_captcha';
   const ARKOSE_PROVIDER = 'arkose';
+  const AUTH0_V2_CAPTCHA_PROVIDER = 'auth0_v2';
 
   [
     RECAPTCHA_V2_PROVIDER,
     RECAPTCHA_ENTERPRISE_PROVIDER,
     HCAPTCHA_PROVIDER,
-    FRIENDLY_CAPTCHA_PROVIDER
+    FRIENDLY_CAPTCHA_PROVIDER,
+    AUTH0_V2_CAPTCHA_PROVIDER
   ].forEach(provider => {
     const getScript = () => {
       switch (provider) {
@@ -209,6 +211,8 @@ describe('captcha rendering', function () {
           return 'enterprise.js';
         case FRIENDLY_CAPTCHA_PROVIDER:
           return 'widget.min.js';
+        case AUTH0_V2_CAPTCHA_PROVIDER:
+          return 'api.js';
       }
     };
     const getHostname = () => {
@@ -221,6 +225,8 @@ describe('captcha rendering', function () {
           return 'hcaptcha.com';
         case FRIENDLY_CAPTCHA_PROVIDER:
           return 'jsdelivr.net';
+        case AUTH0_V2_CAPTCHA_PROVIDER:
+          return 'cloudflare.com';
       }
     };
     const getSubdomain = () => {
@@ -233,6 +239,8 @@ describe('captcha rendering', function () {
           return 'js';
         case FRIENDLY_CAPTCHA_PROVIDER:
           return 'cdn';
+        case AUTH0_V2_CAPTCHA_PROVIDER:
+          return 'challenges';
       }
     };
     const getPath = () => {
@@ -245,6 +253,8 @@ describe('captcha rendering', function () {
           return '1';
         case FRIENDLY_CAPTCHA_PROVIDER:
           return 'npm/friendly-challenge@0.9.12';
+        case AUTH0_V2_CAPTCHA_PROVIDER:
+          return 'turnstile/v0';
       }
     };
     const setMockGlobal = mock => {
@@ -260,6 +270,9 @@ describe('captcha rendering', function () {
           break;
         case FRIENDLY_CAPTCHA_PROVIDER:
           window.friendlyChallenge = mock;
+          break;
+        case AUTH0_V2_CAPTCHA_PROVIDER:
+          window.turnstile = mock;
           break;
       }
     };
@@ -303,8 +316,13 @@ describe('captcha rendering', function () {
           `${getSubdomain()}.${getHostname()}`
         );
         expect(scriptUrl.pathname).to.equal(`/${getPath()}/${getScript()}`);
-        if (provider !== FRIENDLY_CAPTCHA_PROVIDER) {
+        if (
+          provider !== FRIENDLY_CAPTCHA_PROVIDER &&
+          provider !== AUTH0_V2_CAPTCHA_PROVIDER
+        ) {
           expect(scriptUrl.query.hl).to.equal('en');
+        }
+        if (provider !== FRIENDLY_CAPTCHA_PROVIDER) {
           expect(scriptUrl.query).to.have.property('onload');
         }
       });
@@ -748,12 +766,14 @@ describe('passwordless captcha rendering', function () {
   const HCAPTCHA_PROVIDER = 'hcaptcha';
   const FRIENDLY_CAPTCHA_PROVIDER = 'friendly_captcha';
   const ARKOSE_PROVIDER = 'arkose';
+  const AUTH0_V2_CAPTCHA_PROVIDER = 'auth0_v2';
 
   [
     RECAPTCHA_V2_PROVIDER,
     RECAPTCHA_ENTERPRISE_PROVIDER,
     HCAPTCHA_PROVIDER,
-    FRIENDLY_CAPTCHA_PROVIDER
+    FRIENDLY_CAPTCHA_PROVIDER,
+    AUTH0_V2_CAPTCHA_PROVIDER
   ].forEach(provider => {
     const getScript = () => {
       switch (provider) {
@@ -765,6 +785,8 @@ describe('passwordless captcha rendering', function () {
           return 'enterprise.js';
         case FRIENDLY_CAPTCHA_PROVIDER:
           return 'widget.min.js';
+        case AUTH0_V2_CAPTCHA_PROVIDER:
+          return 'api.js';
       }
     };
     const getHostname = () => {
@@ -777,6 +799,8 @@ describe('passwordless captcha rendering', function () {
           return 'hcaptcha.com';
         case FRIENDLY_CAPTCHA_PROVIDER:
           return 'jsdelivr.net';
+        case AUTH0_V2_CAPTCHA_PROVIDER:
+          return 'cloudflare.com';
       }
     };
     const getSubdomain = () => {
@@ -789,6 +813,8 @@ describe('passwordless captcha rendering', function () {
           return 'js';
         case FRIENDLY_CAPTCHA_PROVIDER:
           return 'cdn';
+        case AUTH0_V2_CAPTCHA_PROVIDER:
+          return 'challenges';
       }
     };
     const getPath = () => {
@@ -801,6 +827,8 @@ describe('passwordless captcha rendering', function () {
           return '1';
         case FRIENDLY_CAPTCHA_PROVIDER:
           return 'npm/friendly-challenge@0.9.12';
+        case AUTH0_V2_CAPTCHA_PROVIDER:
+          return 'turnstile/v0';
       }
     };
     const setMockGlobal = mock => {
@@ -816,6 +844,9 @@ describe('passwordless captcha rendering', function () {
           break;
         case FRIENDLY_CAPTCHA_PROVIDER:
           window.friendlyChallenge = mock;
+          break;
+        case AUTH0_V2_CAPTCHA_PROVIDER:
+          window.turnstile = mock;
           break;
       }
     };
@@ -861,8 +892,13 @@ describe('passwordless captcha rendering', function () {
           `${getSubdomain()}.${getHostname()}`
         );
         expect(scriptUrl.pathname).to.equal(`/${getPath()}/${getScript()}`);
-        if (provider !== FRIENDLY_CAPTCHA_PROVIDER) {
+        if (
+          provider !== FRIENDLY_CAPTCHA_PROVIDER &&
+          provider !== AUTH0_V2_CAPTCHA_PROVIDER
+        ) {
           expect(scriptUrl.query.hl).to.equal('en');
+        }
+        if (provider !== FRIENDLY_CAPTCHA_PROVIDER) {
           expect(scriptUrl.query).to.have.property('onload');
         }
       });
