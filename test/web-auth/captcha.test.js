@@ -216,18 +216,14 @@ describe('captcha rendering', function () {
       }
     };
     const getHostname = () => {
-      switch (provider) {
-        case RECAPTCHA_V2_PROVIDER:
-          return 'recaptcha.net';
-        case RECAPTCHA_ENTERPRISE_PROVIDER:
-          return 'recaptcha.net';
-        case HCAPTCHA_PROVIDER:
-          return 'hcaptcha.com';
-        case FRIENDLY_CAPTCHA_PROVIDER:
-          return 'jsdelivr.net';
-        case AUTH0_V2_CAPTCHA_PROVIDER:
-          return 'cloudflare.com';
+      const hosts = {
+        [RECAPTCHA_V2_PROVIDER]: 'recaptcha.net',
+        [RECAPTCHA_ENTERPRISE_PROVIDER]: 'recaptcha.net',
+        [HCAPTCHA_PROVIDER]: 'hcaptcha.com',
+        [FRIENDLY_CAPTCHA_PROVIDER]: 'jsdelivr.net',
+        [AUTH0_V2_CAPTCHA_PROVIDER]: 'cloudflare.com'
       }
+      return hosts[provider];
     };
     const getSubdomain = () => {
       switch (provider) {
@@ -790,18 +786,14 @@ describe('passwordless captcha rendering', function () {
       }
     };
     const getHostname = () => {
-      switch (provider) {
-        case RECAPTCHA_V2_PROVIDER:
-          return 'recaptcha.net';
-        case RECAPTCHA_ENTERPRISE_PROVIDER:
-          return 'recaptcha.net';
-        case HCAPTCHA_PROVIDER:
-          return 'hcaptcha.com';
-        case FRIENDLY_CAPTCHA_PROVIDER:
-          return 'jsdelivr.net';
-        case AUTH0_V2_CAPTCHA_PROVIDER:
-          return 'cloudflare.com';
+      const hosts = {
+        [RECAPTCHA_V2_PROVIDER]: 'recaptcha.net',
+        [RECAPTCHA_ENTERPRISE_PROVIDER]: 'recaptcha.net',
+        [HCAPTCHA_PROVIDER]: 'hcaptcha.com',
+        [FRIENDLY_CAPTCHA_PROVIDER]: 'jsdelivr.net',
+        [AUTH0_V2_CAPTCHA_PROVIDER]: 'cloudflare.com'
       }
+      return hosts[provider];
     };
     const getSubdomain = () => {
       switch (provider) {
