@@ -106,7 +106,7 @@
     "rollup-plugin-terser": "^5.1.1",
     "selenium-webdriver": "^4.8.2",
     "sinon": "^11.1.2",
-    "wait-on": "^6.0.0",
+    "wait-on": "^7.2.0",
     "yargs": "^17.2.1"
   },
   "overrides": {
