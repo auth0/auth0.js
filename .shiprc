@@ -1,6 +1,7 @@
 {
   "files": {
     "src/version.js": [],
+    ".version": [],
     "README.md": []
   },
   "postbump": "npm run build && node scripts/jsdocs.js"
