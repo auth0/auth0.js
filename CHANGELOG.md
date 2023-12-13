@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.24.0](https://github.com/auth0/auth0.js/tree/v9.24.0) (2023-12-13)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.23.3...v9.24.0)
+
+**Added**
+- [IAMRISK-2915] Added support for Auth0 v2 captcha provider [\#1368](https://github.com/auth0/auth0.js/pull/1368) ([alexkoumarianos-okta](https://github.com/alexkoumarianos-okta))
+
 ## [v9.23.3](https://github.com/auth0/auth0.js/tree/v9.23.3) (2023-11-13)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.23.2...v9.23.3)
 
