@@ -18,60 +18,9 @@ env:
 
 jobs:
   release:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged && startsWith(github.event.pull_request.head.ref, 'release/'))
-    runs-on: ubuntu-latest
-    environment: release
-
-    steps:
-      # Checkout the code
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # Get the version from the branch name
-      - id: get_version
-        uses: ./.github/actions/get-version
-
-      # Get the prerelease flag from the branch name
-      - id: get_prerelease
-        uses: ./.github/actions/get-prerelease
-        with:
-          version: ${{ steps.get_version.outputs.version }}
-
-      # Get the release notes
-      # This will expose the release notes as env.RELEASE_NOTES
-      - id: get_release_notes
-        uses: ./.github/actions/get-release-notes
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: ${{ steps.get_version.outputs.version }}
-          repo_owner: ${{ github.repository_owner }}
-          repo_name: ${{ github.event.repository.name }}
-
-      # Check if the tag already exists
-      - id: tag_exists
-        uses: ./.github/actions/tag-exists
-        with:
-          tag: ${{ steps.get_version.outputs.version }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      # If the tag already exists, exit with an error
-      - if: steps.tag_exists.outputs.exists == 'true'
-        run: exit 1
-
-      # Publish the release to our package manager
-      - uses: ./.github/actions/publish-package
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          version: ${{ steps.get_version.outputs.version }}
-          npm-token: ${{ secrets.NPM_TOKEN }}
-
-      # Create a release for the tag
-      - uses: ./.github/actions/release-create
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          name: ${{ steps.get_version.outputs.version }}
-          body: ${{ steps.get_release_notes.outputs.release-notes }}
-          tag: ${{ steps.get_version.outputs.version }}
-          commit: ${{ github.sha }}
-          prerelease: ${{ steps.get_prerelease.outputs.prerelease }}
+    uses: ./.github/workflows/npm-release.yml
+    with:
+      node-version: ${{ env.NODE_VERSION }}
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
+      github-token: ${{ secrets.GITHUB_TOKEN }}
