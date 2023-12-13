@@ -1,0 +1,46 @@
+name: Publish release to package manager
+
+inputs:
+  node-version:
+    required: true
+  npm-token:
+    required: true
+  version:
+    required: true
+  release-directory:
+    default: './'
+
+runs:
+  using: composite
+
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Build package
+      uses: ./.github/actions/build
+      with:
+        node: ${{ inputs.node-version }}
+
+    - name: Publish release to NPM
+      shell: bash
+      working-directory: ${{ inputs.release-directory }}
+      run: |
+        if [[ "${VERSION}" == *"beta"* ]]; then
+          TAG="beta"
+        elif [[ "${VERSION}" == *"alpha"* ]]; then
+          TAG="alpha"
+        else
+          TAG="latest"
+        fi
+        npm publish --provenance --tag $TAG
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
+        VERSION: ${{ inputs.version }}
