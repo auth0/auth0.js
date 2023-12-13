@@ -6,10 +6,6 @@ on:
       - closed
   workflow_dispatch:
 
-permissions:
-  contents: write
-  id-token: write # For publishing to npm using --provenance
-
 env:
   NODE_VERSION: 18
 
