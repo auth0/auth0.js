@@ -11,6 +11,7 @@ var HCAPTCHA_PROVIDER = 'hcaptcha';
 var FRIENDLY_CAPTCHA_PROVIDER = 'friendly_captcha';
 var ARKOSE_PROVIDER = 'arkose';
 var AUTH0_PROVIDER = 'auth0';
+var AUTH0_V2_CAPTCHA_PROVIDER = 'auth0_v2';
 var MAX_RETRY = 3;
 
 var defaults = {
@@ -50,6 +51,9 @@ var defaults = {
     arkose: function () {
       return '<div class="arkose" ></div><input type="hidden" name="captcha" />';
     },
+    auth0_v2: function () {
+      return '<div class="auth0_v2" ></div><input type="hidden" name="captcha" />';
+    },
     error: function () {
       return '<div class="error" style="color: red;">Error getting the bot detection challenge. Please contact the system administrator.</div>';
     }
@@ -78,6 +82,8 @@ function globalForCaptchaProvider(provider) {
       return window.friendlyChallenge;
     case ARKOSE_PROVIDER:
       return window.arkose;
+    case AUTH0_V2_CAPTCHA_PROVIDER:
+      return window.turnstile;
     /* istanbul ignore next */
     default:
       throw new Error('Unknown captcha provider');
@@ -119,6 +125,11 @@ function scriptForCaptchaProvider(
         '.arkoselabs.com/v2/' +
         siteKey +
         '/api.js'
+      );
+    case AUTH0_V2_CAPTCHA_PROVIDER:
+      return (
+        'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=' +
+        callback
       );
     /* istanbul ignore next */
     default:
@@ -238,6 +249,9 @@ function handleCaptchaProvider(element, options, challenge) {
     case ARKOSE_PROVIDER:
       captchaClass = '.arkose';
       break;
+    case AUTH0_V2_CAPTCHA_PROVIDER:
+      captchaClass = '.auth0_v2';
+      break;
   }
   var captchaDiv = element.querySelector(captchaClass);
 
@@ -285,7 +299,7 @@ function handleCaptchaProvider(element, options, challenge) {
           }
         });
       } else {
-        widgetId = global.render(captchaDiv, {
+        var renderParams = {
           callback: setValue,
           'expired-callback': function () {
             setValue();
@@ -294,7 +308,12 @@ function handleCaptchaProvider(element, options, challenge) {
             setValue();
           },
           sitekey: challenge.siteKey
-        });
+        };
+        if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
+          renderParams.language = options.lang;
+          renderParams.theme = 'light';
+        }
+        widgetId = global.render(captchaDiv, renderParams);
         element.setAttribute('data-wid', widgetId);
       }
     },
@@ -316,6 +335,7 @@ function handleCaptchaProvider(element, options, challenge) {
  * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
  * @param {Function} [callback] An optional callback called after captcha is loaded
@@ -343,7 +363,8 @@ function render(auth0Client, element, options, callback) {
         challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
         challenge.provider === HCAPTCHA_PROVIDER ||
         challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
-        challenge.provider === ARKOSE_PROVIDER
+        challenge.provider === ARKOSE_PROVIDER ||
+        challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER
       ) {
         handleCaptchaProvider(element, options, challenge);
       }
@@ -390,6 +411,7 @@ function render(auth0Client, element, options, callback) {
  * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
  * @param {Function} [callback] An optional callback called after captcha is loaded
@@ -417,7 +439,8 @@ function renderPasswordless(auth0Client, element, options, callback) {
         challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
         challenge.provider === HCAPTCHA_PROVIDER ||
         challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
-        challenge.provider === ARKOSE_PROVIDER
+        challenge.provider === ARKOSE_PROVIDER ||
+        challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER
       ) {
         handleCaptchaProvider(element, options, challenge);
       }
