@@ -389,7 +389,7 @@ describe('captcha rendering', function () {
         }
 
         if (provider === AUTH0_V2_CAPTCHA_PROVIDER) {
-          it('should remove script and set bypass token after more than 3 errors vvs', function () {
+          it('should remove script and set bypass token after more than 3 errors', function () {
             const input = element.querySelector('input[name="captcha"]');
             input.value = '';
             for (let i = 0; i < 4; i++) {
@@ -400,6 +400,18 @@ describe('captcha rendering', function () {
                 s.src.match('cloudflare')
               )
             ).to.equal(undefined);
+            expect(input.value).to.equal('BYPASS_CAPTCHA');
+          });
+
+          it('should clear token on error before until the third attempt and set bypass token after more than 3 errors', function () {
+            const input = element.querySelector('input[name="captcha"]');
+            input.value = 'token';
+            for (let i = 0; i < 3; i++) {
+              renderOptions['error-callback']();
+              expect(input.value).to.equal('');
+            }
+            const finalRetry = renderOptions['error-callback']();
+            expect(finalRetry).to.equal(true);
             expect(input.value).to.equal('BYPASS_CAPTCHA');
           });
         }
@@ -986,18 +998,31 @@ describe('passwordless captcha rendering', function () {
         });
 
         if (provider === AUTH0_V2_CAPTCHA_PROVIDER) {
-          it('should remove script and set bypass token after more than 3 errors vvs', function () {
+          it('should remove script and set bypass token after more than 3 errors', function () {
             const input = element.querySelector('input[name="captcha"]');
             input.value = '';
             for (let i = 0; i < 4; i++) {
               scriptErrorCallback();
             }
-      
+
             expect(
               [...window.document.querySelectorAll('script')].find(s =>
                 s.src.match('cloudflare')
               )
             ).to.equal(undefined);
+            expect(input.value).to.equal('BYPASS_CAPTCHA');
+          });
+
+                    
+          it('should clear token on error before until the third attempt and set bypass token after more than 3 errors', function () {
+            const input = element.querySelector('input[name="captcha"]');
+            input.value = 'token';
+            for (let i = 0; i < 3; i++) {
+              renderOptions['error-callback']();
+              expect(input.value).to.equal('');
+            }
+            const finalRetry = renderOptions['error-callback']();
+            expect(finalRetry).to.equal(true);
             expect(input.value).to.equal('BYPASS_CAPTCHA');
           });
         }
