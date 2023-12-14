@@ -310,6 +310,17 @@ function handleCaptchaProvider(element, options, challenge) {
           sitekey: challenge.siteKey
         };
         if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
+          var a0RetryCount = 0;
+          renderParams['error-callback'] = function () {
+            if (a0RetryCount < MAX_RETRY) {
+              setValue();
+              globalForCaptchaProvider(challenge.provider).reset(widgetId);
+              a0RetryCount++;
+            } else {
+              // similar implementation to ARKOSE_PROVIDER failOpen
+              setValue('BYPASS_CAPTCHA');
+            }
+          }
           renderParams.language = options.lang;
           renderParams.theme = 'light';
         }
