@@ -397,7 +397,7 @@ describe('captcha rendering', function () {
             }
             expect(
               [...window.document.querySelectorAll('script')].find(s =>
-                s.src.match('cloudflare.com')
+                s.src.match('cloudflare')
               )
             ).to.equal(undefined);
             expect(input.value).to.equal('BYPASS_CAPTCHA');
@@ -992,9 +992,10 @@ describe('passwordless captcha rendering', function () {
             for (let i = 0; i < 4; i++) {
               scriptErrorCallback();
             }
+      
             expect(
               [...window.document.querySelectorAll('script')].find(s =>
-                s.src.match('cloudflare.com')
+                s.src.match('cloudflare')
               )
             ).to.equal(undefined);
             expect(input.value).to.equal('BYPASS_CAPTCHA');
