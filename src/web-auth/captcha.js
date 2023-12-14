@@ -191,7 +191,6 @@ function injectCaptchaScript(element, opts, callback, setValue) {
     };
   } else if (opts.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
     var a0RetryCount = 0;
-    attributes['data-callback'] = callbackName;
     attributes['error-callback'] = function () {
       if (a0RetryCount < MAX_RETRY) {
         removeScript(scriptSrc);
