@@ -1,5 +1,5 @@
-// eslint-disable-next-line no-unused-vars
 import Authentication from '../authentication';
+// eslint-disable-next-line no-unused-vars
 import object from '../helper/object';
 
 var noop = function () {};
@@ -189,6 +189,24 @@ function injectCaptchaScript(element, opts, callback, setValue) {
       window.arkose = arkose;
       callback(arkose);
     };
+  } else if (opts.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
+    var a0RetryCount = 0;
+    attributes['data-callback'] = callbackName;
+    attributes['error-callback'] = function () {
+      if (a0RetryCount < MAX_RETRY) {
+        removeScript(scriptSrc);
+        loadScript(scriptSrc, attributes);
+        a0RetryCount++;
+        return;
+      }
+      removeScript(scriptSrc);
+      // similar implementation to ARKOSE_PROVIDER failOpen
+      setValue('BYPASS_CAPTCHA');
+    };
+    window[callbackName] = function () {
+      delete window[callbackName]
+      callback();
+    };
   } else {
     window[callbackName] = function () {
       delete window[callbackName];
@@ -309,8 +327,12 @@ function handleCaptchaProvider(element, options, challenge) {
           },
           sitekey: challenge.siteKey
         };
+
         if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
           var a0RetryCount = 0;
+          renderParams.language = options.lang;
+          renderParams.theme = 'light';
+          renderParams.retry = 'never';
           renderParams['error-callback'] = function () {
             if (a0RetryCount < MAX_RETRY) {
               setValue();
@@ -320,9 +342,8 @@ function handleCaptchaProvider(element, options, challenge) {
               // similar implementation to ARKOSE_PROVIDER failOpen
               setValue('BYPASS_CAPTCHA');
             }
-          }
-          renderParams.language = options.lang;
-          renderParams.theme = 'light';
+            return true;
+          };
         }
         widgetId = global.render(captchaDiv, renderParams);
         element.setAttribute('data-wid', widgetId);
