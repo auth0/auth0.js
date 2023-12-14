@@ -1,4 +1,4 @@
-name: Create GitHub Release
+name: Create npm and GitHub Release
 
 on:
   workflow_call:
