@@ -1,5 +1,5 @@
-import Authentication from '../authentication';
 // eslint-disable-next-line no-unused-vars
+import Authentication from '../authentication';
 import object from '../helper/object';
 
 var noop = function () {};

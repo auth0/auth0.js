@@ -390,12 +390,10 @@ describe('captcha rendering', function () {
 
         if (provider === AUTH0_V2_CAPTCHA_PROVIDER) {
           it('should remove script and set bypass token after more than 3 errors vvs', function () {
-            console.log(scriptErrorCallback.toString());
             const input = element.querySelector('input[name="captcha"]');
             input.value = '';
             for (let i = 0; i < 4; i++) {
               scriptErrorCallback();
-              console.log(input.value);
             }
             expect(
               [...window.document.querySelectorAll('script')].find(s =>
@@ -989,12 +987,10 @@ describe('passwordless captcha rendering', function () {
 
         if (provider === AUTH0_V2_CAPTCHA_PROVIDER) {
           it('should remove script and set bypass token after more than 3 errors vvs', function () {
-            console.log(scriptErrorCallback.toString());
             const input = element.querySelector('input[name="captcha"]');
             input.value = '';
             for (let i = 0; i < 4; i++) {
               scriptErrorCallback();
-              console.log(input.value);
             }
             expect(
               [...window.document.querySelectorAll('script')].find(s =>
