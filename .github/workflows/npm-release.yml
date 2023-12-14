@@ -6,6 +6,8 @@ on:
       node-version:
         required: true
         type: string
+      require-build:
+        default: true
     secrets:
       github-token:
         required: true
@@ -57,10 +59,11 @@ jobs:
       - if: steps.tag_exists.outputs.exists == 'true'
         run: exit 1
 
-      # Publish the release to our package manager
-      - uses: ./.github/actions/publish-package
+      # Publish the release to npm
+      - uses: ./.github/actions/npm-publish
         with:
           node-version: ${{ inputs.node-version }}
+          require-build: ${{ inputs.require-build }}
           version: ${{ steps.get_version.outputs.version }}
           npm-token: ${{ secrets.npm-token }}
 
