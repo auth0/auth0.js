@@ -1,4 +1,4 @@
-name: Publish release to package manager
+name: Publish release to npm
 
 inputs:
   node-version:
@@ -7,6 +7,8 @@ inputs:
     required: true
   version:
     required: true
+  require-build:
+    default: true
   release-directory:
     default: './'
 
@@ -24,10 +26,15 @@ runs:
         cache: 'npm'
         registry-url: 'https://registry.npmjs.org'
 
+    - name: Install dependencies
+      if: inputs.require-build == 'true'
+      shell: bash
+      run: npm ci --include=dev
+
     - name: Build package
-      uses: ./.github/actions/build
-      with:
-        node: ${{ inputs.node-version }}
+      if: inputs.require-build == 'true'
+      shell: bash
+      run: npm run build
 
     - name: Publish release to NPM
       shell: bash
