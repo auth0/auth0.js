@@ -1,4 +1,4 @@
-name: Return the release notes extracted from the PR body
+name: Return the release notes extracted from the body of the PR associated with the release.
 
 #
 # Returns the release notes from the content of a pull request linked to a release branch. It expects the branch name to be in the format release/vX.Y.Z, release/X.Y.Z, release/vX.Y.Z-beta.N. etc.

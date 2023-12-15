@@ -8,6 +8,10 @@ on:
         type: string
       require-build:
         default: true
+        type: string
+      release-directory:
+        default: './'
+        type: string
     secrets:
       github-token:
         required: true
@@ -64,6 +68,7 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
           require-build: ${{ inputs.require-build }}
+          release-directory: ${{ inputs.release-directory }}
           version: ${{ steps.get_version.outputs.version }}
           npm-token: ${{ secrets.npm-token }}
 
