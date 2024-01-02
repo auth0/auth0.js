@@ -314,7 +314,7 @@ function handleCaptchaProvider(element, options, challenge) {
         };
 
         if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
-          var retryCount = 0;
+          retryCount = 0;
           renderParams.language = options.lang;
           renderParams.theme = 'light';
           renderParams.retry = 'never';
