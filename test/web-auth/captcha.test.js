@@ -299,7 +299,7 @@ describe('captcha rendering', function () {
         if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
           scriptOnLoadCallback = captchaScript.onload;
         }
-        scriptErrorCallback = captchaScript['error-callback'];
+        scriptErrorCallback = captchaScript['onerror'];
       });
 
       afterEach(function () {
@@ -900,7 +900,7 @@ describe('passwordless captcha rendering', function () {
         if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
           scriptOnLoadCallback = captchaScript.onload;
         }
-        scriptErrorCallback = captchaScript['error-callback'];
+        scriptErrorCallback = captchaScript['onerror'];
       });
 
       afterEach(function () {
