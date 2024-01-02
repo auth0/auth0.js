@@ -171,7 +171,10 @@ function injectCaptchaScript(element, opts, callback, setValue) {
     opts.clientSubdomain,
     opts.siteKey
   );
-  if (opts.provider === ARKOSE_PROVIDER) {
+  if (
+    opts.provider === ARKOSE_PROVIDER ||
+    opts.provider === AUTH0_V2_CAPTCHA_PROVIDER
+  ) {
     var retryCount = 0;
     attributes['data-callback'] = callbackName;
     attributes['onerror'] = function () {
@@ -182,29 +185,12 @@ function injectCaptchaScript(element, opts, callback, setValue) {
         return;
       }
       removeScript(scriptSrc);
-      // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
+      // Optimzation to tell auth0 to fail open if Arkose/auth0_v2 is configured to fail open
       setValue('BYPASS_CAPTCHA');
     };
     window[callbackName] = function (arkose) {
       window.arkose = arkose;
       callback(arkose);
-    };
-  } else if (opts.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
-    var a0RetryCount = 0;
-    attributes['error-callback'] = function () {
-      if (a0RetryCount < MAX_RETRY) {
-        removeScript(scriptSrc);
-        loadScript(scriptSrc, attributes);
-        a0RetryCount++;
-        return;
-      }
-      removeScript(scriptSrc);
-      // similar implementation to ARKOSE_PROVIDER failOpen
-      setValue('BYPASS_CAPTCHA');
-    };
-    window[callbackName] = function () {
-      delete window[callbackName]
-      callback();
     };
   } else {
     window[callbackName] = function () {
@@ -328,17 +314,16 @@ function handleCaptchaProvider(element, options, challenge) {
         };
 
         if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
-          var a0RetryCount = 0;
+          var retryCount = 0;
           renderParams.language = options.lang;
           renderParams.theme = 'light';
           renderParams.retry = 'never';
           renderParams['error-callback'] = function () {
-            if (a0RetryCount < MAX_RETRY) {
+            if (retryCount < MAX_RETRY) {
               setValue();
               globalForCaptchaProvider(challenge.provider).reset(widgetId);
-              a0RetryCount++;
+              retryCount++;
             } else {
-              // similar implementation to ARKOSE_PROVIDER failOpen
               setValue('BYPASS_CAPTCHA');
             }
             return true;
