@@ -318,6 +318,7 @@ function handleCaptchaProvider(element, options, challenge) {
           renderParams.language = options.lang;
           renderParams.theme = 'light';
           renderParams.retry = 'never';
+          renderParams['response-field'] = false;
           renderParams['error-callback'] = function () {
             if (retryCount < MAX_RETRY) {
               setValue();
