@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.24.1](https://github.com/auth0/auth0.js/tree/v9.24.1) (2024-01-04)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.24.0...v9.24.1)
+
+**Changed**
+- [IAMRISK-3011] Auth0 V2 Captcha failOpen support [\#1382](https://github.com/auth0/auth0.js/pull/1382) ([alexkoumarianos-okta](https://github.com/alexkoumarianos-okta))
+
 ## [v9.24.0](https://github.com/auth0/auth0.js/tree/v9.24.0) (2023-12-13)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.23.3...v9.24.0)
 
