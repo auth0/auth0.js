@@ -1,10 +1,16 @@
-name: Create GitHub Release
+name: Create npm and GitHub Release
 
 on:
   workflow_call:
     inputs:
       node-version:
         required: true
+        type: string
+      require-build:
+        default: true
+        type: string
+      release-directory:
+        default: './'
         type: string
     secrets:
       github-token:
@@ -57,10 +63,12 @@ jobs:
       - if: steps.tag_exists.outputs.exists == 'true'
         run: exit 1
 
-      # Publish the release to our package manager
-      - uses: ./.github/actions/publish-package
+      # Publish the release to npm
+      - uses: ./.github/actions/npm-publish
         with:
           node-version: ${{ inputs.node-version }}
+          require-build: ${{ inputs.require-build }}
+          release-directory: ${{ inputs.release-directory }}
           version: ${{ steps.get_version.outputs.version }}
           npm-token: ${{ secrets.npm-token }}
 
