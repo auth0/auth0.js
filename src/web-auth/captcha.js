@@ -171,7 +171,10 @@ function injectCaptchaScript(element, opts, callback, setValue) {
     opts.clientSubdomain,
     opts.siteKey
   );
-  if (opts.provider === ARKOSE_PROVIDER) {
+  if (
+    opts.provider === ARKOSE_PROVIDER ||
+    opts.provider === AUTH0_V2_CAPTCHA_PROVIDER
+  ) {
     var retryCount = 0;
     attributes['data-callback'] = callbackName;
     attributes['onerror'] = function () {
@@ -182,7 +185,7 @@ function injectCaptchaScript(element, opts, callback, setValue) {
         return;
       }
       removeScript(scriptSrc);
-      // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
+      // Optimzation to tell auth0 to fail open if Arkose/auth0_v2 is configured to fail open
       setValue('BYPASS_CAPTCHA');
     };
     window[callbackName] = function (arkose) {
@@ -309,9 +312,23 @@ function handleCaptchaProvider(element, options, challenge) {
           },
           sitekey: challenge.siteKey
         };
+
         if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
+          retryCount = 0;
           renderParams.language = options.lang;
           renderParams.theme = 'light';
+          renderParams.retry = 'never';
+          renderParams['response-field'] = false;
+          renderParams['error-callback'] = function () {
+            if (retryCount < MAX_RETRY) {
+              setValue();
+              globalForCaptchaProvider(challenge.provider).reset(widgetId);
+              retryCount++;
+            } else {
+              setValue('BYPASS_CAPTCHA');
+            }
+            return true;
+          };
         }
         widgetId = global.render(captchaDiv, renderParams);
         element.setAttribute('data-wid', widgetId);
