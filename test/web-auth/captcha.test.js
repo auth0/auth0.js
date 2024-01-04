@@ -222,7 +222,7 @@ describe('captcha rendering', function () {
         [HCAPTCHA_PROVIDER]: 'hcaptcha.com',
         [FRIENDLY_CAPTCHA_PROVIDER]: 'jsdelivr.net',
         [AUTH0_V2_CAPTCHA_PROVIDER]: 'cloudflare.com'
-      }
+      };
       return hosts[provider];
     };
     const getSubdomain = () => {
@@ -279,7 +279,7 @@ describe('captcha rendering', function () {
         siteKey: 'blabla sitekey'
       };
 
-      let c, captchaScript, scriptOnLoadCallback, element;
+      let c, captchaScript, scriptOnLoadCallback, scriptErrorCallback, element;
 
       beforeEach(() => {
         const { window } = new JSDOM('<body><div class="captcha" /></body>');
@@ -299,6 +299,7 @@ describe('captcha rendering', function () {
         if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
           scriptOnLoadCallback = captchaScript.onload;
         }
+        scriptErrorCallback = captchaScript['onerror'];
       });
 
       afterEach(function () {
@@ -384,6 +385,34 @@ describe('captcha rendering', function () {
             input.value = 'expired token';
             renderOptions['expired-callback']();
             expect(input.value).to.equal('');
+          });
+        }
+
+        if (provider === AUTH0_V2_CAPTCHA_PROVIDER) {
+          it('should remove script and set bypass token after more than 3 errors', function () {
+            const input = element.querySelector('input[name="captcha"]');
+            input.value = '';
+            for (let i = 0; i < 4; i++) {
+              scriptErrorCallback();
+            }
+            expect(
+              [...window.document.querySelectorAll('script')].find(s =>
+                s.src.match('cloudflare')
+              )
+            ).to.equal(undefined);
+            expect(input.value).to.equal('BYPASS_CAPTCHA');
+          });
+
+          it('should clear token on error before until the third attempt and set bypass token after more than 3 errors', function () {
+            const input = element.querySelector('input[name="captcha"]');
+            input.value = 'token';
+            for (let i = 0; i < 3; i++) {
+              renderOptions['error-callback']();
+              expect(input.value).to.equal('');
+            }
+            const finalRetry = renderOptions['error-callback']();
+            expect(finalRetry).to.equal(true);
+            expect(input.value).to.equal('BYPASS_CAPTCHA');
           });
         }
 
@@ -792,7 +821,7 @@ describe('passwordless captcha rendering', function () {
         [HCAPTCHA_PROVIDER]: 'hcaptcha.com',
         [FRIENDLY_CAPTCHA_PROVIDER]: 'jsdelivr.net',
         [AUTH0_V2_CAPTCHA_PROVIDER]: 'cloudflare.com'
-      }
+      };
       return hosts[provider];
     };
     const getSubdomain = () => {
@@ -849,7 +878,7 @@ describe('passwordless captcha rendering', function () {
         siteKey: 'blabla sitekey'
       };
 
-      let c, captchaScript, scriptOnLoadCallback, element;
+      let c, captchaScript, scriptOnLoadCallback, scriptErrorCallback, element;
 
       beforeEach(() => {
         const { window } = new JSDOM('<body><div class="captcha" /></body>');
@@ -871,6 +900,7 @@ describe('passwordless captcha rendering', function () {
         if (provider === FRIENDLY_CAPTCHA_PROVIDER) {
           scriptOnLoadCallback = captchaScript.onload;
         }
+        scriptErrorCallback = captchaScript['onerror'];
       });
 
       afterEach(function () {
@@ -966,6 +996,36 @@ describe('passwordless captcha rendering', function () {
           expect(input.value).to.equal('');
           expect(resetted).to.be.ok();
         });
+
+        if (provider === AUTH0_V2_CAPTCHA_PROVIDER) {
+          it('should remove script and set bypass token after more than 3 errors', function () {
+            const input = element.querySelector('input[name="captcha"]');
+            input.value = '';
+            for (let i = 0; i < 4; i++) {
+              scriptErrorCallback();
+            }
+
+            expect(
+              [...window.document.querySelectorAll('script')].find(s =>
+                s.src.match('cloudflare')
+              )
+            ).to.equal(undefined);
+            expect(input.value).to.equal('BYPASS_CAPTCHA');
+          });
+
+                    
+          it('should clear token on error before until the third attempt and set bypass token after more than 3 errors', function () {
+            const input = element.querySelector('input[name="captcha"]');
+            input.value = 'token';
+            for (let i = 0; i < 3; i++) {
+              renderOptions['error-callback']();
+              expect(input.value).to.equal('');
+            }
+            const finalRetry = renderOptions['error-callback']();
+            expect(finalRetry).to.equal(true);
+            expect(input.value).to.equal('BYPASS_CAPTCHA');
+          });
+        }
 
         it('should clean the value when there is an error', function () {
           const input = element.querySelector('input[name="captcha"]');
