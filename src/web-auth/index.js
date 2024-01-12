@@ -824,10 +824,11 @@ WebAuth.prototype.signup = function (options, cb) {
  * @param {String} [options.organization] the id or name of an organization to log in to
  * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
  * @param {Object} [options.appState] any values that you want back on the authentication response
+ * @param {Function} cb callback to fire before redirecting the user
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  * @memberof WebAuth.prototype
  */
-WebAuth.prototype.authorize = function (options) {
+WebAuth.prototype.authorize = function (options, cb) {
   var params = objectHelper
     .merge(this.baseOptions, [
       'clientID',
@@ -859,6 +860,7 @@ WebAuth.prototype.authorize = function (options) {
   params = this.transactionManager.process(params);
   params.scope = params.scope || 'openid profile email';
 
+  cb?.();
   windowHelper.redirect(this.client.buildAuthorizeUrl(params));
 };
 
