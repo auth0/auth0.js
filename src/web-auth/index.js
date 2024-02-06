@@ -400,10 +400,10 @@ WebAuth.prototype.validateAuthenticationResponse = function (
               return callback(
                 error.invalidToken(
                   'Organization Id (org_id) claim value mismatch in the ID token; expected "' +
-                    transactionOrganization +
-                    '", found "' +
-                    payload.org_id +
-                    '"'
+                  transactionOrganization +
+                  '", found "' +
+                  payload.org_id +
+                  '"'
                 )
               );
             }
@@ -420,10 +420,10 @@ WebAuth.prototype.validateAuthenticationResponse = function (
               return callback(
                 error.invalidToken(
                   'Organization Name (org_name) claim value mismatch in the ID token; expected "' +
-                    transactionOrganization +
-                    '", found "' +
-                    payload.org_name +
-                    '"'
+                  transactionOrganization +
+                  '", found "' +
+                  payload.org_name +
+                  '"'
                 )
               );
             }
@@ -944,8 +944,9 @@ WebAuth.prototype.login = function (options, cb) {
 
   params = this.transactionManager.process(params);
 
+  optionsDomainWithoutProtocol = this.baseOptions.domain.replace("https://", "")
   var isHostedLoginPage =
-    windowHelper.getWindow().location.host === this.baseOptions.domain;
+    windowHelper.getWindow().location.host === optionsDomainWithoutProtocol;
 
   if (isHostedLoginPage) {
     params.connection = params.realm;
