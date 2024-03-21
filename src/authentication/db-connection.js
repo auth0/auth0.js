@@ -33,6 +33,7 @@ function DBConnection(request, options) {
  * @param {String} [options.picture] A URI pointing to the user's picture.
  * @param {String} options.connection name of the connection where the user will be created
  * @param {Object} [options.user_metadata] additional signup attributes used for creating the user. Will be stored in `user_metadata`
+ * @param {String} [options.captcha] the attempted solution for the captcha, if one was presented
  * @param {signUpCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
  * @ignore
