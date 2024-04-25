@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.25.0](https://github.com/auth0/auth0.js/tree/v9.25.0) (2024-04-25)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.24.1...v9.25.0)
+
+**Added**
+- Add APIs to get captcha challenge for reset password [\#1426](https://github.com/auth0/auth0.js/pull/1426) ([srijonsaha](https://github.com/srijonsaha))
+
 ## [v9.24.1](https://github.com/auth0/auth0.js/tree/v9.24.1) (2024-01-04)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.24.0...v9.24.1)
 

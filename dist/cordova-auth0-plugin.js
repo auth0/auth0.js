@@ -1,5 +1,5 @@
 /**
- * auth0-js v9.24.1
+ * auth0-js v9.25.0
  * Author: Auth0
  * Date: 2024-04-25
  * License: MIT
@@ -11,7 +11,7 @@
   (global = global || self, global.CordovaAuth0Plugin = factory());
 }(this, (function () { 'use strict';
 
-  var version = { raw: '9.24.1' };
+  var version = { raw: '9.25.0' };
 
   var toString = Object.prototype.toString;
 
@@ -504,88 +504,46 @@
   	return shams();
   };
 
-  var test = {
-  	foo: {}
-  };
-
-  var $Object = Object;
-
-  var hasProto = function hasProto() {
-  	return { __proto__: test }.foo === test.foo && !({ __proto__: null } instanceof $Object);
-  };
-
   /* eslint no-invalid-this: 1 */
 
   var ERROR_MESSAGE = 'Function.prototype.bind called on incompatible ';
+  var slice = Array.prototype.slice;
   var toStr = Object.prototype.toString;
-  var max = Math.max;
   var funcType = '[object Function]';
-
-  var concatty = function concatty(a, b) {
-      var arr = [];
-
-      for (var i = 0; i < a.length; i += 1) {
-          arr[i] = a[i];
-      }
-      for (var j = 0; j < b.length; j += 1) {
-          arr[j + a.length] = b[j];
-      }
-
-      return arr;
-  };
-
-  var slicy = function slicy(arrLike, offset) {
-      var arr = [];
-      for (var i = offset || 0, j = 0; i < arrLike.length; i += 1, j += 1) {
-          arr[j] = arrLike[i];
-      }
-      return arr;
-  };
-
-  var joiny = function (arr, joiner) {
-      var str = '';
-      for (var i = 0; i < arr.length; i += 1) {
-          str += arr[i];
-          if (i + 1 < arr.length) {
-              str += joiner;
-          }
-      }
-      return str;
-  };
 
   var implementation = function bind(that) {
       var target = this;
-      if (typeof target !== 'function' || toStr.apply(target) !== funcType) {
+      if (typeof target !== 'function' || toStr.call(target) !== funcType) {
           throw new TypeError(ERROR_MESSAGE + target);
       }
-      var args = slicy(arguments, 1);
+      var args = slice.call(arguments, 1);
 
       var bound;
       var binder = function () {
           if (this instanceof bound) {
               var result = target.apply(
                   this,
-                  concatty(args, arguments)
+                  args.concat(slice.call(arguments))
               );
               if (Object(result) === result) {
                   return result;
               }
               return this;
+          } else {
+              return target.apply(
+                  that,
+                  args.concat(slice.call(arguments))
+              );
           }
-          return target.apply(
-              that,
-              concatty(args, arguments)
-          );
-
       };
 
-      var boundLength = max(0, target.length - args.length);
+      var boundLength = Math.max(0, target.length - args.length);
       var boundArgs = [];
       for (var i = 0; i < boundLength; i++) {
-          boundArgs[i] = '$' + i;
+          boundArgs.push('$' + i);
       }
 
-      bound = Function('binder', 'return function (' + joiny(boundArgs, ',') + '){ return binder.apply(this,arguments); }')(binder);
+      bound = Function('binder', 'return function (' + boundArgs.join(',') + '){ return binder.apply(this,arguments); }')(binder);
 
       if (target.prototype) {
           var Empty = function Empty() {};
@@ -644,23 +602,18 @@
   	: throwTypeError;
 
   var hasSymbols$1 = hasSymbols();
-  var hasProto$1 = hasProto();
 
-  var getProto = Object.getPrototypeOf || (
-  	hasProto$1
-  		? function (x) { return x.__proto__; } // eslint-disable-line no-proto
-  		: null
-  );
+  var getProto = Object.getPrototypeOf || function (x) { return x.__proto__; }; // eslint-disable-line no-proto
 
   var needsEval = {};
 
-  var TypedArray = typeof Uint8Array === 'undefined' || !getProto ? undefined$1 : getProto(Uint8Array);
+  var TypedArray = typeof Uint8Array === 'undefined' ? undefined$1 : getProto(Uint8Array);
 
   var INTRINSICS = {
   	'%AggregateError%': typeof AggregateError === 'undefined' ? undefined$1 : AggregateError,
   	'%Array%': Array,
   	'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined$1 : ArrayBuffer,
-  	'%ArrayIteratorPrototype%': hasSymbols$1 && getProto ? getProto([][Symbol.iterator]()) : undefined$1,
+  	'%ArrayIteratorPrototype%': hasSymbols$1 ? getProto([][Symbol.iterator]()) : undefined$1,
   	'%AsyncFromSyncIteratorPrototype%': undefined$1,
   	'%AsyncFunction%': needsEval,
   	'%AsyncGenerator%': needsEval,
@@ -690,10 +643,10 @@
   	'%Int32Array%': typeof Int32Array === 'undefined' ? undefined$1 : Int32Array,
   	'%isFinite%': isFinite,
   	'%isNaN%': isNaN,
-  	'%IteratorPrototype%': hasSymbols$1 && getProto ? getProto(getProto([][Symbol.iterator]())) : undefined$1,
+  	'%IteratorPrototype%': hasSymbols$1 ? getProto(getProto([][Symbol.iterator]())) : undefined$1,
   	'%JSON%': typeof JSON === 'object' ? JSON : undefined$1,
   	'%Map%': typeof Map === 'undefined' ? undefined$1 : Map,
-  	'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols$1 || !getProto ? undefined$1 : getProto(new Map()[Symbol.iterator]()),
+  	'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols$1 ? undefined$1 : getProto(new Map()[Symbol.iterator]()),
   	'%Math%': Math,
   	'%Number%': Number,
   	'%Object%': Object,
@@ -706,10 +659,10 @@
   	'%Reflect%': typeof Reflect === 'undefined' ? undefined$1 : Reflect,
   	'%RegExp%': RegExp,
   	'%Set%': typeof Set === 'undefined' ? undefined$1 : Set,
-  	'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols$1 || !getProto ? undefined$1 : getProto(new Set()[Symbol.iterator]()),
+  	'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols$1 ? undefined$1 : getProto(new Set()[Symbol.iterator]()),
   	'%SharedArrayBuffer%': typeof SharedArrayBuffer === 'undefined' ? undefined$1 : SharedArrayBuffer,
   	'%String%': String,
-  	'%StringIteratorPrototype%': hasSymbols$1 && getProto ? getProto(''[Symbol.iterator]()) : undefined$1,
+  	'%StringIteratorPrototype%': hasSymbols$1 ? getProto(''[Symbol.iterator]()) : undefined$1,
   	'%Symbol%': hasSymbols$1 ? Symbol : undefined$1,
   	'%SyntaxError%': $SyntaxError,
   	'%ThrowTypeError%': ThrowTypeError,
@@ -725,14 +678,12 @@
   	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined$1 : WeakSet
   };
 
-  if (getProto) {
-  	try {
-  		null.error; // eslint-disable-line no-unused-expressions
-  	} catch (e) {
-  		// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
-  		var errorProto = getProto(getProto(e));
-  		INTRINSICS['%Error.prototype%'] = errorProto;
-  	}
+  try {
+  	null.error; // eslint-disable-line no-unused-expressions
+  } catch (e) {
+  	// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
+  	var errorProto = getProto(getProto(e));
+  	INTRINSICS['%Error.prototype%'] = errorProto;
   }
 
   var doEval = function doEval(name) {
@@ -750,7 +701,7 @@
   		}
   	} else if (name === '%AsyncIteratorPrototype%') {
   		var gen = doEval('%AsyncGenerator%');
-  		if (gen && getProto) {
+  		if (gen) {
   			value = getProto(gen.prototype);
   		}
   	}
@@ -1943,6 +1894,7 @@
   };
 
   var isArray$3 = Array.isArray;
+  var split = String.prototype.split;
   var push = Array.prototype.push;
   var pushToArray = function (arr, valueOrArray) {
       push.apply(arr, isArray$3(valueOrArray) ? valueOrArray : [valueOrArray]);
@@ -2044,6 +1996,14 @@
       if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
           if (encoder) {
               var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, 'key', format);
+              if (generateArrayPrefix === 'comma' && encodeValuesOnly) {
+                  var valuesArray = split.call(String(obj), ',');
+                  var valuesJoined = '';
+                  for (var i = 0; i < valuesArray.length; ++i) {
+                      valuesJoined += (i === 0 ? '' : ',') + formatter(encoder(valuesArray[i], defaults.encoder, charset, 'value', format));
+                  }
+                  return [formatter(keyValue) + (commaRoundTrip && isArray$3(obj) && valuesArray.length === 1 ? '[]' : '') + '=' + valuesJoined];
+              }
               return [formatter(keyValue) + '=' + formatter(encoder(obj, defaults.encoder, charset, 'value', format))];
           }
           return [formatter(prefix) + '=' + formatter(String(obj))];
@@ -2058,9 +2018,6 @@
       var objKeys;
       if (generateArrayPrefix === 'comma' && isArray$3(obj)) {
           // we need to join elements in
-          if (encodeValuesOnly && encoder) {
-              obj = utils.maybeMap(obj, encoder);
-          }
           objKeys = [{ value: obj.length > 0 ? obj.join(',') || null : void undefined }];
       } else if (isArray$3(filter)) {
           objKeys = filter;
@@ -2093,7 +2050,7 @@
               commaRoundTrip,
               strictNullHandling,
               skipNulls,
-              generateArrayPrefix === 'comma' && encodeValuesOnly && isArray$3(obj) ? null : encoder,
+              encoder,
               filter,
               sort,
               allowDots,
@@ -2290,8 +2247,7 @@
   var charsetSentinel = 'utf8=%E2%9C%93'; // encodeURIComponent('✓')
 
   var parseValues = function parseQueryStringValues(str, options) {
-      var obj = { __proto__: null };
-
+      var obj = {};
       var cleanStr = options.ignoreQueryPrefix ? str.replace(/^\?/, '') : str;
       var limit = options.parameterLimit === Infinity ? undefined : options.parameterLimit;
       var parts = cleanStr.split(options.delimiter, limit);
