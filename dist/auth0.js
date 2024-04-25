@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.24.1
  * Author: Auth0
- * Date: 2024-01-04
+ * Date: 2024-04-25
  * License: MIT
  */
 
@@ -9528,7 +9528,7 @@
 	 * @see   {@link https://auth0.com/docs/api/authentication#signup}
 	 * @ignore
 	 */
-	DBConnection.prototype.signup = function(options, cb) {
+	DBConnection.prototype.signup = function (options, cb) {
 	  var url;
 	  var body;
 	  var metadata;
@@ -9587,7 +9587,7 @@
 	 * @see   {@link https://auth0.com/docs/api/authentication#change-password}
 	 * @ignore
 	 */
-	DBConnection.prototype.changePassword = function(options, cb) {
+	DBConnection.prototype.changePassword = function (options, cb) {
 	  var url;
 	  var body;
 
@@ -9604,8 +9604,8 @@
 	  url = urlJoin(this.baseOptions.rootUrl, 'dbconnections', 'change_password');
 
 	  body = objectHelper
-	    .merge(this.baseOptions, ['clientID'])
-	    .with(options, ['email', 'connection']);
+	    .merge(this.baseOptions, ['clientID', 'state'])
+	    .with(options, ['email', 'connection', 'captcha']);
 
 	  body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
@@ -9613,6 +9613,21 @@
 	    .post(url)
 	    .send(body)
 	    .end(wrapCallback(cb));
+	};
+
+	DBConnection.prototype.getChallenge = function (cb) {
+	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+	  if (!this.baseOptions.state) {
+	    return cb();
+	  }
+
+	  var url = urlJoin(this.baseOptions.rootUrl, 'dbconnections', 'challenge');
+
+	  return this.request
+	    .post(url)
+	    .send({ state: this.baseOptions.state })
+	    .end(wrapCallback(cb, { ignoreCasing: true }));
 	};
 
 	/**
