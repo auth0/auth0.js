@@ -124,14 +124,14 @@ DBConnection.prototype.changePassword = function (options, cb) {
     .end(responseHandler(cb));
 };
 
-DBConnection.prototype.getChallenge = function (cb) {
+DBConnection.prototype.getChangePasswordChallenge = function (cb) {
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   if (!this.baseOptions.state) {
     return cb();
   }
 
-  var url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'challenge');
+  var url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'change_password', 'challenge');
 
   return this.request
     .post(url)
