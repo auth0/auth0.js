@@ -7958,18 +7958,10 @@
 	 * @ignore
 	 */
 	function render(auth0Client, flow, element, options, callback) {
-	  var getChallengeFunc;
-	  if (flow === Flow.PASSWORDLESS) {
-	    getChallengeFunc = auth0Client.passwordless.getChallenge;
-	  } else if (flow === Flow.PASSWORD_RESET) {
-	    getChallengeFunc = auth0Client.dbConnection.getChangePasswordChallenge;
-	  } else {
-	    getChallengeFunc = auth0Client.getChallenge;
-	  }
 	  options = objectHelper.merge(defaults$2).with(options || {});
 	  function load(done) {
 	    done = done || noop;
-	    getChallengeFunc(function (err, challenge) {
+	    function challengeCallback(err, challenge) {
 	      if (err) {
 	        element.innerHTML = options.templates.error(err);
 	        return done(err);
@@ -8002,7 +7994,14 @@
 	      } else {
 	        done();
 	      }
-	    });
+	    }
+	    if (flow === Flow.PASSWORDLESS) {
+	      auth0Client.passwordless.getChallenge(challengeCallback);
+	    } else if (flow === Flow.PASSWORD_RESET) {
+	      auth0Client.dbConnection.getChangePasswordChallenge(challengeCallback);
+	    } else {
+	      auth0Client.getChallenge(challengeCallback);
+	    }
 	  }
 
 	  function getValue() {
