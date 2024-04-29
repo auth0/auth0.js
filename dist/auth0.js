@@ -8022,7 +8022,7 @@
 	}
 
 
-	var captcha = { render, Flow };
+	var captcha = { render: render, Flow: Flow };
 
 	function defaultClock() {
 	  return new Date();

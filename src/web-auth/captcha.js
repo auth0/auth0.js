@@ -430,4 +430,4 @@ function render(auth0Client, flow, element, options, callback) {
 }
 
 
-export default { render, Flow };
+export default { render: render, Flow: Flow };
