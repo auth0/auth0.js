@@ -124,7 +124,7 @@ DBConnection.prototype.changePassword = function (options, cb) {
     .end(responseHandler(cb));
 };
 
-DBConnection.prototype.getChangePasswordChallenge = function (cb) {
+DBConnection.prototype.getPasswordResetChallenge = function (cb) {
   assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
   if (!this.baseOptions.state) {

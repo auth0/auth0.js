@@ -1181,7 +1181,7 @@ describe('password reset captcha rendering', function () {
 
     beforeEach(function () {
       const mockClient = {
-        dbConnection: { getChangePasswordChallenge: cb => cb(null, { required: false }) }
+        dbConnection: { getPasswordResetChallenge: cb => cb(null, { required: false }) }
       };
       c = captcha.render(mockClient, captcha.Flow.PASSWORD_RESET, element);
     });
@@ -1206,7 +1206,7 @@ describe('password reset captcha rendering', function () {
 
     beforeEach(function () {
       const mockClient = {
-        dbConnection: { getChangePasswordChallenge: cb => cb(new Error('network error')) }
+        dbConnection: { getPasswordResetChallenge: cb => cb(new Error('network error')) }
       };
       captcha.render(mockClient, captcha.Flow.PASSWORD_RESET, element, {}, callbackStub);
     });
@@ -1253,7 +1253,7 @@ describe('password reset captcha rendering', function () {
       const mockClient = {
         challengeIndex: 0,
         dbConnection: {
-          getChangePasswordChallenge: cb => {
+          getPasswordResetChallenge: cb => {
             cb(null, challenges[mockClient.challengeIndex++]);
           }
         }
@@ -1337,7 +1337,7 @@ describe('password reset captcha rendering', function () {
       const mockClient = {
         challengeIndex: 0,
         dbConnection: {
-          getChangePasswordChallenge: cb => {
+          getPasswordResetChallenge: cb => {
             cb(null, challenges[mockClient.challengeIndex++]);
           }
         }
@@ -1460,7 +1460,7 @@ describe('password reset captcha rendering', function () {
         global.window = window;
         const mockClient = {
           dbConnection: {
-            getChangePasswordChallenge: cb => {
+            getPasswordResetChallenge: cb => {
               cb(null, challenge);
             }
           }
@@ -1636,7 +1636,7 @@ describe('password reset captcha rendering', function () {
       global.window = window;
       const mockClient = {
         dbConnection: {
-          getChangePasswordChallenge(cb) {
+          getPasswordResetChallenge(cb) {
             cb(null, challenge);
           }
         }

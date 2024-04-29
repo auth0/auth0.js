@@ -7998,7 +7998,7 @@
 	    if (flow === Flow.PASSWORDLESS) {
 	      auth0Client.passwordless.getChallenge(challengeCallback);
 	    } else if (flow === Flow.PASSWORD_RESET) {
-	      auth0Client.dbConnection.getChangePasswordChallenge(challengeCallback);
+	      auth0Client.dbConnection.getPasswordResetChallenge(challengeCallback);
 	    } else {
 	      auth0Client.getChallenge(challengeCallback);
 	    }
@@ -9583,7 +9583,7 @@
 	    .end(wrapCallback(cb));
 	};
 
-	DBConnection.prototype.getChangePasswordChallenge = function (cb) {
+	DBConnection.prototype.getPasswordResetChallenge = function (cb) {
 	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
 
 	  if (!this.baseOptions.state) {
