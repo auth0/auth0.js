@@ -37,7 +37,7 @@ function DBConnection(request, options) {
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
  * @ignore
  */
-DBConnection.prototype.signup = function(options, cb) {
+DBConnection.prototype.signup = function (options, cb) {
   var url;
   var body;
   var metadata;
@@ -96,7 +96,7 @@ DBConnection.prototype.signup = function(options, cb) {
  * @see   {@link https://auth0.com/docs/api/authentication#change-password}
  * @ignore
  */
-DBConnection.prototype.changePassword = function(options, cb) {
+DBConnection.prototype.changePassword = function (options, cb) {
   var url;
   var body;
 
@@ -113,8 +113,8 @@ DBConnection.prototype.changePassword = function(options, cb) {
   url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'change_password');
 
   body = objectHelper
-    .merge(this.baseOptions, ['clientID'])
-    .with(options, ['email', 'connection']);
+    .merge(this.baseOptions, ['clientID', 'state'])
+    .with(options, ['email', 'connection', 'captcha']);
 
   body = objectHelper.toSnakeCase(body, ['auth0Client']);
 
@@ -122,6 +122,21 @@ DBConnection.prototype.changePassword = function(options, cb) {
     .post(url)
     .send(body)
     .end(responseHandler(cb));
+};
+
+DBConnection.prototype.getChallenge = function (cb) {
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  if (!this.baseOptions.state) {
+    return cb();
+  }
+
+  var url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'challenge');
+
+  return this.request
+    .post(url)
+    .send({ state: this.baseOptions.state })
+    .end(responseHandler(cb, { ignoreCasing: true }));
 };
 
 export default DBConnection;
