@@ -2,8 +2,14 @@
 import Authentication from '../authentication';
 import object from '../helper/object';
 
-var noop = function () {};
+var noop = function () { };
 var captchaSolved = noop;
+
+var Flow = {
+  DEFAULT: 'default',
+  PASSWORDLESS: 'passwordless',
+  PASSWORD_RESET: 'password_reset'
+};
 
 var RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
 var RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
@@ -340,10 +346,11 @@ function handleCaptchaProvider(element, options, challenge) {
 
 /**
  *
- * Renders the captcha challenge in the provided element.
+ * Renders the captcha challenge in the provided element based on the flow.
  *
  * @param {Authentication} auth0Client The challenge response from the authentication server
  * @param {HTMLElement} element The element where the captcha needs to be rendered
+ * @param {Flow} flow The flow for which the captcha needs to be rendered
  * @param {Object} options The configuration options for the captcha
  * @param {Object} [options.templates] An object containing templates for each captcha provider
  * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
@@ -358,11 +365,11 @@ function handleCaptchaProvider(element, options, challenge) {
  * @param {Function} [callback] An optional callback called after captcha is loaded
  * @ignore
  */
-function render(auth0Client, element, options, callback) {
+function render(auth0Client, flow, element, options, callback) {
   options = object.merge(defaults).with(options || {});
   function load(done) {
     done = done || noop;
-    auth0Client.getChallenge(function (err, challenge) {
+    function challengeCallback(err, challenge) {
       if (err) {
         element.innerHTML = options.templates.error(err);
         return done(err);
@@ -395,7 +402,14 @@ function render(auth0Client, element, options, callback) {
       } else {
         done();
       }
-    });
+    }
+    if (flow === Flow.PASSWORDLESS) {
+      auth0Client.passwordless.getChallenge(challengeCallback);
+    } else if (flow === Flow.PASSWORD_RESET) {
+      auth0Client.dbConnection.getPasswordResetChallenge(challengeCallback);
+    } else {
+      auth0Client.getChallenge(challengeCallback);
+    }
   }
 
   function getValue() {
@@ -414,80 +428,5 @@ function render(auth0Client, element, options, callback) {
   };
 }
 
-/**
- *
- * Renders the passwordless captcha challenge in the provided element.
- *
- * @param {Authentication} auth0Client The challenge response from the authentication server
- * @param {HTMLElement} element The element where the captcha needs to be rendered
- * @param {Object} options The configuration options for the captcha
- * @param {Object} [options.templates] An object containing templates for each captcha provider
- * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
- * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
- * @param {String} [options.lang=en] the ISO code of the language for recaptcha
- * @param {Function} [callback] An optional callback called after captcha is loaded
- * @ignore
- */
-function renderPasswordless(auth0Client, element, options, callback) {
-  options = object.merge(defaults).with(options || {});
-  function load(done) {
-    done = done || noop;
-    auth0Client.passwordless.getChallenge(function (err, challenge) {
-      if (err) {
-        element.innerHTML = options.templates.error(err);
-        return done(err);
-      }
-      if (!challenge.required) {
-        element.style.display = 'none';
-        element.innerHTML = '';
-        return;
-      }
-      element.style.display = '';
-      if (challenge.provider === AUTH0_PROVIDER) {
-        handleAuth0Provider(element, options, challenge, load);
-      } else if (
-        challenge.provider === RECAPTCHA_V2_PROVIDER ||
-        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
-        challenge.provider === HCAPTCHA_PROVIDER ||
-        challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
-        challenge.provider === ARKOSE_PROVIDER ||
-        challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER
-      ) {
-        handleCaptchaProvider(element, options, challenge);
-      }
-      if (challenge.provider === ARKOSE_PROVIDER) {
-        done(null, {
-          triggerCaptcha: function (solvedCallback) {
-            globalForCaptchaProvider(challenge.provider).run();
-            captchaSolved = solvedCallback;
-          }
-        });
-      } else {
-        done();
-      }
-    });
-  }
 
-  function getValue() {
-    var captchaInput = element.querySelector('input[name="captcha"]');
-    if (!captchaInput) {
-      return;
-    }
-    return captchaInput.value;
-  }
-
-  load(callback);
-
-  return {
-    reload: load,
-    getValue: getValue
-  };
-}
-
-export default { render: render, renderPasswordless: renderPasswordless };
+export default { render: render, Flow: Flow };

@@ -230,7 +230,7 @@ describe('auth0.authentication', function () {
     });
   });
 
-  context('dbConnection getChallenge', function () {
+  context('dbConnection getPasswordResetChallenge', function () {
     context('when the client does not have state', function () {
       before(function () {
         this.auth0 = new Authentication(this.webAuthSpy, {
@@ -243,7 +243,7 @@ describe('auth0.authentication', function () {
       });
 
       it('should return nothing', function (done) {
-        this.auth0.dbConnection.getChallenge((err, challenge) => {
+        this.auth0.dbConnection.getPasswordResetChallenge((err, challenge) => {
           expect(err).to.not.be.ok();
           expect(challenge).to.not.be.ok();
           done();
@@ -269,7 +269,7 @@ describe('auth0.authentication', function () {
 
       it('should post state and returns the image/type', function (done) {
         sinon.stub(request, 'post').callsFake(function (url) {
-          expect(url).to.be('https://me.auth0.com/dbconnections/challenge');
+          expect(url).to.be('https://me.auth0.com/dbconnections/change_password/challenge');
           return new RequestMock({
             body: {
               state: '123abc'
@@ -288,7 +288,7 @@ describe('auth0.authentication', function () {
           });
         });
 
-        this.auth0.dbConnection.getChallenge((err, challenge) => {
+        this.auth0.dbConnection.getPasswordResetChallenge((err, challenge) => {
           expect(err).to.not.be.ok();
           expect(challenge.image).to.be('svg+yadayada');
           expect(challenge.type).to.be('code');
@@ -298,7 +298,7 @@ describe('auth0.authentication', function () {
 
       it('should return the error if network fails', function (done) {
         sinon.stub(request, 'post').callsFake(function (url) {
-          expect(url).to.be('https://me.auth0.com/dbconnections/challenge');
+          expect(url).to.be('https://me.auth0.com/dbconnections/change_password/challenge');
           return new RequestMock({
             body: {
               state: '123abc'
@@ -312,7 +312,7 @@ describe('auth0.authentication', function () {
           });
         });
 
-        this.auth0.dbConnection.getChallenge((err, challenge) => {
+        this.auth0.dbConnection.getPasswordResetChallenge((err, challenge) => {
           expect(err.original.message).to.equal('error error error');
           done();
         });
