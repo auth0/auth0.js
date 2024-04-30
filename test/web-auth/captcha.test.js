@@ -488,7 +488,6 @@ describe('captcha rendering', function () {
         `/${'v2'}/${challenge.siteKey}/${'api.js'}`
       );
       expect(arkoseCallback).to.be.a('function');
-      expect(triggerCaptcha).to.be.a('function');
     });
 
     it('should reinject the captcha script on error', function () {
@@ -534,12 +533,15 @@ describe('captcha rendering', function () {
         runSpy = sinon.spy(arkose, 'run');
         resetSpy = sinon.spy(arkose, 'reset');
         arkoseCallback(arkose);
+        configOptions.onReady();
       });
 
       it('should setup captcha config', function () {
         expect(setConfigSpy.calledOnce).to.be.ok();
+        expect(configOptions).to.have.property('onReady');
         expect(configOptions).to.have.property('onCompleted');
         expect(configOptions).to.have.property('onError');
+        expect(triggerCaptcha).to.be.a('function');
       });
 
       it('should set the value on the input when the user completes the captcha', function () {
@@ -1091,7 +1093,6 @@ describe('passwordless captcha rendering', function () {
         `/${'v2'}/${challenge.siteKey}/${'api.js'}`
       );
       expect(arkoseCallback).to.be.a('function');
-      expect(triggerCaptcha).to.be.a('function');
     });
 
     describe('after captcha is loaded', function () {
@@ -1108,12 +1109,15 @@ describe('passwordless captcha rendering', function () {
         runSpy = sinon.spy(arkose, 'run');
         resetSpy = sinon.spy(arkose, 'reset');
         arkoseCallback(arkose);
+        configOptions.onReady();
       });
 
       it('should setup captcha config', function () {
         expect(setConfigSpy.calledOnce).to.be.ok();
+        expect(configOptions).to.have.property('onReady');
         expect(configOptions).to.have.property('onCompleted');
         expect(configOptions).to.have.property('onError');
+        expect(triggerCaptcha).to.be.a('function');
       });
 
       it('should set the value on the input when the user completes the captcha', function () {
@@ -1665,7 +1669,6 @@ describe('password reset captcha rendering', function () {
         `/${'v2'}/${challenge.siteKey}/${'api.js'}`
       );
       expect(arkoseCallback).to.be.a('function');
-      expect(triggerCaptcha).to.be.a('function');
     });
 
     describe('after captcha is loaded', function () {
@@ -1682,12 +1685,15 @@ describe('password reset captcha rendering', function () {
         runSpy = sinon.spy(arkose, 'run');
         resetSpy = sinon.spy(arkose, 'reset');
         arkoseCallback(arkose);
+        configOptions.onReady();
       });
 
       it('should setup captcha config', function () {
         expect(setConfigSpy.calledOnce).to.be.ok();
+        expect(configOptions).to.have.property('onReady');
         expect(configOptions).to.have.property('onCompleted');
         expect(configOptions).to.have.property('onError');
+        expect(triggerCaptcha).to.be.a('function');
       });
 
       it('should set the value on the input when the user completes the captcha', function () {

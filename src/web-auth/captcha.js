@@ -90,7 +90,6 @@ function globalForCaptchaProvider(provider) {
       return window.arkose;
     case AUTH0_V2_CAPTCHA_PROVIDER:
       return window.turnstile;
-    /* istanbul ignore next */
     default:
       throw new Error('Unknown captcha provider');
   }
@@ -210,7 +209,7 @@ function injectCaptchaScript(element, opts, callback, setValue) {
   loadScript(scriptSrc, attributes);
 }
 
-function handleCaptchaProvider(element, options, challenge) {
+function handleCaptchaProvider(element, options, challenge, done) {
   var widgetId =
     element.hasAttribute('data-wid') && element.getAttribute('data-wid');
 
@@ -276,7 +275,19 @@ function handleCaptchaProvider(element, options, challenge) {
       var global = globalForCaptchaProvider(challenge.provider);
       if (challenge.provider === ARKOSE_PROVIDER) {
         var retryCount = 0;
+        var arkoseLoaded = false;
         arkose.setConfig({
+          onReady: function () {
+            if (!arkoseLoaded) {
+              done(null, {
+                triggerCaptcha: function (solvedCallback) {
+                  arkose.run();
+                  captchaSolved = solvedCallback;
+                }
+              });
+              arkoseLoaded = true;
+            }
+          },
           onCompleted: function (response) {
             setValue(response.token);
             captchaSolved();
@@ -307,6 +318,7 @@ function handleCaptchaProvider(element, options, challenge) {
             setValue();
           }
         });
+        done();
       } else {
         var renderParams = {
           callback: setValue,
@@ -338,6 +350,7 @@ function handleCaptchaProvider(element, options, challenge) {
         }
         widgetId = global.render(captchaDiv, renderParams);
         element.setAttribute('data-wid', widgetId);
+        done();
       }
     },
     setValue
@@ -382,6 +395,7 @@ function render(auth0Client, flow, element, options, callback) {
       element.style.display = '';
       if (challenge.provider === AUTH0_PROVIDER) {
         handleAuth0Provider(element, options, challenge, load);
+        done();
       } else if (
         challenge.provider === RECAPTCHA_V2_PROVIDER ||
         challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
@@ -390,19 +404,10 @@ function render(auth0Client, flow, element, options, callback) {
         challenge.provider === ARKOSE_PROVIDER ||
         challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER
       ) {
-        handleCaptchaProvider(element, options, challenge);
-      }
-      if (challenge.provider === ARKOSE_PROVIDER) {
-        done(null, {
-          triggerCaptcha: function (solvedCallback) {
-            globalForCaptchaProvider(challenge.provider).run();
-            captchaSolved = solvedCallback;
-          }
-        });
-      } else {
-        done();
+        handleCaptchaProvider(element, options, challenge, done);
       }
     }
+
     if (flow === Flow.PASSWORDLESS) {
       auth0Client.passwordless.getChallenge(challengeCallback);
     } else if (flow === Flow.PASSWORD_RESET) {
