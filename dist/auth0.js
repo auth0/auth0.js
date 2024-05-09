@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.26.0
  * Author: Auth0
- * Date: 2024-04-30
+ * Date: 2024-05-09
  * License: MIT
  */
 
@@ -7988,7 +7988,7 @@
 	  });
 	}
 
-	function injectCaptchaScript(element, opts, callback, setValue) {
+	function injectCaptchaScript(opts, callback, setValue, done) {
 	  var callbackName =
 	    opts.provider + 'Callback_' + Math.floor(Math.random() * 1000001);
 	  var attributes = {
@@ -8016,6 +8016,7 @@
 	        return;
 	      }
 	      removeScript(scriptSrc);
+	      done(new Error(opts.provider + ' failed to load'));
 	      // Optimzation to tell auth0 to fail open if Arkose/auth0_v2 is configured to fail open
 	      setValue('BYPASS_CAPTCHA');
 	    };
@@ -8090,7 +8091,6 @@
 	  var captchaDiv = element.querySelector(captchaClass);
 
 	  injectCaptchaScript(
-	    element,
 	    {
 	      lang: options.lang,
 	      provider: challenge.provider,
@@ -8118,7 +8118,7 @@
 	            setValue(response.token);
 	            captchaSolved();
 	          },
-	          onError: function () {
+	          onError: function (response) {
 	            if (retryCount < MAX_RETRY) {
 	              setValue();
 	              arkose.reset();
@@ -8128,6 +8128,10 @@
 	              }, 500);
 	              retryCount++;
 	            } else {
+	              if (!arkoseLoaded) {
+	                done(new Error(response.error.error));
+	                arkoseLoaded = true;
+	              }
 	              // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
 	              setValue('BYPASS_CAPTCHA');
 	            }
@@ -8179,7 +8183,8 @@
 	        done();
 	      }
 	    },
-	    setValue
+	    setValue,
+	    done
 	  );
 	}
 

@@ -162,7 +162,7 @@ function removeScript(url) {
   });
 }
 
-function injectCaptchaScript(element, opts, callback, setValue) {
+function injectCaptchaScript(opts, callback, setValue, done) {
   var callbackName =
     opts.provider + 'Callback_' + Math.floor(Math.random() * 1000001);
   var attributes = {
@@ -190,6 +190,7 @@ function injectCaptchaScript(element, opts, callback, setValue) {
         return;
       }
       removeScript(scriptSrc);
+      done(new Error(opts.provider + ' failed to load'));
       // Optimzation to tell auth0 to fail open if Arkose/auth0_v2 is configured to fail open
       setValue('BYPASS_CAPTCHA');
     };
@@ -264,7 +265,6 @@ function handleCaptchaProvider(element, options, challenge, done) {
   var captchaDiv = element.querySelector(captchaClass);
 
   injectCaptchaScript(
-    element,
     {
       lang: options.lang,
       provider: challenge.provider,
@@ -292,7 +292,7 @@ function handleCaptchaProvider(element, options, challenge, done) {
             setValue(response.token);
             captchaSolved();
           },
-          onError: function () {
+          onError: function (response) {
             if (retryCount < MAX_RETRY) {
               setValue();
               arkose.reset();
@@ -302,6 +302,10 @@ function handleCaptchaProvider(element, options, challenge, done) {
               }, 500);
               retryCount++;
             } else {
+              if (!arkoseLoaded) {
+                done(new Error(response.error.error));
+                arkoseLoaded = true;
+              }
               // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
               setValue('BYPASS_CAPTCHA');
             }
@@ -353,7 +357,8 @@ function handleCaptchaProvider(element, options, challenge, done) {
         done();
       }
     },
-    setValue
+    setValue,
+    done
   );
 }
 
