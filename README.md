@@ -129,8 +129,6 @@ To provide feedback or report a bug, please [raise an issue on our issue tracker
 
 Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy) details the procedure for disclosing security issues.
 
----
-
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: light)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png"   width="150">
