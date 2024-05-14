@@ -451,6 +451,7 @@ describe('captcha rendering', function () {
       arkoseCallback,
       scriptErrorCallback,
       doneCallback,
+      doneCallbackSpy,
       triggerCaptcha,
       arkose,
       element;
@@ -464,9 +465,12 @@ describe('captcha rendering', function () {
         }
       };
       doneCallback = (err, apis) => {
-        triggerCaptcha = apis.triggerCaptcha;
+        if (apis) {
+          triggerCaptcha = apis.triggerCaptcha;
+        }
       };
-      c = captcha.render(mockClient, captcha.Flow.DEFAULT, element, null, doneCallback);
+      doneCallbackSpy = sinon.spy(doneCallback);
+      c = captcha.render(mockClient, captcha.Flow.DEFAULT, element, null, doneCallbackSpy);
       captchaScript = [...window.document.querySelectorAll('script')].find(s =>
         s.src.match('arkoselabs.com')
       );
@@ -488,7 +492,6 @@ describe('captcha rendering', function () {
         `/${'v2'}/${challenge.siteKey}/${'api.js'}`
       );
       expect(arkoseCallback).to.be.a('function');
-      expect(triggerCaptcha).to.be.a('function');
     });
 
     it('should reinject the captcha script on error', function () {
@@ -537,12 +540,17 @@ describe('captcha rendering', function () {
       });
 
       it('should setup captcha config', function () {
+        configOptions.onReady();
+        expect(doneCallbackSpy.calledOnce).to.be.ok();
         expect(setConfigSpy.calledOnce).to.be.ok();
+        expect(configOptions).to.have.property('onReady');
         expect(configOptions).to.have.property('onCompleted');
         expect(configOptions).to.have.property('onError');
+        expect(triggerCaptcha).to.be.a('function');
       });
 
       it('should set the value on the input when the user completes the captcha', function () {
+        configOptions.onReady();
         const mockToken = 'token xxxxxx';
         const input = element.querySelector('input[name="captcha"]');
         configOptions.onCompleted({ token: mockToken });
@@ -550,12 +558,14 @@ describe('captcha rendering', function () {
       });
 
       it('should return the value when calling getValue()', function () {
+        configOptions.onReady();
         const mockToken = 'token xxxxxx';
         configOptions.onCompleted({ token: mockToken });
         expect(c.getValue()).to.equal(mockToken);
       });
 
       it('should clean the value and reset when reloading', function () {
+        configOptions.onReady();
         const input = element.querySelector('input[name="captcha"]');
         input.value = 'old token';
         c.reload();
@@ -563,6 +573,7 @@ describe('captcha rendering', function () {
       });
 
       it('should clean the value when there is an error and reset arkose', function () {
+        configOptions.onReady();
         const clock = sinon.useFakeTimers();
         const input = element.querySelector('input[name="captcha"]');
         input.value = 'old token';
@@ -579,15 +590,18 @@ describe('captcha rendering', function () {
         for (let i = 0; i < 4; i++) {
           configOptions.onError({ error: 'error' });
         }
+        expect(doneCallbackSpy.calledOnceWith(sinon.match.instanceOf(Error))).to.be.ok();
         expect(input.value).to.not.equal('');
       });
 
       it('should run arkose when calling function passed by the done callback', function () {
+        configOptions.onReady();
         triggerCaptcha();
         expect(runSpy.calledOnce).to.be.ok();
       });
 
       it('should call callback when the user completes the captcha', function () {
+        configOptions.onReady();
         let called = false;
         triggerCaptcha(function () {
           called = true;
@@ -1053,6 +1067,7 @@ describe('passwordless captcha rendering', function () {
       captchaScript,
       arkoseCallback,
       doneCallback,
+      doneCallbackSpy,
       triggerCaptcha,
       arkose,
       element;
@@ -1068,9 +1083,12 @@ describe('passwordless captcha rendering', function () {
         }
       };
       doneCallback = (err, apis) => {
-        triggerCaptcha = apis.triggerCaptcha;
+        if (apis) {
+          triggerCaptcha = apis.triggerCaptcha;
+        }
       };
-      c = captcha.render(mockClient, captcha.Flow.PASSWORDLESS, element, null, doneCallback);
+      doneCallbackSpy = sinon.spy(doneCallback);
+      c = captcha.render(mockClient, captcha.Flow.PASSWORDLESS, element, null, doneCallbackSpy);
       captchaScript = [...window.document.querySelectorAll('script')].find(s =>
         s.src.match('arkoselabs.com')
       );
@@ -1091,7 +1109,6 @@ describe('passwordless captcha rendering', function () {
         `/${'v2'}/${challenge.siteKey}/${'api.js'}`
       );
       expect(arkoseCallback).to.be.a('function');
-      expect(triggerCaptcha).to.be.a('function');
     });
 
     describe('after captcha is loaded', function () {
@@ -1111,12 +1128,17 @@ describe('passwordless captcha rendering', function () {
       });
 
       it('should setup captcha config', function () {
+        configOptions.onReady();
+        expect(doneCallbackSpy.calledOnce).to.be.ok();
         expect(setConfigSpy.calledOnce).to.be.ok();
+        expect(configOptions).to.have.property('onReady');
         expect(configOptions).to.have.property('onCompleted');
         expect(configOptions).to.have.property('onError');
+        expect(triggerCaptcha).to.be.a('function');
       });
 
       it('should set the value on the input when the user completes the captcha', function () {
+        configOptions.onReady();
         const mockToken = 'token xxxxxx';
         const input = element.querySelector('input[name="captcha"]');
         configOptions.onCompleted({ token: mockToken });
@@ -1124,12 +1146,14 @@ describe('passwordless captcha rendering', function () {
       });
 
       it('should return the value when calling getValue()', function () {
+        configOptions.onReady();
         const mockToken = 'token xxxxxx';
         configOptions.onCompleted({ token: mockToken });
         expect(c.getValue()).to.equal(mockToken);
       });
 
       it('should clean the value and reset when reloading', function () {
+        configOptions.onReady();
         const input = element.querySelector('input[name="captcha"]');
         input.value = 'old token';
         c.reload();
@@ -1137,6 +1161,7 @@ describe('passwordless captcha rendering', function () {
       });
 
       it('should clean the value when there is an error and reset arkose', function () {
+        configOptions.onReady();
         const clock = sinon.useFakeTimers();
         const input = element.querySelector('input[name="captcha"]');
         input.value = 'old token';
@@ -1153,15 +1178,18 @@ describe('passwordless captcha rendering', function () {
         for (let i = 0; i < 4; i++) {
           configOptions.onError({ error: 'error' });
         }
+        expect(doneCallbackSpy.calledOnceWith(sinon.match.instanceOf(Error))).to.be.ok();
         expect(input.value).to.not.equal('');
       });
 
       it('should run arkose when calling function passed by the done callback', function () {
+        configOptions.onReady();
         triggerCaptcha();
         expect(runSpy.calledOnce).to.be.ok();
       });
 
       it('should call callback when the user completes the captcha', function () {
+        configOptions.onReady();
         let called = false;
         triggerCaptcha(function () {
           called = true;
@@ -1627,6 +1655,7 @@ describe('password reset captcha rendering', function () {
       captchaScript,
       arkoseCallback,
       doneCallback,
+      doneCallbackSpy,
       triggerCaptcha,
       arkose,
       element;
@@ -1642,9 +1671,12 @@ describe('password reset captcha rendering', function () {
         }
       };
       doneCallback = (err, apis) => {
-        triggerCaptcha = apis.triggerCaptcha;
+        if (apis) {
+          triggerCaptcha = apis.triggerCaptcha;
+        }
       };
-      c = captcha.render(mockClient, captcha.Flow.PASSWORD_RESET, element, null, doneCallback);
+      doneCallbackSpy = sinon.spy(doneCallback);
+      c = captcha.render(mockClient, captcha.Flow.PASSWORD_RESET, element, null, doneCallbackSpy);
       captchaScript = [...window.document.querySelectorAll('script')].find(s =>
         s.src.match('arkoselabs.com')
       );
@@ -1665,7 +1697,6 @@ describe('password reset captcha rendering', function () {
         `/${'v2'}/${challenge.siteKey}/${'api.js'}`
       );
       expect(arkoseCallback).to.be.a('function');
-      expect(triggerCaptcha).to.be.a('function');
     });
 
     describe('after captcha is loaded', function () {
@@ -1685,12 +1716,17 @@ describe('password reset captcha rendering', function () {
       });
 
       it('should setup captcha config', function () {
+        configOptions.onReady();
+        expect(doneCallbackSpy.calledOnce).to.be.ok();
         expect(setConfigSpy.calledOnce).to.be.ok();
+        expect(configOptions).to.have.property('onReady');
         expect(configOptions).to.have.property('onCompleted');
         expect(configOptions).to.have.property('onError');
+        expect(triggerCaptcha).to.be.a('function');
       });
 
       it('should set the value on the input when the user completes the captcha', function () {
+        configOptions.onReady();
         const mockToken = 'token xxxxxx';
         const input = element.querySelector('input[name="captcha"]');
         configOptions.onCompleted({ token: mockToken });
@@ -1698,12 +1734,14 @@ describe('password reset captcha rendering', function () {
       });
 
       it('should return the value when calling getValue()', function () {
+        configOptions.onReady();
         const mockToken = 'token xxxxxx';
         configOptions.onCompleted({ token: mockToken });
         expect(c.getValue()).to.equal(mockToken);
       });
 
       it('should clean the value and reset when reloading', function () {
+        configOptions.onReady();
         const input = element.querySelector('input[name="captcha"]');
         input.value = 'old token';
         c.reload();
@@ -1711,6 +1749,7 @@ describe('password reset captcha rendering', function () {
       });
 
       it('should clean the value when there is an error and reset arkose', function () {
+        configOptions.onReady();
         const clock = sinon.useFakeTimers();
         const input = element.querySelector('input[name="captcha"]');
         input.value = 'old token';
@@ -1727,15 +1766,18 @@ describe('password reset captcha rendering', function () {
         for (let i = 0; i < 4; i++) {
           configOptions.onError({ error: 'error' });
         }
+        expect(doneCallbackSpy.calledOnceWith(sinon.match.instanceOf(Error))).to.be.ok();
         expect(input.value).to.not.equal('');
       });
 
       it('should run arkose when calling function passed by the done callback', function () {
+        configOptions.onReady();
         triggerCaptcha();
         expect(runSpy.calledOnce).to.be.ok();
       });
 
       it('should call callback when the user completes the captcha', function () {
+        configOptions.onReady();
         let called = false;
         triggerCaptcha(function () {
           called = true;
