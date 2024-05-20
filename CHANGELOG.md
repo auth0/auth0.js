@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.26.1](https://github.com/auth0/auth0.js/tree/v9.26.1) (2024-05-20)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.26.0...v9.26.1)
+
+**Fixed**
+- Call done callback once Arkose is ready [\#1433](https://github.com/auth0/auth0.js/pull/1433) ([srijonsaha](https://github.com/srijonsaha))
+
 ## [v9.26.0](https://github.com/auth0/auth0.js/tree/v9.26.0) (2024-04-30)
 
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.25.0...v9.26.0)
