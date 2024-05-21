@@ -1897,6 +1897,23 @@ describe('auth0.WebAuth', function () {
       expect(args.organization).to.eql('org_123');
       expect(args.invitation).to.eql('inv_123');
     });
+    it('should fire the provided callback before redirecting', function () {
+      let mockCalledTimes = 0;
+      let mockFn = () => { mockCalledTimes++ };
+
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'token',
+        _sendTelemetry: false
+      });
+
+      sinon.spy(webAuth.client, 'buildAuthorizeUrl');
+
+      webAuth.authorize({}, mockFn);
+      expect(mockCalledTimes).to.be.equal(1);
+    });
   });
 
   context('renewAuth', function () {
