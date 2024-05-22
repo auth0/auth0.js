@@ -36,7 +36,7 @@ jobs:
           node: ${{ env.NODE_VERSION }}
 
       - name: Save build artifacts
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: .
           key: ${{ env.CACHE_KEY }}
@@ -58,7 +58,7 @@ jobs:
           cache: npm
 
       - name: Restore build artifacts
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: .
           key: ${{ env.CACHE_KEY }}
@@ -69,7 +69,7 @@ jobs:
           MOCHA_FILE: junit/test-results.xml
 
       - name: Upload coverage
-        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # pin@3.1.4
+        uses: codecov/codecov-action@4fe8c5f003fae66aa5ebb77cfd3e7bfbbda0b6b0 # pin@3.1.5
 
   compatibility:
     needs: build # Require build to complete before running tests
@@ -88,7 +88,7 @@ jobs:
           cache: npm
 
       - name: Restore build artifacts
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: .
           key: ${{ env.CACHE_KEY }}
@@ -113,7 +113,7 @@ jobs:
           cache: npm
 
       - name: Restore build artifacts
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: .
           key: ${{ env.CACHE_KEY }}

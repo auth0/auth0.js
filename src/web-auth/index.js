@@ -400,10 +400,10 @@ WebAuth.prototype.validateAuthenticationResponse = function (
               return callback(
                 error.invalidToken(
                   'Organization Id (org_id) claim value mismatch in the ID token; expected "' +
-                    transactionOrganization +
-                    '", found "' +
-                    payload.org_id +
-                    '"'
+                  transactionOrganization +
+                  '", found "' +
+                  payload.org_id +
+                  '"'
                 )
               );
             }
@@ -420,10 +420,10 @@ WebAuth.prototype.validateAuthenticationResponse = function (
               return callback(
                 error.invalidToken(
                   'Organization Name (org_name) claim value mismatch in the ID token; expected "' +
-                    transactionOrganization +
-                    '", found "' +
-                    payload.org_name +
-                    '"'
+                  transactionOrganization +
+                  '", found "' +
+                  payload.org_name +
+                  '"'
                 )
               );
             }
@@ -1160,7 +1160,7 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
  * @memberof WebAuth.prototype
  */
 WebAuth.prototype.renderCaptcha = function (element, options, callback) {
-  return captcha.render(this.client, element, options, callback);
+  return captcha.render(this.client, captcha.Flow.DEFAULT, element, options, callback);
 };
 
 /**
@@ -1189,7 +1189,36 @@ WebAuth.prototype.renderPasswordlessCaptcha = function (
   options,
   callback
 ) {
-  return captcha.renderPasswordless(this.client, element, options, callback);
+  return captcha.render(this.client, captcha.Flow.PASSWORDLESS, element, options, callback);
+};
+
+/**
+ *
+ * Renders the password reset captcha challenge in the provided element.
+ * This function can only be used in the context of a Classic Universal Login Page.
+ *
+ * @method renderPasswordResetCaptcha
+ * @param {HTMLElement} element The element where the captcha needs to be rendered
+ * @param {Object} options The configuration options for the captcha
+ * @param {Object} [options.templates] An object containing templates for each captcha provider
+ * @param {Function} [options.templates.auth0] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.recaptcha_v2] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.recaptcha_enterprise] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.hcaptcha] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.friendly_captcha] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
+ * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
+ * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
+ * @param {captchaLoadedCallback} [callback] An optional callback called after captcha is loaded
+ * @memberof WebAuth.prototype
+ */
+WebAuth.prototype.renderPasswordResetCaptcha = function (
+  element,
+  options,
+  callback
+) {
+  return captcha.render(this.client, captcha.Flow.PASSWORD_RESET, element, options, callback);
 };
 
 export default WebAuth;
