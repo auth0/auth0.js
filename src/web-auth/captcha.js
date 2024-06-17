@@ -231,7 +231,7 @@ function handleCaptchaProvider(element, options, challenge, done) {
     globalForCaptchaProvider(challenge.provider)
   ) {
     setValue();
-    globalForCaptchaProvider(challenge.provider).reset();
+    globalForCaptchaProvider(challenge.provider).run();
     return;
   } else if (widgetId) {
     setValue();
