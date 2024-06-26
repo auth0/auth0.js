@@ -57,7 +57,7 @@
     "js-cookie": "^2.2.0",
     "minimist": "^1.2.5",
     "qs": "^6.10.1",
-    "superagent": "^7.1.5",
+    "superagent": "^9.0.2",
     "url-join": "^4.0.1",
     "winchan": "^0.2.2"
   },
