@@ -346,8 +346,6 @@ function handleCaptchaProvider(element, options, challenge, done) {
               setValue();
               globalForCaptchaProvider(challenge.provider).reset(widgetId);
               retryCount++;
-            } else {
-              setValue('BYPASS_CAPTCHA');
             }
             return true;
           };
