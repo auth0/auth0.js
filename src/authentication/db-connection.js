@@ -139,4 +139,20 @@ DBConnection.prototype.getPasswordResetChallenge = function (cb) {
     .end(responseHandler(cb, { ignoreCasing: true }));
 };
 
+
+DBConnection.prototype.getSignupChallenge = function (cb) {
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  if (!this.baseOptions.state) {
+    return cb();
+  }
+
+  var url = urljoin(this.baseOptions.rootUrl, 'dbconnections', 'signup', 'challenge');
+
+  return this.request
+    .post(url)
+    .send({ state: this.baseOptions.state })
+    .end(responseHandler(cb, { ignoreCasing: true }));
+};
+
 export default DBConnection;
