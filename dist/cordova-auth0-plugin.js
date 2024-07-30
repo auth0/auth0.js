@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.26.1
  * Author: Auth0
- * Date: 2024-05-20
+ * Date: 2024-07-30
  * License: MIT
  */
 
@@ -451,6 +451,27 @@
   });
   });
 
+  /** @type {import('.')} */
+  var esErrors = Error;
+
+  /** @type {import('./eval')} */
+  var _eval = EvalError;
+
+  /** @type {import('./range')} */
+  var range = RangeError;
+
+  /** @type {import('./ref')} */
+  var ref = ReferenceError;
+
+  /** @type {import('./syntax')} */
+  var syntax = SyntaxError;
+
+  /** @type {import('./type')} */
+  var type = TypeError;
+
+  /** @type {import('./uri')} */
+  var uri = URIError;
+
   /* eslint complexity: [2, 18], max-statements: [2, 33] */
   var shams = function hasSymbols() {
   	if (typeof Symbol !== 'function' || typeof Object.getOwnPropertySymbols !== 'function') { return false; }
@@ -599,13 +620,24 @@
 
   var functionBind = Function.prototype.bind || implementation;
 
-  var src = functionBind.call(Function.call, Object.prototype.hasOwnProperty);
+  var call = Function.prototype.call;
+  var $hasOwn = Object.prototype.hasOwnProperty;
+
+
+  /** @type {(o: {}, p: PropertyKey) => p is keyof o} */
+  var hasown = functionBind.call(call, $hasOwn);
 
   var undefined$1;
 
-  var $SyntaxError = SyntaxError;
+
+
+
+
+
+
+
+
   var $Function = Function;
-  var $TypeError = TypeError;
 
   // eslint-disable-next-line consistent-return
   var getEvalledConstructor = function (expressionSyntax) {
@@ -624,7 +656,7 @@
   }
 
   var throwTypeError = function () {
-  	throw new $TypeError();
+  	throw new type();
   };
   var ThrowTypeError = $gOPD
   	? (function () {
@@ -657,6 +689,7 @@
   var TypedArray = typeof Uint8Array === 'undefined' || !getProto ? undefined$1 : getProto(Uint8Array);
 
   var INTRINSICS = {
+  	__proto__: null,
   	'%AggregateError%': typeof AggregateError === 'undefined' ? undefined$1 : AggregateError,
   	'%Array%': Array,
   	'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined$1 : ArrayBuffer,
@@ -677,9 +710,9 @@
   	'%decodeURIComponent%': decodeURIComponent,
   	'%encodeURI%': encodeURI,
   	'%encodeURIComponent%': encodeURIComponent,
-  	'%Error%': Error,
+  	'%Error%': esErrors,
   	'%eval%': eval, // eslint-disable-line no-eval
-  	'%EvalError%': EvalError,
+  	'%EvalError%': _eval,
   	'%Float32Array%': typeof Float32Array === 'undefined' ? undefined$1 : Float32Array,
   	'%Float64Array%': typeof Float64Array === 'undefined' ? undefined$1 : Float64Array,
   	'%FinalizationRegistry%': typeof FinalizationRegistry === 'undefined' ? undefined$1 : FinalizationRegistry,
@@ -701,8 +734,8 @@
   	'%parseInt%': parseInt,
   	'%Promise%': typeof Promise === 'undefined' ? undefined$1 : Promise,
   	'%Proxy%': typeof Proxy === 'undefined' ? undefined$1 : Proxy,
-  	'%RangeError%': RangeError,
-  	'%ReferenceError%': ReferenceError,
+  	'%RangeError%': range,
+  	'%ReferenceError%': ref,
   	'%Reflect%': typeof Reflect === 'undefined' ? undefined$1 : Reflect,
   	'%RegExp%': RegExp,
   	'%Set%': typeof Set === 'undefined' ? undefined$1 : Set,
@@ -711,15 +744,15 @@
   	'%String%': String,
   	'%StringIteratorPrototype%': hasSymbols$1 && getProto ? getProto(''[Symbol.iterator]()) : undefined$1,
   	'%Symbol%': hasSymbols$1 ? Symbol : undefined$1,
-  	'%SyntaxError%': $SyntaxError,
+  	'%SyntaxError%': syntax,
   	'%ThrowTypeError%': ThrowTypeError,
   	'%TypedArray%': TypedArray,
-  	'%TypeError%': $TypeError,
+  	'%TypeError%': type,
   	'%Uint8Array%': typeof Uint8Array === 'undefined' ? undefined$1 : Uint8Array,
   	'%Uint8ClampedArray%': typeof Uint8ClampedArray === 'undefined' ? undefined$1 : Uint8ClampedArray,
   	'%Uint16Array%': typeof Uint16Array === 'undefined' ? undefined$1 : Uint16Array,
   	'%Uint32Array%': typeof Uint32Array === 'undefined' ? undefined$1 : Uint32Array,
-  	'%URIError%': URIError,
+  	'%URIError%': uri,
   	'%WeakMap%': typeof WeakMap === 'undefined' ? undefined$1 : WeakMap,
   	'%WeakRef%': typeof WeakRef === 'undefined' ? undefined$1 : WeakRef,
   	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined$1 : WeakSet
@@ -761,6 +794,7 @@
   };
 
   var LEGACY_ALIASES = {
+  	__proto__: null,
   	'%ArrayBufferPrototype%': ['ArrayBuffer', 'prototype'],
   	'%ArrayPrototype%': ['Array', 'prototype'],
   	'%ArrayProto_entries%': ['Array', 'prototype', 'entries'],
@@ -829,9 +863,9 @@
   	var first = $strSlice(string, 0, 1);
   	var last = $strSlice(string, -1);
   	if (first === '%' && last !== '%') {
-  		throw new $SyntaxError('invalid intrinsic syntax, expected closing `%`');
+  		throw new syntax('invalid intrinsic syntax, expected closing `%`');
   	} else if (last === '%' && first !== '%') {
-  		throw new $SyntaxError('invalid intrinsic syntax, expected opening `%`');
+  		throw new syntax('invalid intrinsic syntax, expected opening `%`');
   	}
   	var result = [];
   	$replace(string, rePropName, function (match, number, quote, subString) {
@@ -844,18 +878,18 @@
   var getBaseIntrinsic = function getBaseIntrinsic(name, allowMissing) {
   	var intrinsicName = name;
   	var alias;
-  	if (src(LEGACY_ALIASES, intrinsicName)) {
+  	if (hasown(LEGACY_ALIASES, intrinsicName)) {
   		alias = LEGACY_ALIASES[intrinsicName];
   		intrinsicName = '%' + alias[0] + '%';
   	}
 
-  	if (src(INTRINSICS, intrinsicName)) {
+  	if (hasown(INTRINSICS, intrinsicName)) {
   		var value = INTRINSICS[intrinsicName];
   		if (value === needsEval) {
   			value = doEval(intrinsicName);
   		}
   		if (typeof value === 'undefined' && !allowMissing) {
-  			throw new $TypeError('intrinsic ' + name + ' exists, but is not available. Please file an issue!');
+  			throw new type('intrinsic ' + name + ' exists, but is not available. Please file an issue!');
   		}
 
   		return {
@@ -865,19 +899,19 @@
   		};
   	}
 
-  	throw new $SyntaxError('intrinsic ' + name + ' does not exist!');
+  	throw new syntax('intrinsic ' + name + ' does not exist!');
   };
 
   var getIntrinsic = function GetIntrinsic(name, allowMissing) {
   	if (typeof name !== 'string' || name.length === 0) {
-  		throw new $TypeError('intrinsic name must be a non-empty string');
+  		throw new type('intrinsic name must be a non-empty string');
   	}
   	if (arguments.length > 1 && typeof allowMissing !== 'boolean') {
-  		throw new $TypeError('"allowMissing" argument must be a boolean');
+  		throw new type('"allowMissing" argument must be a boolean');
   	}
 
   	if ($exec(/^%?[^%]*%?$/, name) === null) {
-  		throw new $SyntaxError('`%` may not be present anywhere but at the beginning and end of the intrinsic name');
+  		throw new syntax('`%` may not be present anywhere but at the beginning and end of the intrinsic name');
   	}
   	var parts = stringToPath(name);
   	var intrinsicBaseName = parts.length > 0 ? parts[0] : '';
@@ -904,7 +938,7 @@
   			)
   			&& first !== last
   		) {
-  			throw new $SyntaxError('property names with quotes must have matching quotes');
+  			throw new syntax('property names with quotes must have matching quotes');
   		}
   		if (part === 'constructor' || !isOwn) {
   			skipFurtherCaching = true;
@@ -913,12 +947,12 @@
   		intrinsicBaseName += '.' + part;
   		intrinsicRealName = '%' + intrinsicBaseName + '%';
 
-  		if (src(INTRINSICS, intrinsicRealName)) {
+  		if (hasown(INTRINSICS, intrinsicRealName)) {
   			value = INTRINSICS[intrinsicRealName];
   		} else if (value != null) {
   			if (!(part in value)) {
   				if (!allowMissing) {
-  					throw new $TypeError('base intrinsic for ' + name + ' exists, but the property is not available.');
+  					throw new type('base intrinsic for ' + name + ' exists, but the property is not available.');
   				}
   				return void undefined$1;
   			}
@@ -939,7 +973,7 @@
   					value = value[part];
   				}
   			} else {
-  				isOwn = src(value, part);
+  				isOwn = hasown(value, part);
   				value = value[part];
   			}
 
@@ -951,7 +985,141 @@
   	return value;
   };
 
+  /** @type {import('.')} */
+  var $defineProperty = getIntrinsic('%Object.defineProperty%', true) || false;
+  if ($defineProperty) {
+  	try {
+  		$defineProperty({}, 'a', { value: 1 });
+  	} catch (e) {
+  		// IE 8 has a broken defineProperty
+  		$defineProperty = false;
+  	}
+  }
+
+  var esDefineProperty = $defineProperty;
+
+  var $gOPD$1 = getIntrinsic('%Object.getOwnPropertyDescriptor%', true);
+
+  if ($gOPD$1) {
+  	try {
+  		$gOPD$1([], 'length');
+  	} catch (e) {
+  		// IE 8 has a broken gOPD
+  		$gOPD$1 = null;
+  	}
+  }
+
+  var gopd = $gOPD$1;
+
+  /** @type {import('.')} */
+  var defineDataProperty = function defineDataProperty(
+  	obj,
+  	property,
+  	value
+  ) {
+  	if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
+  		throw new type('`obj` must be an object or a function`');
+  	}
+  	if (typeof property !== 'string' && typeof property !== 'symbol') {
+  		throw new type('`property` must be a string or a symbol`');
+  	}
+  	if (arguments.length > 3 && typeof arguments[3] !== 'boolean' && arguments[3] !== null) {
+  		throw new type('`nonEnumerable`, if provided, must be a boolean or null');
+  	}
+  	if (arguments.length > 4 && typeof arguments[4] !== 'boolean' && arguments[4] !== null) {
+  		throw new type('`nonWritable`, if provided, must be a boolean or null');
+  	}
+  	if (arguments.length > 5 && typeof arguments[5] !== 'boolean' && arguments[5] !== null) {
+  		throw new type('`nonConfigurable`, if provided, must be a boolean or null');
+  	}
+  	if (arguments.length > 6 && typeof arguments[6] !== 'boolean') {
+  		throw new type('`loose`, if provided, must be a boolean');
+  	}
+
+  	var nonEnumerable = arguments.length > 3 ? arguments[3] : null;
+  	var nonWritable = arguments.length > 4 ? arguments[4] : null;
+  	var nonConfigurable = arguments.length > 5 ? arguments[5] : null;
+  	var loose = arguments.length > 6 ? arguments[6] : false;
+
+  	/* @type {false | TypedPropertyDescriptor<unknown>} */
+  	var desc = !!gopd && gopd(obj, property);
+
+  	if (esDefineProperty) {
+  		esDefineProperty(obj, property, {
+  			configurable: nonConfigurable === null && desc ? desc.configurable : !nonConfigurable,
+  			enumerable: nonEnumerable === null && desc ? desc.enumerable : !nonEnumerable,
+  			value: value,
+  			writable: nonWritable === null && desc ? desc.writable : !nonWritable
+  		});
+  	} else if (loose || (!nonEnumerable && !nonWritable && !nonConfigurable)) {
+  		// must fall back to [[Set]], and was not explicitly asked to make non-enumerable, non-writable, or non-configurable
+  		obj[property] = value; // eslint-disable-line no-param-reassign
+  	} else {
+  		throw new syntax('This environment does not support defining a property as non-configurable, non-writable, or non-enumerable.');
+  	}
+  };
+
+  var hasPropertyDescriptors = function hasPropertyDescriptors() {
+  	return !!esDefineProperty;
+  };
+
+  hasPropertyDescriptors.hasArrayLengthDefineBug = function hasArrayLengthDefineBug() {
+  	// node v0.6 has a bug where array lengths can be Set but not Defined
+  	if (!esDefineProperty) {
+  		return null;
+  	}
+  	try {
+  		return esDefineProperty([], 'length', { value: 1 }).length !== 1;
+  	} catch (e) {
+  		// In Firefox 4-22, defining length on an array throws an exception.
+  		return true;
+  	}
+  };
+
+  var hasPropertyDescriptors_1 = hasPropertyDescriptors;
+
+  var hasDescriptors = hasPropertyDescriptors_1();
+
+
+
+  var $floor = getIntrinsic('%Math.floor%');
+
+  /** @type {import('.')} */
+  var setFunctionLength = function setFunctionLength(fn, length) {
+  	if (typeof fn !== 'function') {
+  		throw new type('`fn` is not a function');
+  	}
+  	if (typeof length !== 'number' || length < 0 || length > 0xFFFFFFFF || $floor(length) !== length) {
+  		throw new type('`length` must be a positive 32-bit integer');
+  	}
+
+  	var loose = arguments.length > 2 && !!arguments[2];
+
+  	var functionLengthIsConfigurable = true;
+  	var functionLengthIsWritable = true;
+  	if ('length' in fn && gopd) {
+  		var desc = gopd(fn, 'length');
+  		if (desc && !desc.configurable) {
+  			functionLengthIsConfigurable = false;
+  		}
+  		if (desc && !desc.writable) {
+  			functionLengthIsWritable = false;
+  		}
+  	}
+
+  	if (functionLengthIsConfigurable || functionLengthIsWritable || !loose) {
+  		if (hasDescriptors) {
+  			defineDataProperty(/** @type {Parameters<define>[0]} */ (fn), 'length', length, true, true);
+  		} else {
+  			defineDataProperty(/** @type {Parameters<define>[0]} */ (fn), 'length', length);
+  		}
+  	}
+  	return fn;
+  };
+
   var callBind = createCommonjsModule(function (module) {
+
+
 
 
 
@@ -960,41 +1128,27 @@
   var $call = getIntrinsic('%Function.prototype.call%');
   var $reflectApply = getIntrinsic('%Reflect.apply%', true) || functionBind.call($call, $apply);
 
-  var $gOPD = getIntrinsic('%Object.getOwnPropertyDescriptor%', true);
-  var $defineProperty = getIntrinsic('%Object.defineProperty%', true);
+
   var $max = getIntrinsic('%Math.max%');
 
-  if ($defineProperty) {
-  	try {
-  		$defineProperty({}, 'a', { value: 1 });
-  	} catch (e) {
-  		// IE 8 has a broken defineProperty
-  		$defineProperty = null;
-  	}
-  }
-
   module.exports = function callBind(originalFunction) {
-  	var func = $reflectApply(functionBind, $call, arguments);
-  	if ($gOPD && $defineProperty) {
-  		var desc = $gOPD(func, 'length');
-  		if (desc.configurable) {
-  			// original length, plus the receiver, minus any additional arguments (after the receiver)
-  			$defineProperty(
-  				func,
-  				'length',
-  				{ value: 1 + $max(0, originalFunction.length - (arguments.length - 1)) }
-  			);
-  		}
+  	if (typeof originalFunction !== 'function') {
+  		throw new type('a function is required');
   	}
-  	return func;
+  	var func = $reflectApply(functionBind, $call, arguments);
+  	return setFunctionLength(
+  		func,
+  		1 + $max(0, originalFunction.length - (arguments.length - 1)),
+  		true
+  	);
   };
 
   var applyBind = function applyBind() {
   	return $reflectApply(functionBind, $apply, arguments);
   };
 
-  if ($defineProperty) {
-  	$defineProperty(module.exports, 'apply', { value: applyBind });
+  if (esDefineProperty) {
+  	esDefineProperty(module.exports, 'apply', { value: applyBind });
   } else {
   	module.exports.apply = applyBind;
   }
@@ -1046,7 +1200,7 @@
   var $concat$1 = Array.prototype.concat;
   var $join = Array.prototype.join;
   var $arrSlice = Array.prototype.slice;
-  var $floor = Math.floor;
+  var $floor$1 = Math.floor;
   var bigIntValueOf = typeof BigInt === 'function' ? BigInt.prototype.valueOf : null;
   var gOPS = Object.getOwnPropertySymbols;
   var symToString = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol' ? Symbol.prototype.toString : null;
@@ -1077,7 +1231,7 @@
       }
       var sepRegex = /[0-9](?=(?:[0-9]{3})+(?![0-9]))/g;
       if (typeof num === 'number') {
-          var int = num < 0 ? -$floor(-num) : $floor(num); // trunc(num)
+          var int = num < 0 ? -$floor$1(-num) : $floor$1(num); // trunc(num)
           if (int !== num) {
               var intStr = String(int);
               var dec = $slice.call(str, intStr.length + 1);
@@ -1260,6 +1414,14 @@
       }
       if (isString(obj)) {
           return markBoxed(inspect(String(obj)));
+      }
+      // note: in IE 8, sometimes `global !== window` but both are the prototypes of each other
+      /* eslint-env browser */
+      if (typeof window !== 'undefined' && obj === window) {
+          return '{ [object Window] }';
+      }
+      if (obj === commonjsGlobal) {
+          return '{ [object globalThis] }';
       }
       if (!isDate(obj) && !isRegExp(obj)) {
           var ys = arrObjKeys(obj, inspect);
@@ -1537,7 +1699,6 @@
       return xs;
   }
 
-  var $TypeError$1 = getIntrinsic('%TypeError%');
   var $WeakMap = getIntrinsic('%WeakMap%', true);
   var $Map = getIntrinsic('%Map%', true);
 
@@ -1549,53 +1710,62 @@
   var $mapHas = callBound('Map.prototype.has', true);
 
   /*
-   * This function traverses the list returning the node corresponding to the
-   * given key.
-   *
-   * That node is also moved to the head of the list, so that if it's accessed
-   * again we don't need to traverse the whole list. By doing so, all the recently
-   * used nodes can be accessed relatively quickly.
-   */
+  * This function traverses the list returning the node corresponding to the given key.
+  *
+  * That node is also moved to the head of the list, so that if it's accessed again we don't need to traverse the whole list. By doing so, all the recently used nodes can be accessed relatively quickly.
+  */
+  /** @type {import('.').listGetNode} */
   var listGetNode = function (list, key) { // eslint-disable-line consistent-return
-  	for (var prev = list, curr; (curr = prev.next) !== null; prev = curr) {
+  	/** @type {typeof list | NonNullable<(typeof list)['next']>} */
+  	var prev = list;
+  	/** @type {(typeof list)['next']} */
+  	var curr;
+  	for (; (curr = prev.next) !== null; prev = curr) {
   		if (curr.key === key) {
   			prev.next = curr.next;
-  			curr.next = list.next;
+  			// eslint-disable-next-line no-extra-parens
+  			curr.next = /** @type {NonNullable<typeof list.next>} */ (list.next);
   			list.next = curr; // eslint-disable-line no-param-reassign
   			return curr;
   		}
   	}
   };
 
+  /** @type {import('.').listGet} */
   var listGet = function (objects, key) {
   	var node = listGetNode(objects, key);
   	return node && node.value;
   };
+  /** @type {import('.').listSet} */
   var listSet = function (objects, key, value) {
   	var node = listGetNode(objects, key);
   	if (node) {
   		node.value = value;
   	} else {
   		// Prepend the new node to the beginning of the list
-  		objects.next = { // eslint-disable-line no-param-reassign
+  		objects.next = /** @type {import('.').ListNode<typeof value>} */ ({ // eslint-disable-line no-param-reassign, no-extra-parens
   			key: key,
   			next: objects.next,
   			value: value
-  		};
+  		});
   	}
   };
+  /** @type {import('.').listHas} */
   var listHas = function (objects, key) {
   	return !!listGetNode(objects, key);
   };
 
+  /** @type {import('.')} */
   var sideChannel = function getSideChannel() {
-  	var $wm;
-  	var $m;
-  	var $o;
+  	/** @type {WeakMap<object, unknown>} */ var $wm;
+  	/** @type {Map<object, unknown>} */ var $m;
+  	/** @type {import('.').RootNode<unknown>} */ var $o;
+
+  	/** @type {import('.').Channel} */
   	var channel = {
   		assert: function (key) {
   			if (!channel.has(key)) {
-  				throw new $TypeError$1('Side channel does not contain ' + objectInspect(key));
+  				throw new type('Side channel does not contain ' + objectInspect(key));
   			}
   		},
   		get: function (key) { // eslint-disable-line consistent-return
@@ -1642,11 +1812,7 @@
   				$mapSet($m, key, value);
   			} else {
   				if (!$o) {
-  					/*
-  					 * Initialize the linked list as an empty node, so that we don't have
-  					 * to special-case handling of the first node: we can always refer to
-  					 * it as (previous node).next, instead of something like (list).head
-  					 */
+  					// Initialize the linked list as an empty node, so that we don't have to special-case handling of the first node: we can always refer to it as (previous node).next, instead of something like (list).head
   					$o = { key: {}, next: null };
   				}
   				listSet($o, key, value);
@@ -1798,6 +1964,10 @@
       }
   };
 
+  var limit = 1024;
+
+  /* eslint operator-linebreak: [2, "before"] */
+
   var encode = function encode(str, defaultEncoder, charset, kind, format) {
       // This code was originally written by Brian White (mscdex) for the io.js core querystring library.
       // It has been adapted here for stricter adherence to RFC 3986
@@ -1819,45 +1989,54 @@
       }
 
       var out = '';
-      for (var i = 0; i < string.length; ++i) {
-          var c = string.charCodeAt(i);
+      for (var j = 0; j < string.length; j += limit) {
+          var segment = string.length >= limit ? string.slice(j, j + limit) : string;
+          var arr = [];
 
-          if (
-              c === 0x2D // -
-              || c === 0x2E // .
-              || c === 0x5F // _
-              || c === 0x7E // ~
-              || (c >= 0x30 && c <= 0x39) // 0-9
-              || (c >= 0x41 && c <= 0x5A) // a-z
-              || (c >= 0x61 && c <= 0x7A) // A-Z
-              || (format === formats.RFC1738 && (c === 0x28 || c === 0x29)) // ( )
-          ) {
-              out += string.charAt(i);
-              continue;
+          for (var i = 0; i < segment.length; ++i) {
+              var c = segment.charCodeAt(i);
+              if (
+                  c === 0x2D // -
+                  || c === 0x2E // .
+                  || c === 0x5F // _
+                  || c === 0x7E // ~
+                  || (c >= 0x30 && c <= 0x39) // 0-9
+                  || (c >= 0x41 && c <= 0x5A) // a-z
+                  || (c >= 0x61 && c <= 0x7A) // A-Z
+                  || (format === formats.RFC1738 && (c === 0x28 || c === 0x29)) // ( )
+              ) {
+                  arr[arr.length] = segment.charAt(i);
+                  continue;
+              }
+
+              if (c < 0x80) {
+                  arr[arr.length] = hexTable[c];
+                  continue;
+              }
+
+              if (c < 0x800) {
+                  arr[arr.length] = hexTable[0xC0 | (c >> 6)]
+                      + hexTable[0x80 | (c & 0x3F)];
+                  continue;
+              }
+
+              if (c < 0xD800 || c >= 0xE000) {
+                  arr[arr.length] = hexTable[0xE0 | (c >> 12)]
+                      + hexTable[0x80 | ((c >> 6) & 0x3F)]
+                      + hexTable[0x80 | (c & 0x3F)];
+                  continue;
+              }
+
+              i += 1;
+              c = 0x10000 + (((c & 0x3FF) << 10) | (segment.charCodeAt(i) & 0x3FF));
+
+              arr[arr.length] = hexTable[0xF0 | (c >> 18)]
+                  + hexTable[0x80 | ((c >> 12) & 0x3F)]
+                  + hexTable[0x80 | ((c >> 6) & 0x3F)]
+                  + hexTable[0x80 | (c & 0x3F)];
           }
 
-          if (c < 0x80) {
-              out = out + hexTable[c];
-              continue;
-          }
-
-          if (c < 0x800) {
-              out = out + (hexTable[0xC0 | (c >> 6)] + hexTable[0x80 | (c & 0x3F)]);
-              continue;
-          }
-
-          if (c < 0xD800 || c >= 0xE000) {
-              out = out + (hexTable[0xE0 | (c >> 12)] + hexTable[0x80 | ((c >> 6) & 0x3F)] + hexTable[0x80 | (c & 0x3F)]);
-              continue;
-          }
-
-          i += 1;
-          c = 0x10000 + (((c & 0x3FF) << 10) | (string.charCodeAt(i) & 0x3FF));
-          /* eslint operator-linebreak: [2, "before"] */
-          out += hexTable[0xF0 | (c >> 18)]
-              + hexTable[0x80 | ((c >> 12) & 0x3F)]
-              + hexTable[0x80 | ((c >> 6) & 0x3F)]
-              + hexTable[0x80 | (c & 0x3F)];
+          out += arr.join('');
       }
 
       return out;
@@ -1954,10 +2133,13 @@
   var defaults = {
       addQueryPrefix: false,
       allowDots: false,
+      allowEmptyArrays: false,
+      arrayFormat: 'indices',
       charset: 'utf-8',
       charsetSentinel: false,
       delimiter: '&',
       encode: true,
+      encodeDotInKeys: false,
       encoder: utils.encode,
       encodeValuesOnly: false,
       format: defaultFormat,
@@ -1986,8 +2168,10 @@
       prefix,
       generateArrayPrefix,
       commaRoundTrip,
+      allowEmptyArrays,
       strictNullHandling,
       skipNulls,
+      encodeDotInKeys,
       encoder,
       filter,
       sort,
@@ -2069,7 +2253,13 @@
           objKeys = sort ? keys.sort(sort) : keys;
       }
 
-      var adjustedPrefix = commaRoundTrip && isArray$3(obj) && obj.length === 1 ? prefix + '[]' : prefix;
+      var encodedPrefix = encodeDotInKeys ? prefix.replace(/\./g, '%2E') : prefix;
+
+      var adjustedPrefix = commaRoundTrip && isArray$3(obj) && obj.length === 1 ? encodedPrefix + '[]' : encodedPrefix;
+
+      if (allowEmptyArrays && isArray$3(obj) && obj.length === 0) {
+          return adjustedPrefix + '[]';
+      }
 
       for (var j = 0; j < objKeys.length; ++j) {
           var key = objKeys[j];
@@ -2079,9 +2269,10 @@
               continue;
           }
 
+          var encodedKey = allowDots && encodeDotInKeys ? key.replace(/\./g, '%2E') : key;
           var keyPrefix = isArray$3(obj)
-              ? typeof generateArrayPrefix === 'function' ? generateArrayPrefix(adjustedPrefix, key) : adjustedPrefix
-              : adjustedPrefix + (allowDots ? '.' + key : '[' + key + ']');
+              ? typeof generateArrayPrefix === 'function' ? generateArrayPrefix(adjustedPrefix, encodedKey) : adjustedPrefix
+              : adjustedPrefix + (allowDots ? '.' + encodedKey : '[' + encodedKey + ']');
 
           sideChannel$1.set(object, step);
           var valueSideChannel = sideChannel();
@@ -2091,8 +2282,10 @@
               keyPrefix,
               generateArrayPrefix,
               commaRoundTrip,
+              allowEmptyArrays,
               strictNullHandling,
               skipNulls,
+              encodeDotInKeys,
               generateArrayPrefix === 'comma' && encodeValuesOnly && isArray$3(obj) ? null : encoder,
               filter,
               sort,
@@ -2112,6 +2305,14 @@
   var normalizeStringifyOptions = function normalizeStringifyOptions(opts) {
       if (!opts) {
           return defaults;
+      }
+
+      if (typeof opts.allowEmptyArrays !== 'undefined' && typeof opts.allowEmptyArrays !== 'boolean') {
+          throw new TypeError('`allowEmptyArrays` option can only be `true` or `false`, when provided');
+      }
+
+      if (typeof opts.encodeDotInKeys !== 'undefined' && typeof opts.encodeDotInKeys !== 'boolean') {
+          throw new TypeError('`encodeDotInKeys` option can only be `true` or `false`, when provided');
       }
 
       if (opts.encoder !== null && typeof opts.encoder !== 'undefined' && typeof opts.encoder !== 'function') {
@@ -2137,13 +2338,32 @@
           filter = opts.filter;
       }
 
+      var arrayFormat;
+      if (opts.arrayFormat in arrayPrefixGenerators) {
+          arrayFormat = opts.arrayFormat;
+      } else if ('indices' in opts) {
+          arrayFormat = opts.indices ? 'indices' : 'repeat';
+      } else {
+          arrayFormat = defaults.arrayFormat;
+      }
+
+      if ('commaRoundTrip' in opts && typeof opts.commaRoundTrip !== 'boolean') {
+          throw new TypeError('`commaRoundTrip` must be a boolean, or absent');
+      }
+
+      var allowDots = typeof opts.allowDots === 'undefined' ? opts.encodeDotInKeys === true ? true : defaults.allowDots : !!opts.allowDots;
+
       return {
           addQueryPrefix: typeof opts.addQueryPrefix === 'boolean' ? opts.addQueryPrefix : defaults.addQueryPrefix,
-          allowDots: typeof opts.allowDots === 'undefined' ? defaults.allowDots : !!opts.allowDots,
+          allowDots: allowDots,
+          allowEmptyArrays: typeof opts.allowEmptyArrays === 'boolean' ? !!opts.allowEmptyArrays : defaults.allowEmptyArrays,
+          arrayFormat: arrayFormat,
           charset: charset,
           charsetSentinel: typeof opts.charsetSentinel === 'boolean' ? opts.charsetSentinel : defaults.charsetSentinel,
+          commaRoundTrip: opts.commaRoundTrip,
           delimiter: typeof opts.delimiter === 'undefined' ? defaults.delimiter : opts.delimiter,
           encode: typeof opts.encode === 'boolean' ? opts.encode : defaults.encode,
+          encodeDotInKeys: typeof opts.encodeDotInKeys === 'boolean' ? opts.encodeDotInKeys : defaults.encodeDotInKeys,
           encoder: typeof opts.encoder === 'function' ? opts.encoder : defaults.encoder,
           encodeValuesOnly: typeof opts.encodeValuesOnly === 'boolean' ? opts.encodeValuesOnly : defaults.encodeValuesOnly,
           filter: filter,
@@ -2177,20 +2397,8 @@
           return '';
       }
 
-      var arrayFormat;
-      if (opts && opts.arrayFormat in arrayPrefixGenerators) {
-          arrayFormat = opts.arrayFormat;
-      } else if (opts && 'indices' in opts) {
-          arrayFormat = opts.indices ? 'indices' : 'repeat';
-      } else {
-          arrayFormat = 'indices';
-      }
-
-      var generateArrayPrefix = arrayPrefixGenerators[arrayFormat];
-      if (opts && 'commaRoundTrip' in opts && typeof opts.commaRoundTrip !== 'boolean') {
-          throw new TypeError('`commaRoundTrip` must be a boolean, or absent');
-      }
-      var commaRoundTrip = generateArrayPrefix === 'comma' && opts && opts.commaRoundTrip;
+      var generateArrayPrefix = arrayPrefixGenerators[options.arrayFormat];
+      var commaRoundTrip = generateArrayPrefix === 'comma' && options.commaRoundTrip;
 
       if (!objKeys) {
           objKeys = Object.keys(obj);
@@ -2212,8 +2420,10 @@
               key,
               generateArrayPrefix,
               commaRoundTrip,
+              options.allowEmptyArrays,
               options.strictNullHandling,
               options.skipNulls,
+              options.encodeDotInKeys,
               options.encode ? options.encoder : null,
               options.filter,
               options.sort,
@@ -2248,15 +2458,18 @@
 
   var defaults$1 = {
       allowDots: false,
+      allowEmptyArrays: false,
       allowPrototypes: false,
       allowSparse: false,
       arrayLimit: 20,
       charset: 'utf-8',
       charsetSentinel: false,
       comma: false,
+      decodeDotInKeys: false,
       decoder: utils.decode,
       delimiter: '&',
       depth: 5,
+      duplicates: 'combine',
       ignoreQueryPrefix: false,
       interpretNumericEntities: false,
       parameterLimit: 1000,
@@ -2344,9 +2557,10 @@
               val = isArray$4(val) ? [val] : val;
           }
 
-          if (has$3.call(obj, key)) {
+          var existing = has$3.call(obj, key);
+          if (existing && options.duplicates === 'combine') {
               obj[key] = utils.combine(obj[key], val);
-          } else {
+          } else if (!existing || options.duplicates === 'last') {
               obj[key] = val;
           }
       }
@@ -2362,24 +2576,25 @@
           var root = chain[i];
 
           if (root === '[]' && options.parseArrays) {
-              obj = [].concat(leaf);
+              obj = options.allowEmptyArrays && leaf === '' ? [] : [].concat(leaf);
           } else {
               obj = options.plainObjects ? Object.create(null) : {};
               var cleanRoot = root.charAt(0) === '[' && root.charAt(root.length - 1) === ']' ? root.slice(1, -1) : root;
-              var index = parseInt(cleanRoot, 10);
-              if (!options.parseArrays && cleanRoot === '') {
+              var decodedRoot = options.decodeDotInKeys ? cleanRoot.replace(/%2E/g, '.') : cleanRoot;
+              var index = parseInt(decodedRoot, 10);
+              if (!options.parseArrays && decodedRoot === '') {
                   obj = { 0: leaf };
               } else if (
                   !isNaN(index)
-                  && root !== cleanRoot
-                  && String(index) === cleanRoot
+                  && root !== decodedRoot
+                  && String(index) === decodedRoot
                   && index >= 0
                   && (options.parseArrays && index <= options.arrayLimit)
               ) {
                   obj = [];
                   obj[index] = leaf;
-              } else if (cleanRoot !== '__proto__') {
-                  obj[cleanRoot] = leaf;
+              } else if (decodedRoot !== '__proto__') {
+                  obj[decodedRoot] = leaf;
               }
           }
 
@@ -2448,7 +2663,15 @@
           return defaults$1;
       }
 
-      if (opts.decoder !== null && opts.decoder !== undefined && typeof opts.decoder !== 'function') {
+      if (typeof opts.allowEmptyArrays !== 'undefined' && typeof opts.allowEmptyArrays !== 'boolean') {
+          throw new TypeError('`allowEmptyArrays` option can only be `true` or `false`, when provided');
+      }
+
+      if (typeof opts.decodeDotInKeys !== 'undefined' && typeof opts.decodeDotInKeys !== 'boolean') {
+          throw new TypeError('`decodeDotInKeys` option can only be `true` or `false`, when provided');
+      }
+
+      if (opts.decoder !== null && typeof opts.decoder !== 'undefined' && typeof opts.decoder !== 'function') {
           throw new TypeError('Decoder has to be a function.');
       }
 
@@ -2457,18 +2680,29 @@
       }
       var charset = typeof opts.charset === 'undefined' ? defaults$1.charset : opts.charset;
 
+      var duplicates = typeof opts.duplicates === 'undefined' ? defaults$1.duplicates : opts.duplicates;
+
+      if (duplicates !== 'combine' && duplicates !== 'first' && duplicates !== 'last') {
+          throw new TypeError('The duplicates option must be either combine, first, or last');
+      }
+
+      var allowDots = typeof opts.allowDots === 'undefined' ? opts.decodeDotInKeys === true ? true : defaults$1.allowDots : !!opts.allowDots;
+
       return {
-          allowDots: typeof opts.allowDots === 'undefined' ? defaults$1.allowDots : !!opts.allowDots,
+          allowDots: allowDots,
+          allowEmptyArrays: typeof opts.allowEmptyArrays === 'boolean' ? !!opts.allowEmptyArrays : defaults$1.allowEmptyArrays,
           allowPrototypes: typeof opts.allowPrototypes === 'boolean' ? opts.allowPrototypes : defaults$1.allowPrototypes,
           allowSparse: typeof opts.allowSparse === 'boolean' ? opts.allowSparse : defaults$1.allowSparse,
           arrayLimit: typeof opts.arrayLimit === 'number' ? opts.arrayLimit : defaults$1.arrayLimit,
           charset: charset,
           charsetSentinel: typeof opts.charsetSentinel === 'boolean' ? opts.charsetSentinel : defaults$1.charsetSentinel,
           comma: typeof opts.comma === 'boolean' ? opts.comma : defaults$1.comma,
+          decodeDotInKeys: typeof opts.decodeDotInKeys === 'boolean' ? opts.decodeDotInKeys : defaults$1.decodeDotInKeys,
           decoder: typeof opts.decoder === 'function' ? opts.decoder : defaults$1.decoder,
           delimiter: typeof opts.delimiter === 'string' || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults$1.delimiter,
           // eslint-disable-next-line no-implicit-coercion, no-extra-parens
           depth: (typeof opts.depth === 'number' || opts.depth === false) ? +opts.depth : defaults$1.depth,
+          duplicates: duplicates,
           ignoreQueryPrefix: opts.ignoreQueryPrefix === true,
           interpretNumericEntities: typeof opts.interpretNumericEntities === 'boolean' ? opts.interpretNumericEntities : defaults$1.interpretNumericEntities,
           parameterLimit: typeof opts.parameterLimit === 'number' ? opts.parameterLimit : defaults$1.parameterLimit,
