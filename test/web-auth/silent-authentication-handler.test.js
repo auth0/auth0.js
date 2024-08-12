@@ -340,5 +340,14 @@ describe('handlers silent-authentication-handler', function() {
 
       expect(sah.postMessageOrigin).to.be('https://unit-test');
     });
+
+    it('sets sandbox from parameter', function () {
+      var expectedSandbox = 'unit-test-sandbox';
+      var param = { sandbox: expectedSandbox };
+
+      var sah = new SilentAuthenticationHandler(param);
+
+      expect(sah.sandbox).to.be(expectedSandbox);
+    });
   });
 });
