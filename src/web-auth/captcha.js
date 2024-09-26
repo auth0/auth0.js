@@ -7,6 +7,7 @@ var captchaSolved = noop;
 
 var Flow = {
   DEFAULT: 'default',
+  SIGNUP: 'signup',
   PASSWORDLESS: 'passwordless',
   PASSWORD_RESET: 'password_reset'
 };
@@ -417,6 +418,8 @@ function render(auth0Client, flow, element, options, callback) {
       auth0Client.passwordless.getChallenge(challengeCallback);
     } else if (flow === Flow.PASSWORD_RESET) {
       auth0Client.dbConnection.getPasswordResetChallenge(challengeCallback);
+    } else if (flow === Flow.SIGNUP) {
+      auth0Client.dbConnection.getSignupChallenge(challengeCallback);
     } else {
       auth0Client.getChallenge(challengeCallback);
     }
