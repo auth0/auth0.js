@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.26.1
+ * auth0-js v9.27.0
  * Author: Auth0
- * Date: 2024-09-26
+ * Date: 2024-09-27
  * License: MIT
  */
 
@@ -11,7 +11,7 @@
   (global = global || self, global.CordovaAuth0Plugin = factory());
 }(this, (function () { 'use strict';
 
-  var version = { raw: '9.26.1' };
+  var version = { raw: '9.27.0' };
 
   var toString = Object.prototype.toString;
 
@@ -526,13 +526,17 @@
   };
 
   var test = {
+  	__proto__: null,
   	foo: {}
   };
 
   var $Object = Object;
 
+  /** @type {import('.')} */
   var hasProto = function hasProto() {
-  	return { __proto__: test }.foo === test.foo && !({ __proto__: null } instanceof $Object);
+  	// @ts-expect-error: TS errors on an inherited property for some reason
+  	return { __proto__: test }.foo === test.foo
+  		&& !(test instanceof $Object);
   };
 
   /* eslint no-invalid-this: 1 */
@@ -624,7 +628,7 @@
   var $hasOwn = Object.prototype.hasOwnProperty;
 
 
-  /** @type {(o: {}, p: PropertyKey) => p is keyof o} */
+  /** @type {import('.')} */
   var hasown = functionBind.call(call, $hasOwn);
 
   var undefined$1;
