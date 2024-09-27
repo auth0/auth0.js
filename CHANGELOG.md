@@ -1,5 +1,14 @@
 # Change Log
 
+## [v9.27.0](https://github.com/auth0/auth0.js/tree/v9.27.0) (2024-09-27)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.26.1...v9.27.0)
+
+**Added**
+- [IAMRISK-3539] Add challenge endpoint for signup [\#1467](https://github.com/auth0/auth0.js/pull/1467) ([TSLarson](https://github.com/TSLarson))
+
+**Changed**
+- Update codeowner file with new GitHub team name [\#1452](https://github.com/auth0/auth0.js/pull/1452) ([stevenwong-okta](https://github.com/stevenwong-okta))
+
 ## [v9.26.1](https://github.com/auth0/auth0.js/tree/v9.26.1) (2024-05-20)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.26.0...v9.26.1)
 
