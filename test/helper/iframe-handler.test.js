@@ -121,6 +121,20 @@ describe('helpers iframeHandler', function() {
       expect(windowHelper.getWindow().document.body);
       expect(iframe.src).to.be('my-url');
       expect(iframe.style.display).to.be('none');
+      expect(iframe.sandbox).to.be('allow-same-origin allow-scripts');
+    });
+
+    it('should create a hidden iframe with specific sandbox attributes', function () {
+      var iframe = stubWindow('load');
+      var iframeHandler = new IframeHandler({
+        url: 'my-url',
+        callback: function() {},
+        sandbox: 'allow-same-origin'
+      });
+
+      iframeHandler.init();
+
+      expect(iframe.sandbox).to.be('allow-same-origin');
     });
 
     it('should callback after a timeout', function() {
