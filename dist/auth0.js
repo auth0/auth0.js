@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.27.0
  * Author: Auth0
- * Date: 2024-10-04
+ * Date: 2024-10-11
  * License: MIT
  */
 
@@ -8226,7 +8226,7 @@
 	      if (!challenge.required) {
 	        element.style.display = 'none';
 	        element.innerHTML = '';
-	        return;
+	        return done();
 	      }
 	      element.style.display = '';
 	      if (challenge.provider === AUTH0_PROVIDER) {

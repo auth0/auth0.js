@@ -400,7 +400,7 @@ function render(auth0Client, flow, element, options, callback) {
       if (!challenge.required) {
         element.style.display = 'none';
         element.innerHTML = '';
-        return;
+        return done();
       }
       element.style.display = '';
       if (challenge.provider === AUTH0_PROVIDER) {
