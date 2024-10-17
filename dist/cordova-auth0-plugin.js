@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.27.0
  * Author: Auth0
- * Date: 2024-09-27
+ * Date: 2024-10-11
  * License: MIT
  */
 
@@ -526,17 +526,13 @@
   };
 
   var test = {
-  	__proto__: null,
   	foo: {}
   };
 
   var $Object = Object;
 
-  /** @type {import('.')} */
   var hasProto = function hasProto() {
-  	// @ts-expect-error: TS errors on an inherited property for some reason
-  	return { __proto__: test }.foo === test.foo
-  		&& !(test instanceof $Object);
+  	return { __proto__: test }.foo === test.foo && !({ __proto__: null } instanceof $Object);
   };
 
   /* eslint no-invalid-this: 1 */
@@ -628,7 +624,7 @@
   var $hasOwn = Object.prototype.hasOwnProperty;
 
 
-  /** @type {import('.')} */
+  /** @type {(o: {}, p: PropertyKey) => p is keyof o} */
   var hasown = functionBind.call(call, $hasOwn);
 
   var undefined$1;

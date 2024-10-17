@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.27.0
  * Author: Auth0
- * Date: 2024-09-27
+ * Date: 2024-10-11
  * License: MIT
  */
 
@@ -176,17 +176,13 @@
 	};
 
 	var test = {
-		__proto__: null,
 		foo: {}
 	};
 
 	var $Object = Object;
 
-	/** @type {import('.')} */
 	var hasProto = function hasProto() {
-		// @ts-expect-error: TS errors on an inherited property for some reason
-		return { __proto__: test }.foo === test.foo
-			&& !(test instanceof $Object);
+		return { __proto__: test }.foo === test.foo && !({ __proto__: null } instanceof $Object);
 	};
 
 	/* eslint no-invalid-this: 1 */
@@ -278,7 +274,7 @@
 	var $hasOwn = Object.prototype.hasOwnProperty;
 
 
-	/** @type {import('.')} */
+	/** @type {(o: {}, p: PropertyKey) => p is keyof o} */
 	var hasown = functionBind.call(call, $hasOwn);
 
 	var undefined$1;
@@ -3407,7 +3403,7 @@
 
 	  if (typeof value === 'boolean') {
 	    value = String(value);
-	  } // fix https://github.com/visionmedia/superagent/issues/1680
+	  } //fix https://github.com/visionmedia/superagent/issues/1680
 
 
 	  if (options) this._getFormData().append(name, value, options);else this._getFormData().append(name, value);
@@ -3986,8 +3982,32 @@
 	 */
 
 	request.getXHR = function () {
-	  if (root.XMLHttpRequest && (!root.location || root.location.protocol !== 'file:')) {
+	  if (root.XMLHttpRequest && (!root.location || root.location.protocol !== 'file:' || !root.ActiveXObject)) {
 	    return new XMLHttpRequest();
+	  }
+
+	  try {
+	    return new ActiveXObject('Microsoft.XMLHTTP');
+	  } catch (_unused) {
+	    /**/
+	  }
+
+	  try {
+	    return new ActiveXObject('Msxml2.XMLHTTP.6.0');
+	  } catch (_unused2) {
+	    /**/
+	  }
+
+	  try {
+	    return new ActiveXObject('Msxml2.XMLHTTP.3.0');
+	  } catch (_unused3) {
+	    /**/
+	  }
+
+	  try {
+	    return new ActiveXObject('Msxml2.XMLHTTP');
+	  } catch (_unused4) {
+	    /**/
 	  }
 
 	  throw new Error('Browser-only version of superagent could not find XHR');
@@ -4375,7 +4395,7 @@
 	    if (new_error) {
 	      new_error.original = error;
 	      new_error.response = res;
-	      new_error.status = new_error.status || res.status;
+	      new_error.status = res.status;
 	      self.callback(new_error, res);
 	    } else {
 	      self.callback(null, res);
@@ -4663,7 +4683,7 @@
 
 	    try {
 	      status = xhr.status;
-	    } catch (_unused) {
+	    } catch (_unused5) {
 	      status = 0;
 	    }
 
@@ -4695,7 +4715,7 @@
 	      if (xhr.upload) {
 	        xhr.upload.addEventListener('progress', handleProgress.bind(null, 'upload'));
 	      }
-	    } catch (_unused2) {// Accessing xhr.upload fails in IE from a web worker, so just pretend it doesn't exist.
+	    } catch (_unused6) {// Accessing xhr.upload fails in IE from a web worker, so just pretend it doesn't exist.
 	      // Reported here:
 	      // https://connect.microsoft.com/IE/feedback/details/837245/xmlhttprequest-upload-throws-invalid-argument-when-used-from-web-worker-context
 	    }
@@ -7810,6 +7830,8 @@
 
 	var noop = function () { };
 	var captchaSolved = noop;
+	var done = noop;
+	var captchaReloaded = false;
 
 	var Flow = {
 	  DEFAULT: 'default',
@@ -7969,7 +7991,7 @@
 	  });
 	}
 
-	function injectCaptchaScript(opts, callback, setValue, done) {
+	function injectCaptchaScript(opts, callback, setValue) {
 	  var callbackName =
 	    opts.provider + 'Callback_' + Math.floor(Math.random() * 1000001);
 	  var attributes = {
@@ -8017,7 +8039,7 @@
 	  loadScript(scriptSrc, attributes);
 	}
 
-	function handleCaptchaProvider(element, options, challenge, done) {
+	function handleCaptchaProvider(element, options, challenge) {
 	  var widgetId =
 	    element.hasAttribute('data-wid') && element.getAttribute('data-wid');
 
@@ -8085,13 +8107,16 @@
 	        var arkoseLoaded = false;
 	        arkose.setConfig({
 	          onReady: function () {
-	            if (!arkoseLoaded) {
+	            if (!arkoseLoaded || captchaReloaded) {
 	              done(null, {
 	                triggerCaptcha: function (solvedCallback) {
 	                  arkose.run();
 	                  captchaSolved = solvedCallback;
 	                }
 	              });
+	              if (captchaReloaded) {
+	                captchaReloaded = false;
+	              }
 	              arkoseLoaded = true;
 	            }
 	          },
@@ -8164,8 +8189,7 @@
 	        done();
 	      }
 	    },
-	    setValue,
-	    done
+	    setValue
 	  );
 	}
 
@@ -8192,8 +8216,8 @@
 	 */
 	function render(auth0Client, flow, element, options, callback) {
 	  options = objectHelper.merge(defaults$2).with(options || {});
-	  function load(done) {
-	    done = done || noop;
+	  function load(loadDone) {
+	    done = loadDone || noop;
 	    function challengeCallback(err, challenge) {
 	      if (err) {
 	        element.innerHTML = options.templates.error(err);
@@ -8202,7 +8226,7 @@
 	      if (!challenge.required) {
 	        element.style.display = 'none';
 	        element.innerHTML = '';
-	        return;
+	        return done();
 	      }
 	      element.style.display = '';
 	      if (challenge.provider === AUTH0_PROVIDER) {
@@ -8216,7 +8240,7 @@
 	        challenge.provider === ARKOSE_PROVIDER ||
 	        challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER
 	      ) {
-	        handleCaptchaProvider(element, options, challenge, done);
+	        handleCaptchaProvider(element, options, challenge);
 	      }
 	    }
 
@@ -8242,7 +8266,10 @@
 	  load(callback);
 
 	  return {
-	    reload: load,
+	    reload: function (reloadDone) {
+	      captchaReloaded = true;
+	      load(reloadDone);
+	    },
 	    getValue: getValue
 	  };
 	}
