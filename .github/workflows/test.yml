@@ -69,7 +69,7 @@ jobs:
           MOCHA_FILE: junit/test-results.xml
 
       - name: Upload coverage
-        uses: codecov/codecov-action@4fe8c5f003fae66aa5ebb77cfd3e7bfbbda0b6b0 # pin@3.1.5
+        uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3 # pin@5.3.1
 
   compatibility:
     needs: build # Require build to complete before running tests
