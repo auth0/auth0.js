@@ -3,6 +3,7 @@
 - [Passwordless Login](#passwordless-login)
 - [Organizations](#organizations)
 - [WebAuth.client.login(options, callback)](#webauthclientloginoptions-callback)
+- [Get and use a Refresh token](#get-and-use-a-refresh-token)
 
 ## Passwordless Login
 
@@ -131,4 +132,53 @@ auth0.client.login(
     // Auth tokens in the result or an error
   }
 );
+```
+
+## Get and use a Refresh token
+
+How to obtain and generate a refresh_token to use it for getting new access_tokens.
+
+To do this, set `responseType` to `code` when creating the `WebAuth` client:
+```js
+var webAuth = new auth0.WebAuth({
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  redirectUri: '{YOUR_REDIRECT_URI}',
+  clientID: '{YOUR_CLIENT_ID}',
+  responseType: 'code',
+});
+```
+
+Call `authorize`, add `offline_access` as part of the `scope`:
+```js
+webAuth.authorize({
+  audience: '{THE_AUDIENCE}',
+  scope: 'offline_access'
+});
+```
+
+`code` can be obtained as a string param in the callback
+
+Exchange the obtained `code` to get an `access_token` and the `refresh_token`:
+```js
+webAuth.client.oauthToken(
+  {
+    code,
+    grantType: 'authorization_code',
+    redirectUri: '{YOUR_REDIRECT_URI}',
+  }, function(err, result) {
+    if (!err) {
+      // result.refreshToken
+    }
+  }
+);
+```
+
+Use the `refresh_token` to generate `access_token`
+```js
+webAuth.client.oauthToken(
+  {
+    grantType: 'refresh_token',
+    clientID: '{YOUR_CLIENT_ID}',
+    refresh_token: '{THE_REFRESH_TOKEN}',
+  }
 ```

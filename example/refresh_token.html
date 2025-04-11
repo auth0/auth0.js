@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Auth0.js Demo Examples</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//cdn.auth0.com/js/auth0/development/auth0.min.js"></script>
+  </head>
+  <body class="container">
+
+    <h1>How to get and use a Refresh Token</h1>
+    <div>
+      <p>1. Get code for exchange</p>
+      <input
+        type="button"
+        class="code-exchange-button"
+        value="Generate code"
+      />
+      <label for="code-exchange">Code:</label>
+      <input id="code-exchange" type="text" value="" />
+    </div>
+
+
+    <div>
+      <p>2. Get new tokens using the code</p>
+      <input
+        type="button"
+        class="get-token-using-code-button"
+        value="Get"
+      />
+        <pre id="code-exchange-result"></pre>
+    </div>
+
+
+    <div>
+      <p>3. Get new tokens using the Refresh Token</p>
+      <label for="refresh-token">Refresh token:</label>
+      <input id="refresh-token" type="text" value="" />
+
+      <input
+        type="button"
+        class="get-new-token-button"
+        value="Get Tokens"
+      />
+        <p>New tokens:</p>
+        <pre id="refresh-token-result"></pre>
+    </div>
+
+    <input type="button" class="logout-button" value="logout" />
+
+    <input type="button" class="reset-button" value="reset" />
+
+    <pre id="err"></pre>
+
+    <script type="text/javascript">
+      const config = {
+        audience: '{YOUR_AUDIENCE}',
+        domain: '{YOUR_AUTH0_DOMAIN}',
+        clientID: '{YOUR_AUTH0_CLIENT_ID}',
+        redirectUri: '{YOUR_REDIRECT_URI}',
+      }
+
+      var webAuth = new auth0.WebAuth({
+        domain: config.domain,
+        redirectUri: config.redirectUri,
+        clientID: config.clientID,
+        responseType: 'code',
+      });
+
+      $('.code-exchange-button').click(function(e) {
+        e.preventDefault();
+
+        webAuth.authorize({
+          audience: config.audience,
+          scope: 'offline_access'
+        });
+      });
+
+      $('.get-token-using-code-button').click(function(e) {
+        e.preventDefault();
+        const code = $('#code-exchange').val();
+        if (code !== '') {
+          webAuth.client.oauthToken(
+            {
+              code,
+              grantType: 'authorization_code',
+              redirectUri: config.redirectUri,
+            },
+            function(err, data) {
+              let result = null;
+              if (err) {
+                const { statusCode, code, description } = err;
+                result = {
+                  statusCode,
+                  code,
+                  description
+                }
+              } else {
+                result = data;
+                $('#refresh-token').val(data.refreshToken);
+              }
+
+              displayJson(result, '#code-exchange-result');
+            }
+          );
+        }
+      });
+
+      $('.get-new-token-button').click(function(e) {
+        e.preventDefault();
+        webAuth.client.oauthToken(
+          {
+            grantType: 'refresh_token',
+            clientID: config.clientID,
+            refresh_token: $('#refresh-token').val(),
+          },
+          function(err, data) {
+            let result = null;
+              if (err) {
+                const { statusCode, code, description } = err;
+                result = {
+                  statusCode,
+                  code,
+                  description
+                }
+              } else {
+                result = data;
+              }
+
+              displayJson(result, '#refresh-token-result');
+          }
+        );
+      });
+
+      $('.logout-button').click(function(e) {
+        e.preventDefault();
+        webAuth.logout({ returnTo: config.redirectUri });
+      });
+
+      $('.reset-button').click(function(e) {
+        e.preventDefault();
+        window.location.href = config.redirectUri;
+      });
+
+      const displayJson = (json, locator) => {
+        const jsonStr = JSON.stringify(json, null, 2);
+        $(locator).append(jsonStr);
+      };
+
+      $(document).ready(function() {
+        var params = new URLSearchParams(window.location.search);
+
+        if (params.get('code')) {
+          $('#code-exchange').val(params.get('code'));
+        }
+      });
+    </script>
+  </body>
+</html>
