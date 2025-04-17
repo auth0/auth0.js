@@ -11,7 +11,8 @@ on:
       - master
 
 permissions:
-  contents: read
+  contents: read # Only need read access to code
+  checks: write # Needed to report test results
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -69,7 +70,7 @@ jobs:
           MOCHA_FILE: junit/test-results.xml
 
       - name: Upload coverage
-        uses: codecov/codecov-action@4fe8c5f003fae66aa5ebb77cfd3e7bfbbda0b6b0 # pin@3.1.5
+        uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # pin@5.4.0
 
   compatibility:
     needs: build # Require build to complete before running tests

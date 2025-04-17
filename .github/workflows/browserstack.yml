@@ -12,7 +12,7 @@ on:
       - master
 
 permissions:
-  contents: read
+  contents: read # Only need read access to code
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,9 +23,7 @@ env:
   CACHE_KEY: '${{ github.event.pull_request.head.sha || github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}'
 
 jobs:
-
   build:
-
     name: Build Package
     runs-on: ubuntu-latest
 

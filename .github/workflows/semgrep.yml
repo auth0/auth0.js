@@ -13,16 +13,15 @@ on:
     - cron: '30 0 1,15 * *'
 
 permissions:
-  contents: read
+  contents: read # Only need read access to code
+  security-events: write # Needed to report security findings
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
-
   run:
-
     name: Check for Vulnerabilities
     runs-on: ubuntu-latest
 
