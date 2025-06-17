@@ -4,9 +4,12 @@ import object from '../helper/object';
 
 var noop = function () { };
 var captchaSolved = noop;
+var done = noop;
+var captchaReloaded = false;
 
 var Flow = {
   DEFAULT: 'default',
+  SIGNUP: 'signup',
   PASSWORDLESS: 'passwordless',
   PASSWORD_RESET: 'password_reset'
 };
@@ -162,7 +165,7 @@ function removeScript(url) {
   });
 }
 
-function injectCaptchaScript(opts, callback, setValue, done) {
+function injectCaptchaScript(opts, callback, setValue) {
   var callbackName =
     opts.provider + 'Callback_' + Math.floor(Math.random() * 1000001);
   var attributes = {
@@ -210,7 +213,7 @@ function injectCaptchaScript(opts, callback, setValue, done) {
   loadScript(scriptSrc, attributes);
 }
 
-function handleCaptchaProvider(element, options, challenge, done) {
+function handleCaptchaProvider(element, options, challenge) {
   var widgetId =
     element.hasAttribute('data-wid') && element.getAttribute('data-wid');
 
@@ -278,13 +281,16 @@ function handleCaptchaProvider(element, options, challenge, done) {
         var arkoseLoaded = false;
         arkose.setConfig({
           onReady: function () {
-            if (!arkoseLoaded) {
+            if (!arkoseLoaded || captchaReloaded) {
               done(null, {
                 triggerCaptcha: function (solvedCallback) {
                   arkose.run();
                   captchaSolved = solvedCallback;
                 }
               });
+              if (captchaReloaded) {
+                captchaReloaded = false;
+              }
               arkoseLoaded = true;
             }
           },
@@ -357,8 +363,7 @@ function handleCaptchaProvider(element, options, challenge, done) {
         done();
       }
     },
-    setValue,
-    done
+    setValue
   );
 }
 
@@ -385,8 +390,8 @@ function handleCaptchaProvider(element, options, challenge, done) {
  */
 function render(auth0Client, flow, element, options, callback) {
   options = object.merge(defaults).with(options || {});
-  function load(done) {
-    done = done || noop;
+  function load(loadDone) {
+    done = loadDone || noop;
     function challengeCallback(err, challenge) {
       if (err) {
         element.innerHTML = options.templates.error(err);
@@ -395,7 +400,7 @@ function render(auth0Client, flow, element, options, callback) {
       if (!challenge.required) {
         element.style.display = 'none';
         element.innerHTML = '';
-        return;
+        return done();
       }
       element.style.display = '';
       if (challenge.provider === AUTH0_PROVIDER) {
@@ -409,7 +414,7 @@ function render(auth0Client, flow, element, options, callback) {
         challenge.provider === ARKOSE_PROVIDER ||
         challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER
       ) {
-        handleCaptchaProvider(element, options, challenge, done);
+        handleCaptchaProvider(element, options, challenge);
       }
     }
 
@@ -417,6 +422,8 @@ function render(auth0Client, flow, element, options, callback) {
       auth0Client.passwordless.getChallenge(challengeCallback);
     } else if (flow === Flow.PASSWORD_RESET) {
       auth0Client.dbConnection.getPasswordResetChallenge(challengeCallback);
+    } else if (flow === Flow.SIGNUP) {
+      auth0Client.dbConnection.getSignupChallenge(challengeCallback);
     } else {
       auth0Client.getChallenge(challengeCallback);
     }
@@ -433,7 +440,10 @@ function render(auth0Client, flow, element, options, callback) {
   load(callback);
 
   return {
-    reload: load,
+    reload: function (reloadDone) {
+      captchaReloaded = true;
+      load(reloadDone);
+    },
     getValue: getValue
   };
 }

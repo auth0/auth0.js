@@ -8,13 +8,18 @@ describe('captcha rendering', function () {
   describe('when challenge is not required', function () {
     const { window } = new JSDOM('<body><div class="captcha" /></body>');
     const element = window.document.querySelector('.captcha');
+    const callbackStub = sinon.stub();
     let c;
 
     beforeEach(function () {
       const mockClient = {
         getChallenge: cb => cb(null, { required: false })
       };
-      c = captcha.render(mockClient, captcha.Flow.DEFAULT, element);
+      c = captcha.render(mockClient, captcha.Flow.DEFAULT, element, {}, callbackStub);
+    });
+
+    afterEach(function () {
+      callbackStub.reset();
     });
 
     it('should hide the element', function () {
@@ -25,8 +30,18 @@ describe('captcha rendering', function () {
       expect(element.innerHTML).to.equal('');
     });
 
+    it('should call optional callback on load', function () {
+      expect(callbackStub.calledOnce).to.be.ok();
+    });
+
     it('should return undefined when calling getValue', function () {
       expect(c.getValue()).to.be.equal(undefined);
+    });
+
+    it('should call done callback on reload', function () {
+      const doneStub = sinon.stub();
+      c.reload(doneStub);
+      expect(doneStub.calledOnce).to.be.ok();
     });
   });
 
@@ -42,6 +57,10 @@ describe('captcha rendering', function () {
       captcha.render(mockClient, captcha.Flow.DEFAULT, element, {}, callbackStub);
     });
 
+    afterEach(function () {
+      callbackStub.reset();
+    });
+
     it('should show the element', function () {
       expect(element.style.display).to.equal('');
     });
@@ -53,7 +72,7 @@ describe('captcha rendering', function () {
     });
 
     it('should call the optional callback with the error', function () {
-      expect(callbackStub.called).to.equal(true);
+      expect(callbackStub.calledOnce).to.be.ok();
       expect(callbackStub.args[0][0].message).to.equal('network error');
     });
   });
@@ -123,10 +142,12 @@ describe('captcha rendering', function () {
       expect(imgEl.src).to.equal(challenges[1].image);
     });
 
-    it('should load a new image when calling the reload method', function () {
-      c.reload();
+    it('should load a new image when calling the reload method and call done callback', function () {
+      const doneStub = sinon.stub();
+      c.reload(doneStub);
       const imgEl = element.querySelector('img');
       expect(imgEl.src).to.equal(challenges[1].image);
+      expect(doneStub.calledOnce).to.be.ok();
     });
   });
 
@@ -609,6 +630,13 @@ describe('captcha rendering', function () {
         configOptions.onCompleted({ token: 'token' });
         expect(called).to.be.ok();
       });
+
+      it('should call done callback on reload', function () {
+        const doneStub = sinon.stub();
+        c.reload(doneStub);
+        configOptions.onReady();
+        expect(doneStub.calledOnce).to.be.ok();
+      });
     });
   });
 });
@@ -617,13 +645,18 @@ describe('passwordless captcha rendering', function () {
   describe('when challenge is not required', function () {
     const { window } = new JSDOM('<body><div class="captcha" /></body>');
     const element = window.document.querySelector('.captcha');
+    const callbackStub = sinon.stub();
     let c;
 
     beforeEach(function () {
       const mockClient = {
         passwordless: { getChallenge: cb => cb(null, { required: false }) }
       };
-      c = captcha.render(mockClient, captcha.Flow.PASSWORDLESS, element);
+      c = captcha.render(mockClient, captcha.Flow.PASSWORDLESS, element, {}, callbackStub);
+    });
+
+    afterEach(function () {
+      callbackStub.reset();
     });
 
     it('should hide the element', function () {
@@ -634,8 +667,18 @@ describe('passwordless captcha rendering', function () {
       expect(element.innerHTML).to.equal('');
     });
 
+    it('should call optional callback on load', function () {
+      expect(callbackStub.calledOnce).to.be.ok();
+    });
+
     it('should return undefined when calling getValue', function () {
       expect(c.getValue()).to.be.equal(undefined);
+    });
+
+    it('should call done callback on reload', function () {
+      const doneStub = sinon.stub();
+      c.reload(doneStub);
+      expect(doneStub.calledOnce).to.be.ok();
     });
   });
 
@@ -651,6 +694,10 @@ describe('passwordless captcha rendering', function () {
       captcha.render(mockClient, captcha.Flow.PASSWORDLESS, element, {}, callbackStub);
     });
 
+    afterEach(function () {
+      callbackStub.reset();
+    });
+
     it('should show the element', function () {
       expect(element.style.display).to.equal('');
     });
@@ -662,7 +709,7 @@ describe('passwordless captcha rendering', function () {
     });
 
     it('should call the optional callback with the error', function () {
-      expect(callbackStub.called).to.equal(true);
+      expect(callbackStub.calledOnce).to.be.ok();
       expect(callbackStub.args[0][0].message).to.equal('network error');
     });
   });
@@ -734,10 +781,12 @@ describe('passwordless captcha rendering', function () {
       expect(imgEl.src).to.equal(challenges[1].image);
     });
 
-    it('should load a new image when calling the reload method', function () {
-      c.reload();
+    it('should load a new image when calling the reload method and call done callback', function () {
+      const doneStub = sinon.stub();
+      c.reload(doneStub);
       const imgEl = element.querySelector('img');
       expect(imgEl.src).to.equal(challenges[1].image);
+      expect(doneStub.calledOnce).to.be.ok();
     });
   });
 
@@ -1197,6 +1246,13 @@ describe('passwordless captcha rendering', function () {
         configOptions.onCompleted({ token: 'token' });
         expect(called).to.be.ok();
       });
+
+      it('should call done callback on reload', function () {
+        const doneStub = sinon.stub();
+        c.reload(doneStub);
+        configOptions.onReady();
+        expect(doneStub.calledOnce).to.be.ok();
+      });
     });
   });
 });
@@ -1205,13 +1261,18 @@ describe('password reset captcha rendering', function () {
   describe('when challenge is not required', function () {
     const { window } = new JSDOM('<body><div class="captcha" /></body>');
     const element = window.document.querySelector('.captcha');
+    const callbackStub = sinon.stub();
     let c;
 
     beforeEach(function () {
       const mockClient = {
         dbConnection: { getPasswordResetChallenge: cb => cb(null, { required: false }) }
       };
-      c = captcha.render(mockClient, captcha.Flow.PASSWORD_RESET, element);
+      c = captcha.render(mockClient, captcha.Flow.PASSWORD_RESET, element, {}, callbackStub);
+    });
+
+    afterEach(function () {
+      callbackStub.reset();
     });
 
     it('should hide the element', function () {
@@ -1222,8 +1283,18 @@ describe('password reset captcha rendering', function () {
       expect(element.innerHTML).to.equal('');
     });
 
+    it('should call optional callback on load', function () {
+      expect(callbackStub.calledOnce).to.be.ok();
+    });
+
     it('should return undefined when calling getValue', function () {
       expect(c.getValue()).to.be.equal(undefined);
+    });
+
+    it('should call done callback on reload', function () {
+      const doneStub = sinon.stub();
+      c.reload(doneStub);
+      expect(doneStub.calledOnce).to.be.ok();
     });
   });
 
@@ -1239,6 +1310,10 @@ describe('password reset captcha rendering', function () {
       captcha.render(mockClient, captcha.Flow.PASSWORD_RESET, element, {}, callbackStub);
     });
 
+    afterEach(function () {
+      callbackStub.reset();
+    });
+
     it('should show the element', function () {
       expect(element.style.display).to.equal('');
     });
@@ -1250,7 +1325,7 @@ describe('password reset captcha rendering', function () {
     });
 
     it('should call the optional callback with the error', function () {
-      expect(callbackStub.called).to.equal(true);
+      expect(callbackStub.calledOnce).to.be.ok();
       expect(callbackStub.args[0][0].message).to.equal('network error');
     });
   });
@@ -1322,10 +1397,12 @@ describe('password reset captcha rendering', function () {
       expect(imgEl.src).to.equal(challenges[1].image);
     });
 
-    it('should load a new image when calling the reload method', function () {
-      c.reload();
+    it('should load a new image when calling the reload method and call done callback', function () {
+      const doneStub = sinon.stub();
+      c.reload(doneStub);
       const imgEl = element.querySelector('img');
       expect(imgEl.src).to.equal(challenges[1].image);
+      expect(doneStub.calledOnce).to.be.ok();
     });
   });
 
@@ -1784,6 +1861,13 @@ describe('password reset captcha rendering', function () {
         });
         configOptions.onCompleted({ token: 'token' });
         expect(called).to.be.ok();
+      });
+
+      it('should call done callback on reload', function () {
+        const doneStub = sinon.stub();
+        c.reload(doneStub);
+        configOptions.onReady();
+        expect(doneStub.calledOnce).to.be.ok();
       });
     });
   });
