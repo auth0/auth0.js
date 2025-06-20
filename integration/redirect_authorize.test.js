@@ -1,6 +1,7 @@
 /* eslint-disable no-console, no-unneeded-ternary */
 
-require('@babel/polyfill');
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import expect from 'expect.js';
 import { setupDriver } from './selenium';
 import { By, authorize, until, logout } from './helper';
