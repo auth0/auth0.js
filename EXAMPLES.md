@@ -181,4 +181,17 @@ webAuth.client.oauthToken(
     clientID: '{YOUR_CLIENT_ID}',
     refresh_token: '{THE_REFRESH_TOKEN}',
   }
+);
+```
+Optionally, the `refresh_token` can be used to request an `access_token` with a different audience and/or scope (MRRT)
+```js
+webAuth.client.oauthToken(
+  {
+    grantType: 'refresh_token',
+    clientID: '{YOUR_CLIENT_ID}',
+    refresh_token: '{THE_REFRESH_TOKEN}',
+    audience: '{OTHER_AUDIENCE}',
+    scope: '{OTHER_SCOPE}'
+  }
+);
 ```
