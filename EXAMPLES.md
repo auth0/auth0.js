@@ -183,7 +183,7 @@ webAuth.client.oauthToken(
   }
 );
 ```
-Optionally, the `refresh_token` can be used to request an `access_token` with a different audience and/or scope (MRRT)
+Additionally, if your tenant supports Multi-Resource Refresh Token (MRRT), you can use a `refresh_token` to get an `access_token` with a different audience and/or scope.
 ```js
 webAuth.client.oauthToken(
   {
