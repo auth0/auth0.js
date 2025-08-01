@@ -7,20 +7,22 @@ function runWebMessageFlow(authorizeUrl, options, callback) {
   var handler = new IframeHandler({
     url: authorizeUrl,
     eventListenerType: 'message',
-    callback: function(eventData) {
+    callback: function (eventData) {
       callback(null, eventData);
     },
     timeout: options.timeout,
     eventValidator: {
-      isValid: function(eventData) {
+      isValid: function (eventData) {
+        var expectedOrigin = objectHelper.getOriginFromUrl(authorizeUrl);
         return !!(
+          eventData.event.origin === expectedOrigin &&
           eventData.event.data &&
           eventData.event.data.type === 'authorization_response' &&
           options.state === eventData.event.data.response.state
         );
       }
     },
-    timeoutCallback: function() {
+    timeoutCallback: function () {
       callback({
         error: 'timeout',
         error_description: 'Timeout during executing web_message communication',
@@ -36,7 +38,7 @@ function WebMessageHandler(webAuth) {
   this.warn = new Warn(webAuth.baseOptions);
 }
 
-WebMessageHandler.prototype.run = function(options, cb) {
+WebMessageHandler.prototype.run = function (options, cb) {
   var _this = this;
   options.responseMode = 'web_message';
   options.prompt = 'none';
@@ -58,7 +60,7 @@ WebMessageHandler.prototype.run = function(options, cb) {
   runWebMessageFlow(
     this.webAuth.client.buildAuthorizeUrl(options),
     options,
-    function(err, eventData) {
+    function (err, eventData) {
       var error = err;
       if (!err && eventData.event.data.response.error) {
         error = eventData.event.data.response;
