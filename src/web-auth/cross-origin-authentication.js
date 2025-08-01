@@ -57,7 +57,7 @@ function createKey(origin, coId) {
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
  * @ignore
  */
-CrossOriginAuthentication.prototype.login = function (options, cb) {
+CrossOriginAuthentication.prototype.login = function(options, cb) {
   var _this = this;
   var url = urljoin(this.baseOptions.rootUrl, '/co/authenticate');
 
@@ -95,7 +95,7 @@ CrossOriginAuthentication.prototype.login = function (options, cb) {
     .post(url)
     .withCredentials()
     .send(authenticateBody)
-    .end(function (err, data) {
+    .end(function(err, data) {
       if (err) {
         var errorObject = (err.response && err.response.body) || {
           error: 'request_error',
@@ -162,12 +162,12 @@ function tryGetVerifier(storage, key) {
  * @method callback
  * @ignore
  */
-CrossOriginAuthentication.prototype.callback = function () {
+CrossOriginAuthentication.prototype.callback = function() {
   var targetOrigin = decodeURIComponent(getFragment('origin'));
   var theWindow = windowHelper.getWindow();
   var _this = this;
 
-  theWindow.addEventListener('message', function (evt) {
+  theWindow.addEventListener('message', function(evt) {
     // ✅ Only accept messages from expected origin
     if (evt.origin !== targetOrigin) {
       console.warn('Rejected message from untrusted origin:', evt.origin);
