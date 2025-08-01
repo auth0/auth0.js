@@ -12,16 +12,11 @@ function IframeHandler(options) {
   this._destroyTimeout = null;
   this.transientMessageEventListener = null;
   this.proxyEventListener = null;
-  // If no event identifier specified, set default
+
   var expectedOrigin = objectHelper.getOriginFromUrl(this.url);
 
   this.eventValidator = options.eventValidator || {
     isValid: function (eventData) {
-      // If options.disableOriginCheck is true, accept all events (like before)
-      // if (options.disableOriginCheck) {
-      //   return true;
-      // }
-      // Otherwise, check origin matches expectedOrigin
       return eventData.event.origin === expectedOrigin;
     }
   };
