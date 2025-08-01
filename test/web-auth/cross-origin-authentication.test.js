@@ -10,9 +10,9 @@ import CrossOriginAuthentication from '../../src/web-auth/cross-origin-authentic
 import windowHelper from '../../src/helper/window';
 import WebMessageHandler from '../../src/web-auth/web-message-handler';
 
-describe('auth0.WebAuth.crossOriginAuthentication', function () {
-  context('login', function () {
-    before(function () {
+describe('auth0.WebAuth.crossOriginAuthentication', function() {
+  context('login', function() {
+    before(function() {
       this.webAuthSpy = {
         authorize: sinon.spy(),
         baseOptions: {}
@@ -26,10 +26,10 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
       global.window = {};
     });
 
-    beforeEach(function () {
+    beforeEach(function() {
       sinon.spy(Storage.prototype, 'setItem');
 
-      sinon.stub(windowHelper, 'getWindow').callsFake(function () {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {
           location: {
             protocol: 'http:'
@@ -38,7 +38,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       request.post.restore();
       Storage.prototype.setItem.restore();
       this.webAuthSpy.authorize = sinon.spy();
@@ -53,8 +53,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         windowHelper.getWindow.restore();
       }
     });
-    it('should call /co/authenticate and redirect to /authorize with login_ticket using `username`', function () {
-      sinon.stub(request, 'post').callsFake(function (url) {
+    it('should call /co/authenticate and redirect to /authorize with login_ticket using `username`', function() {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -66,7 +66,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb(null, {
               body: {
                 login_ticket: 'a_login_ticket',
@@ -92,8 +92,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
 
       windowHelper.getWindow.restore();
     });
-    it('should call /co/authenticate and redirect to /authorize with login_ticket using `email`', function () {
-      sinon.stub(request, 'post').callsFake(function (url) {
+    it('should call /co/authenticate and redirect to /authorize with login_ticket using `email`', function() {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -105,7 +105,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb(null, {
               body: {
                 login_ticket: 'a_login_ticket',
@@ -127,8 +127,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         anotherOption: 'foobar'
       });
     });
-    it('should call /co/authenticate and run onRedirecting before /authorize', function () {
-      sinon.stub(request, 'post').callsFake(function (url) {
+    it('should call /co/authenticate and run onRedirecting before /authorize', function() {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
 
         return new RequestMock({
@@ -141,7 +141,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb(null, {
               body: {
                 login_ticket: 'a_login_ticket',
@@ -159,7 +159,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         username: 'me@example.com',
         password: '123456',
         anotherOption: 'foobar',
-        onRedirecting: function (cb) {
+        onRedirecting: function(cb) {
           expect(spy.authorize.getCall(0)).not.to.be.ok();
           cb();
 
@@ -171,8 +171,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         }
       });
     });
-    it('should call /co/authenticate and call `webMessageHandler.run` when popup:true', function (done) {
-      sinon.stub(request, 'post').callsFake(function (url) {
+    it('should call /co/authenticate and call `webMessageHandler.run` when popup:true', function(done) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -184,7 +184,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb(null, {
               body: {
                 login_ticket: 'a_login_ticket',
@@ -197,7 +197,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
       });
       sinon
         .stub(WebMessageHandler.prototype, 'run')
-        .callsFake(function (options, callback) {
+        .callsFake(function(options, callback) {
           expect(options).to.be.eql({
             username: 'me@example.com',
             loginTicket: 'a_login_ticket',
@@ -212,13 +212,13 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           anotherOption: 'foobar',
           popup: true
         },
-        function () {
+        function() {
           done();
         }
       );
     });
-    it('should map error correctly when popup:true', function (done) {
-      sinon.stub(request, 'post').callsFake(function (url) {
+    it('should map error correctly when popup:true', function(done) {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -230,7 +230,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb(null, {
               body: {
                 login_ticket: 'a_login_ticket',
@@ -243,7 +243,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
       });
       sinon
         .stub(WebMessageHandler.prototype, 'run')
-        .callsFake(function (options, callback) {
+        .callsFake(function(options, callback) {
           callback({
             error: 'any error',
             error_description: 'a huge error string'
@@ -256,7 +256,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           anotherOption: 'foobar',
           popup: true
         },
-        function (err) {
+        function(err) {
           expect(err).to.be.eql({
             original: {
               error: 'any error',
@@ -271,8 +271,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         }
       );
     });
-    it('should call /co/authenticate with realm grant and redirect to /authorize with login_ticket when realm is used', function () {
-      sinon.stub(request, 'post').callsFake(function (url) {
+    it('should call /co/authenticate with realm grant and redirect to /authorize with login_ticket when realm is used', function() {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -285,7 +285,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb(null, {
               body: {
                 login_ticket: 'a_login_ticket',
@@ -307,8 +307,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         realm: 'a-connection'
       });
     });
-    it('should work with custom realm, grant and otp', function () {
-      sinon.stub(request, 'post').callsFake(function (url) {
+    it('should work with custom realm, grant and otp', function() {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -322,7 +322,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb(null, {
               body: {
                 login_ticket: 'a_login_ticket',
@@ -345,8 +345,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         realm: 'email'
       });
     });
-    it('should call /co/authenticate and save the verifier in storage', function () {
-      sinon.stub(request, 'post').callsFake(function (url) {
+    it('should call /co/authenticate and save the verifier in storage', function() {
+      sinon.stub(request, 'post').callsFake(function(url) {
         expect(url).to.be('https://me.auth0.com/co/authenticate');
         return new RequestMock({
           body: {
@@ -358,7 +358,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function (cb) {
+          cb: function(cb) {
             cb(null, {
               body: {
                 login_ticket: 'a_login_ticket',
@@ -383,9 +383,9 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
     });
     context(
       'should call callback and not redirect to authorize when it is an authentication error',
-      function () {
-        it('with error_description', function (done) {
-          sinon.stub(request, 'post').callsFake(function (url) {
+      function() {
+        it('with error_description', function(done) {
+          sinon.stub(request, 'post').callsFake(function(url) {
             expect(url).to.be('https://me.auth0.com/co/authenticate');
             return new RequestMock({
               body: {
@@ -397,7 +397,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
               headers: {
                 'Content-Type': 'application/json'
               },
-              cb: function (cb) {
+              cb: function(cb) {
                 cb({
                   response: {
                     body: {
@@ -416,7 +416,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
               password: '123456',
               anotherOption: 'foobar'
             },
-            function (err) {
+            function(err) {
               expect(err).to.be.eql({
                 original: {
                   error: 'any_error',
@@ -432,8 +432,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
             }
           );
         });
-        it('without error_description', function (done) {
-          sinon.stub(request, 'post').callsFake(function (url) {
+        it('without error_description', function(done) {
+          sinon.stub(request, 'post').callsFake(function(url) {
             expect(url).to.be('https://me.auth0.com/co/authenticate');
             return new RequestMock({
               body: {
@@ -445,7 +445,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
               headers: {
                 'Content-Type': 'application/json'
               },
-              cb: function (cb) {
+              cb: function(cb) {
                 cb({ some: 'error' });
               }
             });
@@ -457,7 +457,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
               password: '123456',
               anotherOption: 'foobar'
             },
-            function (err) {
+            function(err) {
               expect(err).to.be.eql({
                 original: {
                   error: 'request_error',
@@ -476,8 +476,8 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
       }
     );
   });
-  context('callback', function () {
-    before(function () {
+  context('callback', function() {
+    before(function() {
       this.co = new CrossOriginAuthentication(
         { baseOptions: {} },
         {
@@ -497,30 +497,30 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         }
       };
     });
-    beforeEach(function () {
+    beforeEach(function() {
       sinon.spy(Storage.prototype, 'removeItem');
-      sinon.stub(Storage.prototype, 'getItem').callsFake(function (key) {
+      sinon.stub(Storage.prototype, 'getItem').callsFake(function(key) {
         expect(key).to.be('co/verifier/https%3A%2F%2Fme.auth0.com/co_id');
         return 'co_verifier';
       });
     });
-    afterEach(function () {
+    afterEach(function() {
       Storage.prototype.getItem.restore();
       Storage.prototype.removeItem.restore();
     });
-    it('should call parent.postMessage on load', function () {
+    it('should call parent.postMessage on load', function() {
       this.co.callback();
       var theCall = global.window.parent.postMessage.getCall(0);
       expect(theCall.args[0]).to.be.eql({ type: 'ready' });
       expect(theCall.args[1]).to.be('https://me.auth0.com');
     });
-    it('should add a listener to the message event', function () {
+    it('should add a listener to the message event', function() {
       this.co.callback();
       var theCall = global.window.addEventListener.getCall(0);
       expect(theCall.args[0]).to.be('message');
     });
-    context('when a message is received', function () {
-      it('should ignore if the message.data.type !== co_verifier_request', function () {
+    context('when a message is received', function() {
+      it('should ignore if the message.data.type !== co_verifier_request', function() {
         this.co.callback();
         var theCall = global.window.addEventListener.getCall(0);
         var evt = {
@@ -531,7 +531,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         theCall.args[1](evt);
         expect(Storage.prototype.removeItem.called).to.be(false);
       });
-      it('should remove item from storage', function () {
+      it('should remove item from storage', function() {
         this.co.callback();
         var onMessageHandler = global.window.addEventListener.getCall(0)
           .args[1];
@@ -544,7 +544,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
             }
           },
           source: {
-            postMessage: function () { }
+            postMessage: function() { }
           }
         };
         onMessageHandler(evt);
@@ -553,7 +553,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
           'co/verifier/https%3A%2F%2Fme.auth0.com/co_id'
         );
       });
-      it('should send the verifier response', function () {
+      it('should send the verifier response', function() {
         this.co.callback();
         var onMessageHandler = global.window.addEventListener.getCall(0)
           .args[1];
@@ -577,9 +577,9 @@ describe('auth0.WebAuth.crossOriginAuthentication', function () {
         });
         expect(theCall.args[1]).to.be('https://me.auth0.com');
       });
-      it('should send empty verifier in the response when storage can not be accessed', function () {
+      it('should send empty verifier in the response when storage can not be accessed', function() {
         Storage.prototype.getItem.restore();
-        sinon.stub(Storage.prototype, 'getItem').callsFake(function () {
+        sinon.stub(Storage.prototype, 'getItem').callsFake(function() {
           throw new Error('');
         });
         this.co.callback();
