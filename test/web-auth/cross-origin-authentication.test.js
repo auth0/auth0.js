@@ -544,7 +544,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
             }
           },
           source: {
-            postMessage: function() { }
+            postMessage: function() {}
           }
         };
         onMessageHandler(evt);
