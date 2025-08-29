@@ -1,7 +1,7 @@
 /**
  * auth0-js v9.28.0
  * Author: Auth0
- * Date: 2024-10-21
+ * Date: 2025-06-20
  * License: MIT
  */
 
@@ -176,17 +176,13 @@
 	};
 
 	var test = {
-		__proto__: null,
 		foo: {}
 	};
 
 	var $Object = Object;
 
-	/** @type {import('.')} */
 	var hasProto = function hasProto() {
-		// @ts-expect-error: TS errors on an inherited property for some reason
-		return { __proto__: test }.foo === test.foo
-			&& !(test instanceof $Object);
+		return { __proto__: test }.foo === test.foo && !({ __proto__: null } instanceof $Object);
 	};
 
 	/* eslint no-invalid-this: 1 */
@@ -278,7 +274,7 @@
 	var $hasOwn = Object.prototype.hasOwnProperty;
 
 
-	/** @type {import('.')} */
+	/** @type {(o: {}, p: PropertyKey) => p is keyof o} */
 	var hasown = functionBind.call(call, $hasOwn);
 
 	var undefined$1;
@@ -3407,7 +3403,7 @@
 
 	  if (typeof value === 'boolean') {
 	    value = String(value);
-	  } // fix https://github.com/visionmedia/superagent/issues/1680
+	  } //fix https://github.com/visionmedia/superagent/issues/1680
 
 
 	  if (options) this._getFormData().append(name, value, options);else this._getFormData().append(name, value);
@@ -3986,8 +3982,32 @@
 	 */
 
 	request.getXHR = function () {
-	  if (root.XMLHttpRequest && (!root.location || root.location.protocol !== 'file:')) {
+	  if (root.XMLHttpRequest && (!root.location || root.location.protocol !== 'file:' || !root.ActiveXObject)) {
 	    return new XMLHttpRequest();
+	  }
+
+	  try {
+	    return new ActiveXObject('Microsoft.XMLHTTP');
+	  } catch (_unused) {
+	    /**/
+	  }
+
+	  try {
+	    return new ActiveXObject('Msxml2.XMLHTTP.6.0');
+	  } catch (_unused2) {
+	    /**/
+	  }
+
+	  try {
+	    return new ActiveXObject('Msxml2.XMLHTTP.3.0');
+	  } catch (_unused3) {
+	    /**/
+	  }
+
+	  try {
+	    return new ActiveXObject('Msxml2.XMLHTTP');
+	  } catch (_unused4) {
+	    /**/
 	  }
 
 	  throw new Error('Browser-only version of superagent could not find XHR');
@@ -4375,7 +4395,7 @@
 	    if (new_error) {
 	      new_error.original = error;
 	      new_error.response = res;
-	      new_error.status = new_error.status || res.status;
+	      new_error.status = res.status;
 	      self.callback(new_error, res);
 	    } else {
 	      self.callback(null, res);
@@ -4663,7 +4683,7 @@
 
 	    try {
 	      status = xhr.status;
-	    } catch (_unused) {
+	    } catch (_unused5) {
 	      status = 0;
 	    }
 
@@ -4695,7 +4715,7 @@
 	      if (xhr.upload) {
 	        xhr.upload.addEventListener('progress', handleProgress.bind(null, 'upload'));
 	      }
-	    } catch (_unused2) {// Accessing xhr.upload fails in IE from a web worker, so just pretend it doesn't exist.
+	    } catch (_unused6) {// Accessing xhr.upload fails in IE from a web worker, so just pretend it doesn't exist.
 	      // Reported here:
 	      // https://connect.microsoft.com/IE/feedback/details/837245/xmlhttprequest-upload-throws-invalid-argument-when-used-from-web-worker-context
 	    }
