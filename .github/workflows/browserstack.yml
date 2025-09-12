@@ -19,13 +19,11 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 env:
-  NODE_VERSION: 18
+  NODE_VERSION: 22
   CACHE_KEY: '${{ github.event.pull_request.head.sha || github.ref }}-${{ github.run_id }}-${{ github.run_attempt }}'
 
 jobs:
-
   build:
-
     name: Build Package
     runs-on: ubuntu-latest
 
