@@ -493,7 +493,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
           postMessage: sinon.spy()
         },
         location: {
-          hash: '#origin=origin'
+          hash: '#origin=https://me.auth0.com'
         }
       };
     });
@@ -512,7 +512,7 @@ describe('auth0.WebAuth.crossOriginAuthentication', function() {
       this.co.callback();
       var theCall = global.window.parent.postMessage.getCall(0);
       expect(theCall.args[0]).to.be.eql({ type: 'ready' });
-      expect(theCall.args[1]).to.be('origin');
+      expect(theCall.args[1]).to.be('https://me.auth0.com');
     });
     it('should add a listener to the message event', function() {
       this.co.callback();

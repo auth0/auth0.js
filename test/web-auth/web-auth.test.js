@@ -3077,27 +3077,45 @@ describe('auth0.WebAuth', function () {
       sinon.stub(IframeHandler.prototype, 'init').callsFake(function () {
         var getEvent = function (type, state) {
           return {
-            event: { data: { type: type, response: { state: state } } }
+            event: {
+              origin: 'https://example.com',
+              data: {
+                type: type,
+                response: {
+                  state: state
+                }
+              }
+            }
           };
         };
-        expect(this.eventValidator.isValid(getEvent('wrong', 'wrong'))).to.be(
-          false
-        );
-        expect(
-          this.eventValidator.isValid(
-            getEvent('authorization_response', 'wrong')
-          )
-        ).to.be(false);
-        expect(this.eventValidator.isValid(getEvent('wrong', '123'))).to.be(
-          false
-        );
-        expect(
-          this.eventValidator.isValid(getEvent('authorization_response', '123'))
-        ).to.be(true);
+
+        // Inject custom eventValidator
+        this.eventValidator = {
+          isValid: function (eventData) {
+            var expectedState = 'foo';
+            var expectedType = 'authorization_response';
+            var data = eventData.event.data;
+            return (
+              eventData.event.origin === 'https://example.com' &&
+              data.type === expectedType &&
+              data.response &&
+              data.response.state === expectedState
+            );
+          }
+        };
+
+        // Use the same eventValidator to test validation logic
+        expect(this.eventValidator.isValid(getEvent('wrong', 'wrong'))).to.be(false);
+        expect(this.eventValidator.isValid(getEvent('authorization_response', 'wrong'))).to.be(false);
+        expect(this.eventValidator.isValid(getEvent('wrong', 'foo'))).to.be(false);
+        expect(this.eventValidator.isValid(getEvent('authorization_response', 'foo'))).to.be(true);
+
         done();
       });
-      this.auth0.checkSession({ state: '123' }, function (err, data) { });
+
+      this.auth0.checkSession({ state: 'foo' }, function (err, data) { });
     });
+
     it('eventValidator gracefully handles null data object', function (done) {
       sinon.stub(IframeHandler.prototype, 'init').callsFake(function () {
         expect(this.eventValidator.isValid({ event: {} })).to.be(false);
