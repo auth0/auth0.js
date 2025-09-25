@@ -5,6 +5,7 @@ import { terser } from 'rollup-plugin-terser';
 import dev from 'rollup-plugin-dev';
 import license from 'rollup-plugin-license';
 import json from 'rollup-plugin-json';
+import { babel } from '@rollup/plugin-babel';
 import { argv } from 'yargs';
 import pkg from './package.json';
 import createApp from './scripts/oidc-provider';
@@ -18,6 +19,17 @@ const getPlugins = prod => [
   }),
   commonjs(),
   json(),
+  babel({
+    babelHelpers: 'bundled',
+    presets: [
+      ['@babel/preset-env', {
+        targets: {
+          ie: '9'
+        }
+      }]
+    ],
+    include: ['src/**', 'node_modules/superagent/**']
+  }),
   replace({
     __DEV__: prod ? 'false' : 'true',
     'process.env.NODE_ENV': prod ? "'production'" : "'development'"
