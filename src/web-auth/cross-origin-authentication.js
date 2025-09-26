@@ -168,6 +168,11 @@ CrossOriginAuthentication.prototype.callback = function() {
   var _this = this;
 
   theWindow.addEventListener('message', function(evt) {
+    // ✅ Only accept messages from expected origin
+    if (evt.origin !== targetOrigin) {
+      console.warn('Rejected message from untrusted origin:', evt.origin);
+      return;
+    }
     if (evt.data.type !== 'co_verifier_request') {
       return;
     }
