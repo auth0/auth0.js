@@ -35,6 +35,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
-      - uses: snyk/actions/node@de2dda699bf7276d103ed6a72a5bc5a1871ad658 # pin@0.5.0
+      - uses: snyk/actions/node@9adf32b1121593767fc3c057af55b55db032dc04 # pin@1.0.0
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
