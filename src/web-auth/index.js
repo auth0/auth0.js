@@ -792,6 +792,7 @@ WebAuth.prototype.passwordlessStart = function (options, cb) {
  * @param {String} [options.name] The user's full name.
  * @param {String} [options.nickname] The user's nickname.
  * @param {String} [options.picture] A URI pointing to the user's picture.
+ * @param {String} [options.captcha] captcha challenge response when required
  * @param {signUpCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#signup}
  * @memberof WebAuth.prototype
