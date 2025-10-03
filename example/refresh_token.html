@@ -6,43 +6,60 @@
     <script src="//cdn.auth0.com/js/auth0/development/auth0.min.js"></script>
   </head>
   <body class="container">
-
     <h1>How to get and use a Refresh Token</h1>
     <div>
-      <p>1. Get code for exchange</p>
+      <h2>1. Get code for exchange</h2>
       <input
         type="button"
         class="code-exchange-button"
         value="Generate code"
       />
-      <label for="code-exchange">Code:</label>
-      <input id="code-exchange" type="text" value="" />
+      <p>
+        <label for="code-exchange">Code:</label>
+        <input id="code-exchange" type="text" value="" />
+      </p>
     </div>
 
-
     <div>
-      <p>2. Get new tokens using the code</p>
+      <h2>2. Get new tokens using the code</h2>
       <input
         type="button"
         class="get-token-using-code-button"
-        value="Get"
+        value="Get tokens"
       />
-        <pre id="code-exchange-result"></pre>
+      <pre id="code-exchange-result"></pre>
     </div>
 
-
     <div>
-      <p>3. Get new tokens using the Refresh Token</p>
-      <label for="refresh-token">Refresh token:</label>
-      <input id="refresh-token" type="text" value="" />
-
+      <h2>3. Get new tokens using the Refresh Token</h2>
+      <p>
+        <label for="refresh-token">Refresh token:</label>
+        <input id="refresh-token" type="text" value="" />
+      </p>
       <input
         type="button"
         class="get-new-token-button"
         value="Get Tokens"
       />
-        <p>New tokens:</p>
-        <pre id="refresh-token-result"></pre>
+      <p>New tokens:</p>
+      <pre id="refresh-token-result"></pre>
+    </div>
+
+    <div>
+      <p>
+        <h2>4. Use RT to request a different audience/scope (MRRT)</h2>
+        <label for="last-refreshed-token">Refresh token:</label>
+        <input id="last-refreshed-token" type="text" value="" />
+      </p>
+      <p>
+        <label for="last-refreshed-token">Alternative audience:</label>
+        <input id="alternative-audience" type="text" value="{OTHER_AUDIENCE}" />
+        <br>
+        <label for="last-refreshed-token">Alternative scope:</label>
+        <input id="alternative-scope" type="text" value="{OTHER_SCOPE}" />
+      </p>
+      <input type="button" class="get-new-token-button-mrrt" value="Get tokens" />
+      <pre id="mrrt-token-result"></pre>
     </div>
 
     <input type="button" class="logout-button" value="logout" />
@@ -115,18 +132,48 @@
           },
           function(err, data) {
             let result = null;
-              if (err) {
-                const { statusCode, code, description } = err;
-                result = {
-                  statusCode,
-                  code,
-                  description
-                }
-              } else {
-                result = data;
+            if (err) {
+              const { statusCode, code, description } = err;
+              result = {
+                statusCode,
+                code,
+                description
               }
+            } else {
+              result = data;
+              $('#last-refreshed-token').val(data.refreshToken);
+            }
 
-              displayJson(result, '#refresh-token-result');
+            displayJson(result, '#refresh-token-result');
+          }
+        );
+      });
+
+      $('.get-new-token-button-mrrt').click(function(e) {
+        e.preventDefault();
+
+        webAuth.client.oauthToken(
+          {
+            grantType: 'refresh_token',
+            clientID: config.clientID,
+            refresh_token: $('#last-refreshed-token').val(),
+            audience: $('#alternative-audience').val(),
+            scope: $('#alternative-scope').val(),
+          },
+          function(err, data) {
+            let result = null;
+            if (err) {
+              const { statusCode, code, description } = err;
+              result = {
+                statusCode,
+                code,
+                description,
+              }
+            } else {
+              result = data;
+            }
+
+            displayJson(result, '#mrrt-token-result');
           }
         );
       });

@@ -5,14 +5,14 @@ inputs:
   node:
     description: The Node version to use
     required: false
-    default: 18
+    default: 22
 
 runs:
   using: composite
 
   steps:
     - name: Setup Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v5
       with:
         node-version: ${{ inputs.node }}
         cache: 'npm'
