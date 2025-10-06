@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.28.0
+ * auth0-js v9.29.0
  * Author: Auth0
- * Date: 2024-10-21
+ * Date: 2025-10-06
  * License: MIT
  */
 
@@ -101,723 +101,8 @@
 	});
 	});
 
-	/** @type {import('.')} */
-	var esErrors = Error;
-
-	/** @type {import('./eval')} */
-	var _eval = EvalError;
-
-	/** @type {import('./range')} */
-	var range = RangeError;
-
-	/** @type {import('./ref')} */
-	var ref = ReferenceError;
-
-	/** @type {import('./syntax')} */
-	var syntax = SyntaxError;
-
 	/** @type {import('./type')} */
 	var type = TypeError;
-
-	/** @type {import('./uri')} */
-	var uri = URIError;
-
-	/* eslint complexity: [2, 18], max-statements: [2, 33] */
-	var shams = function hasSymbols() {
-		if (typeof Symbol !== 'function' || typeof Object.getOwnPropertySymbols !== 'function') { return false; }
-		if (typeof Symbol.iterator === 'symbol') { return true; }
-
-		var obj = {};
-		var sym = Symbol('test');
-		var symObj = Object(sym);
-		if (typeof sym === 'string') { return false; }
-
-		if (Object.prototype.toString.call(sym) !== '[object Symbol]') { return false; }
-		if (Object.prototype.toString.call(symObj) !== '[object Symbol]') { return false; }
-
-		// temp disabled per https://github.com/ljharb/object.assign/issues/17
-		// if (sym instanceof Symbol) { return false; }
-		// temp disabled per https://github.com/WebReflection/get-own-property-symbols/issues/4
-		// if (!(symObj instanceof Symbol)) { return false; }
-
-		// if (typeof Symbol.prototype.toString !== 'function') { return false; }
-		// if (String(sym) !== Symbol.prototype.toString.call(sym)) { return false; }
-
-		var symVal = 42;
-		obj[sym] = symVal;
-		for (sym in obj) { return false; } // eslint-disable-line no-restricted-syntax, no-unreachable-loop
-		if (typeof Object.keys === 'function' && Object.keys(obj).length !== 0) { return false; }
-
-		if (typeof Object.getOwnPropertyNames === 'function' && Object.getOwnPropertyNames(obj).length !== 0) { return false; }
-
-		var syms = Object.getOwnPropertySymbols(obj);
-		if (syms.length !== 1 || syms[0] !== sym) { return false; }
-
-		if (!Object.prototype.propertyIsEnumerable.call(obj, sym)) { return false; }
-
-		if (typeof Object.getOwnPropertyDescriptor === 'function') {
-			var descriptor = Object.getOwnPropertyDescriptor(obj, sym);
-			if (descriptor.value !== symVal || descriptor.enumerable !== true) { return false; }
-		}
-
-		return true;
-	};
-
-	var origSymbol = typeof Symbol !== 'undefined' && Symbol;
-
-
-	var hasSymbols = function hasNativeSymbols() {
-		if (typeof origSymbol !== 'function') { return false; }
-		if (typeof Symbol !== 'function') { return false; }
-		if (typeof origSymbol('foo') !== 'symbol') { return false; }
-		if (typeof Symbol('bar') !== 'symbol') { return false; }
-
-		return shams();
-	};
-
-	var test = {
-		__proto__: null,
-		foo: {}
-	};
-
-	var $Object = Object;
-
-	/** @type {import('.')} */
-	var hasProto = function hasProto() {
-		// @ts-expect-error: TS errors on an inherited property for some reason
-		return { __proto__: test }.foo === test.foo
-			&& !(test instanceof $Object);
-	};
-
-	/* eslint no-invalid-this: 1 */
-
-	var ERROR_MESSAGE = 'Function.prototype.bind called on incompatible ';
-	var toStr = Object.prototype.toString;
-	var max = Math.max;
-	var funcType = '[object Function]';
-
-	var concatty = function concatty(a, b) {
-	    var arr = [];
-
-	    for (var i = 0; i < a.length; i += 1) {
-	        arr[i] = a[i];
-	    }
-	    for (var j = 0; j < b.length; j += 1) {
-	        arr[j + a.length] = b[j];
-	    }
-
-	    return arr;
-	};
-
-	var slicy = function slicy(arrLike, offset) {
-	    var arr = [];
-	    for (var i = offset || 0, j = 0; i < arrLike.length; i += 1, j += 1) {
-	        arr[j] = arrLike[i];
-	    }
-	    return arr;
-	};
-
-	var joiny = function (arr, joiner) {
-	    var str = '';
-	    for (var i = 0; i < arr.length; i += 1) {
-	        str += arr[i];
-	        if (i + 1 < arr.length) {
-	            str += joiner;
-	        }
-	    }
-	    return str;
-	};
-
-	var implementation = function bind(that) {
-	    var target = this;
-	    if (typeof target !== 'function' || toStr.apply(target) !== funcType) {
-	        throw new TypeError(ERROR_MESSAGE + target);
-	    }
-	    var args = slicy(arguments, 1);
-
-	    var bound;
-	    var binder = function () {
-	        if (this instanceof bound) {
-	            var result = target.apply(
-	                this,
-	                concatty(args, arguments)
-	            );
-	            if (Object(result) === result) {
-	                return result;
-	            }
-	            return this;
-	        }
-	        return target.apply(
-	            that,
-	            concatty(args, arguments)
-	        );
-
-	    };
-
-	    var boundLength = max(0, target.length - args.length);
-	    var boundArgs = [];
-	    for (var i = 0; i < boundLength; i++) {
-	        boundArgs[i] = '$' + i;
-	    }
-
-	    bound = Function('binder', 'return function (' + joiny(boundArgs, ',') + '){ return binder.apply(this,arguments); }')(binder);
-
-	    if (target.prototype) {
-	        var Empty = function Empty() {};
-	        Empty.prototype = target.prototype;
-	        bound.prototype = new Empty();
-	        Empty.prototype = null;
-	    }
-
-	    return bound;
-	};
-
-	var functionBind = Function.prototype.bind || implementation;
-
-	var call = Function.prototype.call;
-	var $hasOwn = Object.prototype.hasOwnProperty;
-
-
-	/** @type {import('.')} */
-	var hasown = functionBind.call(call, $hasOwn);
-
-	var undefined$1;
-
-
-
-
-
-
-
-
-
-	var $Function = Function;
-
-	// eslint-disable-next-line consistent-return
-	var getEvalledConstructor = function (expressionSyntax) {
-		try {
-			return $Function('"use strict"; return (' + expressionSyntax + ').constructor;')();
-		} catch (e) {}
-	};
-
-	var $gOPD = Object.getOwnPropertyDescriptor;
-	if ($gOPD) {
-		try {
-			$gOPD({}, '');
-		} catch (e) {
-			$gOPD = null; // this is IE 8, which has a broken gOPD
-		}
-	}
-
-	var throwTypeError = function () {
-		throw new type();
-	};
-	var ThrowTypeError = $gOPD
-		? (function () {
-			try {
-				// eslint-disable-next-line no-unused-expressions, no-caller, no-restricted-properties
-				arguments.callee; // IE 8 does not throw here
-				return throwTypeError;
-			} catch (calleeThrows) {
-				try {
-					// IE 8 throws on Object.getOwnPropertyDescriptor(arguments, '')
-					return $gOPD(arguments, 'callee').get;
-				} catch (gOPDthrows) {
-					return throwTypeError;
-				}
-			}
-		}())
-		: throwTypeError;
-
-	var hasSymbols$1 = hasSymbols();
-	var hasProto$1 = hasProto();
-
-	var getProto = Object.getPrototypeOf || (
-		hasProto$1
-			? function (x) { return x.__proto__; } // eslint-disable-line no-proto
-			: null
-	);
-
-	var needsEval = {};
-
-	var TypedArray = typeof Uint8Array === 'undefined' || !getProto ? undefined$1 : getProto(Uint8Array);
-
-	var INTRINSICS = {
-		__proto__: null,
-		'%AggregateError%': typeof AggregateError === 'undefined' ? undefined$1 : AggregateError,
-		'%Array%': Array,
-		'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined$1 : ArrayBuffer,
-		'%ArrayIteratorPrototype%': hasSymbols$1 && getProto ? getProto([][Symbol.iterator]()) : undefined$1,
-		'%AsyncFromSyncIteratorPrototype%': undefined$1,
-		'%AsyncFunction%': needsEval,
-		'%AsyncGenerator%': needsEval,
-		'%AsyncGeneratorFunction%': needsEval,
-		'%AsyncIteratorPrototype%': needsEval,
-		'%Atomics%': typeof Atomics === 'undefined' ? undefined$1 : Atomics,
-		'%BigInt%': typeof BigInt === 'undefined' ? undefined$1 : BigInt,
-		'%BigInt64Array%': typeof BigInt64Array === 'undefined' ? undefined$1 : BigInt64Array,
-		'%BigUint64Array%': typeof BigUint64Array === 'undefined' ? undefined$1 : BigUint64Array,
-		'%Boolean%': Boolean,
-		'%DataView%': typeof DataView === 'undefined' ? undefined$1 : DataView,
-		'%Date%': Date,
-		'%decodeURI%': decodeURI,
-		'%decodeURIComponent%': decodeURIComponent,
-		'%encodeURI%': encodeURI,
-		'%encodeURIComponent%': encodeURIComponent,
-		'%Error%': esErrors,
-		'%eval%': eval, // eslint-disable-line no-eval
-		'%EvalError%': _eval,
-		'%Float32Array%': typeof Float32Array === 'undefined' ? undefined$1 : Float32Array,
-		'%Float64Array%': typeof Float64Array === 'undefined' ? undefined$1 : Float64Array,
-		'%FinalizationRegistry%': typeof FinalizationRegistry === 'undefined' ? undefined$1 : FinalizationRegistry,
-		'%Function%': $Function,
-		'%GeneratorFunction%': needsEval,
-		'%Int8Array%': typeof Int8Array === 'undefined' ? undefined$1 : Int8Array,
-		'%Int16Array%': typeof Int16Array === 'undefined' ? undefined$1 : Int16Array,
-		'%Int32Array%': typeof Int32Array === 'undefined' ? undefined$1 : Int32Array,
-		'%isFinite%': isFinite,
-		'%isNaN%': isNaN,
-		'%IteratorPrototype%': hasSymbols$1 && getProto ? getProto(getProto([][Symbol.iterator]())) : undefined$1,
-		'%JSON%': typeof JSON === 'object' ? JSON : undefined$1,
-		'%Map%': typeof Map === 'undefined' ? undefined$1 : Map,
-		'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols$1 || !getProto ? undefined$1 : getProto(new Map()[Symbol.iterator]()),
-		'%Math%': Math,
-		'%Number%': Number,
-		'%Object%': Object,
-		'%parseFloat%': parseFloat,
-		'%parseInt%': parseInt,
-		'%Promise%': typeof Promise === 'undefined' ? undefined$1 : Promise,
-		'%Proxy%': typeof Proxy === 'undefined' ? undefined$1 : Proxy,
-		'%RangeError%': range,
-		'%ReferenceError%': ref,
-		'%Reflect%': typeof Reflect === 'undefined' ? undefined$1 : Reflect,
-		'%RegExp%': RegExp,
-		'%Set%': typeof Set === 'undefined' ? undefined$1 : Set,
-		'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols$1 || !getProto ? undefined$1 : getProto(new Set()[Symbol.iterator]()),
-		'%SharedArrayBuffer%': typeof SharedArrayBuffer === 'undefined' ? undefined$1 : SharedArrayBuffer,
-		'%String%': String,
-		'%StringIteratorPrototype%': hasSymbols$1 && getProto ? getProto(''[Symbol.iterator]()) : undefined$1,
-		'%Symbol%': hasSymbols$1 ? Symbol : undefined$1,
-		'%SyntaxError%': syntax,
-		'%ThrowTypeError%': ThrowTypeError,
-		'%TypedArray%': TypedArray,
-		'%TypeError%': type,
-		'%Uint8Array%': typeof Uint8Array === 'undefined' ? undefined$1 : Uint8Array,
-		'%Uint8ClampedArray%': typeof Uint8ClampedArray === 'undefined' ? undefined$1 : Uint8ClampedArray,
-		'%Uint16Array%': typeof Uint16Array === 'undefined' ? undefined$1 : Uint16Array,
-		'%Uint32Array%': typeof Uint32Array === 'undefined' ? undefined$1 : Uint32Array,
-		'%URIError%': uri,
-		'%WeakMap%': typeof WeakMap === 'undefined' ? undefined$1 : WeakMap,
-		'%WeakRef%': typeof WeakRef === 'undefined' ? undefined$1 : WeakRef,
-		'%WeakSet%': typeof WeakSet === 'undefined' ? undefined$1 : WeakSet
-	};
-
-	if (getProto) {
-		try {
-			null.error; // eslint-disable-line no-unused-expressions
-		} catch (e) {
-			// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
-			var errorProto = getProto(getProto(e));
-			INTRINSICS['%Error.prototype%'] = errorProto;
-		}
-	}
-
-	var doEval = function doEval(name) {
-		var value;
-		if (name === '%AsyncFunction%') {
-			value = getEvalledConstructor('async function () {}');
-		} else if (name === '%GeneratorFunction%') {
-			value = getEvalledConstructor('function* () {}');
-		} else if (name === '%AsyncGeneratorFunction%') {
-			value = getEvalledConstructor('async function* () {}');
-		} else if (name === '%AsyncGenerator%') {
-			var fn = doEval('%AsyncGeneratorFunction%');
-			if (fn) {
-				value = fn.prototype;
-			}
-		} else if (name === '%AsyncIteratorPrototype%') {
-			var gen = doEval('%AsyncGenerator%');
-			if (gen && getProto) {
-				value = getProto(gen.prototype);
-			}
-		}
-
-		INTRINSICS[name] = value;
-
-		return value;
-	};
-
-	var LEGACY_ALIASES = {
-		__proto__: null,
-		'%ArrayBufferPrototype%': ['ArrayBuffer', 'prototype'],
-		'%ArrayPrototype%': ['Array', 'prototype'],
-		'%ArrayProto_entries%': ['Array', 'prototype', 'entries'],
-		'%ArrayProto_forEach%': ['Array', 'prototype', 'forEach'],
-		'%ArrayProto_keys%': ['Array', 'prototype', 'keys'],
-		'%ArrayProto_values%': ['Array', 'prototype', 'values'],
-		'%AsyncFunctionPrototype%': ['AsyncFunction', 'prototype'],
-		'%AsyncGenerator%': ['AsyncGeneratorFunction', 'prototype'],
-		'%AsyncGeneratorPrototype%': ['AsyncGeneratorFunction', 'prototype', 'prototype'],
-		'%BooleanPrototype%': ['Boolean', 'prototype'],
-		'%DataViewPrototype%': ['DataView', 'prototype'],
-		'%DatePrototype%': ['Date', 'prototype'],
-		'%ErrorPrototype%': ['Error', 'prototype'],
-		'%EvalErrorPrototype%': ['EvalError', 'prototype'],
-		'%Float32ArrayPrototype%': ['Float32Array', 'prototype'],
-		'%Float64ArrayPrototype%': ['Float64Array', 'prototype'],
-		'%FunctionPrototype%': ['Function', 'prototype'],
-		'%Generator%': ['GeneratorFunction', 'prototype'],
-		'%GeneratorPrototype%': ['GeneratorFunction', 'prototype', 'prototype'],
-		'%Int8ArrayPrototype%': ['Int8Array', 'prototype'],
-		'%Int16ArrayPrototype%': ['Int16Array', 'prototype'],
-		'%Int32ArrayPrototype%': ['Int32Array', 'prototype'],
-		'%JSONParse%': ['JSON', 'parse'],
-		'%JSONStringify%': ['JSON', 'stringify'],
-		'%MapPrototype%': ['Map', 'prototype'],
-		'%NumberPrototype%': ['Number', 'prototype'],
-		'%ObjectPrototype%': ['Object', 'prototype'],
-		'%ObjProto_toString%': ['Object', 'prototype', 'toString'],
-		'%ObjProto_valueOf%': ['Object', 'prototype', 'valueOf'],
-		'%PromisePrototype%': ['Promise', 'prototype'],
-		'%PromiseProto_then%': ['Promise', 'prototype', 'then'],
-		'%Promise_all%': ['Promise', 'all'],
-		'%Promise_reject%': ['Promise', 'reject'],
-		'%Promise_resolve%': ['Promise', 'resolve'],
-		'%RangeErrorPrototype%': ['RangeError', 'prototype'],
-		'%ReferenceErrorPrototype%': ['ReferenceError', 'prototype'],
-		'%RegExpPrototype%': ['RegExp', 'prototype'],
-		'%SetPrototype%': ['Set', 'prototype'],
-		'%SharedArrayBufferPrototype%': ['SharedArrayBuffer', 'prototype'],
-		'%StringPrototype%': ['String', 'prototype'],
-		'%SymbolPrototype%': ['Symbol', 'prototype'],
-		'%SyntaxErrorPrototype%': ['SyntaxError', 'prototype'],
-		'%TypedArrayPrototype%': ['TypedArray', 'prototype'],
-		'%TypeErrorPrototype%': ['TypeError', 'prototype'],
-		'%Uint8ArrayPrototype%': ['Uint8Array', 'prototype'],
-		'%Uint8ClampedArrayPrototype%': ['Uint8ClampedArray', 'prototype'],
-		'%Uint16ArrayPrototype%': ['Uint16Array', 'prototype'],
-		'%Uint32ArrayPrototype%': ['Uint32Array', 'prototype'],
-		'%URIErrorPrototype%': ['URIError', 'prototype'],
-		'%WeakMapPrototype%': ['WeakMap', 'prototype'],
-		'%WeakSetPrototype%': ['WeakSet', 'prototype']
-	};
-
-
-
-	var $concat = functionBind.call(Function.call, Array.prototype.concat);
-	var $spliceApply = functionBind.call(Function.apply, Array.prototype.splice);
-	var $replace = functionBind.call(Function.call, String.prototype.replace);
-	var $strSlice = functionBind.call(Function.call, String.prototype.slice);
-	var $exec = functionBind.call(Function.call, RegExp.prototype.exec);
-
-	/* adapted from https://github.com/lodash/lodash/blob/4.17.15/dist/lodash.js#L6735-L6744 */
-	var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
-	var reEscapeChar = /\\(\\)?/g; /** Used to match backslashes in property paths. */
-	var stringToPath = function stringToPath(string) {
-		var first = $strSlice(string, 0, 1);
-		var last = $strSlice(string, -1);
-		if (first === '%' && last !== '%') {
-			throw new syntax('invalid intrinsic syntax, expected closing `%`');
-		} else if (last === '%' && first !== '%') {
-			throw new syntax('invalid intrinsic syntax, expected opening `%`');
-		}
-		var result = [];
-		$replace(string, rePropName, function (match, number, quote, subString) {
-			result[result.length] = quote ? $replace(subString, reEscapeChar, '$1') : number || match;
-		});
-		return result;
-	};
-	/* end adaptation */
-
-	var getBaseIntrinsic = function getBaseIntrinsic(name, allowMissing) {
-		var intrinsicName = name;
-		var alias;
-		if (hasown(LEGACY_ALIASES, intrinsicName)) {
-			alias = LEGACY_ALIASES[intrinsicName];
-			intrinsicName = '%' + alias[0] + '%';
-		}
-
-		if (hasown(INTRINSICS, intrinsicName)) {
-			var value = INTRINSICS[intrinsicName];
-			if (value === needsEval) {
-				value = doEval(intrinsicName);
-			}
-			if (typeof value === 'undefined' && !allowMissing) {
-				throw new type('intrinsic ' + name + ' exists, but is not available. Please file an issue!');
-			}
-
-			return {
-				alias: alias,
-				name: intrinsicName,
-				value: value
-			};
-		}
-
-		throw new syntax('intrinsic ' + name + ' does not exist!');
-	};
-
-	var getIntrinsic = function GetIntrinsic(name, allowMissing) {
-		if (typeof name !== 'string' || name.length === 0) {
-			throw new type('intrinsic name must be a non-empty string');
-		}
-		if (arguments.length > 1 && typeof allowMissing !== 'boolean') {
-			throw new type('"allowMissing" argument must be a boolean');
-		}
-
-		if ($exec(/^%?[^%]*%?$/, name) === null) {
-			throw new syntax('`%` may not be present anywhere but at the beginning and end of the intrinsic name');
-		}
-		var parts = stringToPath(name);
-		var intrinsicBaseName = parts.length > 0 ? parts[0] : '';
-
-		var intrinsic = getBaseIntrinsic('%' + intrinsicBaseName + '%', allowMissing);
-		var intrinsicRealName = intrinsic.name;
-		var value = intrinsic.value;
-		var skipFurtherCaching = false;
-
-		var alias = intrinsic.alias;
-		if (alias) {
-			intrinsicBaseName = alias[0];
-			$spliceApply(parts, $concat([0, 1], alias));
-		}
-
-		for (var i = 1, isOwn = true; i < parts.length; i += 1) {
-			var part = parts[i];
-			var first = $strSlice(part, 0, 1);
-			var last = $strSlice(part, -1);
-			if (
-				(
-					(first === '"' || first === "'" || first === '`')
-					|| (last === '"' || last === "'" || last === '`')
-				)
-				&& first !== last
-			) {
-				throw new syntax('property names with quotes must have matching quotes');
-			}
-			if (part === 'constructor' || !isOwn) {
-				skipFurtherCaching = true;
-			}
-
-			intrinsicBaseName += '.' + part;
-			intrinsicRealName = '%' + intrinsicBaseName + '%';
-
-			if (hasown(INTRINSICS, intrinsicRealName)) {
-				value = INTRINSICS[intrinsicRealName];
-			} else if (value != null) {
-				if (!(part in value)) {
-					if (!allowMissing) {
-						throw new type('base intrinsic for ' + name + ' exists, but the property is not available.');
-					}
-					return void undefined$1;
-				}
-				if ($gOPD && (i + 1) >= parts.length) {
-					var desc = $gOPD(value, part);
-					isOwn = !!desc;
-
-					// By convention, when a data property is converted to an accessor
-					// property to emulate a data property that does not suffer from
-					// the override mistake, that accessor's getter is marked with
-					// an `originalValue` property. Here, when we detect this, we
-					// uphold the illusion by pretending to see that original data
-					// property, i.e., returning the value rather than the getter
-					// itself.
-					if (isOwn && 'get' in desc && !('originalValue' in desc.get)) {
-						value = desc.get;
-					} else {
-						value = value[part];
-					}
-				} else {
-					isOwn = hasown(value, part);
-					value = value[part];
-				}
-
-				if (isOwn && !skipFurtherCaching) {
-					INTRINSICS[intrinsicRealName] = value;
-				}
-			}
-		}
-		return value;
-	};
-
-	/** @type {import('.')} */
-	var $defineProperty = getIntrinsic('%Object.defineProperty%', true) || false;
-	if ($defineProperty) {
-		try {
-			$defineProperty({}, 'a', { value: 1 });
-		} catch (e) {
-			// IE 8 has a broken defineProperty
-			$defineProperty = false;
-		}
-	}
-
-	var esDefineProperty = $defineProperty;
-
-	var $gOPD$1 = getIntrinsic('%Object.getOwnPropertyDescriptor%', true);
-
-	if ($gOPD$1) {
-		try {
-			$gOPD$1([], 'length');
-		} catch (e) {
-			// IE 8 has a broken gOPD
-			$gOPD$1 = null;
-		}
-	}
-
-	var gopd = $gOPD$1;
-
-	/** @type {import('.')} */
-	var defineDataProperty = function defineDataProperty(
-		obj,
-		property,
-		value
-	) {
-		if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
-			throw new type('`obj` must be an object or a function`');
-		}
-		if (typeof property !== 'string' && typeof property !== 'symbol') {
-			throw new type('`property` must be a string or a symbol`');
-		}
-		if (arguments.length > 3 && typeof arguments[3] !== 'boolean' && arguments[3] !== null) {
-			throw new type('`nonEnumerable`, if provided, must be a boolean or null');
-		}
-		if (arguments.length > 4 && typeof arguments[4] !== 'boolean' && arguments[4] !== null) {
-			throw new type('`nonWritable`, if provided, must be a boolean or null');
-		}
-		if (arguments.length > 5 && typeof arguments[5] !== 'boolean' && arguments[5] !== null) {
-			throw new type('`nonConfigurable`, if provided, must be a boolean or null');
-		}
-		if (arguments.length > 6 && typeof arguments[6] !== 'boolean') {
-			throw new type('`loose`, if provided, must be a boolean');
-		}
-
-		var nonEnumerable = arguments.length > 3 ? arguments[3] : null;
-		var nonWritable = arguments.length > 4 ? arguments[4] : null;
-		var nonConfigurable = arguments.length > 5 ? arguments[5] : null;
-		var loose = arguments.length > 6 ? arguments[6] : false;
-
-		/* @type {false | TypedPropertyDescriptor<unknown>} */
-		var desc = !!gopd && gopd(obj, property);
-
-		if (esDefineProperty) {
-			esDefineProperty(obj, property, {
-				configurable: nonConfigurable === null && desc ? desc.configurable : !nonConfigurable,
-				enumerable: nonEnumerable === null && desc ? desc.enumerable : !nonEnumerable,
-				value: value,
-				writable: nonWritable === null && desc ? desc.writable : !nonWritable
-			});
-		} else if (loose || (!nonEnumerable && !nonWritable && !nonConfigurable)) {
-			// must fall back to [[Set]], and was not explicitly asked to make non-enumerable, non-writable, or non-configurable
-			obj[property] = value; // eslint-disable-line no-param-reassign
-		} else {
-			throw new syntax('This environment does not support defining a property as non-configurable, non-writable, or non-enumerable.');
-		}
-	};
-
-	var hasPropertyDescriptors = function hasPropertyDescriptors() {
-		return !!esDefineProperty;
-	};
-
-	hasPropertyDescriptors.hasArrayLengthDefineBug = function hasArrayLengthDefineBug() {
-		// node v0.6 has a bug where array lengths can be Set but not Defined
-		if (!esDefineProperty) {
-			return null;
-		}
-		try {
-			return esDefineProperty([], 'length', { value: 1 }).length !== 1;
-		} catch (e) {
-			// In Firefox 4-22, defining length on an array throws an exception.
-			return true;
-		}
-	};
-
-	var hasPropertyDescriptors_1 = hasPropertyDescriptors;
-
-	var hasDescriptors = hasPropertyDescriptors_1();
-
-
-
-	var $floor = getIntrinsic('%Math.floor%');
-
-	/** @type {import('.')} */
-	var setFunctionLength = function setFunctionLength(fn, length) {
-		if (typeof fn !== 'function') {
-			throw new type('`fn` is not a function');
-		}
-		if (typeof length !== 'number' || length < 0 || length > 0xFFFFFFFF || $floor(length) !== length) {
-			throw new type('`length` must be a positive 32-bit integer');
-		}
-
-		var loose = arguments.length > 2 && !!arguments[2];
-
-		var functionLengthIsConfigurable = true;
-		var functionLengthIsWritable = true;
-		if ('length' in fn && gopd) {
-			var desc = gopd(fn, 'length');
-			if (desc && !desc.configurable) {
-				functionLengthIsConfigurable = false;
-			}
-			if (desc && !desc.writable) {
-				functionLengthIsWritable = false;
-			}
-		}
-
-		if (functionLengthIsConfigurable || functionLengthIsWritable || !loose) {
-			if (hasDescriptors) {
-				defineDataProperty(/** @type {Parameters<define>[0]} */ (fn), 'length', length, true, true);
-			} else {
-				defineDataProperty(/** @type {Parameters<define>[0]} */ (fn), 'length', length);
-			}
-		}
-		return fn;
-	};
-
-	var callBind = createCommonjsModule(function (module) {
-
-
-
-
-
-
-	var $apply = getIntrinsic('%Function.prototype.apply%');
-	var $call = getIntrinsic('%Function.prototype.call%');
-	var $reflectApply = getIntrinsic('%Reflect.apply%', true) || functionBind.call($call, $apply);
-
-
-	var $max = getIntrinsic('%Math.max%');
-
-	module.exports = function callBind(originalFunction) {
-		if (typeof originalFunction !== 'function') {
-			throw new type('a function is required');
-		}
-		var func = $reflectApply(functionBind, $call, arguments);
-		return setFunctionLength(
-			func,
-			1 + $max(0, originalFunction.length - (arguments.length - 1)),
-			true
-		);
-	};
-
-	var applyBind = function applyBind() {
-		return $reflectApply(functionBind, $apply, arguments);
-	};
-
-	if (esDefineProperty) {
-		esDefineProperty(module.exports, 'apply', { value: applyBind });
-	} else {
-		module.exports.apply = applyBind;
-	}
-	});
-	var callBind_1 = callBind.apply;
-
-	var $indexOf = callBind(getIntrinsic('String.prototype.indexOf'));
-
-	var callBound = function callBoundIntrinsic(name, allowMissing) {
-		var intrinsic = getIntrinsic(name, !!allowMissing);
-		if (typeof intrinsic === 'function' && $indexOf(name, '.prototype.') > -1) {
-			return callBind(intrinsic);
-		}
-		return intrinsic;
-	};
 
 	var _nodeResolve_empty = {};
 
@@ -826,7 +111,7 @@
 		'default': _nodeResolve_empty
 	});
 
-	var semver = getCjsExportFromNamespace(_nodeResolve_empty$1);
+	var utilInspect = getCjsExportFromNamespace(_nodeResolve_empty$1);
 
 	var hasMap = typeof Map === 'function' && Map.prototype;
 	var mapSizeDescriptor = Object.getOwnPropertyDescriptor && hasMap ? Object.getOwnPropertyDescriptor(Map.prototype, 'size') : null;
@@ -847,14 +132,14 @@
 	var functionToString = Function.prototype.toString;
 	var $match = String.prototype.match;
 	var $slice = String.prototype.slice;
-	var $replace$1 = String.prototype.replace;
+	var $replace = String.prototype.replace;
 	var $toUpperCase = String.prototype.toUpperCase;
 	var $toLowerCase = String.prototype.toLowerCase;
 	var $test = RegExp.prototype.test;
-	var $concat$1 = Array.prototype.concat;
+	var $concat = Array.prototype.concat;
 	var $join = Array.prototype.join;
 	var $arrSlice = Array.prototype.slice;
-	var $floor$1 = Math.floor;
+	var $floor = Math.floor;
 	var bigIntValueOf = typeof BigInt === 'function' ? BigInt.prototype.valueOf : null;
 	var gOPS = Object.getOwnPropertySymbols;
 	var symToString = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol' ? Symbol.prototype.toString : null;
@@ -885,24 +170,35 @@
 	    }
 	    var sepRegex = /[0-9](?=(?:[0-9]{3})+(?![0-9]))/g;
 	    if (typeof num === 'number') {
-	        var int = num < 0 ? -$floor$1(-num) : $floor$1(num); // trunc(num)
+	        var int = num < 0 ? -$floor(-num) : $floor(num); // trunc(num)
 	        if (int !== num) {
 	            var intStr = String(int);
 	            var dec = $slice.call(str, intStr.length + 1);
-	            return $replace$1.call(intStr, sepRegex, '$&_') + '.' + $replace$1.call($replace$1.call(dec, /([0-9]{3})/g, '$&_'), /_$/, '');
+	            return $replace.call(intStr, sepRegex, '$&_') + '.' + $replace.call($replace.call(dec, /([0-9]{3})/g, '$&_'), /_$/, '');
 	        }
 	    }
-	    return $replace$1.call(str, sepRegex, '$&_');
+	    return $replace.call(str, sepRegex, '$&_');
 	}
 
 
-	var inspectCustom = semver.custom;
+	var inspectCustom = utilInspect.custom;
 	var inspectSymbol = isSymbol(inspectCustom) ? inspectCustom : null;
+
+	var quotes = {
+	    __proto__: null,
+	    'double': '"',
+	    single: "'"
+	};
+	var quoteREs = {
+	    __proto__: null,
+	    'double': /(["\\])/g,
+	    single: /(['\\])/g
+	};
 
 	var objectInspect = function inspect_(obj, options, depth, seen) {
 	    var opts = options || {};
 
-	    if (has(opts, 'quoteStyle') && (opts.quoteStyle !== 'single' && opts.quoteStyle !== 'double')) {
+	    if (has(opts, 'quoteStyle') && !has(quotes, opts.quoteStyle)) {
 	        throw new TypeError('option "quoteStyle" must be "single" or "double"');
 	    }
 	    if (
@@ -993,7 +289,7 @@
 	        return '[Function' + (name ? ': ' + name : ' (anonymous)') + ']' + (keys.length > 0 ? ' { ' + $join.call(keys, ', ') + ' }' : '');
 	    }
 	    if (isSymbol(obj)) {
-	        var symString = hasShammedSymbols ? $replace$1.call(String(obj), /^(Symbol\(.*\))_[^)]*$/, '$1') : symToString.call(obj);
+	        var symString = hasShammedSymbols ? $replace.call(String(obj), /^(Symbol\(.*\))_[^)]*$/, '$1') : symToString.call(obj);
 	        return typeof obj === 'object' && !hasShammedSymbols ? markBoxed(symString) : symString;
 	    }
 	    if (isElement(obj)) {
@@ -1018,14 +314,14 @@
 	    if (isError(obj)) {
 	        var parts = arrObjKeys(obj, inspect);
 	        if (!('cause' in Error.prototype) && 'cause' in obj && !isEnumerable.call(obj, 'cause')) {
-	            return '{ [' + String(obj) + '] ' + $join.call($concat$1.call('[cause]: ' + inspect(obj.cause), parts), ', ') + ' }';
+	            return '{ [' + String(obj) + '] ' + $join.call($concat.call('[cause]: ' + inspect(obj.cause), parts), ', ') + ' }';
 	        }
 	        if (parts.length === 0) { return '[' + String(obj) + ']'; }
 	        return '{ [' + String(obj) + '] ' + $join.call(parts, ', ') + ' }';
 	    }
 	    if (typeof obj === 'object' && customInspect) {
-	        if (inspectSymbol && typeof obj[inspectSymbol] === 'function' && semver) {
-	            return semver(obj, { depth: maxDepth - depth });
+	        if (inspectSymbol && typeof obj[inspectSymbol] === 'function' && utilInspect) {
+	            return utilInspect(obj, { depth: maxDepth - depth });
 	        } else if (customInspect !== 'symbol' && typeof obj.inspect === 'function') {
 	            return obj.inspect();
 	        }
@@ -1074,16 +370,19 @@
 	    if (typeof window !== 'undefined' && obj === window) {
 	        return '{ [object Window] }';
 	    }
-	    if (obj === commonjsGlobal) {
+	    if (
+	        (typeof globalThis !== 'undefined' && obj === globalThis)
+	        || (typeof commonjsGlobal !== 'undefined' && obj === commonjsGlobal)
+	    ) {
 	        return '{ [object globalThis] }';
 	    }
 	    if (!isDate(obj) && !isRegExp(obj)) {
 	        var ys = arrObjKeys(obj, inspect);
 	        var isPlainObject = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
 	        var protoTag = obj instanceof Object ? '' : 'null prototype';
-	        var stringTag = !isPlainObject && toStringTag && Object(obj) === obj && toStringTag in obj ? $slice.call(toStr$1(obj), 8, -1) : protoTag ? 'Object' : '';
+	        var stringTag = !isPlainObject && toStringTag && Object(obj) === obj && toStringTag in obj ? $slice.call(toStr(obj), 8, -1) : protoTag ? 'Object' : '';
 	        var constructorTag = isPlainObject || typeof obj.constructor !== 'function' ? '' : obj.constructor.name ? obj.constructor.name + ' ' : '';
-	        var tag = constructorTag + (stringTag || protoTag ? '[' + $join.call($concat$1.call([], stringTag || [], protoTag || []), ': ') + '] ' : '');
+	        var tag = constructorTag + (stringTag || protoTag ? '[' + $join.call($concat.call([], stringTag || [], protoTag || []), ': ') + '] ' : '');
 	        if (ys.length === 0) { return tag + '{}'; }
 	        if (indent) {
 	            return tag + '{' + indentedJoin(ys, indent) + '}';
@@ -1094,21 +393,25 @@
 	};
 
 	function wrapQuotes(s, defaultStyle, opts) {
-	    var quoteChar = (opts.quoteStyle || defaultStyle) === 'double' ? '"' : "'";
+	    var style = opts.quoteStyle || defaultStyle;
+	    var quoteChar = quotes[style];
 	    return quoteChar + s + quoteChar;
 	}
 
 	function quote(s) {
-	    return $replace$1.call(String(s), /"/g, '&quot;');
+	    return $replace.call(String(s), /"/g, '&quot;');
 	}
 
-	function isArray(obj) { return toStr$1(obj) === '[object Array]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-	function isDate(obj) { return toStr$1(obj) === '[object Date]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-	function isRegExp(obj) { return toStr$1(obj) === '[object RegExp]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-	function isError(obj) { return toStr$1(obj) === '[object Error]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-	function isString(obj) { return toStr$1(obj) === '[object String]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-	function isNumber(obj) { return toStr$1(obj) === '[object Number]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
-	function isBoolean(obj) { return toStr$1(obj) === '[object Boolean]' && (!toStringTag || !(typeof obj === 'object' && toStringTag in obj)); }
+	function canTrustToString(obj) {
+	    return !toStringTag || !(typeof obj === 'object' && (toStringTag in obj || typeof obj[toStringTag] !== 'undefined'));
+	}
+	function isArray(obj) { return toStr(obj) === '[object Array]' && canTrustToString(obj); }
+	function isDate(obj) { return toStr(obj) === '[object Date]' && canTrustToString(obj); }
+	function isRegExp(obj) { return toStr(obj) === '[object RegExp]' && canTrustToString(obj); }
+	function isError(obj) { return toStr(obj) === '[object Error]' && canTrustToString(obj); }
+	function isString(obj) { return toStr(obj) === '[object String]' && canTrustToString(obj); }
+	function isNumber(obj) { return toStr(obj) === '[object Number]' && canTrustToString(obj); }
+	function isBoolean(obj) { return toStr(obj) === '[object Boolean]' && canTrustToString(obj); }
 
 	// Symbol and BigInt do have Symbol.toStringTag by spec, so that can't be used to eliminate false positives
 	function isSymbol(obj) {
@@ -1144,7 +447,7 @@
 	    return hasOwn.call(obj, key);
 	}
 
-	function toStr$1(obj) {
+	function toStr(obj) {
 	    return objectToString.call(obj);
 	}
 
@@ -1252,8 +555,10 @@
 	        var trailer = '... ' + remaining + ' more character' + (remaining > 1 ? 's' : '');
 	        return inspectString($slice.call(str, 0, opts.maxStringLength), opts) + trailer;
 	    }
+	    var quoteRE = quoteREs[opts.quoteStyle || 'single'];
+	    quoteRE.lastIndex = 0;
 	    // eslint-disable-next-line no-control-regex
-	    var s = $replace$1.call($replace$1.call(str, /(['\\])/g, '\\$1'), /[\x00-\x1f]/g, lowbyte);
+	    var s = $replace.call($replace.call(str, quoteRE, '\\$1'), /[\x00-\x1f]/g, lowbyte);
 	    return wrapQuotes(s, 'single', opts);
 	}
 
@@ -1353,126 +658,981 @@
 	    return xs;
 	}
 
-	var $WeakMap = getIntrinsic('%WeakMap%', true);
-	var $Map = getIntrinsic('%Map%', true);
-
-	var $weakMapGet = callBound('WeakMap.prototype.get', true);
-	var $weakMapSet = callBound('WeakMap.prototype.set', true);
-	var $weakMapHas = callBound('WeakMap.prototype.has', true);
-	var $mapGet = callBound('Map.prototype.get', true);
-	var $mapSet = callBound('Map.prototype.set', true);
-	var $mapHas = callBound('Map.prototype.has', true);
-
 	/*
 	* This function traverses the list returning the node corresponding to the given key.
 	*
-	* That node is also moved to the head of the list, so that if it's accessed again we don't need to traverse the whole list. By doing so, all the recently used nodes can be accessed relatively quickly.
+	* That node is also moved to the head of the list, so that if it's accessed again we don't need to traverse the whole list.
+	* By doing so, all the recently used nodes can be accessed relatively quickly.
 	*/
-	/** @type {import('.').listGetNode} */
-	var listGetNode = function (list, key) { // eslint-disable-line consistent-return
+	/** @type {import('./list.d.ts').listGetNode} */
+	// eslint-disable-next-line consistent-return
+	var listGetNode = function (list, key, isDelete) {
 		/** @type {typeof list | NonNullable<(typeof list)['next']>} */
 		var prev = list;
 		/** @type {(typeof list)['next']} */
 		var curr;
-		for (; (curr = prev.next) !== null; prev = curr) {
+		// eslint-disable-next-line eqeqeq
+		for (; (curr = prev.next) != null; prev = curr) {
 			if (curr.key === key) {
 				prev.next = curr.next;
-				// eslint-disable-next-line no-extra-parens
-				curr.next = /** @type {NonNullable<typeof list.next>} */ (list.next);
-				list.next = curr; // eslint-disable-line no-param-reassign
+				if (!isDelete) {
+					// eslint-disable-next-line no-extra-parens
+					curr.next = /** @type {NonNullable<typeof list.next>} */ (list.next);
+					list.next = curr; // eslint-disable-line no-param-reassign
+				}
 				return curr;
 			}
 		}
 	};
 
-	/** @type {import('.').listGet} */
+	/** @type {import('./list.d.ts').listGet} */
 	var listGet = function (objects, key) {
+		if (!objects) {
+			return void undefined;
+		}
 		var node = listGetNode(objects, key);
 		return node && node.value;
 	};
-	/** @type {import('.').listSet} */
+	/** @type {import('./list.d.ts').listSet} */
 	var listSet = function (objects, key, value) {
 		var node = listGetNode(objects, key);
 		if (node) {
 			node.value = value;
 		} else {
 			// Prepend the new node to the beginning of the list
-			objects.next = /** @type {import('.').ListNode<typeof value>} */ ({ // eslint-disable-line no-param-reassign, no-extra-parens
+			objects.next = /** @type {import('./list.d.ts').ListNode<typeof value, typeof key>} */ ({ // eslint-disable-line no-param-reassign, no-extra-parens
 				key: key,
 				next: objects.next,
 				value: value
 			});
 		}
 	};
-	/** @type {import('.').listHas} */
+	/** @type {import('./list.d.ts').listHas} */
 	var listHas = function (objects, key) {
+		if (!objects) {
+			return false;
+		}
 		return !!listGetNode(objects, key);
+	};
+	/** @type {import('./list.d.ts').listDelete} */
+	// eslint-disable-next-line consistent-return
+	var listDelete = function (objects, key) {
+		if (objects) {
+			return listGetNode(objects, key, true);
+		}
 	};
 
 	/** @type {import('.')} */
-	var sideChannel = function getSideChannel() {
-		/** @type {WeakMap<object, unknown>} */ var $wm;
-		/** @type {Map<object, unknown>} */ var $m;
-		/** @type {import('.').RootNode<unknown>} */ var $o;
+	var sideChannelList = function getSideChannelList() {
+		/** @typedef {ReturnType<typeof getSideChannelList>} Channel */
+		/** @typedef {Parameters<Channel['get']>[0]} K */
+		/** @typedef {Parameters<Channel['set']>[1]} V */
 
-		/** @type {import('.').Channel} */
+		/** @type {import('./list.d.ts').RootNode<V, K> | undefined} */ var $o;
+
+		/** @type {Channel} */
 		var channel = {
 			assert: function (key) {
 				if (!channel.has(key)) {
 					throw new type('Side channel does not contain ' + objectInspect(key));
 				}
 			},
-			get: function (key) { // eslint-disable-line consistent-return
-				if ($WeakMap && key && (typeof key === 'object' || typeof key === 'function')) {
-					if ($wm) {
-						return $weakMapGet($wm, key);
+			'delete': function (key) {
+				var root = $o && $o.next;
+				var deletedNode = listDelete($o, key);
+				if (deletedNode && root && root === deletedNode) {
+					$o = void undefined;
+				}
+				return !!deletedNode;
+			},
+			get: function (key) {
+				return listGet($o, key);
+			},
+			has: function (key) {
+				return listHas($o, key);
+			},
+			set: function (key, value) {
+				if (!$o) {
+					// Initialize the linked list as an empty node, so that we don't have to special-case handling of the first node: we can always refer to it as (previous node).next, instead of something like (list).head
+					$o = {
+						next: void undefined
+					};
+				}
+				// eslint-disable-next-line no-extra-parens
+				listSet(/** @type {NonNullable<typeof $o>} */ ($o), key, value);
+			}
+		};
+		// @ts-expect-error TODO: figure out why this is erroring
+		return channel;
+	};
+
+	/** @type {import('.')} */
+	var esObjectAtoms = Object;
+
+	/** @type {import('.')} */
+	var esErrors = Error;
+
+	/** @type {import('./eval')} */
+	var _eval = EvalError;
+
+	/** @type {import('./range')} */
+	var range = RangeError;
+
+	/** @type {import('./ref')} */
+	var ref = ReferenceError;
+
+	/** @type {import('./syntax')} */
+	var syntax = SyntaxError;
+
+	/** @type {import('./uri')} */
+	var uri = URIError;
+
+	/** @type {import('./abs')} */
+	var abs = Math.abs;
+
+	/** @type {import('./floor')} */
+	var floor = Math.floor;
+
+	/** @type {import('./max')} */
+	var max = Math.max;
+
+	/** @type {import('./min')} */
+	var min = Math.min;
+
+	/** @type {import('./pow')} */
+	var pow = Math.pow;
+
+	/** @type {import('./round')} */
+	var round = Math.round;
+
+	/** @type {import('./isNaN')} */
+	var _isNaN = Number.isNaN || function isNaN(a) {
+		return a !== a;
+	};
+
+	/** @type {import('./sign')} */
+	var sign = function sign(number) {
+		if (_isNaN(number) || number === 0) {
+			return number;
+		}
+		return number < 0 ? -1 : +1;
+	};
+
+	/** @type {import('./gOPD')} */
+	var gOPD = Object.getOwnPropertyDescriptor;
+
+	/** @type {import('.')} */
+	var $gOPD = gOPD;
+
+	if ($gOPD) {
+		try {
+			$gOPD([], 'length');
+		} catch (e) {
+			// IE 8 has a broken gOPD
+			$gOPD = null;
+		}
+	}
+
+	var gopd = $gOPD;
+
+	/** @type {import('.')} */
+	var $defineProperty = Object.defineProperty || false;
+	if ($defineProperty) {
+		try {
+			$defineProperty({}, 'a', { value: 1 });
+		} catch (e) {
+			// IE 8 has a broken defineProperty
+			$defineProperty = false;
+		}
+	}
+
+	var esDefineProperty = $defineProperty;
+
+	/** @type {import('./shams')} */
+	/* eslint complexity: [2, 18], max-statements: [2, 33] */
+	var shams = function hasSymbols() {
+		if (typeof Symbol !== 'function' || typeof Object.getOwnPropertySymbols !== 'function') { return false; }
+		if (typeof Symbol.iterator === 'symbol') { return true; }
+
+		/** @type {{ [k in symbol]?: unknown }} */
+		var obj = {};
+		var sym = Symbol('test');
+		var symObj = Object(sym);
+		if (typeof sym === 'string') { return false; }
+
+		if (Object.prototype.toString.call(sym) !== '[object Symbol]') { return false; }
+		if (Object.prototype.toString.call(symObj) !== '[object Symbol]') { return false; }
+
+		// temp disabled per https://github.com/ljharb/object.assign/issues/17
+		// if (sym instanceof Symbol) { return false; }
+		// temp disabled per https://github.com/WebReflection/get-own-property-symbols/issues/4
+		// if (!(symObj instanceof Symbol)) { return false; }
+
+		// if (typeof Symbol.prototype.toString !== 'function') { return false; }
+		// if (String(sym) !== Symbol.prototype.toString.call(sym)) { return false; }
+
+		var symVal = 42;
+		obj[sym] = symVal;
+		for (var _ in obj) { return false; } // eslint-disable-line no-restricted-syntax, no-unreachable-loop
+		if (typeof Object.keys === 'function' && Object.keys(obj).length !== 0) { return false; }
+
+		if (typeof Object.getOwnPropertyNames === 'function' && Object.getOwnPropertyNames(obj).length !== 0) { return false; }
+
+		var syms = Object.getOwnPropertySymbols(obj);
+		if (syms.length !== 1 || syms[0] !== sym) { return false; }
+
+		if (!Object.prototype.propertyIsEnumerable.call(obj, sym)) { return false; }
+
+		if (typeof Object.getOwnPropertyDescriptor === 'function') {
+			// eslint-disable-next-line no-extra-parens
+			var descriptor = /** @type {PropertyDescriptor} */ (Object.getOwnPropertyDescriptor(obj, sym));
+			if (descriptor.value !== symVal || descriptor.enumerable !== true) { return false; }
+		}
+
+		return true;
+	};
+
+	var origSymbol = typeof Symbol !== 'undefined' && Symbol;
+
+
+	/** @type {import('.')} */
+	var hasSymbols = function hasNativeSymbols() {
+		if (typeof origSymbol !== 'function') { return false; }
+		if (typeof Symbol !== 'function') { return false; }
+		if (typeof origSymbol('foo') !== 'symbol') { return false; }
+		if (typeof Symbol('bar') !== 'symbol') { return false; }
+
+		return shams();
+	};
+
+	/** @type {import('./Reflect.getPrototypeOf')} */
+	var Reflect_getPrototypeOf = (typeof Reflect !== 'undefined' && Reflect.getPrototypeOf) || null;
+
+	/** @type {import('./Object.getPrototypeOf')} */
+	var Object_getPrototypeOf = esObjectAtoms.getPrototypeOf || null;
+
+	/* eslint no-invalid-this: 1 */
+
+	var ERROR_MESSAGE = 'Function.prototype.bind called on incompatible ';
+	var toStr$1 = Object.prototype.toString;
+	var max$1 = Math.max;
+	var funcType = '[object Function]';
+
+	var concatty = function concatty(a, b) {
+	    var arr = [];
+
+	    for (var i = 0; i < a.length; i += 1) {
+	        arr[i] = a[i];
+	    }
+	    for (var j = 0; j < b.length; j += 1) {
+	        arr[j + a.length] = b[j];
+	    }
+
+	    return arr;
+	};
+
+	var slicy = function slicy(arrLike, offset) {
+	    var arr = [];
+	    for (var i = offset || 0, j = 0; i < arrLike.length; i += 1, j += 1) {
+	        arr[j] = arrLike[i];
+	    }
+	    return arr;
+	};
+
+	var joiny = function (arr, joiner) {
+	    var str = '';
+	    for (var i = 0; i < arr.length; i += 1) {
+	        str += arr[i];
+	        if (i + 1 < arr.length) {
+	            str += joiner;
+	        }
+	    }
+	    return str;
+	};
+
+	var implementation = function bind(that) {
+	    var target = this;
+	    if (typeof target !== 'function' || toStr$1.apply(target) !== funcType) {
+	        throw new TypeError(ERROR_MESSAGE + target);
+	    }
+	    var args = slicy(arguments, 1);
+
+	    var bound;
+	    var binder = function () {
+	        if (this instanceof bound) {
+	            var result = target.apply(
+	                this,
+	                concatty(args, arguments)
+	            );
+	            if (Object(result) === result) {
+	                return result;
+	            }
+	            return this;
+	        }
+	        return target.apply(
+	            that,
+	            concatty(args, arguments)
+	        );
+
+	    };
+
+	    var boundLength = max$1(0, target.length - args.length);
+	    var boundArgs = [];
+	    for (var i = 0; i < boundLength; i++) {
+	        boundArgs[i] = '$' + i;
+	    }
+
+	    bound = Function('binder', 'return function (' + joiny(boundArgs, ',') + '){ return binder.apply(this,arguments); }')(binder);
+
+	    if (target.prototype) {
+	        var Empty = function Empty() {};
+	        Empty.prototype = target.prototype;
+	        bound.prototype = new Empty();
+	        Empty.prototype = null;
+	    }
+
+	    return bound;
+	};
+
+	var functionBind = Function.prototype.bind || implementation;
+
+	/** @type {import('./functionCall')} */
+	var functionCall = Function.prototype.call;
+
+	/** @type {import('./functionApply')} */
+	var functionApply = Function.prototype.apply;
+
+	/** @type {import('./reflectApply')} */
+	var reflectApply = typeof Reflect !== 'undefined' && Reflect && Reflect.apply;
+
+	/** @type {import('./actualApply')} */
+	var actualApply = reflectApply || functionBind.call(functionCall, functionApply);
+
+	/** @type {(args: [Function, thisArg?: unknown, ...args: unknown[]]) => Function} TODO FIXME, find a way to use import('.') */
+	var callBindApplyHelpers = function callBindBasic(args) {
+		if (args.length < 1 || typeof args[0] !== 'function') {
+			throw new type('a function is required');
+		}
+		return actualApply(functionBind, functionCall, args);
+	};
+
+	var hasProtoAccessor;
+	try {
+		// eslint-disable-next-line no-extra-parens, no-proto
+		hasProtoAccessor = /** @type {{ __proto__?: typeof Array.prototype }} */ ([]).__proto__ === Array.prototype;
+	} catch (e) {
+		if (!e || typeof e !== 'object' || !('code' in e) || e.code !== 'ERR_PROTO_ACCESS') {
+			throw e;
+		}
+	}
+
+	// eslint-disable-next-line no-extra-parens
+	var desc = !!hasProtoAccessor && gopd && gopd(Object.prototype, /** @type {keyof typeof Object.prototype} */ ('__proto__'));
+
+	var $Object = Object;
+	var $getPrototypeOf = $Object.getPrototypeOf;
+
+	/** @type {import('./get')} */
+	var get = desc && typeof desc.get === 'function'
+		? callBindApplyHelpers([desc.get])
+		: typeof $getPrototypeOf === 'function'
+			? /** @type {import('./get')} */ function getDunder(value) {
+				// eslint-disable-next-line eqeqeq
+				return $getPrototypeOf(value == null ? value : $Object(value));
+			}
+			: false;
+
+	/** @type {import('.')} */
+	var getProto = Reflect_getPrototypeOf
+		? function getProto(O) {
+			// @ts-expect-error TS can't narrow inside a closure, for some reason
+			return Reflect_getPrototypeOf(O);
+		}
+		: Object_getPrototypeOf
+			? function getProto(O) {
+				if (!O || (typeof O !== 'object' && typeof O !== 'function')) {
+					throw new TypeError('getProto: not an object');
+				}
+				// @ts-expect-error TS can't narrow inside a closure, for some reason
+				return Object_getPrototypeOf(O);
+			}
+			: get
+				? function getProto(O) {
+					// @ts-expect-error TS can't narrow inside a closure, for some reason
+					return get(O);
+				}
+				: null;
+
+	var call = Function.prototype.call;
+	var $hasOwn = Object.prototype.hasOwnProperty;
+
+
+	/** @type {import('.')} */
+	var hasown = functionBind.call(call, $hasOwn);
+
+	var undefined$1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	var $Function = Function;
+
+	// eslint-disable-next-line consistent-return
+	var getEvalledConstructor = function (expressionSyntax) {
+		try {
+			return $Function('"use strict"; return (' + expressionSyntax + ').constructor;')();
+		} catch (e) {}
+	};
+
+
+
+
+	var throwTypeError = function () {
+		throw new type();
+	};
+	var ThrowTypeError = gopd
+		? (function () {
+			try {
+				// eslint-disable-next-line no-unused-expressions, no-caller, no-restricted-properties
+				arguments.callee; // IE 8 does not throw here
+				return throwTypeError;
+			} catch (calleeThrows) {
+				try {
+					// IE 8 throws on Object.getOwnPropertyDescriptor(arguments, '')
+					return gopd(arguments, 'callee').get;
+				} catch (gOPDthrows) {
+					return throwTypeError;
+				}
+			}
+		}())
+		: throwTypeError;
+
+	var hasSymbols$1 = hasSymbols();
+
+
+
+
+
+
+
+
+	var needsEval = {};
+
+	var TypedArray = typeof Uint8Array === 'undefined' || !getProto ? undefined$1 : getProto(Uint8Array);
+
+	var INTRINSICS = {
+		__proto__: null,
+		'%AggregateError%': typeof AggregateError === 'undefined' ? undefined$1 : AggregateError,
+		'%Array%': Array,
+		'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined$1 : ArrayBuffer,
+		'%ArrayIteratorPrototype%': hasSymbols$1 && getProto ? getProto([][Symbol.iterator]()) : undefined$1,
+		'%AsyncFromSyncIteratorPrototype%': undefined$1,
+		'%AsyncFunction%': needsEval,
+		'%AsyncGenerator%': needsEval,
+		'%AsyncGeneratorFunction%': needsEval,
+		'%AsyncIteratorPrototype%': needsEval,
+		'%Atomics%': typeof Atomics === 'undefined' ? undefined$1 : Atomics,
+		'%BigInt%': typeof BigInt === 'undefined' ? undefined$1 : BigInt,
+		'%BigInt64Array%': typeof BigInt64Array === 'undefined' ? undefined$1 : BigInt64Array,
+		'%BigUint64Array%': typeof BigUint64Array === 'undefined' ? undefined$1 : BigUint64Array,
+		'%Boolean%': Boolean,
+		'%DataView%': typeof DataView === 'undefined' ? undefined$1 : DataView,
+		'%Date%': Date,
+		'%decodeURI%': decodeURI,
+		'%decodeURIComponent%': decodeURIComponent,
+		'%encodeURI%': encodeURI,
+		'%encodeURIComponent%': encodeURIComponent,
+		'%Error%': esErrors,
+		'%eval%': eval, // eslint-disable-line no-eval
+		'%EvalError%': _eval,
+		'%Float16Array%': typeof Float16Array === 'undefined' ? undefined$1 : Float16Array,
+		'%Float32Array%': typeof Float32Array === 'undefined' ? undefined$1 : Float32Array,
+		'%Float64Array%': typeof Float64Array === 'undefined' ? undefined$1 : Float64Array,
+		'%FinalizationRegistry%': typeof FinalizationRegistry === 'undefined' ? undefined$1 : FinalizationRegistry,
+		'%Function%': $Function,
+		'%GeneratorFunction%': needsEval,
+		'%Int8Array%': typeof Int8Array === 'undefined' ? undefined$1 : Int8Array,
+		'%Int16Array%': typeof Int16Array === 'undefined' ? undefined$1 : Int16Array,
+		'%Int32Array%': typeof Int32Array === 'undefined' ? undefined$1 : Int32Array,
+		'%isFinite%': isFinite,
+		'%isNaN%': isNaN,
+		'%IteratorPrototype%': hasSymbols$1 && getProto ? getProto(getProto([][Symbol.iterator]())) : undefined$1,
+		'%JSON%': typeof JSON === 'object' ? JSON : undefined$1,
+		'%Map%': typeof Map === 'undefined' ? undefined$1 : Map,
+		'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols$1 || !getProto ? undefined$1 : getProto(new Map()[Symbol.iterator]()),
+		'%Math%': Math,
+		'%Number%': Number,
+		'%Object%': esObjectAtoms,
+		'%Object.getOwnPropertyDescriptor%': gopd,
+		'%parseFloat%': parseFloat,
+		'%parseInt%': parseInt,
+		'%Promise%': typeof Promise === 'undefined' ? undefined$1 : Promise,
+		'%Proxy%': typeof Proxy === 'undefined' ? undefined$1 : Proxy,
+		'%RangeError%': range,
+		'%ReferenceError%': ref,
+		'%Reflect%': typeof Reflect === 'undefined' ? undefined$1 : Reflect,
+		'%RegExp%': RegExp,
+		'%Set%': typeof Set === 'undefined' ? undefined$1 : Set,
+		'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols$1 || !getProto ? undefined$1 : getProto(new Set()[Symbol.iterator]()),
+		'%SharedArrayBuffer%': typeof SharedArrayBuffer === 'undefined' ? undefined$1 : SharedArrayBuffer,
+		'%String%': String,
+		'%StringIteratorPrototype%': hasSymbols$1 && getProto ? getProto(''[Symbol.iterator]()) : undefined$1,
+		'%Symbol%': hasSymbols$1 ? Symbol : undefined$1,
+		'%SyntaxError%': syntax,
+		'%ThrowTypeError%': ThrowTypeError,
+		'%TypedArray%': TypedArray,
+		'%TypeError%': type,
+		'%Uint8Array%': typeof Uint8Array === 'undefined' ? undefined$1 : Uint8Array,
+		'%Uint8ClampedArray%': typeof Uint8ClampedArray === 'undefined' ? undefined$1 : Uint8ClampedArray,
+		'%Uint16Array%': typeof Uint16Array === 'undefined' ? undefined$1 : Uint16Array,
+		'%Uint32Array%': typeof Uint32Array === 'undefined' ? undefined$1 : Uint32Array,
+		'%URIError%': uri,
+		'%WeakMap%': typeof WeakMap === 'undefined' ? undefined$1 : WeakMap,
+		'%WeakRef%': typeof WeakRef === 'undefined' ? undefined$1 : WeakRef,
+		'%WeakSet%': typeof WeakSet === 'undefined' ? undefined$1 : WeakSet,
+
+		'%Function.prototype.call%': functionCall,
+		'%Function.prototype.apply%': functionApply,
+		'%Object.defineProperty%': esDefineProperty,
+		'%Object.getPrototypeOf%': Object_getPrototypeOf,
+		'%Math.abs%': abs,
+		'%Math.floor%': floor,
+		'%Math.max%': max,
+		'%Math.min%': min,
+		'%Math.pow%': pow,
+		'%Math.round%': round,
+		'%Math.sign%': sign,
+		'%Reflect.getPrototypeOf%': Reflect_getPrototypeOf
+	};
+
+	if (getProto) {
+		try {
+			null.error; // eslint-disable-line no-unused-expressions
+		} catch (e) {
+			// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
+			var errorProto = getProto(getProto(e));
+			INTRINSICS['%Error.prototype%'] = errorProto;
+		}
+	}
+
+	var doEval = function doEval(name) {
+		var value;
+		if (name === '%AsyncFunction%') {
+			value = getEvalledConstructor('async function () {}');
+		} else if (name === '%GeneratorFunction%') {
+			value = getEvalledConstructor('function* () {}');
+		} else if (name === '%AsyncGeneratorFunction%') {
+			value = getEvalledConstructor('async function* () {}');
+		} else if (name === '%AsyncGenerator%') {
+			var fn = doEval('%AsyncGeneratorFunction%');
+			if (fn) {
+				value = fn.prototype;
+			}
+		} else if (name === '%AsyncIteratorPrototype%') {
+			var gen = doEval('%AsyncGenerator%');
+			if (gen && getProto) {
+				value = getProto(gen.prototype);
+			}
+		}
+
+		INTRINSICS[name] = value;
+
+		return value;
+	};
+
+	var LEGACY_ALIASES = {
+		__proto__: null,
+		'%ArrayBufferPrototype%': ['ArrayBuffer', 'prototype'],
+		'%ArrayPrototype%': ['Array', 'prototype'],
+		'%ArrayProto_entries%': ['Array', 'prototype', 'entries'],
+		'%ArrayProto_forEach%': ['Array', 'prototype', 'forEach'],
+		'%ArrayProto_keys%': ['Array', 'prototype', 'keys'],
+		'%ArrayProto_values%': ['Array', 'prototype', 'values'],
+		'%AsyncFunctionPrototype%': ['AsyncFunction', 'prototype'],
+		'%AsyncGenerator%': ['AsyncGeneratorFunction', 'prototype'],
+		'%AsyncGeneratorPrototype%': ['AsyncGeneratorFunction', 'prototype', 'prototype'],
+		'%BooleanPrototype%': ['Boolean', 'prototype'],
+		'%DataViewPrototype%': ['DataView', 'prototype'],
+		'%DatePrototype%': ['Date', 'prototype'],
+		'%ErrorPrototype%': ['Error', 'prototype'],
+		'%EvalErrorPrototype%': ['EvalError', 'prototype'],
+		'%Float32ArrayPrototype%': ['Float32Array', 'prototype'],
+		'%Float64ArrayPrototype%': ['Float64Array', 'prototype'],
+		'%FunctionPrototype%': ['Function', 'prototype'],
+		'%Generator%': ['GeneratorFunction', 'prototype'],
+		'%GeneratorPrototype%': ['GeneratorFunction', 'prototype', 'prototype'],
+		'%Int8ArrayPrototype%': ['Int8Array', 'prototype'],
+		'%Int16ArrayPrototype%': ['Int16Array', 'prototype'],
+		'%Int32ArrayPrototype%': ['Int32Array', 'prototype'],
+		'%JSONParse%': ['JSON', 'parse'],
+		'%JSONStringify%': ['JSON', 'stringify'],
+		'%MapPrototype%': ['Map', 'prototype'],
+		'%NumberPrototype%': ['Number', 'prototype'],
+		'%ObjectPrototype%': ['Object', 'prototype'],
+		'%ObjProto_toString%': ['Object', 'prototype', 'toString'],
+		'%ObjProto_valueOf%': ['Object', 'prototype', 'valueOf'],
+		'%PromisePrototype%': ['Promise', 'prototype'],
+		'%PromiseProto_then%': ['Promise', 'prototype', 'then'],
+		'%Promise_all%': ['Promise', 'all'],
+		'%Promise_reject%': ['Promise', 'reject'],
+		'%Promise_resolve%': ['Promise', 'resolve'],
+		'%RangeErrorPrototype%': ['RangeError', 'prototype'],
+		'%ReferenceErrorPrototype%': ['ReferenceError', 'prototype'],
+		'%RegExpPrototype%': ['RegExp', 'prototype'],
+		'%SetPrototype%': ['Set', 'prototype'],
+		'%SharedArrayBufferPrototype%': ['SharedArrayBuffer', 'prototype'],
+		'%StringPrototype%': ['String', 'prototype'],
+		'%SymbolPrototype%': ['Symbol', 'prototype'],
+		'%SyntaxErrorPrototype%': ['SyntaxError', 'prototype'],
+		'%TypedArrayPrototype%': ['TypedArray', 'prototype'],
+		'%TypeErrorPrototype%': ['TypeError', 'prototype'],
+		'%Uint8ArrayPrototype%': ['Uint8Array', 'prototype'],
+		'%Uint8ClampedArrayPrototype%': ['Uint8ClampedArray', 'prototype'],
+		'%Uint16ArrayPrototype%': ['Uint16Array', 'prototype'],
+		'%Uint32ArrayPrototype%': ['Uint32Array', 'prototype'],
+		'%URIErrorPrototype%': ['URIError', 'prototype'],
+		'%WeakMapPrototype%': ['WeakMap', 'prototype'],
+		'%WeakSetPrototype%': ['WeakSet', 'prototype']
+	};
+
+
+
+	var $concat$1 = functionBind.call(functionCall, Array.prototype.concat);
+	var $spliceApply = functionBind.call(functionApply, Array.prototype.splice);
+	var $replace$1 = functionBind.call(functionCall, String.prototype.replace);
+	var $strSlice = functionBind.call(functionCall, String.prototype.slice);
+	var $exec = functionBind.call(functionCall, RegExp.prototype.exec);
+
+	/* adapted from https://github.com/lodash/lodash/blob/4.17.15/dist/lodash.js#L6735-L6744 */
+	var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
+	var reEscapeChar = /\\(\\)?/g; /** Used to match backslashes in property paths. */
+	var stringToPath = function stringToPath(string) {
+		var first = $strSlice(string, 0, 1);
+		var last = $strSlice(string, -1);
+		if (first === '%' && last !== '%') {
+			throw new syntax('invalid intrinsic syntax, expected closing `%`');
+		} else if (last === '%' && first !== '%') {
+			throw new syntax('invalid intrinsic syntax, expected opening `%`');
+		}
+		var result = [];
+		$replace$1(string, rePropName, function (match, number, quote, subString) {
+			result[result.length] = quote ? $replace$1(subString, reEscapeChar, '$1') : number || match;
+		});
+		return result;
+	};
+	/* end adaptation */
+
+	var getBaseIntrinsic = function getBaseIntrinsic(name, allowMissing) {
+		var intrinsicName = name;
+		var alias;
+		if (hasown(LEGACY_ALIASES, intrinsicName)) {
+			alias = LEGACY_ALIASES[intrinsicName];
+			intrinsicName = '%' + alias[0] + '%';
+		}
+
+		if (hasown(INTRINSICS, intrinsicName)) {
+			var value = INTRINSICS[intrinsicName];
+			if (value === needsEval) {
+				value = doEval(intrinsicName);
+			}
+			if (typeof value === 'undefined' && !allowMissing) {
+				throw new type('intrinsic ' + name + ' exists, but is not available. Please file an issue!');
+			}
+
+			return {
+				alias: alias,
+				name: intrinsicName,
+				value: value
+			};
+		}
+
+		throw new syntax('intrinsic ' + name + ' does not exist!');
+	};
+
+	var getIntrinsic = function GetIntrinsic(name, allowMissing) {
+		if (typeof name !== 'string' || name.length === 0) {
+			throw new type('intrinsic name must be a non-empty string');
+		}
+		if (arguments.length > 1 && typeof allowMissing !== 'boolean') {
+			throw new type('"allowMissing" argument must be a boolean');
+		}
+
+		if ($exec(/^%?[^%]*%?$/, name) === null) {
+			throw new syntax('`%` may not be present anywhere but at the beginning and end of the intrinsic name');
+		}
+		var parts = stringToPath(name);
+		var intrinsicBaseName = parts.length > 0 ? parts[0] : '';
+
+		var intrinsic = getBaseIntrinsic('%' + intrinsicBaseName + '%', allowMissing);
+		var intrinsicRealName = intrinsic.name;
+		var value = intrinsic.value;
+		var skipFurtherCaching = false;
+
+		var alias = intrinsic.alias;
+		if (alias) {
+			intrinsicBaseName = alias[0];
+			$spliceApply(parts, $concat$1([0, 1], alias));
+		}
+
+		for (var i = 1, isOwn = true; i < parts.length; i += 1) {
+			var part = parts[i];
+			var first = $strSlice(part, 0, 1);
+			var last = $strSlice(part, -1);
+			if (
+				(
+					(first === '"' || first === "'" || first === '`')
+					|| (last === '"' || last === "'" || last === '`')
+				)
+				&& first !== last
+			) {
+				throw new syntax('property names with quotes must have matching quotes');
+			}
+			if (part === 'constructor' || !isOwn) {
+				skipFurtherCaching = true;
+			}
+
+			intrinsicBaseName += '.' + part;
+			intrinsicRealName = '%' + intrinsicBaseName + '%';
+
+			if (hasown(INTRINSICS, intrinsicRealName)) {
+				value = INTRINSICS[intrinsicRealName];
+			} else if (value != null) {
+				if (!(part in value)) {
+					if (!allowMissing) {
+						throw new type('base intrinsic for ' + name + ' exists, but the property is not available.');
 					}
-				} else if ($Map) {
-					if ($m) {
-						return $mapGet($m, key);
+					return void undefined$1;
+				}
+				if (gopd && (i + 1) >= parts.length) {
+					var desc = gopd(value, part);
+					isOwn = !!desc;
+
+					// By convention, when a data property is converted to an accessor
+					// property to emulate a data property that does not suffer from
+					// the override mistake, that accessor's getter is marked with
+					// an `originalValue` property. Here, when we detect this, we
+					// uphold the illusion by pretending to see that original data
+					// property, i.e., returning the value rather than the getter
+					// itself.
+					if (isOwn && 'get' in desc && !('originalValue' in desc.get)) {
+						value = desc.get;
+					} else {
+						value = value[part];
 					}
 				} else {
-					if ($o) { // eslint-disable-line no-lonely-if
-						return listGet($o, key);
+					isOwn = hasown(value, part);
+					value = value[part];
+				}
+
+				if (isOwn && !skipFurtherCaching) {
+					INTRINSICS[intrinsicRealName] = value;
+				}
+			}
+		}
+		return value;
+	};
+
+	/** @type {(thisArg: string, searchString: string, position?: number) => number} */
+	var $indexOf = callBindApplyHelpers([getIntrinsic('%String.prototype.indexOf%')]);
+
+	/** @type {import('.')} */
+	var callBound = function callBoundIntrinsic(name, allowMissing) {
+		/* eslint no-extra-parens: 0 */
+
+		var intrinsic = /** @type {(this: unknown, ...args: unknown[]) => unknown} */ (getIntrinsic(name, !!allowMissing));
+		if (typeof intrinsic === 'function' && $indexOf(name, '.prototype.') > -1) {
+			return callBindApplyHelpers(/** @type {const} */ ([intrinsic]));
+		}
+		return intrinsic;
+	};
+
+	var $Map = getIntrinsic('%Map%', true);
+
+	/** @type {<K, V>(thisArg: Map<K, V>, key: K) => V} */
+	var $mapGet = callBound('Map.prototype.get', true);
+	/** @type {<K, V>(thisArg: Map<K, V>, key: K, value: V) => void} */
+	var $mapSet = callBound('Map.prototype.set', true);
+	/** @type {<K, V>(thisArg: Map<K, V>, key: K) => boolean} */
+	var $mapHas = callBound('Map.prototype.has', true);
+	/** @type {<K, V>(thisArg: Map<K, V>, key: K) => boolean} */
+	var $mapDelete = callBound('Map.prototype.delete', true);
+	/** @type {<K, V>(thisArg: Map<K, V>) => number} */
+	var $mapSize = callBound('Map.prototype.size', true);
+
+	/** @type {import('.')} */
+	var sideChannelMap = !!$Map && /** @type {Exclude<import('.'), false>} */ function getSideChannelMap() {
+		/** @typedef {ReturnType<typeof getSideChannelMap>} Channel */
+		/** @typedef {Parameters<Channel['get']>[0]} K */
+		/** @typedef {Parameters<Channel['set']>[1]} V */
+
+		/** @type {Map<K, V> | undefined} */ var $m;
+
+		/** @type {Channel} */
+		var channel = {
+			assert: function (key) {
+				if (!channel.has(key)) {
+					throw new type('Side channel does not contain ' + objectInspect(key));
+				}
+			},
+			'delete': function (key) {
+				if ($m) {
+					var result = $mapDelete($m, key);
+					if ($mapSize($m) === 0) {
+						$m = void undefined;
 					}
+					return result;
+				}
+				return false;
+			},
+			get: function (key) { // eslint-disable-line consistent-return
+				if ($m) {
+					return $mapGet($m, key);
 				}
 			},
 			has: function (key) {
-				if ($WeakMap && key && (typeof key === 'object' || typeof key === 'function')) {
-					if ($wm) {
-						return $weakMapHas($wm, key);
-					}
-				} else if ($Map) {
-					if ($m) {
-						return $mapHas($m, key);
-					}
-				} else {
-					if ($o) { // eslint-disable-line no-lonely-if
-						return listHas($o, key);
-					}
+				if ($m) {
+					return $mapHas($m, key);
 				}
 				return false;
 			},
 			set: function (key, value) {
-				if ($WeakMap && key && (typeof key === 'object' || typeof key === 'function')) {
-					if (!$wm) {
-						$wm = new $WeakMap();
-					}
-					$weakMapSet($wm, key, value);
-				} else if ($Map) {
-					if (!$m) {
-						$m = new $Map();
-					}
-					$mapSet($m, key, value);
-				} else {
-					if (!$o) {
-						// Initialize the linked list as an empty node, so that we don't have to special-case handling of the first node: we can always refer to it as (previous node).next, instead of something like (list).head
-						$o = { key: {}, next: null };
-					}
-					listSet($o, key, value);
+				if (!$m) {
+					// @ts-expect-error TS can't handle narrowing a variable inside a closure
+					$m = new $Map();
 				}
+				$mapSet($m, key, value);
 			}
 		};
+
+		// @ts-expect-error TODO: figure out why TS is erroring here
+		return channel;
+	};
+
+	var $WeakMap = getIntrinsic('%WeakMap%', true);
+
+	/** @type {<K extends object, V>(thisArg: WeakMap<K, V>, key: K) => V} */
+	var $weakMapGet = callBound('WeakMap.prototype.get', true);
+	/** @type {<K extends object, V>(thisArg: WeakMap<K, V>, key: K, value: V) => void} */
+	var $weakMapSet = callBound('WeakMap.prototype.set', true);
+	/** @type {<K extends object, V>(thisArg: WeakMap<K, V>, key: K) => boolean} */
+	var $weakMapHas = callBound('WeakMap.prototype.has', true);
+	/** @type {<K extends object, V>(thisArg: WeakMap<K, V>, key: K) => boolean} */
+	var $weakMapDelete = callBound('WeakMap.prototype.delete', true);
+
+	/** @type {import('.')} */
+	var sideChannelWeakmap = $WeakMap
+		? /** @type {Exclude<import('.'), false>} */ function getSideChannelWeakMap() {
+			/** @typedef {ReturnType<typeof getSideChannelWeakMap>} Channel */
+			/** @typedef {Parameters<Channel['get']>[0]} K */
+			/** @typedef {Parameters<Channel['set']>[1]} V */
+
+			/** @type {WeakMap<K & object, V> | undefined} */ var $wm;
+			/** @type {Channel | undefined} */ var $m;
+
+			/** @type {Channel} */
+			var channel = {
+				assert: function (key) {
+					if (!channel.has(key)) {
+						throw new type('Side channel does not contain ' + objectInspect(key));
+					}
+				},
+				'delete': function (key) {
+					if ($WeakMap && key && (typeof key === 'object' || typeof key === 'function')) {
+						if ($wm) {
+							return $weakMapDelete($wm, key);
+						}
+					} else if (sideChannelMap) {
+						if ($m) {
+							return $m['delete'](key);
+						}
+					}
+					return false;
+				},
+				get: function (key) {
+					if ($WeakMap && key && (typeof key === 'object' || typeof key === 'function')) {
+						if ($wm) {
+							return $weakMapGet($wm, key);
+						}
+					}
+					return $m && $m.get(key);
+				},
+				has: function (key) {
+					if ($WeakMap && key && (typeof key === 'object' || typeof key === 'function')) {
+						if ($wm) {
+							return $weakMapHas($wm, key);
+						}
+					}
+					return !!$m && $m.has(key);
+				},
+				set: function (key, value) {
+					if ($WeakMap && key && (typeof key === 'object' || typeof key === 'function')) {
+						if (!$wm) {
+							$wm = new $WeakMap();
+						}
+						$weakMapSet($wm, key, value);
+					} else if (sideChannelMap) {
+						if (!$m) {
+							$m = sideChannelMap();
+						}
+						// eslint-disable-next-line no-extra-parens
+						/** @type {NonNullable<typeof $m>} */ ($m).set(key, value);
+					}
+				}
+			};
+
+			// @ts-expect-error TODO: figure out why this is erroring
+			return channel;
+		}
+		: sideChannelMap;
+
+	var makeChannel = sideChannelWeakmap || sideChannelMap || sideChannelList;
+
+	/** @type {import('.')} */
+	var sideChannel = function getSideChannel() {
+		/** @typedef {ReturnType<typeof getSideChannel>} Channel */
+
+		/** @type {Channel | undefined} */ var $channelData;
+
+		/** @type {Channel} */
+		var channel = {
+			assert: function (key) {
+				if (!channel.has(key)) {
+					throw new type('Side channel does not contain ' + objectInspect(key));
+				}
+			},
+			'delete': function (key) {
+				return !!$channelData && $channelData['delete'](key);
+			},
+			get: function (key) {
+				return $channelData && $channelData.get(key);
+			},
+			has: function (key) {
+				return !!$channelData && $channelData.has(key);
+			},
+			set: function (key, value) {
+				if (!$channelData) {
+					$channelData = makeChannel();
+				}
+
+				$channelData.set(key, value);
+			}
+		};
+		// @ts-expect-error TODO: figure out why this is erroring
 		return channel;
 	};
 
@@ -1530,7 +1690,7 @@
 	};
 
 	var arrayToObject = function arrayToObject(source, options) {
-	    var obj = options && options.plainObjects ? Object.create(null) : {};
+	    var obj = options && options.plainObjects ? { __proto__: null } : {};
 	    for (var i = 0; i < source.length; ++i) {
 	        if (typeof source[i] !== 'undefined') {
 	            obj[i] = source[i];
@@ -1546,11 +1706,14 @@
 	        return target;
 	    }
 
-	    if (typeof source !== 'object') {
+	    if (typeof source !== 'object' && typeof source !== 'function') {
 	        if (isArray$1(target)) {
 	            target.push(source);
 	        } else if (target && typeof target === 'object') {
-	            if ((options && (options.plainObjects || options.allowPrototypes)) || !has$1.call(Object.prototype, source)) {
+	            if (
+	                (options && (options.plainObjects || options.allowPrototypes))
+	                || !has$1.call(Object.prototype, source)
+	            ) {
 	                target[source] = true;
 	            }
 	        } else {
@@ -1604,7 +1767,7 @@
 	    }, target);
 	};
 
-	var decode = function (str, decoder, charset) {
+	var decode = function (str, defaultDecoder, charset) {
 	    var strWithoutPlus = str.replace(/\+/g, ' ');
 	    if (charset === 'iso-8859-1') {
 	        // unescape never throws, no try...catch needed:
@@ -1791,11 +1954,13 @@
 	    arrayFormat: 'indices',
 	    charset: 'utf-8',
 	    charsetSentinel: false,
+	    commaRoundTrip: false,
 	    delimiter: '&',
 	    encode: true,
 	    encodeDotInKeys: false,
 	    encoder: utils.encode,
 	    encodeValuesOnly: false,
+	    filter: void undefined,
 	    format: defaultFormat,
 	    formatter: formats.formatters[defaultFormat],
 	    // deprecated
@@ -1907,7 +2072,7 @@
 	        objKeys = sort ? keys.sort(sort) : keys;
 	    }
 
-	    var encodedPrefix = encodeDotInKeys ? prefix.replace(/\./g, '%2E') : prefix;
+	    var encodedPrefix = encodeDotInKeys ? String(prefix).replace(/\./g, '%2E') : String(prefix);
 
 	    var adjustedPrefix = commaRoundTrip && isArray$2(obj) && obj.length === 1 ? encodedPrefix + '[]' : encodedPrefix;
 
@@ -1917,13 +2082,15 @@
 
 	    for (var j = 0; j < objKeys.length; ++j) {
 	        var key = objKeys[j];
-	        var value = typeof key === 'object' && typeof key.value !== 'undefined' ? key.value : obj[key];
+	        var value = typeof key === 'object' && key && typeof key.value !== 'undefined'
+	            ? key.value
+	            : obj[key];
 
 	        if (skipNulls && value === null) {
 	            continue;
 	        }
 
-	        var encodedKey = allowDots && encodeDotInKeys ? key.replace(/\./g, '%2E') : key;
+	        var encodedKey = allowDots && encodeDotInKeys ? String(key).replace(/\./g, '%2E') : String(key);
 	        var keyPrefix = isArray$2(obj)
 	            ? typeof generateArrayPrefix === 'function' ? generateArrayPrefix(adjustedPrefix, encodedKey) : adjustedPrefix
 	            : adjustedPrefix + (allowDots ? '.' + encodedKey : '[' + encodedKey + ']');
@@ -2014,7 +2181,7 @@
 	        arrayFormat: arrayFormat,
 	        charset: charset,
 	        charsetSentinel: typeof opts.charsetSentinel === 'boolean' ? opts.charsetSentinel : defaults.charsetSentinel,
-	        commaRoundTrip: opts.commaRoundTrip,
+	        commaRoundTrip: !!opts.commaRoundTrip,
 	        delimiter: typeof opts.delimiter === 'undefined' ? defaults.delimiter : opts.delimiter,
 	        encode: typeof opts.encode === 'boolean' ? opts.encode : defaults.encode,
 	        encodeDotInKeys: typeof opts.encodeDotInKeys === 'boolean' ? opts.encodeDotInKeys : defaults.encodeDotInKeys,
@@ -2065,12 +2232,13 @@
 	    var sideChannel$1 = sideChannel();
 	    for (var i = 0; i < objKeys.length; ++i) {
 	        var key = objKeys[i];
+	        var value = obj[key];
 
-	        if (options.skipNulls && obj[key] === null) {
+	        if (options.skipNulls && value === null) {
 	            continue;
 	        }
 	        pushToArray(keys, stringify(
-	            obj[key],
+	            value,
 	            key,
 	            generateArrayPrefix,
 	            commaRoundTrip,
@@ -2129,7 +2297,9 @@
 	    parameterLimit: 1000,
 	    parseArrays: true,
 	    plainObjects: false,
-	    strictNullHandling: false
+	    strictDepth: false,
+	    strictNullHandling: false,
+	    throwOnLimitExceeded: false
 	};
 
 	var interpretNumericEntities = function (str) {
@@ -2138,9 +2308,13 @@
 	    });
 	};
 
-	var parseArrayValue = function (val, options) {
+	var parseArrayValue = function (val, options, currentArrayLength) {
 	    if (val && typeof val === 'string' && options.comma && val.indexOf(',') > -1) {
 	        return val.split(',');
+	    }
+
+	    if (options.throwOnLimitExceeded && currentArrayLength >= options.arrayLimit) {
+	        throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
 	    }
 
 	    return val;
@@ -2160,8 +2334,18 @@
 	    var obj = { __proto__: null };
 
 	    var cleanStr = options.ignoreQueryPrefix ? str.replace(/^\?/, '') : str;
+	    cleanStr = cleanStr.replace(/%5B/gi, '[').replace(/%5D/gi, ']');
+
 	    var limit = options.parameterLimit === Infinity ? undefined : options.parameterLimit;
-	    var parts = cleanStr.split(options.delimiter, limit);
+	    var parts = cleanStr.split(
+	        options.delimiter,
+	        options.throwOnLimitExceeded ? limit + 1 : limit
+	    );
+
+	    if (options.throwOnLimitExceeded && parts.length > limit) {
+	        throw new RangeError('Parameter limit exceeded. Only ' + limit + ' parameter' + (limit === 1 ? '' : 's') + ' allowed.');
+	    }
+
 	    var skipIndex = -1; // Keep track of where the utf8 sentinel was found
 	    var i;
 
@@ -2189,14 +2373,20 @@
 	        var bracketEqualsPos = part.indexOf(']=');
 	        var pos = bracketEqualsPos === -1 ? part.indexOf('=') : bracketEqualsPos + 1;
 
-	        var key, val;
+	        var key;
+	        var val;
 	        if (pos === -1) {
 	            key = options.decoder(part, defaults$1.decoder, charset, 'key');
 	            val = options.strictNullHandling ? null : '';
 	        } else {
 	            key = options.decoder(part.slice(0, pos), defaults$1.decoder, charset, 'key');
+
 	            val = utils.maybeMap(
-	                parseArrayValue(part.slice(pos + 1), options),
+	                parseArrayValue(
+	                    part.slice(pos + 1),
+	                    options,
+	                    isArray$3(obj[key]) ? obj[key].length : 0
+	                ),
 	                function (encodedVal) {
 	                    return options.decoder(encodedVal, defaults$1.decoder, charset, 'value');
 	                }
@@ -2204,7 +2394,7 @@
 	        }
 
 	        if (val && options.interpretNumericEntities && charset === 'iso-8859-1') {
-	            val = interpretNumericEntities(val);
+	            val = interpretNumericEntities(String(val));
 	        }
 
 	        if (part.indexOf('[]=') > -1) {
@@ -2223,16 +2413,24 @@
 	};
 
 	var parseObject = function (chain, val, options, valuesParsed) {
-	    var leaf = valuesParsed ? val : parseArrayValue(val, options);
+	    var currentArrayLength = 0;
+	    if (chain.length > 0 && chain[chain.length - 1] === '[]') {
+	        var parentKey = chain.slice(0, -1).join('');
+	        currentArrayLength = Array.isArray(val) && val[parentKey] ? val[parentKey].length : 0;
+	    }
+
+	    var leaf = valuesParsed ? val : parseArrayValue(val, options, currentArrayLength);
 
 	    for (var i = chain.length - 1; i >= 0; --i) {
 	        var obj;
 	        var root = chain[i];
 
 	        if (root === '[]' && options.parseArrays) {
-	            obj = options.allowEmptyArrays && leaf === '' ? [] : [].concat(leaf);
+	            obj = options.allowEmptyArrays && (leaf === '' || (options.strictNullHandling && leaf === null))
+	                ? []
+	                : utils.combine([], leaf);
 	        } else {
-	            obj = options.plainObjects ? Object.create(null) : {};
+	            obj = options.plainObjects ? { __proto__: null } : {};
 	            var cleanRoot = root.charAt(0) === '[' && root.charAt(root.length - 1) === ']' ? root.slice(1, -1) : root;
 	            var decodedRoot = options.decodeDotInKeys ? cleanRoot.replace(/%2E/g, '.') : cleanRoot;
 	            var index = parseInt(decodedRoot, 10);
@@ -2303,9 +2501,12 @@
 	        keys.push(segment[1]);
 	    }
 
-	    // If there's a remainder, just add whatever is left
+	    // If there's a remainder, check strictDepth option for throw, else just add whatever is left
 
 	    if (segment) {
+	        if (options.strictDepth === true) {
+	            throw new RangeError('Input depth exceeded depth option of ' + options.depth + ' and strictDepth is true');
+	        }
 	        keys.push('[' + key.slice(segment.index) + ']');
 	    }
 
@@ -2332,6 +2533,11 @@
 	    if (typeof opts.charset !== 'undefined' && opts.charset !== 'utf-8' && opts.charset !== 'iso-8859-1') {
 	        throw new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined');
 	    }
+
+	    if (typeof opts.throwOnLimitExceeded !== 'undefined' && typeof opts.throwOnLimitExceeded !== 'boolean') {
+	        throw new TypeError('`throwOnLimitExceeded` option must be a boolean');
+	    }
+
 	    var charset = typeof opts.charset === 'undefined' ? defaults$1.charset : opts.charset;
 
 	    var duplicates = typeof opts.duplicates === 'undefined' ? defaults$1.duplicates : opts.duplicates;
@@ -2362,7 +2568,9 @@
 	        parameterLimit: typeof opts.parameterLimit === 'number' ? opts.parameterLimit : defaults$1.parameterLimit,
 	        parseArrays: opts.parseArrays !== false,
 	        plainObjects: typeof opts.plainObjects === 'boolean' ? opts.plainObjects : defaults$1.plainObjects,
-	        strictNullHandling: typeof opts.strictNullHandling === 'boolean' ? opts.strictNullHandling : defaults$1.strictNullHandling
+	        strictDepth: typeof opts.strictDepth === 'boolean' ? !!opts.strictDepth : defaults$1.strictDepth,
+	        strictNullHandling: typeof opts.strictNullHandling === 'boolean' ? opts.strictNullHandling : defaults$1.strictNullHandling,
+	        throwOnLimitExceeded: typeof opts.throwOnLimitExceeded === 'boolean' ? opts.throwOnLimitExceeded : false
 	    };
 	};
 
@@ -2370,11 +2578,11 @@
 	    var options = normalizeParseOptions(opts);
 
 	    if (str === '' || str === null || typeof str === 'undefined') {
-	        return options.plainObjects ? Object.create(null) : {};
+	        return options.plainObjects ? { __proto__: null } : {};
 	    }
 
 	    var tempObj = typeof str === 'string' ? parseValues(str, options) : str;
-	    var obj = options.plainObjects ? Object.create(null) : {};
+	    var obj = options.plainObjects ? { __proto__: null } : {};
 
 	    // Iterate over the keys and setup the new object
 
@@ -2397,6 +2605,152 @@
 	    parse: parse,
 	    stringify: stringify_1
 	};
+
+	function _arrayLikeToArray(r, a) {
+	  (null == a || a > r.length) && (a = r.length);
+	  for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+	  return n;
+	}
+	function _arrayWithHoles(r) {
+	  if (Array.isArray(r)) return r;
+	}
+	function _arrayWithoutHoles(r) {
+	  if (Array.isArray(r)) return _arrayLikeToArray(r);
+	}
+	function _classCallCheck(a, n) {
+	  if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
+	}
+	function _defineProperties(e, r) {
+	  for (var t = 0; t < r.length; t++) {
+	    var o = r[t];
+	    o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o);
+	  }
+	}
+	function _createClass(e, r, t) {
+	  return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", {
+	    writable: !1
+	  }), e;
+	}
+	function _createForOfIteratorHelper(r, e) {
+	  var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+	  if (!t) {
+	    if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) {
+	      t && (r = t);
+	      var n = 0,
+	        F = function () {};
+	      return {
+	        s: F,
+	        n: function () {
+	          return n >= r.length ? {
+	            done: !0
+	          } : {
+	            done: !1,
+	            value: r[n++]
+	          };
+	        },
+	        e: function (r) {
+	          throw r;
+	        },
+	        f: F
+	      };
+	    }
+	    throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+	  }
+	  var o,
+	    a = !0,
+	    u = !1;
+	  return {
+	    s: function () {
+	      t = t.call(r);
+	    },
+	    n: function () {
+	      var r = t.next();
+	      return a = r.done, r;
+	    },
+	    e: function (r) {
+	      u = !0, o = r;
+	    },
+	    f: function () {
+	      try {
+	        a || null == t.return || t.return();
+	      } finally {
+	        if (u) throw o;
+	      }
+	    }
+	  };
+	}
+	function _iterableToArray(r) {
+	  if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r);
+	}
+	function _iterableToArrayLimit(r, l) {
+	  var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+	  if (null != t) {
+	    var e,
+	      n,
+	      i,
+	      u,
+	      a = [],
+	      f = !0,
+	      o = !1;
+	    try {
+	      if (i = (t = t.call(r)).next, 0 === l) {
+	        if (Object(t) !== t) return;
+	        f = !1;
+	      } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+	    } catch (r) {
+	      o = !0, n = r;
+	    } finally {
+	      try {
+	        if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return;
+	      } finally {
+	        if (o) throw n;
+	      }
+	    }
+	    return a;
+	  }
+	}
+	function _nonIterableRest() {
+	  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+	}
+	function _nonIterableSpread() {
+	  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+	}
+	function _slicedToArray(r, e) {
+	  return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
+	}
+	function _toConsumableArray(r) {
+	  return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread();
+	}
+	function _toPrimitive(t, r) {
+	  if ("object" != typeof t || !t) return t;
+	  var e = t[Symbol.toPrimitive];
+	  if (void 0 !== e) {
+	    var i = e.call(t, r || "default");
+	    if ("object" != typeof i) return i;
+	    throw new TypeError("@@toPrimitive must return a primitive value.");
+	  }
+	  return ("string" === r ? String : Number)(t);
+	}
+	function _toPropertyKey(t) {
+	  var i = _toPrimitive(t, "string");
+	  return "symbol" == typeof i ? i : i + "";
+	}
+	function _typeof(o) {
+	  "@babel/helpers - typeof";
+
+	  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+	    return typeof o;
+	  } : function (o) {
+	    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	  }, _typeof(o);
+	}
+	function _unsupportedIterableToArray(r, a) {
+	  if (r) {
+	    if ("string" == typeof r) return _arrayLikeToArray(r, a);
+	    var t = {}.toString.call(r).slice(8, -1);
+	    return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
+	  }
+	}
 
 	var componentEmitter = createCommonjsModule(function (module) {
 	/**
@@ -2806,171 +3160,174 @@
 
 	var utils$1 = createCommonjsModule(function (module, exports) {
 
-	function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+	  /**
+	   * Return the mime type for the given `str`.
+	   *
+	   * @param {String} str
+	   * @return {String}
+	   * @api private
+	   */
+	  exports.type = function (string_) {
+	    return string_.split(/ *; */).shift();
+	  };
 
-	function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+	  /**
+	   * Return header field parameters.
+	   *
+	   * @param {String} str
+	   * @return {Object}
+	   * @api private
+	   */
 
-	function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-	function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-	/**
-	 * Return the mime type for the given `str`.
-	 *
-	 * @param {String} str
-	 * @return {String}
-	 * @api private
-	 */
-	exports.type = function (string_) {
-	  return string_.split(/ *; */).shift();
-	};
-	/**
-	 * Return header field parameters.
-	 *
-	 * @param {String} str
-	 * @return {Object}
-	 * @api private
-	 */
-
-
-	exports.params = function (value) {
-	  var object = {};
-
-	  var _iterator = _createForOfIteratorHelper(value.split(/ *; */)),
+	  exports.params = function (value) {
+	    var object = {};
+	    var _iterator = _createForOfIteratorHelper(value.split(/ *; */)),
 	      _step;
-
-	  try {
-	    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-	      var string_ = _step.value;
-	      var parts = string_.split(/ *= */);
-	      var key = parts.shift();
-
-	      var _value = parts.shift();
-
-	      if (key && _value) object[key] = _value;
+	    try {
+	      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+	        var string_ = _step.value;
+	        var parts = string_.split(/ *= */);
+	        var key = parts.shift();
+	        var _value = parts.shift();
+	        if (key && _value) object[key] = _value;
+	      }
+	    } catch (err) {
+	      _iterator.e(err);
+	    } finally {
+	      _iterator.f();
 	    }
-	  } catch (err) {
-	    _iterator.e(err);
-	  } finally {
-	    _iterator.f();
-	  }
+	    return object;
+	  };
 
-	  return object;
-	};
-	/**
-	 * Parse Link header fields.
-	 *
-	 * @param {String} str
-	 * @return {Object}
-	 * @api private
-	 */
+	  /**
+	   * Parse Link header fields.
+	   *
+	   * @param {String} str
+	   * @return {Object}
+	   * @api private
+	   */
 
-
-	exports.parseLinks = function (value) {
-	  var object = {};
-
-	  var _iterator2 = _createForOfIteratorHelper(value.split(/ *, */)),
+	  exports.parseLinks = function (value) {
+	    var object = {};
+	    var _iterator2 = _createForOfIteratorHelper(value.split(/ *, */)),
 	      _step2;
-
-	  try {
-	    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-	      var string_ = _step2.value;
-	      var parts = string_.split(/ *; */);
-	      var url = parts[0].slice(1, -1);
-	      var rel = parts[1].split(/ *= */)[1].slice(1, -1);
-	      object[rel] = url;
+	    try {
+	      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+	        var string_ = _step2.value;
+	        var parts = string_.split(/ *; */);
+	        var url = parts[0].slice(1, -1);
+	        var rel = parts[1].split(/ *= */)[1].slice(1, -1);
+	        object[rel] = url;
+	      }
+	    } catch (err) {
+	      _iterator2.e(err);
+	    } finally {
+	      _iterator2.f();
 	    }
-	  } catch (err) {
-	    _iterator2.e(err);
-	  } finally {
-	    _iterator2.f();
-	  }
+	    return object;
+	  };
 
-	  return object;
-	};
-	/**
-	 * Strip content related fields from `header`.
-	 *
-	 * @param {Object} header
-	 * @return {Object} header
-	 * @api private
-	 */
+	  /**
+	   * Strip content related fields from `header`.
+	   *
+	   * @param {Object} header
+	   * @return {Object} header
+	   * @api private
+	   */
 
-
-	exports.cleanHeader = function (header, changesOrigin) {
-	  delete header['content-type'];
-	  delete header['content-length'];
-	  delete header['transfer-encoding'];
-	  delete header.host; // secuirty
-
-	  if (changesOrigin) {
-	    delete header.authorization;
-	    delete header.cookie;
-	  }
-
-	  return header;
-	};
-	/**
-	 * Check if `obj` is an object.
-	 *
-	 * @param {Object} object
-	 * @return {Boolean}
-	 * @api private
-	 */
-
-
-	exports.isObject = function (object) {
-	  return object !== null && _typeof(object) === 'object';
-	};
-	/**
-	 * Object.hasOwn fallback/polyfill.
-	 *
-	 * @type {(object: object, property: string) => boolean} object
-	 * @api private
-	 */
-
-
-	exports.hasOwn = Object.hasOwn || function (object, property) {
-	  if (object == null) {
-	    throw new TypeError('Cannot convert undefined or null to object');
-	  }
-
-	  return Object.prototype.hasOwnProperty.call(new Object(object), property);
-	};
-
-	exports.mixin = function (target, source) {
-	  for (var key in source) {
-	    if (exports.hasOwn(source, key)) {
-	      target[key] = source[key];
+	  exports.cleanHeader = function (header, changesOrigin) {
+	    delete header['content-type'];
+	    delete header['content-length'];
+	    delete header['transfer-encoding'];
+	    delete header.host;
+	    // secuirty
+	    if (changesOrigin) {
+	      delete header.authorization;
+	      delete header.cookie;
 	    }
-	  }
-	};
+	    return header;
+	  };
+	  exports.normalizeHostname = function (hostname) {
+	    var _ref = hostname.match(/^\[([^\]]+)\]$/) || [],
+	      _ref2 = _slicedToArray(_ref, 2),
+	      normalized = _ref2[1];
+	    return normalized || hostname;
+	  };
 
+	  /**
+	   * Check if `obj` is an object.
+	   *
+	   * @param {Object} object
+	   * @return {Boolean}
+	   * @api private
+	   */
+	  exports.isObject = function (object) {
+	    return object !== null && _typeof(object) === 'object';
+	  };
+
+	  /**
+	   * Object.hasOwn fallback/polyfill.
+	   *
+	   * @type {(object: object, property: string) => boolean} object
+	   * @api private
+	   */
+	  exports.hasOwn = Object.hasOwn || function (object, property) {
+	    if (object == null) {
+	      throw new TypeError('Cannot convert undefined or null to object');
+	    }
+	    return Object.prototype.hasOwnProperty.call(new Object(object), property);
+	  };
+	  exports.mixin = function (target, source) {
+	    for (var key in source) {
+	      if (exports.hasOwn(source, key)) {
+	        target[key] = source[key];
+	      }
+	    }
+	  };
+
+	  /**
+	   * Check if the response is compressed using Gzip or Deflate.
+	   * @param {Object} res
+	   * @return {Boolean}
+	   */
+
+	  exports.isGzipOrDeflateEncoding = function (res) {
+	    return new RegExp(/^\s*(?:deflate|gzip)\s*$/).test(res.headers['content-encoding']);
+	  };
+
+	  /**
+	   * Check if the response is compressed using Brotli.
+	   * @param {Object} res
+	   * @return {Boolean}
+	   */
+
+	  exports.isBrotliEncoding = function (res) {
+	    return new RegExp(/^\s*(?:br)\s*$/).test(res.headers['content-encoding']);
+	  };
 	});
 	var utils_1 = utils$1.type;
 	var utils_2 = utils$1.params;
 	var utils_3 = utils$1.parseLinks;
 	var utils_4 = utils$1.cleanHeader;
-	var utils_5 = utils$1.isObject;
-	var utils_6 = utils$1.hasOwn;
-	var utils_7 = utils$1.mixin;
-
-	function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
+	var utils_5 = utils$1.normalizeHostname;
+	var utils_6 = utils$1.isObject;
+	var utils_7 = utils$1.hasOwn;
+	var utils_8 = utils$1.mixin;
+	var utils_9 = utils$1.isGzipOrDeflateEncoding;
+	var utils_10 = utils$1.isBrotliEncoding;
 
 	/**
 	 * Module of mixed-in functions shared between node and client code
 	 */
-
-
 	var isObject = utils$1.isObject,
-	    hasOwn$1 = utils$1.hasOwn;
+	  hasOwn$1 = utils$1.hasOwn;
+
 	/**
 	 * Expose `RequestBase`.
 	 */
 
-
 	var requestBase = RequestBase;
+
 	/**
 	 * Initialize a new `RequestBase`.
 	 *
@@ -2978,13 +3335,13 @@
 	 */
 
 	function RequestBase() {}
+
 	/**
 	 * Clear previous timeout.
 	 *
 	 * @return {Request} for chaining
 	 * @api public
 	 */
-
 
 	RequestBase.prototype.clearTimeout = function () {
 	  clearTimeout(this._timer);
@@ -2995,6 +3352,7 @@
 	  delete this._uploadTimeoutTimer;
 	  return this;
 	};
+
 	/**
 	 * Override default response body parser
 	 *
@@ -3004,11 +3362,11 @@
 	 * @api public
 	 */
 
-
 	RequestBase.prototype.parse = function (fn) {
 	  this._parser = fn;
 	  return this;
 	};
+
 	/**
 	 * Set format of binary response body.
 	 * In browser valid formats are 'blob' and 'arraybuffer',
@@ -3027,11 +3385,11 @@
 	 * @api public
 	 */
 
-
 	RequestBase.prototype.responseType = function (value) {
 	  this._responseType = value;
 	  return this;
 	};
+
 	/**
 	 * Override default request body serializer
 	 *
@@ -3041,11 +3399,11 @@
 	 * @api public
 	 */
 
-
 	RequestBase.prototype.serialize = function (fn) {
 	  this._serializer = fn;
 	  return this;
 	};
+
 	/**
 	 * Set timeouts.
 	 *
@@ -3060,7 +3418,6 @@
 	 * @api public
 	 */
 
-
 	RequestBase.prototype.timeout = function (options) {
 	  if (!options || _typeof(options) !== 'object') {
 	    this._timeout = options;
@@ -3068,30 +3425,26 @@
 	    this._uploadTimeout = 0;
 	    return this;
 	  }
-
 	  for (var option in options) {
 	    if (hasOwn$1(options, option)) {
 	      switch (option) {
 	        case 'deadline':
 	          this._timeout = options.deadline;
 	          break;
-
 	        case 'response':
 	          this._responseTimeout = options.response;
 	          break;
-
 	        case 'upload':
 	          this._uploadTimeout = options.upload;
 	          break;
-
 	        default:
 	          console.warn('Unknown timeout option', option);
 	      }
 	    }
 	  }
-
 	  return this;
 	};
+
 	/**
 	 * Set number of retry attempts on error.
 	 *
@@ -3103,7 +3456,6 @@
 	 * @api public
 	 */
 
-
 	RequestBase.prototype.retry = function (count, fn) {
 	  // Default to 1 if no count passed or true
 	  if (arguments.length === 0 || count === true) count = 1;
@@ -3112,7 +3464,9 @@
 	  this._retries = 0;
 	  this._retryCallback = fn;
 	  return this;
-	}; //
+	};
+
+	//
 	// NOTE: we do not include ESOCKETTIMEDOUT because that is from `request` package
 	//       <https://github.com/sindresorhus/got/pull/537>
 	//
@@ -3123,10 +3477,10 @@
 	//
 	// TODO: expose these as configurable defaults
 	//
-
-
 	var ERROR_CODES = new Set(['ETIMEDOUT', 'ECONNRESET', 'EADDRINUSE', 'ECONNREFUSED', 'EPIPE', 'ENOTFOUND', 'ENETUNREACH', 'EAI_AGAIN']);
-	var STATUS_CODES = new Set([408, 413, 429, 500, 502, 503, 504, 521, 522, 524]); // TODO: we would need to make this easily configurable before adding it in (e.g. some might want to add POST)
+	var STATUS_CODES = new Set([408, 413, 429, 500, 502, 503, 504, 521, 522, 524]);
+
+	// TODO: we would need to make this easily configurable before adding it in (e.g. some might want to add POST)
 	// const METHODS = new Set(['GET', 'PUT', 'HEAD', 'DELETE', 'OPTIONS', 'TRACE']);
 
 	/**
@@ -3137,23 +3491,22 @@
 	 * @param {Response} [res] response
 	 * @returns {Boolean} if segment should be retried
 	 */
-
 	RequestBase.prototype._shouldRetry = function (error, res) {
 	  if (!this._maxRetries || this._retries++ >= this._maxRetries) {
 	    return false;
 	  }
-
 	  if (this._retryCallback) {
 	    try {
 	      var override = this._retryCallback(error, res);
-
 	      if (override === true) return true;
-	      if (override === false) return false; // undefined falls back to defaults
+	      if (override === false) return false;
+	      // undefined falls back to defaults
 	    } catch (err) {
 	      console.error(err);
 	    }
-	  } // TODO: we would need to make this easily configurable before adding it in (e.g. some might want to add POST)
+	  }
 
+	  // TODO: we would need to make this easily configurable before adding it in (e.g. some might want to add POST)
 	  /*
 	  if (
 	    this.req &&
@@ -3162,19 +3515,16 @@
 	  )
 	    return false;
 	  */
-
-
 	  if (res && res.status && STATUS_CODES.has(res.status)) return true;
-
 	  if (error) {
-	    if (error.code && ERROR_CODES.has(error.code)) return true; // Superagent timeout
-
+	    if (error.code && ERROR_CODES.has(error.code)) return true;
+	    // Superagent timeout
 	    if (error.timeout && error.code === 'ECONNABORTED') return true;
 	    if (error.crossDomain) return true;
 	  }
-
 	  return false;
 	};
+
 	/**
 	 * Retry request
 	 *
@@ -3182,20 +3532,20 @@
 	 * @api private
 	 */
 
-
 	RequestBase.prototype._retry = function () {
-	  this.clearTimeout(); // node
+	  this.clearTimeout();
 
+	  // node
 	  if (this.req) {
 	    this.req = null;
 	    this.req = this.request();
 	  }
-
 	  this._aborted = false;
 	  this.timedout = false;
 	  this.timedoutError = null;
 	  return this._end();
 	};
+
 	/**
 	 * Promise support
 	 *
@@ -3204,28 +3554,22 @@
 	 * @return {Request}
 	 */
 
-
 	RequestBase.prototype.then = function (resolve, reject) {
 	  var _this = this;
-
 	  if (!this._fullfilledPromise) {
 	    var self = this;
-
 	    if (this._endCalled) {
 	      console.warn('Warning: superagent request was sent twice, because both .end() and .then() were called. Never call .end() if you use promises');
 	    }
-
 	    this._fullfilledPromise = new Promise(function (resolve, reject) {
 	      self.on('abort', function () {
 	        if (_this._maxRetries && _this._maxRetries > _this._retries) {
 	          return;
 	        }
-
 	        if (_this.timedout && _this.timedoutError) {
 	          reject(_this.timedoutError);
 	          return;
 	        }
-
 	        var error = new Error('Aborted');
 	        error.code = 'ABORTED';
 	        error.status = _this.status;
@@ -3238,40 +3582,35 @@
 	      });
 	    });
 	  }
-
 	  return this._fullfilledPromise.then(resolve, reject);
 	};
-
 	RequestBase.prototype.catch = function (callback) {
 	  return this.then(undefined, callback);
 	};
+
 	/**
 	 * Allow for extension
 	 */
-
 
 	RequestBase.prototype.use = function (fn) {
 	  fn(this);
 	  return this;
 	};
-
 	RequestBase.prototype.ok = function (callback) {
 	  if (typeof callback !== 'function') throw new Error('Callback required');
 	  this._okCallback = callback;
 	  return this;
 	};
-
 	RequestBase.prototype._isResponseOK = function (res) {
 	  if (!res) {
 	    return false;
 	  }
-
 	  if (this._okCallback) {
 	    return this._okCallback(res);
 	  }
-
 	  return res.status >= 200 && res.status < 300;
 	};
+
 	/**
 	 * Get request header `field`.
 	 * Case-insensitive.
@@ -3281,10 +3620,10 @@
 	 * @api public
 	 */
 
-
 	RequestBase.prototype.get = function (field) {
 	  return this._header[field.toLowerCase()];
 	};
+
 	/**
 	 * Get case-insensitive header `field` value.
 	 * This is a deprecated internal API. Use `.get(field)` instead.
@@ -3297,8 +3636,8 @@
 	 * @deprecated
 	 */
 
-
 	RequestBase.prototype.getHeader = RequestBase.prototype.get;
+
 	/**
 	 * Set header `field` to `val`, or multiple fields with one object.
 	 * Case-insensitive.
@@ -3325,14 +3664,13 @@
 	    for (var key in field) {
 	      if (hasOwn$1(field, key)) this.set(key, field[key]);
 	    }
-
 	    return this;
 	  }
-
 	  this._header[field.toLowerCase()] = value;
 	  this.header[field] = value;
 	  return this;
 	};
+
 	/**
 	 * Remove header `field`.
 	 * Case-insensitive.
@@ -3345,13 +3683,12 @@
 	 *
 	 * @param {String} field field name
 	 */
-
-
 	RequestBase.prototype.unset = function (field) {
 	  delete this._header[field.toLowerCase()];
 	  delete this.header[field];
 	  return this;
 	};
+
 	/**
 	 * Write the field `name` and `val`, or multiple fields with one object
 	 * for "multipart/form-data" request bodies.
@@ -3372,112 +3709,76 @@
 	 * @return {Request} for chaining
 	 * @api public
 	 */
-
-
 	RequestBase.prototype.field = function (name, value, options) {
 	  // name should be either a string or an object.
 	  if (name === null || undefined === name) {
 	    throw new Error('.field(name, val) name can not be empty');
 	  }
-
 	  if (this._data) {
 	    throw new Error(".field() can't be used if .send() is used. Please use only .send() or only .field() & .attach()");
 	  }
-
 	  if (isObject(name)) {
 	    for (var key in name) {
 	      if (hasOwn$1(name, key)) this.field(key, name[key]);
 	    }
-
 	    return this;
 	  }
-
 	  if (Array.isArray(value)) {
 	    for (var i in value) {
 	      if (hasOwn$1(value, i)) this.field(name, value[i]);
 	    }
-
 	    return this;
-	  } // val should be defined now
+	  }
 
-
+	  // val should be defined now
 	  if (value === null || undefined === value) {
 	    throw new Error('.field(name, val) val can not be empty');
 	  }
-
 	  if (typeof value === 'boolean') {
 	    value = String(value);
-	  } // fix https://github.com/visionmedia/superagent/issues/1680
+	  }
 
-
+	  // fix https://github.com/ladjs/superagent/issues/1680
 	  if (options) this._getFormData().append(name, value, options);else this._getFormData().append(name, value);
 	  return this;
 	};
+
 	/**
 	 * Abort the request, and clear potential timeout.
 	 *
 	 * @return {Request} request
 	 * @api public
 	 */
-
-
 	RequestBase.prototype.abort = function () {
 	  if (this._aborted) {
 	    return this;
 	  }
-
 	  this._aborted = true;
 	  if (this.xhr) this.xhr.abort(); // browser
-
 	  if (this.req) {
-	    // Node v13 has major differences in `abort()`
-	    // https://github.com/nodejs/node/blob/v12.x/lib/internal/streams/end-of-stream.js
-	    // https://github.com/nodejs/node/blob/v13.x/lib/internal/streams/end-of-stream.js
-	    // https://github.com/nodejs/node/blob/v14.x/lib/internal/streams/end-of-stream.js
-	    // (if you run a diff across these you will see the differences)
-	    //
-	    // References:
-	    // <https://github.com/nodejs/node/issues/31630>
-	    // <https://github.com/visionmedia/superagent/pull/1084/commits/dc18679a7c5ccfc6046d882015e5126888973bc8>
-	    //
-	    // Thanks to @shadowgate15 and @niftylettuce
-	    if (semver.gte(process.version, 'v13.0.0') && semver.lt(process.version, 'v14.0.0')) {
-	      // Note that the reason this doesn't work is because in v13 as compared to v14
-	      // there is no `callback = nop` set in end-of-stream.js above
-	      throw new Error('Superagent does not work in v13 properly with abort() due to Node.js core changes');
-	    } else if (semver.gte(process.version, 'v14.0.0')) {
-	      // We have to manually set `destroyed` to `true` in order for this to work
-	      // (see core internals of end-of-stream.js above in v14 branch as compared to v12)
-	      this.req.destroyed = true;
-	    }
-
 	    this.req.abort(); // node
 	  }
-
 	  this.clearTimeout();
 	  this.emit('abort');
 	  return this;
 	};
-
 	RequestBase.prototype._auth = function (user, pass, options, base64Encoder) {
 	  switch (options.type) {
 	    case 'basic':
 	      this.set('Authorization', "Basic ".concat(base64Encoder("".concat(user, ":").concat(pass))));
 	      break;
-
 	    case 'auto':
 	      this.username = user;
 	      this.password = pass;
 	      break;
-
 	    case 'bearer':
 	      // usage would be .auth(accessToken, { type: 'bearer' })
 	      this.set('Authorization', "Bearer ".concat(user));
 	      break;
 	  }
-
 	  return this;
 	};
+
 	/**
 	 * Enable transmission of cookies with x-domain requests.
 	 *
@@ -3485,10 +3786,10 @@
 	 * using "Access-Control-Allow-Origin" with a wildcard,
 	 * and also must set "Access-Control-Allow-Credentials"
 	 * to "true".
-	 *
+	 * @param {Boolean} [on=true] - Set 'withCredentials' state
+	 * @return {Request} for chaining
 	 * @api public
 	 */
-
 
 	RequestBase.prototype.withCredentials = function (on) {
 	  // This is browser-only functionality. Node side is no-op.
@@ -3496,6 +3797,7 @@
 	  this._withCredentials = on;
 	  return this;
 	};
+
 	/**
 	 * Set the max redirects to `n`. Does nothing in browser XHR implementation.
 	 *
@@ -3504,11 +3806,11 @@
 	 * @api public
 	 */
 
-
 	RequestBase.prototype.redirects = function (n) {
 	  this._maxRedirects = n;
 	  return this;
 	};
+
 	/**
 	 * Maximum size of buffered response body, in bytes. Counts uncompressed size.
 	 * Default 200MB.
@@ -3516,16 +3818,14 @@
 	 * @param {Number} n number of bytes
 	 * @return {Request} for chaining
 	 */
-
-
 	RequestBase.prototype.maxResponseSize = function (n) {
 	  if (typeof n !== 'number') {
 	    throw new TypeError('Invalid argument');
 	  }
-
 	  this._maxResponseSize = n;
 	  return this;
 	};
+
 	/**
 	 * Convert to a plain javascript object (not JSON string) of scalar properties.
 	 * Note as this method is designed to return a useful non-this value,
@@ -3535,7 +3835,6 @@
 	 * @api public
 	 */
 
-
 	RequestBase.prototype.toJSON = function () {
 	  return {
 	    method: this.method,
@@ -3544,6 +3843,7 @@
 	    headers: this._header
 	  };
 	};
+
 	/**
 	 * Send `data` as the request body, defaulting the `.type()` to "json" when
 	 * an object is given.
@@ -3583,17 +3883,14 @@
 	 * @return {Request} for chaining
 	 * @api public
 	 */
+
 	// eslint-disable-next-line complexity
-
-
 	RequestBase.prototype.send = function (data) {
 	  var isObject_ = isObject(data);
 	  var type = this._header['content-type'];
-
 	  if (this._formData) {
 	    throw new Error(".send() can't be used if .attach() or .field() is used. Please use only .send() or only .field() & .attach()");
 	  }
-
 	  if (isObject_ && !this._data) {
 	    if (Array.isArray(data)) {
 	      this._data = [];
@@ -3602,19 +3899,19 @@
 	    }
 	  } else if (data && this._data && this._isHost(this._data)) {
 	    throw new Error("Can't merge these send calls");
-	  } // merge
+	  }
 
-
+	  // merge
 	  if (isObject_ && isObject(this._data)) {
 	    for (var key in data) {
+	      if (typeof data[key] == 'bigint' && !data[key].toJSON) throw new Error('Cannot serialize BigInt value to json');
 	      if (hasOwn$1(data, key)) this._data[key] = data[key];
 	    }
-	  } else if (typeof data === 'string') {
+	  } else if (typeof data === 'bigint') throw new Error("Cannot send value of type BigInt");else if (typeof data === 'string') {
 	    // default to x-www-form-urlencoded
 	    if (!type) this.type('form');
 	    type = this._header['content-type'];
 	    if (type) type = type.toLowerCase().trim();
-
 	    if (type === 'application/x-www-form-urlencoded') {
 	      this._data = this._data ? "".concat(this._data, "&").concat(data) : data;
 	    } else {
@@ -3623,15 +3920,15 @@
 	  } else {
 	    this._data = data;
 	  }
-
 	  if (!isObject_ || this._isHost(data)) {
 	    return this;
-	  } // default to json
+	  }
 
-
+	  // default to json
 	  if (!type) this.type('json');
 	  return this;
 	};
+
 	/**
 	 * Sort `querystring` by the sort function
 	 *
@@ -3660,61 +3957,53 @@
 	 * @api public
 	 */
 
-
 	RequestBase.prototype.sortQuery = function (sort) {
 	  // _sort default to true but otherwise can be a function or boolean
 	  this._sort = typeof sort === 'undefined' ? true : sort;
 	  return this;
 	};
+
 	/**
 	 * Compose querystring to append to req.url
 	 *
 	 * @api private
 	 */
-
-
 	RequestBase.prototype._finalizeQueryString = function () {
 	  var query = this._query.join('&');
-
 	  if (query) {
 	    this.url += (this.url.includes('?') ? '&' : '?') + query;
 	  }
-
 	  this._query.length = 0; // Makes the call idempotent
 
 	  if (this._sort) {
 	    var index = this.url.indexOf('?');
-
 	    if (index >= 0) {
 	      var queryArray = this.url.slice(index + 1).split('&');
-
 	      if (typeof this._sort === 'function') {
 	        queryArray.sort(this._sort);
 	      } else {
 	        queryArray.sort();
 	      }
-
 	      this.url = this.url.slice(0, index) + '?' + queryArray.join('&');
 	    }
 	  }
-	}; // For backwards compat only
+	};
 
-
+	// For backwards compat only
 	RequestBase.prototype._appendQueryString = function () {
 	  console.warn('Unsupported');
 	};
+
 	/**
 	 * Invoke callback with timeout error.
 	 *
 	 * @api private
 	 */
 
-
 	RequestBase.prototype._timeoutError = function (reason, timeout, errno) {
 	  if (this._aborted) {
 	    return;
 	  }
-
 	  var error = new Error("".concat(reason + timeout, "ms exceeded"));
 	  error.timeout = timeout;
 	  error.code = 'ECONNABORTED';
@@ -3724,17 +4013,17 @@
 	  this.abort();
 	  this.callback(error);
 	};
-
 	RequestBase.prototype._setTimeouts = function () {
-	  var self = this; // deadline
+	  var self = this;
 
+	  // deadline
 	  if (this._timeout && !this._timer) {
 	    this._timer = setTimeout(function () {
 	      self._timeoutError('Timeout of ', self._timeout, 'ETIME');
 	    }, this._timeout);
-	  } // response timeout
+	  }
 
-
+	  // response timeout
 	  if (this._responseTimeout && !this._responseTimeoutTimer) {
 	    this._responseTimeoutTimer = setTimeout(function () {
 	      self._timeoutError('Response timeout of ', self._responseTimeout, 'ETIMEDOUT');
@@ -3750,8 +4039,8 @@
 	 * Expose `ResponseBase`.
 	 */
 
-
 	var responseBase = ResponseBase;
+
 	/**
 	 * Initialize a new `ResponseBase`.
 	 *
@@ -3759,6 +4048,7 @@
 	 */
 
 	function ResponseBase() {}
+
 	/**
 	 * Get case-insensitive `field` value.
 	 *
@@ -3767,10 +4057,10 @@
 	 * @api public
 	 */
 
-
 	ResponseBase.prototype.get = function (field) {
 	  return this.header[field.toLowerCase()];
 	};
+
 	/**
 	 * Set header related properties:
 	 *
@@ -3783,29 +4073,31 @@
 	 * @api private
 	 */
 
-
 	ResponseBase.prototype._setHeaderProperties = function (header) {
 	  // TODO: moar!
 	  // TODO: make this a util
+
 	  // content-type
 	  var ct = header['content-type'] || '';
-	  this.type = utils$1.type(ct); // params
+	  this.type = utils$1.type(ct);
 
+	  // params
 	  var parameters = utils$1.params(ct);
-
 	  for (var key in parameters) {
 	    if (Object.prototype.hasOwnProperty.call(parameters, key)) this[key] = parameters[key];
 	  }
+	  this.links = {};
 
-	  this.links = {}; // links
-
+	  // links
 	  try {
 	    if (header.link) {
 	      this.links = utils$1.parseLinks(header.link);
 	    }
-	  } catch (_unused) {// ignore
+	  } catch (err) {
+	    // ignore
 	  }
 	};
+
 	/**
 	 * Set flags such as `.ok` based on `status`.
 	 *
@@ -3827,21 +4119,23 @@
 	 * @api private
 	 */
 
-
 	ResponseBase.prototype._setStatusProperties = function (status) {
-	  var type = Math.trunc(status / 100); // status / class
+	  var type = Math.trunc(status / 100);
 
+	  // status / class
 	  this.statusCode = status;
 	  this.status = this.statusCode;
-	  this.statusType = type; // basics
+	  this.statusType = type;
 
+	  // basics
 	  this.info = type === 1;
 	  this.ok = type === 2;
 	  this.redirect = type === 3;
 	  this.clientError = type === 4;
 	  this.serverError = type === 5;
-	  this.error = type === 4 || type === 5 ? this.toError() : false; // sugar
+	  this.error = type === 4 || type === 5 ? this.toError() : false;
 
+	  // sugar
 	  this.created = status === 201;
 	  this.accepted = status === 202;
 	  this.noContent = status === 204;
@@ -3853,1091 +4147,995 @@
 	  this.unprocessableEntity = status === 422;
 	};
 
-	function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-	function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-	function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-
-	function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
-	function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
-	function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-	function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-	function Agent() {
-	  this._defaults = [];
-	}
-
+	var defaults$2 = ['use', 'on', 'once', 'set', 'query', 'type', 'accept', 'auth', 'withCredentials', 'sortQuery', 'retry', 'ok', 'redirects', 'timeout', 'buffer', 'serialize', 'parse', 'ca', 'key', 'pfx', 'cert', 'disableTLSCerts'];
+	var Agent = /*#__PURE__*/function () {
+	  function Agent() {
+	    _classCallCheck(this, Agent);
+	    this._defaults = [];
+	  }
+	  return _createClass(Agent, [{
+	    key: "_setDefaults",
+	    value: function _setDefaults(request) {
+	      var _iterator = _createForOfIteratorHelper(this._defaults),
+	        _step;
+	      try {
+	        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+	          var def = _step.value;
+	          request[def.fn].apply(request, _toConsumableArray(def.args));
+	        }
+	      } catch (err) {
+	        _iterator.e(err);
+	      } finally {
+	        _iterator.f();
+	      }
+	    }
+	  }]);
+	}();
 	var _loop = function _loop() {
-	  var fn = _arr[_i];
-
+	  var fn = _defaults[_i];
 	  // Default setting for all requests from this agent
 	  Agent.prototype[fn] = function () {
 	    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
 	      args[_key] = arguments[_key];
 	    }
-
 	    this._defaults.push({
 	      fn: fn,
 	      args: args
 	    });
-
 	    return this;
 	  };
 	};
-
-	for (var _i = 0, _arr = ['use', 'on', 'once', 'set', 'query', 'type', 'accept', 'auth', 'withCredentials', 'sortQuery', 'retry', 'ok', 'redirects', 'timeout', 'buffer', 'serialize', 'parse', 'ca', 'key', 'pfx', 'cert', 'disableTLSCerts']; _i < _arr.length; _i++) {
+	for (var _i = 0, _defaults = defaults$2; _i < _defaults.length; _i++) {
 	  _loop();
 	}
-
-	Agent.prototype._setDefaults = function (request) {
-	  var _iterator = _createForOfIteratorHelper(this._defaults),
-	      _step;
-
-	  try {
-	    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-	      var def = _step.value;
-	      request[def.fn].apply(request, _toConsumableArray(def.args));
-	    }
-	  } catch (err) {
-	    _iterator.e(err);
-	  } finally {
-	    _iterator.f();
-	  }
-	};
-
 	var agentBase = Agent;
 
 	var client = createCommonjsModule(function (module, exports) {
 
-	function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
-	function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
-	function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-	function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-	/**
-	 * Root reference for iframes.
-	 */
-	var root;
-
-	if (typeof window !== 'undefined') {
-	  // Browser window
-	  root = window;
-	} else if (typeof self === 'undefined') {
-	  // Other environments
-	  console.warn('Using browser-only version of superagent in non-browser environment');
-	  root = void 0;
-	} else {
-	  // Web Worker
-	  root = self;
-	}
-
-
-
-
-
-
-
-
-
-	var isObject = utils$1.isObject,
+	  /**
+	   * Root reference for iframes.
+	   */
+	  var root;
+	  if (typeof window !== 'undefined') {
+	    // Browser window
+	    root = window;
+	  } else if (typeof self === 'undefined') {
+	    // Other environments
+	    console.warn('Using browser-only version of superagent in non-browser environment');
+	    root = void 0;
+	  } else {
+	    // Web Worker
+	    root = self;
+	  }
+	  var isObject = utils$1.isObject,
 	    mixin = utils$1.mixin,
 	    hasOwn = utils$1.hasOwn;
 
+	  /**
+	   * Noop.
+	   */
 
+	  function noop() {}
 
+	  /**
+	   * Expose `request`.
+	   */
 
-	/**
-	 * Noop.
-	 */
-
-
-	function noop() {}
-	/**
-	 * Expose `request`.
-	 */
-
-
-	module.exports = function (method, url) {
-	  // callback
-	  if (typeof url === 'function') {
-	    return new exports.Request('GET', method).end(url);
-	  } // url first
-
-
-	  if (arguments.length === 1) {
-	    return new exports.Request('GET', method);
-	  }
-
-	  return new exports.Request(method, url);
-	};
-
-	exports = module.exports;
-	var request = exports;
-	exports.Request = Request;
-	/**
-	 * Determine XHR.
-	 */
-
-	request.getXHR = function () {
-	  if (root.XMLHttpRequest && (!root.location || root.location.protocol !== 'file:')) {
-	    return new XMLHttpRequest();
-	  }
-
-	  throw new Error('Browser-only version of superagent could not find XHR');
-	};
-	/**
-	 * Removes leading and trailing whitespace, added to support IE.
-	 *
-	 * @param {String} s
-	 * @return {String}
-	 * @api private
-	 */
-
-
-	var trim = ''.trim ? function (s) {
-	  return s.trim();
-	} : function (s) {
-	  return s.replace(/(^\s*|\s*$)/g, '');
-	};
-	/**
-	 * Serialize the given `obj`.
-	 *
-	 * @param {Object} obj
-	 * @return {String}
-	 * @api private
-	 */
-
-	function serialize(object) {
-	  if (!isObject(object)) return object;
-	  var pairs = [];
-
-	  for (var key in object) {
-	    if (hasOwn(object, key)) pushEncodedKeyValuePair(pairs, key, object[key]);
-	  }
-
-	  return pairs.join('&');
-	}
-	/**
-	 * Helps 'serialize' with serializing arrays.
-	 * Mutates the pairs array.
-	 *
-	 * @param {Array} pairs
-	 * @param {String} key
-	 * @param {Mixed} val
-	 */
-
-
-	function pushEncodedKeyValuePair(pairs, key, value) {
-	  if (value === undefined) return;
-
-	  if (value === null) {
-	    pairs.push(encodeURI(key));
-	    return;
-	  }
-
-	  if (Array.isArray(value)) {
-	    var _iterator = _createForOfIteratorHelper(value),
-	        _step;
-
-	    try {
-	      for (_iterator.s(); !(_step = _iterator.n()).done;) {
-	        var v = _step.value;
-	        pushEncodedKeyValuePair(pairs, key, v);
-	      }
-	    } catch (err) {
-	      _iterator.e(err);
-	    } finally {
-	      _iterator.f();
-	    }
-	  } else if (isObject(value)) {
-	    for (var subkey in value) {
-	      if (hasOwn(value, subkey)) pushEncodedKeyValuePair(pairs, "".concat(key, "[").concat(subkey, "]"), value[subkey]);
-	    }
-	  } else {
-	    pairs.push(encodeURI(key) + '=' + encodeURIComponent(value));
-	  }
-	}
-	/**
-	 * Expose serialization method.
-	 */
-
-
-	request.serializeObject = serialize;
-	/**
-	 * Parse the given x-www-form-urlencoded `str`.
-	 *
-	 * @param {String} str
-	 * @return {Object}
-	 * @api private
-	 */
-
-	function parseString(string_) {
-	  var object = {};
-	  var pairs = string_.split('&');
-	  var pair;
-	  var pos;
-
-	  for (var i = 0, length_ = pairs.length; i < length_; ++i) {
-	    pair = pairs[i];
-	    pos = pair.indexOf('=');
-
-	    if (pos === -1) {
-	      object[decodeURIComponent(pair)] = '';
-	    } else {
-	      object[decodeURIComponent(pair.slice(0, pos))] = decodeURIComponent(pair.slice(pos + 1));
-	    }
-	  }
-
-	  return object;
-	}
-	/**
-	 * Expose parser.
-	 */
-
-
-	request.parseString = parseString;
-	/**
-	 * Default MIME type map.
-	 *
-	 *     superagent.types.xml = 'application/xml';
-	 *
-	 */
-
-	request.types = {
-	  html: 'text/html',
-	  json: 'application/json',
-	  xml: 'text/xml',
-	  urlencoded: 'application/x-www-form-urlencoded',
-	  form: 'application/x-www-form-urlencoded',
-	  'form-data': 'application/x-www-form-urlencoded'
-	};
-	/**
-	 * Default serialization map.
-	 *
-	 *     superagent.serialize['application/xml'] = function(obj){
-	 *       return 'generated xml here';
-	 *     };
-	 *
-	 */
-
-	request.serialize = {
-	  'application/x-www-form-urlencoded': lib.stringify,
-	  'application/json': fastSafeStringify
-	};
-	/**
-	 * Default parsers.
-	 *
-	 *     superagent.parse['application/xml'] = function(str){
-	 *       return { object parsed from str };
-	 *     };
-	 *
-	 */
-
-	request.parse = {
-	  'application/x-www-form-urlencoded': parseString,
-	  'application/json': JSON.parse
-	};
-	/**
-	 * Parse the given header `str` into
-	 * an object containing the mapped fields.
-	 *
-	 * @param {String} str
-	 * @return {Object}
-	 * @api private
-	 */
-
-	function parseHeader(string_) {
-	  var lines = string_.split(/\r?\n/);
-	  var fields = {};
-	  var index;
-	  var line;
-	  var field;
-	  var value;
-
-	  for (var i = 0, length_ = lines.length; i < length_; ++i) {
-	    line = lines[i];
-	    index = line.indexOf(':');
-
-	    if (index === -1) {
-	      // could be empty line, just skip it
-	      continue;
+	  module.exports = function (method, url) {
+	    // callback
+	    if (typeof url === 'function') {
+	      return new exports.Request('GET', method).end(url);
 	    }
 
-	    field = line.slice(0, index).toLowerCase();
-	    value = trim(line.slice(index + 1));
-	    fields[field] = value;
-	  }
-
-	  return fields;
-	}
-	/**
-	 * Check if `mime` is json or has +json structured syntax suffix.
-	 *
-	 * @param {String} mime
-	 * @return {Boolean}
-	 * @api private
-	 */
-
-
-	function isJSON(mime) {
-	  // should match /json or +json
-	  // but not /json-seq
-	  return /[/+]json($|[^-\w])/i.test(mime);
-	}
-	/**
-	 * Initialize a new `Response` with the given `xhr`.
-	 *
-	 *  - set flags (.ok, .error, etc)
-	 *  - parse header
-	 *
-	 * Examples:
-	 *
-	 *  Aliasing `superagent` as `request` is nice:
-	 *
-	 *      request = superagent;
-	 *
-	 *  We can use the promise-like API, or pass callbacks:
-	 *
-	 *      request.get('/').end(function(res){});
-	 *      request.get('/', function(res){});
-	 *
-	 *  Sending data can be chained:
-	 *
-	 *      request
-	 *        .post('/user')
-	 *        .send({ name: 'tj' })
-	 *        .end(function(res){});
-	 *
-	 *  Or passed to `.send()`:
-	 *
-	 *      request
-	 *        .post('/user')
-	 *        .send({ name: 'tj' }, function(res){});
-	 *
-	 *  Or passed to `.post()`:
-	 *
-	 *      request
-	 *        .post('/user', { name: 'tj' })
-	 *        .end(function(res){});
-	 *
-	 * Or further reduced to a single call for simple cases:
-	 *
-	 *      request
-	 *        .post('/user', { name: 'tj' }, function(res){});
-	 *
-	 * @param {XMLHTTPRequest} xhr
-	 * @param {Object} options
-	 * @api private
-	 */
-
-
-	function Response(request_) {
-	  this.req = request_;
-	  this.xhr = this.req.xhr; // responseText is accessible only if responseType is '' or 'text' and on older browsers
-
-	  this.text = this.req.method !== 'HEAD' && (this.xhr.responseType === '' || this.xhr.responseType === 'text') || typeof this.xhr.responseType === 'undefined' ? this.xhr.responseText : null;
-	  this.statusText = this.req.xhr.statusText;
-	  var status = this.xhr.status; // handle IE9 bug: http://stackoverflow.com/questions/10046972/msie-returns-status-code-of-1223-for-ajax-request
-
-	  if (status === 1223) {
-	    status = 204;
-	  }
-
-	  this._setStatusProperties(status);
-
-	  this.headers = parseHeader(this.xhr.getAllResponseHeaders());
-	  this.header = this.headers; // getAllResponseHeaders sometimes falsely returns "" for CORS requests, but
-	  // getResponseHeader still works. so we get content-type even if getting
-	  // other headers fails.
-
-	  this.header['content-type'] = this.xhr.getResponseHeader('content-type');
-
-	  this._setHeaderProperties(this.header);
-
-	  if (this.text === null && request_._responseType) {
-	    this.body = this.xhr.response;
-	  } else {
-	    this.body = this.req.method === 'HEAD' ? null : this._parseBody(this.text ? this.text : this.xhr.response);
-	  }
-	}
-
-	mixin(Response.prototype, responseBase.prototype);
-	/**
-	 * Parse the given body `str`.
-	 *
-	 * Used for auto-parsing of bodies. Parsers
-	 * are defined on the `superagent.parse` object.
-	 *
-	 * @param {String} str
-	 * @return {Mixed}
-	 * @api private
-	 */
-
-	Response.prototype._parseBody = function (string_) {
-	  var parse = request.parse[this.type];
-
-	  if (this.req._parser) {
-	    return this.req._parser(this, string_);
-	  }
-
-	  if (!parse && isJSON(this.type)) {
-	    parse = request.parse['application/json'];
-	  }
-
-	  return parse && string_ && (string_.length > 0 || string_ instanceof Object) ? parse(string_) : null;
-	};
-	/**
-	 * Return an `Error` representative of this response.
-	 *
-	 * @return {Error}
-	 * @api public
-	 */
-
-
-	Response.prototype.toError = function () {
-	  var req = this.req;
-	  var method = req.method;
-	  var url = req.url;
-	  var message = "cannot ".concat(method, " ").concat(url, " (").concat(this.status, ")");
-	  var error = new Error(message);
-	  error.status = this.status;
-	  error.method = method;
-	  error.url = url;
-	  return error;
-	};
-	/**
-	 * Expose `Response`.
-	 */
-
-
-	request.Response = Response;
-	/**
-	 * Initialize a new `Request` with the given `method` and `url`.
-	 *
-	 * @param {String} method
-	 * @param {String} url
-	 * @api public
-	 */
-
-	function Request(method, url) {
-	  var self = this;
-	  this._query = this._query || [];
-	  this.method = method;
-	  this.url = url;
-	  this.header = {}; // preserves header name case
-
-	  this._header = {}; // coerces header names to lowercase
-
-	  this.on('end', function () {
-	    var error = null;
-	    var res = null;
-
-	    try {
-	      res = new Response(self);
-	    } catch (err) {
-	      error = new Error('Parser is unable to parse the response');
-	      error.parse = true;
-	      error.original = err; // issue #675: return the raw response if the response parsing fails
-
-	      if (self.xhr) {
-	        // ie9 doesn't have 'response' property
-	        error.rawResponse = typeof self.xhr.responseType === 'undefined' ? self.xhr.responseText : self.xhr.response; // issue #876: return the http status code if the response parsing fails
-
-	        error.status = self.xhr.status ? self.xhr.status : null;
-	        error.statusCode = error.status; // backwards-compat only
-	      } else {
-	        error.rawResponse = null;
-	        error.status = null;
-	      }
-
-	      return self.callback(error);
+	    // url first
+	    if (arguments.length === 1) {
+	      return new exports.Request('GET', method);
 	    }
-
-	    self.emit('response', res);
-	    var new_error;
-
-	    try {
-	      if (!self._isResponseOK(res)) {
-	        new_error = new Error(res.statusText || res.text || 'Unsuccessful HTTP response');
-	      }
-	    } catch (err) {
-	      new_error = err; // ok() callback can throw
-	    } // #1000 don't catch errors from the callback to avoid double calling it
-
-
-	    if (new_error) {
-	      new_error.original = error;
-	      new_error.response = res;
-	      new_error.status = new_error.status || res.status;
-	      self.callback(new_error, res);
-	    } else {
-	      self.callback(null, res);
-	    }
-	  });
-	}
-	/**
-	 * Mixin `Emitter` and `RequestBase`.
-	 */
-	// eslint-disable-next-line new-cap
-
-
-	componentEmitter(Request.prototype);
-	mixin(Request.prototype, requestBase.prototype);
-	/**
-	 * Set Content-Type to `type`, mapping values from `request.types`.
-	 *
-	 * Examples:
-	 *
-	 *      superagent.types.xml = 'application/xml';
-	 *
-	 *      request.post('/')
-	 *        .type('xml')
-	 *        .send(xmlstring)
-	 *        .end(callback);
-	 *
-	 *      request.post('/')
-	 *        .type('application/xml')
-	 *        .send(xmlstring)
-	 *        .end(callback);
-	 *
-	 * @param {String} type
-	 * @return {Request} for chaining
-	 * @api public
-	 */
-
-	Request.prototype.type = function (type) {
-	  this.set('Content-Type', request.types[type] || type);
-	  return this;
-	};
-	/**
-	 * Set Accept to `type`, mapping values from `request.types`.
-	 *
-	 * Examples:
-	 *
-	 *      superagent.types.json = 'application/json';
-	 *
-	 *      request.get('/agent')
-	 *        .accept('json')
-	 *        .end(callback);
-	 *
-	 *      request.get('/agent')
-	 *        .accept('application/json')
-	 *        .end(callback);
-	 *
-	 * @param {String} accept
-	 * @return {Request} for chaining
-	 * @api public
-	 */
-
-
-	Request.prototype.accept = function (type) {
-	  this.set('Accept', request.types[type] || type);
-	  return this;
-	};
-	/**
-	 * Set Authorization field value with `user` and `pass`.
-	 *
-	 * @param {String} user
-	 * @param {String} [pass] optional in case of using 'bearer' as type
-	 * @param {Object} options with 'type' property 'auto', 'basic' or 'bearer' (default 'basic')
-	 * @return {Request} for chaining
-	 * @api public
-	 */
-
-
-	Request.prototype.auth = function (user, pass, options) {
-	  if (arguments.length === 1) pass = '';
-
-	  if (_typeof(pass) === 'object' && pass !== null) {
-	    // pass is optional and can be replaced with options
-	    options = pass;
-	    pass = '';
-	  }
-
-	  if (!options) {
-	    options = {
-	      type: typeof btoa === 'function' ? 'basic' : 'auto'
-	    };
-	  }
-
-	  var encoder = options.encoder ? options.encoder : function (string) {
-	    if (typeof btoa === 'function') {
-	      return btoa(string);
-	    }
-
-	    throw new Error('Cannot use basic auth, btoa is not a function');
+	    return new exports.Request(method, url);
 	  };
-	  return this._auth(user, pass, options, encoder);
-	};
-	/**
-	 * Add query-string `val`.
-	 *
-	 * Examples:
-	 *
-	 *   request.get('/shoes')
-	 *     .query('size=10')
-	 *     .query({ color: 'blue' })
-	 *
-	 * @param {Object|String} val
-	 * @return {Request} for chaining
-	 * @api public
-	 */
+	  exports = module.exports;
+	  var request = exports;
+	  exports.Request = Request;
 
+	  /**
+	   * Determine XHR.
+	   */
 
-	Request.prototype.query = function (value) {
-	  if (typeof value !== 'string') value = serialize(value);
-	  if (value) this._query.push(value);
-	  return this;
-	};
-	/**
-	 * Queue the given `file` as an attachment to the specified `field`,
-	 * with optional `options` (or filename).
-	 *
-	 * ``` js
-	 * request.post('/upload')
-	 *   .attach('content', new Blob(['<a id="a"><b id="b">hey!</b></a>'], { type: "text/html"}))
-	 *   .end(callback);
-	 * ```
-	 *
-	 * @param {String} field
-	 * @param {Blob|File} file
-	 * @param {String|Object} options
-	 * @return {Request} for chaining
-	 * @api public
-	 */
-
-
-	Request.prototype.attach = function (field, file, options) {
-	  if (file) {
-	    if (this._data) {
-	      throw new Error("superagent can't mix .send() and .attach()");
+	  request.getXHR = function () {
+	    if (root.XMLHttpRequest) {
+	      return new root.XMLHttpRequest();
 	    }
+	    throw new Error('Browser-only version of superagent could not find XHR');
+	  };
 
-	    this._getFormData().append(field, file, options || file.name);
-	  }
+	  /**
+	   * Removes leading and trailing whitespace, added to support IE.
+	   *
+	   * @param {String} s
+	   * @return {String}
+	   * @api private
+	   */
 
-	  return this;
-	};
+	  var trim = ''.trim ? function (s) {
+	    return s.trim();
+	  } : function (s) {
+	    return s.replace(/(^\s*|\s*$)/g, '');
+	  };
 
-	Request.prototype._getFormData = function () {
-	  if (!this._formData) {
-	    this._formData = new root.FormData();
-	  }
+	  /**
+	   * Serialize the given `obj`.
+	   *
+	   * @param {Object} obj
+	   * @return {String}
+	   * @api private
+	   */
 
-	  return this._formData;
-	};
-	/**
-	 * Invoke the callback with `err` and `res`
-	 * and handle arity check.
-	 *
-	 * @param {Error} err
-	 * @param {Response} res
-	 * @api private
-	 */
-
-
-	Request.prototype.callback = function (error, res) {
-	  if (this._shouldRetry(error, res)) {
-	    return this._retry();
-	  }
-
-	  var fn = this._callback;
-	  this.clearTimeout();
-
-	  if (error) {
-	    if (this._maxRetries) error.retries = this._retries - 1;
-	    this.emit('error', error);
-	  }
-
-	  fn(error, res);
-	};
-	/**
-	 * Invoke callback with x-domain error.
-	 *
-	 * @api private
-	 */
-
-
-	Request.prototype.crossDomainError = function () {
-	  var error = new Error('Request has been terminated\nPossible causes: the network is offline, Origin is not allowed by Access-Control-Allow-Origin, the page is being unloaded, etc.');
-	  error.crossDomain = true;
-	  error.status = this.status;
-	  error.method = this.method;
-	  error.url = this.url;
-	  this.callback(error);
-	}; // This only warns, because the request is still likely to work
-
-
-	Request.prototype.agent = function () {
-	  console.warn('This is not supported in browser version of superagent');
-	  return this;
-	};
-
-	Request.prototype.ca = Request.prototype.agent;
-	Request.prototype.buffer = Request.prototype.ca; // This throws, because it can't send/receive data as expected
-
-	Request.prototype.write = function () {
-	  throw new Error('Streaming is not supported in browser version of superagent');
-	};
-
-	Request.prototype.pipe = Request.prototype.write;
-	/**
-	 * Check if `obj` is a host object,
-	 * we don't want to serialize these :)
-	 *
-	 * @param {Object} obj host object
-	 * @return {Boolean} is a host object
-	 * @api private
-	 */
-
-	Request.prototype._isHost = function (object) {
-	  // Native objects stringify to [object File], [object Blob], [object FormData], etc.
-	  return object && _typeof(object) === 'object' && !Array.isArray(object) && Object.prototype.toString.call(object) !== '[object Object]';
-	};
-	/**
-	 * Initiate request, invoking callback `fn(res)`
-	 * with an instanceof `Response`.
-	 *
-	 * @param {Function} fn
-	 * @return {Request} for chaining
-	 * @api public
-	 */
-
-
-	Request.prototype.end = function (fn) {
-	  if (this._endCalled) {
-	    console.warn('Warning: .end() was called twice. This is not supported in superagent');
-	  }
-
-	  this._endCalled = true; // store callback
-
-	  this._callback = fn || noop; // querystring
-
-	  this._finalizeQueryString();
-
-	  this._end();
-	};
-
-	Request.prototype._setUploadTimeout = function () {
-	  var self = this; // upload timeout it's wokrs only if deadline timeout is off
-
-	  if (this._uploadTimeout && !this._uploadTimeoutTimer) {
-	    this._uploadTimeoutTimer = setTimeout(function () {
-	      self._timeoutError('Upload timeout of ', self._uploadTimeout, 'ETIMEDOUT');
-	    }, this._uploadTimeout);
-	  }
-	}; // eslint-disable-next-line complexity
-
-
-	Request.prototype._end = function () {
-	  if (this._aborted) return this.callback(new Error('The request has been aborted even before .end() was called'));
-	  var self = this;
-	  this.xhr = request.getXHR();
-	  var xhr = this.xhr;
-	  var data = this._formData || this._data;
-
-	  this._setTimeouts(); // state change
-
-
-	  xhr.addEventListener('readystatechange', function () {
-	    var readyState = xhr.readyState;
-
-	    if (readyState >= 2 && self._responseTimeoutTimer) {
-	      clearTimeout(self._responseTimeoutTimer);
+	  function serialize(object) {
+	    if (!isObject(object)) return object;
+	    var pairs = [];
+	    for (var key in object) {
+	      if (hasOwn(object, key)) pushEncodedKeyValuePair(pairs, key, object[key]);
 	    }
+	    return pairs.join('&');
+	  }
 
-	    if (readyState !== 4) {
+	  /**
+	   * Helps 'serialize' with serializing arrays.
+	   * Mutates the pairs array.
+	   *
+	   * @param {Array} pairs
+	   * @param {String} key
+	   * @param {Mixed} val
+	   */
+
+	  function pushEncodedKeyValuePair(pairs, key, value) {
+	    if (value === undefined) return;
+	    if (value === null) {
+	      pairs.push(encodeURI(key));
 	      return;
-	    } // In IE9, reads to any property (e.g. status) off of an aborted XHR will
-	    // result in the error "Could not complete the operation due to error c00c023f"
-
-
-	    var status;
-
-	    try {
-	      status = xhr.status;
-	    } catch (_unused) {
-	      status = 0;
 	    }
-
-	    if (!status) {
-	      if (self.timedout || self._aborted) return;
-	      return self.crossDomainError();
+	    if (Array.isArray(value)) {
+	      var _iterator = _createForOfIteratorHelper(value),
+	        _step;
+	      try {
+	        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+	          var v = _step.value;
+	          pushEncodedKeyValuePair(pairs, key, v);
+	        }
+	      } catch (err) {
+	        _iterator.e(err);
+	      } finally {
+	        _iterator.f();
+	      }
+	    } else if (isObject(value)) {
+	      for (var subkey in value) {
+	        if (hasOwn(value, subkey)) pushEncodedKeyValuePair(pairs, "".concat(key, "[").concat(subkey, "]"), value[subkey]);
+	      }
+	    } else {
+	      pairs.push(encodeURI(key) + '=' + encodeURIComponent(value));
 	    }
+	  }
 
-	    self.emit('end');
-	  }); // progress
+	  /**
+	   * Expose serialization method.
+	   */
 
-	  var handleProgress = function handleProgress(direction, e) {
-	    if (e.total > 0) {
-	      e.percent = e.loaded / e.total * 100;
+	  request.serializeObject = serialize;
 
-	      if (e.percent === 100) {
-	        clearTimeout(self._uploadTimeoutTimer);
+	  /**
+	   * Parse the given x-www-form-urlencoded `str`.
+	   *
+	   * @param {String} str
+	   * @return {Object}
+	   * @api private
+	   */
+
+	  function parseString(string_) {
+	    var object = {};
+	    var pairs = string_.split('&');
+	    var pair;
+	    var pos;
+	    for (var i = 0, length_ = pairs.length; i < length_; ++i) {
+	      pair = pairs[i];
+	      pos = pair.indexOf('=');
+	      if (pos === -1) {
+	        object[decodeURIComponent(pair)] = '';
+	      } else {
+	        object[decodeURIComponent(pair.slice(0, pos))] = decodeURIComponent(pair.slice(pos + 1));
 	      }
 	    }
+	    return object;
+	  }
 
-	    e.direction = direction;
-	    self.emit('progress', e);
+	  /**
+	   * Expose parser.
+	   */
+
+	  request.parseString = parseString;
+
+	  /**
+	   * Default MIME type map.
+	   *
+	   *     superagent.types.xml = 'application/xml';
+	   *
+	   */
+
+	  request.types = {
+	    html: 'text/html',
+	    json: 'application/json',
+	    xml: 'text/xml',
+	    urlencoded: 'application/x-www-form-urlencoded',
+	    form: 'application/x-www-form-urlencoded',
+	    'form-data': 'application/x-www-form-urlencoded'
 	  };
 
-	  if (this.hasListeners('progress')) {
-	    try {
-	      xhr.addEventListener('progress', handleProgress.bind(null, 'download'));
+	  /**
+	   * Default serialization map.
+	   *
+	   *     superagent.serialize['application/xml'] = function(obj){
+	   *       return 'generated xml here';
+	   *     };
+	   *
+	   */
 
-	      if (xhr.upload) {
-	        xhr.upload.addEventListener('progress', handleProgress.bind(null, 'upload'));
+	  request.serialize = {
+	    'application/x-www-form-urlencoded': function application_xWwwFormUrlencoded(obj) {
+	      return lib.stringify(obj, {
+	        indices: false,
+	        strictNullHandling: true
+	      });
+	    },
+	    'application/json': fastSafeStringify
+	  };
+
+	  /**
+	   * Default parsers.
+	   *
+	   *     superagent.parse['application/xml'] = function(str){
+	   *       return { object parsed from str };
+	   *     };
+	   *
+	   */
+
+	  request.parse = {
+	    'application/x-www-form-urlencoded': parseString,
+	    'application/json': JSON.parse
+	  };
+
+	  /**
+	   * Parse the given header `str` into
+	   * an object containing the mapped fields.
+	   *
+	   * @param {String} str
+	   * @return {Object}
+	   * @api private
+	   */
+
+	  function parseHeader(string_) {
+	    var lines = string_.split(/\r?\n/);
+	    var fields = {};
+	    var index;
+	    var line;
+	    var field;
+	    var value;
+	    for (var i = 0, length_ = lines.length; i < length_; ++i) {
+	      line = lines[i];
+	      index = line.indexOf(':');
+	      if (index === -1) {
+	        // could be empty line, just skip it
+	        continue;
 	      }
-	    } catch (_unused2) {// Accessing xhr.upload fails in IE from a web worker, so just pretend it doesn't exist.
-	      // Reported here:
-	      // https://connect.microsoft.com/IE/feedback/details/837245/xmlhttprequest-upload-throws-invalid-argument-when-used-from-web-worker-context
+	      field = line.slice(0, index).toLowerCase();
+	      value = trim(line.slice(index + 1));
+	      fields[field] = value;
 	    }
+	    return fields;
 	  }
 
-	  if (xhr.upload) {
-	    this._setUploadTimeout();
-	  } // initiate request
+	  /**
+	   * Check if `mime` is json or has +json structured syntax suffix.
+	   *
+	   * @param {String} mime
+	   * @return {Boolean}
+	   * @api private
+	   */
 
+	  function isJSON(mime) {
+	    // should match /json or +json
+	    // but not /json-seq
+	    return /[/+]json($|[^-\w])/i.test(mime);
+	  }
 
-	  try {
-	    if (this.username && this.password) {
-	      xhr.open(this.method, this.url, true, this.username, this.password);
+	  /**
+	   * Initialize a new `Response` with the given `xhr`.
+	   *
+	   *  - set flags (.ok, .error, etc)
+	   *  - parse header
+	   *
+	   * Examples:
+	   *
+	   *  Aliasing `superagent` as `request` is nice:
+	   *
+	   *      request = superagent;
+	   *
+	   *  We can use the promise-like API, or pass callbacks:
+	   *
+	   *      request.get('/').end(function(res){});
+	   *      request.get('/', function(res){});
+	   *
+	   *  Sending data can be chained:
+	   *
+	   *      request
+	   *        .post('/user')
+	   *        .send({ name: 'tj' })
+	   *        .end(function(res){});
+	   *
+	   *  Or passed to `.send()`:
+	   *
+	   *      request
+	   *        .post('/user')
+	   *        .send({ name: 'tj' }, function(res){});
+	   *
+	   *  Or passed to `.post()`:
+	   *
+	   *      request
+	   *        .post('/user', { name: 'tj' })
+	   *        .end(function(res){});
+	   *
+	   * Or further reduced to a single call for simple cases:
+	   *
+	   *      request
+	   *        .post('/user', { name: 'tj' }, function(res){});
+	   *
+	   * @param {XMLHTTPRequest} xhr
+	   * @param {Object} options
+	   * @api private
+	   */
+
+	  function Response(request_) {
+	    this.req = request_;
+	    this.xhr = this.req.xhr;
+	    // responseText is accessible only if responseType is '' or 'text' and on older browsers
+	    this.text = this.req.method !== 'HEAD' && (this.xhr.responseType === '' || this.xhr.responseType === 'text') || typeof this.xhr.responseType === 'undefined' ? this.xhr.responseText : null;
+	    this.statusText = this.req.xhr.statusText;
+	    var status = this.xhr.status;
+	    // handle IE9 bug: http://stackoverflow.com/questions/10046972/msie-returns-status-code-of-1223-for-ajax-request
+	    if (status === 1223) {
+	      status = 204;
+	    }
+	    this._setStatusProperties(status);
+	    this.headers = parseHeader(this.xhr.getAllResponseHeaders());
+	    this.header = this.headers;
+	    // getAllResponseHeaders sometimes falsely returns "" for CORS requests, but
+	    // getResponseHeader still works. so we get content-type even if getting
+	    // other headers fails.
+	    this.header['content-type'] = this.xhr.getResponseHeader('content-type');
+	    this._setHeaderProperties(this.header);
+	    if (this.text === null && request_._responseType) {
+	      this.body = this.xhr.response;
 	    } else {
-	      xhr.open(this.method, this.url, true);
+	      this.body = this.req.method === 'HEAD' ? null : this._parseBody(this.text ? this.text : this.xhr.response);
 	    }
-	  } catch (err) {
-	    // see #1149
-	    return this.callback(err);
-	  } // CORS
+	  }
+	  mixin(Response.prototype, responseBase.prototype);
 
+	  /**
+	   * Parse the given body `str`.
+	   *
+	   * Used for auto-parsing of bodies. Parsers
+	   * are defined on the `superagent.parse` object.
+	   *
+	   * @param {String} str
+	   * @return {Mixed}
+	   * @api private
+	   */
 
-	  if (this._withCredentials) xhr.withCredentials = true; // body
-
-	  if (!this._formData && this.method !== 'GET' && this.method !== 'HEAD' && typeof data !== 'string' && !this._isHost(data)) {
-	    // serialize stuff
-	    var contentType = this._header['content-type'];
-
-	    var _serialize = this._serializer || request.serialize[contentType ? contentType.split(';')[0] : ''];
-
-	    if (!_serialize && isJSON(contentType)) {
-	      _serialize = request.serialize['application/json'];
+	  Response.prototype._parseBody = function (string_) {
+	    var parse = request.parse[this.type];
+	    if (this.req._parser) {
+	      return this.req._parser(this, string_);
 	    }
+	    if (!parse && isJSON(this.type)) {
+	      parse = request.parse['application/json'];
+	    }
+	    return parse && string_ && (string_.length > 0 || string_ instanceof Object) ? parse(string_) : null;
+	  };
 
-	    if (_serialize) data = _serialize(data);
-	  } // set header fields
+	  /**
+	   * Return an `Error` representative of this response.
+	   *
+	   * @return {Error}
+	   * @api public
+	   */
 
+	  Response.prototype.toError = function () {
+	    var req = this.req;
+	    var method = req.method;
+	    var url = req.url;
+	    var message = "cannot ".concat(method, " ").concat(url, " (").concat(this.status, ")");
+	    var error = new Error(message);
+	    error.status = this.status;
+	    error.method = method;
+	    error.url = url;
+	    return error;
+	  };
 
-	  for (var field in this.header) {
-	    if (this.header[field] === null) continue;
-	    if (hasOwn(this.header, field)) xhr.setRequestHeader(field, this.header[field]);
+	  /**
+	   * Expose `Response`.
+	   */
+
+	  request.Response = Response;
+
+	  /**
+	   * Initialize a new `Request` with the given `method` and `url`.
+	   *
+	   * @param {String} method
+	   * @param {String} url
+	   * @api public
+	   */
+
+	  function Request(method, url) {
+	    var self = this;
+	    this._query = this._query || [];
+	    this.method = method;
+	    this.url = url;
+	    this.header = {}; // preserves header name case
+	    this._header = {}; // coerces header names to lowercase
+	    this.on('end', function () {
+	      var error = null;
+	      var res = null;
+	      try {
+	        res = new Response(self);
+	      } catch (err) {
+	        error = new Error('Parser is unable to parse the response');
+	        error.parse = true;
+	        error.original = err;
+	        // issue #675: return the raw response if the response parsing fails
+	        if (self.xhr) {
+	          // ie9 doesn't have 'response' property
+	          error.rawResponse = typeof self.xhr.responseType === 'undefined' ? self.xhr.responseText : self.xhr.response;
+	          // issue #876: return the http status code if the response parsing fails
+	          error.status = self.xhr.status ? self.xhr.status : null;
+	          error.statusCode = error.status; // backwards-compat only
+	        } else {
+	          error.rawResponse = null;
+	          error.status = null;
+	        }
+	        return self.callback(error);
+	      }
+	      self.emit('response', res);
+	      var new_error;
+	      try {
+	        if (!self._isResponseOK(res)) {
+	          new_error = new Error(res.statusText || res.text || 'Unsuccessful HTTP response');
+	        }
+	      } catch (err) {
+	        new_error = err; // ok() callback can throw
+	      }
+
+	      // #1000 don't catch errors from the callback to avoid double calling it
+	      if (new_error) {
+	        new_error.original = error;
+	        new_error.response = res;
+	        new_error.status = new_error.status || res.status;
+	        self.callback(new_error, res);
+	      } else {
+	        self.callback(null, res);
+	      }
+	    });
 	  }
 
-	  if (this._responseType) {
-	    xhr.responseType = this._responseType;
-	  } // send stuff
+	  /**
+	   * Mixin `Emitter` and `RequestBase`.
+	   */
 
+	  // eslint-disable-next-line new-cap
+	  componentEmitter(Request.prototype);
+	  mixin(Request.prototype, requestBase.prototype);
 
-	  this.emit('request', this); // IE11 xhr.send(undefined) sends 'undefined' string as POST payload (instead of nothing)
-	  // We need null here if data is undefined
+	  /**
+	   * Set Content-Type to `type`, mapping values from `request.types`.
+	   *
+	   * Examples:
+	   *
+	   *      superagent.types.xml = 'application/xml';
+	   *
+	   *      request.post('/')
+	   *        .type('xml')
+	   *        .send(xmlstring)
+	   *        .end(callback);
+	   *
+	   *      request.post('/')
+	   *        .type('application/xml')
+	   *        .send(xmlstring)
+	   *        .end(callback);
+	   *
+	   * @param {String} type
+	   * @return {Request} for chaining
+	   * @api public
+	   */
 
-	  xhr.send(typeof data === 'undefined' ? null : data);
-	};
+	  Request.prototype.type = function (type) {
+	    this.set('Content-Type', request.types[type] || type);
+	    return this;
+	  };
 
-	request.agent = function () {
-	  return new agentBase();
-	};
+	  /**
+	   * Set Accept to `type`, mapping values from `request.types`.
+	   *
+	   * Examples:
+	   *
+	   *      superagent.types.json = 'application/json';
+	   *
+	   *      request.get('/agent')
+	   *        .accept('json')
+	   *        .end(callback);
+	   *
+	   *      request.get('/agent')
+	   *        .accept('application/json')
+	   *        .end(callback);
+	   *
+	   * @param {String} accept
+	   * @return {Request} for chaining
+	   * @api public
+	   */
 
-	var _loop = function _loop() {
-	  var method = _arr[_i];
+	  Request.prototype.accept = function (type) {
+	    this.set('Accept', request.types[type] || type);
+	    return this;
+	  };
 
-	  agentBase.prototype[method.toLowerCase()] = function (url, fn) {
-	    var request_ = new request.Request(method, url);
+	  /**
+	   * Set Authorization field value with `user` and `pass`.
+	   *
+	   * @param {String} user
+	   * @param {String} [pass] optional in case of using 'bearer' as type
+	   * @param {Object} options with 'type' property 'auto', 'basic' or 'bearer' (default 'basic')
+	   * @return {Request} for chaining
+	   * @api public
+	   */
 
-	    this._setDefaults(request_);
+	  Request.prototype.auth = function (user, pass, options) {
+	    if (arguments.length === 1) pass = '';
+	    if (_typeof(pass) === 'object' && pass !== null) {
+	      // pass is optional and can be replaced with options
+	      options = pass;
+	      pass = '';
+	    }
+	    if (!options) {
+	      options = {
+	        type: typeof btoa === 'function' ? 'basic' : 'auto'
+	      };
+	    }
+	    var encoder = options.encoder ? options.encoder : function (string) {
+	      if (typeof btoa === 'function') {
+	        return btoa(string);
+	      }
+	      throw new Error('Cannot use basic auth, btoa is not a function');
+	    };
+	    return this._auth(user, pass, options, encoder);
+	  };
 
-	    if (fn) {
-	      request_.end(fn);
+	  /**
+	   * Add query-string `val`.
+	   *
+	   * Examples:
+	   *
+	   *   request.get('/shoes')
+	   *     .query('size=10')
+	   *     .query({ color: 'blue' })
+	   *
+	   * @param {Object|String} val
+	   * @return {Request} for chaining
+	   * @api public
+	   */
+
+	  Request.prototype.query = function (value) {
+	    if (typeof value !== 'string') value = serialize(value);
+	    if (value) this._query.push(value);
+	    return this;
+	  };
+
+	  /**
+	   * Queue the given `file` as an attachment to the specified `field`,
+	   * with optional `options` (or filename).
+	   *
+	   * ``` js
+	   * request.post('/upload')
+	   *   .attach('content', new Blob(['<a id="a"><b id="b">hey!</b></a>'], { type: "text/html"}))
+	   *   .end(callback);
+	   * ```
+	   *
+	   * @param {String} field
+	   * @param {Blob|File} file
+	   * @param {String|Object} options
+	   * @return {Request} for chaining
+	   * @api public
+	   */
+
+	  Request.prototype.attach = function (field, file, options) {
+	    if (file) {
+	      if (this._data) {
+	        throw new Error("superagent can't mix .send() and .attach()");
+	      }
+	      this._getFormData().append(field, file, options || file.name);
+	    }
+	    return this;
+	  };
+	  Request.prototype._getFormData = function () {
+	    if (!this._formData) {
+	      this._formData = new root.FormData();
+	    }
+	    return this._formData;
+	  };
+
+	  /**
+	   * Invoke the callback with `err` and `res`
+	   * and handle arity check.
+	   *
+	   * @param {Error} err
+	   * @param {Response} res
+	   * @api private
+	   */
+
+	  Request.prototype.callback = function (error, res) {
+	    if (this._shouldRetry(error, res)) {
+	      return this._retry();
+	    }
+	    var fn = this._callback;
+	    this.clearTimeout();
+	    if (error) {
+	      if (this._maxRetries) error.retries = this._retries - 1;
+	      this.emit('error', error);
+	    }
+	    fn(error, res);
+	  };
+
+	  /**
+	   * Invoke callback with x-domain error.
+	   *
+	   * @api private
+	   */
+
+	  Request.prototype.crossDomainError = function () {
+	    var error = new Error('Request has been terminated\nPossible causes: the network is offline, Origin is not allowed by Access-Control-Allow-Origin, the page is being unloaded, etc.');
+	    error.crossDomain = true;
+	    error.status = this.status;
+	    error.method = this.method;
+	    error.url = this.url;
+	    this.callback(error);
+	  };
+
+	  // This only warns, because the request is still likely to work
+	  Request.prototype.agent = function () {
+	    console.warn('This is not supported in browser version of superagent');
+	    return this;
+	  };
+	  Request.prototype.ca = Request.prototype.agent;
+	  Request.prototype.buffer = Request.prototype.ca;
+
+	  // This throws, because it can't send/receive data as expected
+	  Request.prototype.write = function () {
+	    throw new Error('Streaming is not supported in browser version of superagent');
+	  };
+	  Request.prototype.pipe = Request.prototype.write;
+
+	  /**
+	   * Check if `obj` is a host object,
+	   * we don't want to serialize these :)
+	   *
+	   * @param {Object} obj host object
+	   * @return {Boolean} is a host object
+	   * @api private
+	   */
+	  Request.prototype._isHost = function (object) {
+	    // Native objects stringify to [object File], [object Blob], [object FormData], etc.
+	    return object && _typeof(object) === 'object' && !Array.isArray(object) && Object.prototype.toString.call(object) !== '[object Object]';
+	  };
+
+	  /**
+	   * Initiate request, invoking callback `fn(res)`
+	   * with an instanceof `Response`.
+	   *
+	   * @param {Function} fn
+	   * @return {Request} for chaining
+	   * @api public
+	   */
+
+	  Request.prototype.end = function (fn) {
+	    if (this._endCalled) {
+	      console.warn('Warning: .end() was called twice. This is not supported in superagent');
+	    }
+	    this._endCalled = true;
+
+	    // store callback
+	    this._callback = fn || noop;
+
+	    // querystring
+	    this._finalizeQueryString();
+	    this._end();
+	  };
+	  Request.prototype._setUploadTimeout = function () {
+	    var self = this;
+
+	    // upload timeout it's wokrs only if deadline timeout is off
+	    if (this._uploadTimeout && !this._uploadTimeoutTimer) {
+	      this._uploadTimeoutTimer = setTimeout(function () {
+	        self._timeoutError('Upload timeout of ', self._uploadTimeout, 'ETIMEDOUT');
+	      }, this._uploadTimeout);
+	    }
+	  };
+
+	  // eslint-disable-next-line complexity
+	  Request.prototype._end = function () {
+	    if (this._aborted) return this.callback(new Error('The request has been aborted even before .end() was called'));
+	    var self = this;
+	    this.xhr = request.getXHR();
+	    var xhr = this.xhr;
+	    var data = this._formData || this._data;
+	    this._setTimeouts();
+
+	    // state change
+	    xhr.addEventListener('readystatechange', function () {
+	      var readyState = xhr.readyState;
+	      if (readyState >= 2 && self._responseTimeoutTimer) {
+	        clearTimeout(self._responseTimeoutTimer);
+	      }
+	      if (readyState !== 4) {
+	        return;
+	      }
+
+	      // In IE9, reads to any property (e.g. status) off of an aborted XHR will
+	      // result in the error "Could not complete the operation due to error c00c023f"
+	      var status;
+	      try {
+	        status = xhr.status;
+	      } catch (err) {
+	        status = 0;
+	      }
+	      if (!status) {
+	        if (self.timedout || self._aborted) return;
+	        return self.crossDomainError();
+	      }
+	      self.emit('end');
+	    });
+
+	    // progress
+	    var handleProgress = function handleProgress(direction, e) {
+	      if (e.total > 0) {
+	        e.percent = e.loaded / e.total * 100;
+	        if (e.percent === 100) {
+	          clearTimeout(self._uploadTimeoutTimer);
+	        }
+	      }
+	      e.direction = direction;
+	      self.emit('progress', e);
+	    };
+	    if (this.hasListeners('progress')) {
+	      try {
+	        xhr.addEventListener('progress', handleProgress.bind(null, 'download'));
+	        if (xhr.upload) {
+	          xhr.upload.addEventListener('progress', handleProgress.bind(null, 'upload'));
+	        }
+	      } catch (err) {
+	        // Accessing xhr.upload fails in IE from a web worker, so just pretend it doesn't exist.
+	        // Reported here:
+	        // https://connect.microsoft.com/IE/feedback/details/837245/xmlhttprequest-upload-throws-invalid-argument-when-used-from-web-worker-context
+	      }
+	    }
+	    if (xhr.upload) {
+	      this._setUploadTimeout();
 	    }
 
+	    // initiate request
+	    try {
+	      if (this.username && this.password) {
+	        xhr.open(this.method, this.url, true, this.username, this.password);
+	      } else {
+	        xhr.open(this.method, this.url, true);
+	      }
+	    } catch (err) {
+	      // see #1149
+	      return this.callback(err);
+	    }
+
+	    // CORS
+	    if (this._withCredentials) xhr.withCredentials = true;
+
+	    // body
+	    if (!this._formData && this.method !== 'GET' && this.method !== 'HEAD' && typeof data !== 'string' && !this._isHost(data)) {
+	      // serialize stuff
+	      var contentType = this._header['content-type'];
+	      var _serialize = this._serializer || request.serialize[contentType ? contentType.split(';')[0] : ''];
+	      if (!_serialize && isJSON(contentType)) {
+	        _serialize = request.serialize['application/json'];
+	      }
+	      if (_serialize) data = _serialize(data);
+	    }
+
+	    // set header fields
+	    for (var field in this.header) {
+	      if (this.header[field] === null) continue;
+	      if (hasOwn(this.header, field)) xhr.setRequestHeader(field, this.header[field]);
+	    }
+	    if (this._responseType) {
+	      xhr.responseType = this._responseType;
+	    }
+
+	    // send stuff
+	    this.emit('request', this);
+
+	    // IE11 xhr.send(undefined) sends 'undefined' string as POST payload (instead of nothing)
+	    // We need null here if data is undefined
+	    xhr.send(typeof data === 'undefined' ? null : data);
+	  };
+	  request.agent = function () {
+	    return new agentBase();
+	  };
+	  var _loop = function _loop() {
+	    var method = _arr[_i];
+	    agentBase.prototype[method.toLowerCase()] = function (url, fn) {
+	      var request_ = new request.Request(method, url);
+	      this._setDefaults(request_);
+	      if (fn) {
+	        request_.end(fn);
+	      }
+	      return request_;
+	    };
+	  };
+	  for (var _i = 0, _arr = ['GET', 'POST', 'OPTIONS', 'PATCH', 'PUT', 'DELETE']; _i < _arr.length; _i++) {
+	    _loop();
+	  }
+	  agentBase.prototype.del = agentBase.prototype.delete;
+
+	  /**
+	   * GET `url` with optional callback `fn(res)`.
+	   *
+	   * @param {String} url
+	   * @param {Mixed|Function} [data] or fn
+	   * @param {Function} [fn]
+	   * @return {Request}
+	   * @api public
+	   */
+
+	  request.get = function (url, data, fn) {
+	    var request_ = request('GET', url);
+	    if (typeof data === 'function') {
+	      fn = data;
+	      data = null;
+	    }
+	    if (data) request_.query(data);
+	    if (fn) request_.end(fn);
 	    return request_;
 	  };
-	};
 
-	for (var _i = 0, _arr = ['GET', 'POST', 'OPTIONS', 'PATCH', 'PUT', 'DELETE']; _i < _arr.length; _i++) {
-	  _loop();
-	}
+	  /**
+	   * HEAD `url` with optional callback `fn(res)`.
+	   *
+	   * @param {String} url
+	   * @param {Mixed|Function} [data] or fn
+	   * @param {Function} [fn]
+	   * @return {Request}
+	   * @api public
+	   */
 
-	agentBase.prototype.del = agentBase.prototype.delete;
-	/**
-	 * GET `url` with optional callback `fn(res)`.
-	 *
-	 * @param {String} url
-	 * @param {Mixed|Function} [data] or fn
-	 * @param {Function} [fn]
-	 * @return {Request}
-	 * @api public
-	 */
+	  request.head = function (url, data, fn) {
+	    var request_ = request('HEAD', url);
+	    if (typeof data === 'function') {
+	      fn = data;
+	      data = null;
+	    }
+	    if (data) request_.query(data);
+	    if (fn) request_.end(fn);
+	    return request_;
+	  };
 
-	request.get = function (url, data, fn) {
-	  var request_ = request('GET', url);
+	  /**
+	   * OPTIONS query to `url` with optional callback `fn(res)`.
+	   *
+	   * @param {String} url
+	   * @param {Mixed|Function} [data] or fn
+	   * @param {Function} [fn]
+	   * @return {Request}
+	   * @api public
+	   */
 
-	  if (typeof data === 'function') {
-	    fn = data;
-	    data = null;
+	  request.options = function (url, data, fn) {
+	    var request_ = request('OPTIONS', url);
+	    if (typeof data === 'function') {
+	      fn = data;
+	      data = null;
+	    }
+	    if (data) request_.send(data);
+	    if (fn) request_.end(fn);
+	    return request_;
+	  };
+
+	  /**
+	   * DELETE `url` with optional `data` and callback `fn(res)`.
+	   *
+	   * @param {String} url
+	   * @param {Mixed} [data]
+	   * @param {Function} [fn]
+	   * @return {Request}
+	   * @api public
+	   */
+
+	  function del(url, data, fn) {
+	    var request_ = request('DELETE', url);
+	    if (typeof data === 'function') {
+	      fn = data;
+	      data = null;
+	    }
+	    if (data) request_.send(data);
+	    if (fn) request_.end(fn);
+	    return request_;
 	  }
+	  request.del = del;
+	  request.delete = del;
 
-	  if (data) request_.query(data);
-	  if (fn) request_.end(fn);
-	  return request_;
-	};
-	/**
-	 * HEAD `url` with optional callback `fn(res)`.
-	 *
-	 * @param {String} url
-	 * @param {Mixed|Function} [data] or fn
-	 * @param {Function} [fn]
-	 * @return {Request}
-	 * @api public
-	 */
+	  /**
+	   * PATCH `url` with optional `data` and callback `fn(res)`.
+	   *
+	   * @param {String} url
+	   * @param {Mixed} [data]
+	   * @param {Function} [fn]
+	   * @return {Request}
+	   * @api public
+	   */
 
+	  request.patch = function (url, data, fn) {
+	    var request_ = request('PATCH', url);
+	    if (typeof data === 'function') {
+	      fn = data;
+	      data = null;
+	    }
+	    if (data) request_.send(data);
+	    if (fn) request_.end(fn);
+	    return request_;
+	  };
 
-	request.head = function (url, data, fn) {
-	  var request_ = request('HEAD', url);
+	  /**
+	   * POST `url` with optional `data` and callback `fn(res)`.
+	   *
+	   * @param {String} url
+	   * @param {Mixed} [data]
+	   * @param {Function} [fn]
+	   * @return {Request}
+	   * @api public
+	   */
 
-	  if (typeof data === 'function') {
-	    fn = data;
-	    data = null;
-	  }
+	  request.post = function (url, data, fn) {
+	    var request_ = request('POST', url);
+	    if (typeof data === 'function') {
+	      fn = data;
+	      data = null;
+	    }
+	    if (data) request_.send(data);
+	    if (fn) request_.end(fn);
+	    return request_;
+	  };
 
-	  if (data) request_.query(data);
-	  if (fn) request_.end(fn);
-	  return request_;
-	};
-	/**
-	 * OPTIONS query to `url` with optional callback `fn(res)`.
-	 *
-	 * @param {String} url
-	 * @param {Mixed|Function} [data] or fn
-	 * @param {Function} [fn]
-	 * @return {Request}
-	 * @api public
-	 */
+	  /**
+	   * PUT `url` with optional `data` and callback `fn(res)`.
+	   *
+	   * @param {String} url
+	   * @param {Mixed|Function} [data] or fn
+	   * @param {Function} [fn]
+	   * @return {Request}
+	   * @api public
+	   */
 
-
-	request.options = function (url, data, fn) {
-	  var request_ = request('OPTIONS', url);
-
-	  if (typeof data === 'function') {
-	    fn = data;
-	    data = null;
-	  }
-
-	  if (data) request_.send(data);
-	  if (fn) request_.end(fn);
-	  return request_;
-	};
-	/**
-	 * DELETE `url` with optional `data` and callback `fn(res)`.
-	 *
-	 * @param {String} url
-	 * @param {Mixed} [data]
-	 * @param {Function} [fn]
-	 * @return {Request}
-	 * @api public
-	 */
-
-
-	function del(url, data, fn) {
-	  var request_ = request('DELETE', url);
-
-	  if (typeof data === 'function') {
-	    fn = data;
-	    data = null;
-	  }
-
-	  if (data) request_.send(data);
-	  if (fn) request_.end(fn);
-	  return request_;
-	}
-
-	request.del = del;
-	request.delete = del;
-	/**
-	 * PATCH `url` with optional `data` and callback `fn(res)`.
-	 *
-	 * @param {String} url
-	 * @param {Mixed} [data]
-	 * @param {Function} [fn]
-	 * @return {Request}
-	 * @api public
-	 */
-
-	request.patch = function (url, data, fn) {
-	  var request_ = request('PATCH', url);
-
-	  if (typeof data === 'function') {
-	    fn = data;
-	    data = null;
-	  }
-
-	  if (data) request_.send(data);
-	  if (fn) request_.end(fn);
-	  return request_;
-	};
-	/**
-	 * POST `url` with optional `data` and callback `fn(res)`.
-	 *
-	 * @param {String} url
-	 * @param {Mixed} [data]
-	 * @param {Function} [fn]
-	 * @return {Request}
-	 * @api public
-	 */
-
-
-	request.post = function (url, data, fn) {
-	  var request_ = request('POST', url);
-
-	  if (typeof data === 'function') {
-	    fn = data;
-	    data = null;
-	  }
-
-	  if (data) request_.send(data);
-	  if (fn) request_.end(fn);
-	  return request_;
-	};
-	/**
-	 * PUT `url` with optional `data` and callback `fn(res)`.
-	 *
-	 * @param {String} url
-	 * @param {Mixed|Function} [data] or fn
-	 * @param {Function} [fn]
-	 * @return {Request}
-	 * @api public
-	 */
-
-
-	request.put = function (url, data, fn) {
-	  var request_ = request('PUT', url);
-
-	  if (typeof data === 'function') {
-	    fn = data;
-	    data = null;
-	  }
-
-	  if (data) request_.send(data);
-	  if (fn) request_.end(fn);
-	  return request_;
-	};
-
+	  request.put = function (url, data, fn) {
+	    var request_ = request('PUT', url);
+	    if (typeof data === 'function') {
+	      fn = data;
+	      data = null;
+	    }
+	    if (data) request_.send(data);
+	    if (fn) request_.end(fn);
+	    return request_;
+	  };
 	});
 	var client_1 = client.Request;
 
@@ -5099,14 +5297,11 @@
 	function padding(str) {
 	  var mod = str.length % 4;
 	  var pad = 4 - mod;
-
 	  if (mod === 0) {
 	    return str;
 	  }
-
 	  return str + new Array(1 + pad).join('=');
 	}
-
 	function stringToByteArray(str) {
 	  var arr = new Array(str.length);
 	  for (var a = 0; a < str.length; a++) {
@@ -5114,7 +5309,6 @@
 	  }
 	  return arr;
 	}
-
 	function byteArrayToString(array) {
 	  var result = '';
 	  for (var i = 0; i < array.length; i++) {
@@ -5122,57 +5316,48 @@
 	  }
 	  return result;
 	}
-
 	function encode$1(str) {
-	  return base64Js
-	    .fromByteArray(stringToByteArray(str))
-	    .replace(/\+/g, '-') // Convert '+' to '-'
-	    .replace(/\//g, '_'); // Convert '/' to '_'
+	  return base64Js.fromByteArray(stringToByteArray(str)).replace(/\+/g, '-') // Convert '+' to '-'
+	  .replace(/\//g, '_'); // Convert '/' to '_'
 	}
-
 	function decode$1(str) {
-	  str = padding(str)
-	    .replace(/-/g, '+') // Convert '-' to '+'
-	    .replace(/_/g, '/'); // Convert '_' to '/'
+	  str = padding(str).replace(/-/g, '+') // Convert '-' to '+'
+	  .replace(/_/g, '/'); // Convert '_' to '/'
 
 	  return byteArrayToString(base64Js.toByteArray(str));
 	}
-
 	var base64Url = {
 	  encode: encode$1,
 	  decode: decode$1
 	};
 
-	var version = { raw: '9.28.0' };
+	var version = {
+	  raw: '9.29.0'
+	};
 
 	var toString = Object.prototype.toString;
-
 	function attribute(o, attr, type, text) {
 	  type = type === 'array' ? 'object' : type;
-	  if (o && typeof o[attr] !== type) {
+	  if (o && _typeof(o[attr]) !== type) {
 	    throw new Error(text);
 	  }
 	}
-
 	function variable(o, type, text) {
-	  if (typeof o !== type) {
+	  if (_typeof(o) !== type) {
 	    throw new Error(text);
 	  }
 	}
-
 	function value(o, values, text) {
 	  if (values.indexOf(o) === -1) {
 	    throw new Error(text);
 	  }
 	}
-
 	function check(o, config, attributes) {
 	  if (!config.optional || o) {
 	    variable(o, config.type, config.message);
 	  }
 	  if (config.type === 'object' && attributes) {
 	    var keys = Object.keys(attributes);
-
 	    for (var index = 0; index < keys.length; index++) {
 	      var a = keys[index];
 	      if (!attributes[a].optional || o[a]) {
@@ -5198,14 +5383,11 @@
 	  if (this.supportsIsArray()) {
 	    return Array.isArray(array);
 	  }
-
 	  return toString.call(array) === '[object Array]';
 	}
-
 	function supportsIsArray() {
 	  return Array.isArray != null;
 	}
-
 	var assert = {
 	  check: check,
 	  attribute: attribute,
@@ -5217,32 +5399,24 @@
 
 	/* eslint-disable no-continue */
 
-	function get() {
+	function get$1() {
 	  if (!Object.assign) {
 	    return objectAssignPolyfill;
 	  }
-
 	  return Object.assign;
 	}
-
 	function objectAssignPolyfill(target) {
 	  if (target === undefined || target === null) {
 	    throw new TypeError('Cannot convert first argument to object');
 	  }
-
 	  var to = Object(target);
 	  for (var i = 1; i < arguments.length; i++) {
 	    var nextSource = arguments[i];
 	    if (nextSource === undefined || nextSource === null) {
 	      continue;
 	    }
-
 	    var keysArray = Object.keys(Object(nextSource));
-	    for (
-	      var nextIndex = 0, len = keysArray.length;
-	      nextIndex < len;
-	      nextIndex++
-	    ) {
+	    for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
 	      var nextKey = keysArray[nextIndex];
 	      var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
 	      if (desc !== undefined && desc.enumerable) {
@@ -5252,23 +5426,19 @@
 	  }
 	  return to;
 	}
-
 	var objectAssign = {
-	  get: get,
+	  get: get$1,
 	  objectAssignPolyfill: objectAssignPolyfill
 	};
 
-	/* eslint-disable no-param-reassign */
-
 	function pick(object, keys) {
-	  return keys.reduce(function(prev, key) {
+	  return keys.reduce(function (prev, key) {
 	    if (object[key]) {
 	      prev[key] = object[key];
 	    }
 	    return prev;
 	  }, {});
 	}
-
 	function getKeysNotIn(obj, allowedKeys) {
 	  var notAllowed = [];
 	  for (var key in obj) {
@@ -5278,7 +5448,6 @@
 	  }
 	  return notAllowed;
 	}
-
 	function objectValues(obj) {
 	  var values = [];
 	  for (var key in obj) {
@@ -5286,45 +5455,37 @@
 	  }
 	  return values;
 	}
-
 	function extend() {
 	  var params = objectValues(arguments);
 	  params.unshift({});
 	  return objectAssign.get().apply(undefined, params);
 	}
-
 	function merge$1(object, keys) {
 	  return {
 	    base: keys ? pick(object, keys) : object,
-	    with: function(object2, keys2) {
+	    with: function _with(object2, keys2) {
 	      object2 = keys2 ? pick(object2, keys2) : object2;
 	      return extend(this.base, object2);
 	    }
 	  };
 	}
-
 	function blacklist(object, blacklistedKeys) {
-	  return Object.keys(object).reduce(function(p, key) {
+	  return Object.keys(object).reduce(function (p, key) {
 	    if (blacklistedKeys.indexOf(key) === -1) {
 	      p[key] = object[key];
 	    }
 	    return p;
 	  }, {});
 	}
-
 	function camelToSnake(str) {
 	  var newKey = '';
 	  var index = 0;
 	  var code;
 	  var wasPrevNumber = true;
 	  var wasPrevUppercase = true;
-
 	  while (index < str.length) {
 	    code = str.charCodeAt(index);
-	    if (
-	      (!wasPrevUppercase && code >= 65 && code <= 90) ||
-	      (!wasPrevNumber && code >= 48 && code <= 57)
-	    ) {
+	    if (!wasPrevUppercase && code >= 65 && code <= 90 || !wasPrevNumber && code >= 48 && code <= 57) {
 	      newKey += '_';
 	      newKey += str[index].toLowerCase();
 	    } else {
@@ -5334,67 +5495,53 @@
 	    wasPrevUppercase = code >= 65 && code <= 90;
 	    index++;
 	  }
-
 	  return newKey;
 	}
-
 	function snakeToCamel(str) {
 	  var parts = str.split('_');
-	  return parts.reduce(function(p, c) {
+	  return parts.reduce(function (p, c) {
 	    return p + c.charAt(0).toUpperCase() + c.slice(1);
 	  }, parts.shift());
 	}
-
 	function toSnakeCase(object, exceptions) {
-	  if (typeof object !== 'object' || assert.isArray(object) || object === null) {
+	  if (_typeof(object) !== 'object' || assert.isArray(object) || object === null) {
 	    return object;
 	  }
 	  exceptions = exceptions || [];
-
-	  return Object.keys(object).reduce(function(p, key) {
+	  return Object.keys(object).reduce(function (p, key) {
 	    var newKey = exceptions.indexOf(key) === -1 ? camelToSnake(key) : key;
 	    p[newKey] = toSnakeCase(object[key]);
 	    return p;
 	  }, {});
 	}
-
 	function toCamelCase(object, exceptions, options) {
-	  if (typeof object !== 'object' || assert.isArray(object) || object === null) {
+	  if (_typeof(object) !== 'object' || assert.isArray(object) || object === null) {
 	    return object;
 	  }
-
 	  exceptions = exceptions || [];
 	  options = options || {};
-	  return Object.keys(object).reduce(function(p, key) {
+	  return Object.keys(object).reduce(function (p, key) {
 	    var newKey = exceptions.indexOf(key) === -1 ? snakeToCamel(key) : key;
-
 	    p[newKey] = toCamelCase(object[newKey] || object[key], [], options);
-
 	    if (options.keepOriginal) {
 	      p[key] = toCamelCase(object[key], [], options);
 	    }
 	    return p;
 	  }, {});
 	}
-
 	function getLocationFromUrl(href) {
-	  var match = href.match(
-	    /^(https?:|file:|chrome-extension:)\/\/(([^:/?#]*)(?::([0-9]+))?)([/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/
-	  );
-	  return (
-	    match && {
-	      href: href,
-	      protocol: match[1],
-	      host: match[2],
-	      hostname: match[3],
-	      port: match[4],
-	      pathname: match[5],
-	      search: match[6],
-	      hash: match[7]
-	    }
-	  );
+	  var match = href.match(/^(https?:|file:|chrome-extension:)\/\/(([^:/?#]*)(?::([0-9]+))?)([/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
+	  return match && {
+	    href: href,
+	    protocol: match[1],
+	    host: match[2],
+	    hostname: match[3],
+	    port: match[4],
+	    pathname: match[5],
+	    search: match[6],
+	    hash: match[7]
+	  };
 	}
-
 	function getOriginFromUrl(url) {
 	  if (!url) {
 	    return undefined;
@@ -5409,7 +5556,6 @@
 	  }
 	  return origin;
 	}
-
 	function trim(options, key) {
 	  var trimmed = extend(options);
 	  if (options[key]) {
@@ -5417,11 +5563,9 @@
 	  }
 	  return trimmed;
 	}
-
 	function trimMultiple(options, keys) {
 	  return keys.reduce(trim, options);
 	}
-
 	function trimUserDetails(options) {
 	  return trimMultiple(options, ['username', 'email', 'phoneNumber']);
 	}
@@ -5437,9 +5581,7 @@
 	  if (typeof path === 'string') {
 	    path = path.split('.');
 	  }
-
 	  var next = path[0];
-
 	  if (obj.hasOwnProperty(next)) {
 	    if (path.length === 1) {
 	      obj[next] = value;
@@ -5448,7 +5590,6 @@
 	    }
 	  }
 	}
-
 	var objectHelper = {
 	  toSnakeCase: toSnakeCase,
 	  toCamelCase: toCamelCase,
@@ -5474,24 +5615,19 @@
 	  this.body = req._data;
 	  this.headers = req._header;
 	}
-
-	RequestWrapper.prototype.abort = function() {
+	RequestWrapper.prototype.abort = function () {
 	  this.request.abort();
 	};
-
-	RequestWrapper.prototype.getMethod = function() {
+	RequestWrapper.prototype.getMethod = function () {
 	  return this.method;
 	};
-
-	RequestWrapper.prototype.getBody = function() {
+	RequestWrapper.prototype.getBody = function () {
 	  return this.body;
 	};
-
-	RequestWrapper.prototype.getUrl = function() {
+	RequestWrapper.prototype.getUrl = function () {
 	  return this.url;
 	};
-
-	RequestWrapper.prototype.getHeaders = function() {
+	RequestWrapper.prototype.getHeaders = function () {
 	  return this.headers;
 	};
 
@@ -5500,23 +5636,19 @@
 	function RequestObj(req) {
 	  this.request = req;
 	}
-
-	RequestObj.prototype.set = function(key, value) {
+	RequestObj.prototype.set = function (key, value) {
 	  this.request = this.request.set(key, value);
 	  return this;
 	};
-
-	RequestObj.prototype.send = function(body) {
+	RequestObj.prototype.send = function (body) {
 	  this.request = this.request.send(objectHelper.trimUserDetails(body));
 	  return this;
 	};
-
-	RequestObj.prototype.withCredentials = function() {
+	RequestObj.prototype.withCredentials = function () {
 	  this.request = this.request.withCredentials();
 	  return this;
 	};
-
-	RequestObj.prototype.end = function(cb) {
+	RequestObj.prototype.end = function (cb) {
 	  this.request.end(cb);
 	  return new RequestWrapper(this.request);
 	};
@@ -5524,57 +5656,40 @@
 	// ------------------------------------------------ RequestBuilder
 
 	function RequestBuilder(options) {
-	  this._sendTelemetry =
-	    options._sendTelemetry === false ? options._sendTelemetry : true;
+	  this._sendTelemetry = options._sendTelemetry === false ? options._sendTelemetry : true;
 	  this._telemetryInfo = options._telemetryInfo || null;
 	  this._timesToRetryFailedRequests = options._timesToRetryFailedRequests;
 	  this.headers = options.headers || {};
 	  this._universalLoginPage = options.universalLoginPage;
 	}
-
-	RequestBuilder.prototype.setCommonConfiguration = function(
-	  ongoingRequest,
-	  options
-	) {
+	RequestBuilder.prototype.setCommonConfiguration = function (ongoingRequest, options) {
 	  options = options || {};
-
 	  if (this._timesToRetryFailedRequests > 0) {
 	    ongoingRequest = ongoingRequest.retry(this._timesToRetryFailedRequests);
 	  }
-
 	  if (options.noHeaders) {
 	    return ongoingRequest;
 	  }
-
 	  var headers = this.headers;
 	  ongoingRequest = ongoingRequest.set('Content-Type', 'application/json');
-
 	  if (options.xRequestLanguage) {
-	    ongoingRequest = ongoingRequest.set(
-	      'X-Request-Language',
-	      options.xRequestLanguage
-	    );
+	    ongoingRequest = ongoingRequest.set('X-Request-Language', options.xRequestLanguage);
 	  }
-
 	  var keys = Object.keys(this.headers);
-
 	  for (var a = 0; a < keys.length; a++) {
 	    ongoingRequest = ongoingRequest.set(keys[a], headers[keys[a]]);
 	  }
-
 	  if (this._sendTelemetry) {
-	    ongoingRequest = ongoingRequest.set(
-	      'Auth0-Client',
-	      this.getTelemetryData()
-	    );
+	    ongoingRequest = ongoingRequest.set('Auth0-Client', this.getTelemetryData());
 	  }
-
 	  return ongoingRequest;
 	};
-
-	RequestBuilder.prototype.getTelemetryData = function() {
+	RequestBuilder.prototype.getTelemetryData = function () {
 	  var telemetryName = this._universalLoginPage ? 'auth0.js-ulp' : 'auth0.js';
-	  var clientInfo = { name: telemetryName, version: version.raw };
+	  var clientInfo = {
+	    name: telemetryName,
+	    version: version.raw
+	  };
 	  if (this._telemetryInfo) {
 	    clientInfo = objectHelper.extend({}, this._telemetryInfo);
 	    clientInfo.env = objectHelper.extend({}, this._telemetryInfo.env);
@@ -5583,46 +5698,33 @@
 	  var jsonClientInfo = JSON.stringify(clientInfo);
 	  return base64Url.encode(jsonClientInfo);
 	};
-
-	RequestBuilder.prototype.get = function(url, options) {
+	RequestBuilder.prototype.get = function (url, options) {
 	  return new RequestObj(this.setCommonConfiguration(client.get(url), options));
 	};
-
-	RequestBuilder.prototype.post = function(url, options) {
-	  return new RequestObj(
-	    this.setCommonConfiguration(client.post(url), options)
-	  );
+	RequestBuilder.prototype.post = function (url, options) {
+	  return new RequestObj(this.setCommonConfiguration(client.post(url), options));
 	};
-
-	RequestBuilder.prototype.patch = function(url, options) {
-	  return new RequestObj(
-	    this.setCommonConfiguration(client.patch(url), options)
-	  );
+	RequestBuilder.prototype.patch = function (url, options) {
+	  return new RequestObj(this.setCommonConfiguration(client.patch(url), options));
 	};
 
 	function redirect(url) {
 	  getWindow().location = url;
 	}
-
 	function getDocument() {
 	  return getWindow().document;
 	}
-
 	function getWindow() {
 	  return window;
 	}
-
 	function getOrigin() {
 	  var location = getWindow().location;
 	  var origin = location.origin;
-
 	  if (!origin) {
 	    origin = objectHelper.getOriginFromUrl(location.href);
 	  }
-
 	  return origin;
 	}
-
 	var windowHelper = {
 	  redirect: redirect,
 	  getDocument: getDocument,
@@ -5631,14 +5733,11 @@
 	};
 
 	function DummyStorage() {}
-
-	DummyStorage.prototype.getItem = function() {
+	DummyStorage.prototype.getItem = function () {
 	  return null;
 	};
-
-	DummyStorage.prototype.removeItem = function() {};
-
-	DummyStorage.prototype.setItem = function() {};
+	DummyStorage.prototype.removeItem = function () {};
+	DummyStorage.prototype.setItem = function () {};
 
 	var js_cookie = createCommonjsModule(function (module, exports) {
 	(function (factory) {
@@ -5798,17 +5897,13 @@
 	function buildCompatCookieKey(key) {
 	  return '_' + key + '_compat';
 	}
-
 	function CookieStorage(options) {
 	  this._options = options || {};
 	}
-
 	CookieStorage.prototype.getItem = function (key) {
 	  var cookie = js_cookie.get(key);
-
 	  return cookie || js_cookie.get(buildCompatCookieKey(key));
 	};
-
 	CookieStorage.prototype.removeItem = function (key) {
 	  var params = {};
 	  if (this._options.cookieDomain) {
@@ -5817,30 +5912,22 @@
 	  js_cookie.remove(key, params);
 	  js_cookie.remove(buildCompatCookieKey(key), params);
 	};
-
 	CookieStorage.prototype.setItem = function (key, value, options) {
-	  var params = objectHelper.extend(
-	    {
-	      expires: 1 // 1 day
-	    },
-	    options
-	  );
-
+	  var params = objectHelper.extend({
+	    expires: 1 // 1 day
+	  }, options);
 	  if (windowHelper.getWindow().location.protocol === 'https:') {
 	    params.secure = true;
 	    params.sameSite = 'none';
-
 	    if (this._options.legacySameSiteCookie) {
 	      // Save a compatibility cookie without sameSite='none' for browsers that don't support it.
 	      var legacyOptions = objectHelper.blacklist(params, ['sameSite']);
 	      js_cookie.set(buildCompatCookieKey(key), value, legacyOptions);
 	    }
 	  }
-
 	  if (this._options.cookieDomain) {
 	    params.domain = this._options.cookieDomain;
 	  }
-
 	  js_cookie.set(key, value, params);
 	};
 
@@ -5849,23 +5936,19 @@
 	function Warn(options) {
 	  this.disableWarnings = options.disableWarnings;
 	}
-
-	Warn.prototype.warning = function(message) {
+	Warn.prototype.warning = function (message) {
 	  if (this.disableWarnings) {
 	    return;
 	  }
-
 	  console.warn(message);
 	};
 
 	function StorageHandler(options) {
 	  this.warn = new Warn({});
 	  this.storage = new CookieStorage(options);
-
 	  if (options.__tryLocalStorageFirst !== true) {
 	    return;
 	  }
-
 	  try {
 	    // some browsers throw an error when trying to access localStorage
 	    // when localStorage is disabled.
@@ -5878,7 +5961,6 @@
 	    this.warn.warning("Can't use localStorage. Using CookieStorage instead.");
 	  }
 	}
-
 	StorageHandler.prototype.failover = function () {
 	  if (this.storage instanceof DummyStorage) {
 	    this.warn.warning('DummyStorage: ignore failover');
@@ -5891,7 +5973,6 @@
 	    this.storage = new CookieStorage();
 	  }
 	};
-
 	StorageHandler.prototype.getItem = function (key) {
 	  try {
 	    return this.storage.getItem(key);
@@ -5901,7 +5982,6 @@
 	    return this.getItem(key);
 	  }
 	};
-
 	StorageHandler.prototype.removeItem = function (key) {
 	  try {
 	    return this.storage.removeItem(key);
@@ -5911,7 +5991,6 @@
 	    return this.removeItem(key);
 	  }
 	};
-
 	StorageHandler.prototype.setItem = function (key, value, options) {
 	  try {
 	    return this.storage.setItem(key, value, options);
@@ -5925,8 +6004,7 @@
 	function Storage(options) {
 	  this.handler = new StorageHandler(options);
 	}
-
-	Storage.prototype.getItem = function(key) {
+	Storage.prototype.getItem = function (key) {
 	  var value = this.handler.getItem(key);
 	  try {
 	    return JSON.parse(value);
@@ -5934,10 +6012,10 @@
 	    return value;
 	  }
 	};
-	Storage.prototype.removeItem = function(key) {
+	Storage.prototype.removeItem = function (key) {
 	  return this.handler.removeItem(key);
 	};
-	Storage.prototype.setItem = function(key, value, options) {
+	Storage.prototype.setItem = function (key, value, options) {
 	  var json = JSON.stringify(value);
 	  return this.handler.setItem(key, json, options);
 	};
@@ -5945,15 +6023,14 @@
 	function SSODataStorage(options) {
 	  this.storage = new Storage(options);
 	}
-
-	SSODataStorage.prototype.set = function(connection, sub) {
+	SSODataStorage.prototype.set = function (connection, sub) {
 	  var ssodata = {
 	    lastUsedConnection: connection,
 	    lastUsedSub: sub
 	  };
 	  this.storage.setItem('auth0.ssodata', JSON.stringify(ssodata));
 	};
-	SSODataStorage.prototype.get = function() {
+	SSODataStorage.prototype.get = function () {
 	  var ssodata = this.storage.getItem('auth0.ssodata');
 	  if (!ssodata) {
 	    return;
@@ -5967,11 +6044,9 @@
 	    errorDescription: description
 	  };
 	}
-
 	function invalidToken(description) {
 	  return buildResponse('invalid_token', description);
 	}
-
 	var error = {
 	  buildResponse: buildResponse,
 	  invalidToken: invalidToken
@@ -5980,194 +6055,92 @@
 	function wrapCallback(cb, options) {
 	  options = options || {};
 	  options.ignoreCasing = options.ignoreCasing ? options.ignoreCasing : false;
-
-	  return function(err, data) {
+	  return function (err, data) {
 	    var errObj;
-
 	    if (!err && !data) {
 	      return cb(error.buildResponse('generic_error', 'Something went wrong'));
 	    }
-
 	    if (!err && data.err) {
 	      err = data.err;
 	      data = null;
 	    }
-
 	    if (!err && data.error) {
 	      err = data;
 	      data = null;
 	    }
-
 	    if (err) {
 	      errObj = {
 	        original: err
 	      };
-
-	      objectHelper.updatePropertyOn(
-	        errObj,
-	        'original.response.req._data.password',
-	        '*****'
-	      );
-
+	      objectHelper.updatePropertyOn(errObj, 'original.response.req._data.password', '*****');
 	      if (err.response && err.response.statusCode) {
 	        errObj.statusCode = err.response.statusCode;
 	      }
-
 	      if (err.response && err.response.statusText) {
 	        errObj.statusText = err.response.statusText;
 	      }
-
 	      if (err.response && err.response.body) {
 	        err = err.response.body;
 	      }
-
 	      if (err.err) {
 	        err = err.err;
 	      }
-
-	      errObj.code =
-	        err.code || err.error || err.error_code || err.status || null;
-
-	      errObj.description =
-	        err.errorDescription ||
-	        err.error_description ||
-	        err.description ||
-	        err.error ||
-	        err.details ||
-	        err.err ||
-	        null;
-
+	      errObj.code = err.code || err.error || err.error_code || err.status || null;
+	      errObj.description = err.errorDescription || err.error_description || err.description || err.error || err.details || err.err || null;
 	      if (options.forceLegacyError) {
 	        errObj.error = errObj.code;
 	        errObj.error_description = errObj.description;
 	      }
-
 	      if (err.error_codes && err.error_details) {
 	        errObj.errorDetails = {
 	          codes: err.error_codes,
 	          details: err.error_details
 	        };
 	      }
-
 	      if (err.name) {
 	        errObj.name = err.name;
 	      }
-
 	      if (err.policy) {
 	        errObj.policy = err.policy;
 	      }
-
 	      return cb(errObj);
 	    }
-
-	    if (
-	      data.type &&
-	      (data.type === 'text/html' || data.type === 'text/plain')
-	    ) {
+	    if (data.type && (data.type === 'text/html' || data.type === 'text/plain')) {
 	      return cb(null, data.text);
 	    }
-
 	    if (options.ignoreCasing) {
 	      return cb(null, data.body || data);
 	    }
-
-	    return cb(
-	      null,
-	      objectHelper.toCamelCase(data.body || data, [], {
-	        keepOriginal: options.keepOriginalCasing
-	      })
-	    );
+	    return cb(null, objectHelper.toCamelCase(data.body || data, [], {
+	      keepOriginal: options.keepOriginalCasing
+	    }));
 	  };
 	}
 
 	// For future reference:,
-
 	var tokenParams = [
-	  // auth0
-	  'realm',
-	  'audience',
-	  'otp',
-	  // oauth2
-	  'client_id',
-	  'client_secret',
-	  'redirect_uri',
-	  'scope',
-	  'code',
-	  'grant_type',
-	  'username',
-	  'password',
-	  'refresh_token',
-	  'assertion',
-	  'client_assertion',
-	  'client_assertion_type',
-	  'code_verifier'
-	];
-
+	// auth0
+	'realm', 'audience', 'otp',
+	// oauth2
+	'client_id', 'client_secret', 'redirect_uri', 'scope', 'code', 'grant_type', 'username', 'password', 'refresh_token', 'assertion', 'client_assertion', 'client_assertion_type', 'code_verifier'];
 	var authorizeParams = [
-	  // auth0
-	  'connection',
-	  'connection_scope',
-	  'auth0Client',
-	  'owp',
-	  'device',
-	  'realm',
-	  'organization',
-	  'invitation',
-
-	  'protocol',
-	  '_csrf',
-	  '_intstate',
-	  'login_ticket',
-
-	  // oauth2
-	  'client_id',
-	  'response_type',
-	  'response_mode',
-	  'redirect_uri',
-	  'audience',
-	  'scope',
-	  'state',
-	  'nonce',
-	  'display',
-	  'prompt',
-	  'screen_hint',
-	  'max_age',
-	  'ui_locales',
-	  'claims_locales',
-	  'id_token_hint',
-	  'login_hint',
-	  'acr_values',
-	  'claims',
-	  'registration',
-	  'request',
-	  'request_uri',
-	  'code_challenge',
-	  'code_challenge_method',
-
-	  // ADDITIONAL_PARAMETERS:
-	  // https://auth0.com/docs/api/authentication?javascript#social
-	  'access_type',
-	  'display'
-	];
-
+	// auth0
+	'connection', 'connection_scope', 'auth0Client', 'owp', 'device', 'realm', 'organization', 'invitation', 'protocol', '_csrf', '_intstate', 'login_ticket',
+	// oauth2
+	'client_id', 'response_type', 'response_mode', 'redirect_uri', 'audience', 'scope', 'state', 'nonce', 'display', 'prompt', 'screen_hint', 'max_age', 'ui_locales', 'claims_locales', 'id_token_hint', 'login_hint', 'acr_values', 'claims', 'registration', 'request', 'request_uri', 'code_challenge', 'code_challenge_method',
+	// ADDITIONAL_PARAMETERS:
+	// https://auth0.com/docs/api/authentication?javascript#social
+	'access_type', 'display'];
 	function oauthAuthorizeParams(warn, params) {
 	  var notAllowed = objectHelper.getKeysNotIn(params, authorizeParams);
-
 	  if (notAllowed.length > 0) {
-	    warn.warning(
-	      'Following parameters are not allowed on the `/authorize` endpoint: [' +
-	        notAllowed.join(',') +
-	        ']'
-	    );
+	    warn.warning('Following parameters are not allowed on the `/authorize` endpoint: [' + notAllowed.join(',') + ']');
 	  }
-
 	  return params;
 	}
-
 	function oauthTokenParams(warn, params) {
 	  return objectHelper.pick(params, tokenParams);
 	}
-
 	var parametersWhitelist = {
 	  oauthTokenParams: oauthTokenParams,
 	  oauthAuthorizeParams: oauthAuthorizeParams
@@ -6177,38 +6150,23 @@
 
 	function PluginHandler(webAuth, plugins) {
 	  this.plugins = plugins;
-
 	  for (var a = 0; a < this.plugins.length; a++) {
 	    if (this.plugins[a].version !== version.raw) {
 	      var pluginName = '';
-
 	      if (this.plugins[a].constructor && this.plugins[a].constructor.name) {
 	        pluginName = this.plugins[a].constructor.name;
 	      }
-
-	      throw new Error(
-	        'Plugin ' +
-	          pluginName +
-	          ' version (' +
-	          this.plugins[a].version +
-	          ') ' +
-	          'is not compatible with the SDK version (' +
-	          version.raw +
-	          ')'
-	      );
+	      throw new Error('Plugin ' + pluginName + ' version (' + this.plugins[a].version + ') ' + 'is not compatible with the SDK version (' + version.raw + ')');
 	    }
-
 	    this.plugins[a].setWebAuth(webAuth);
 	  }
 	}
-
-	PluginHandler.prototype.get = function(extensibilityPoint) {
+	PluginHandler.prototype.get = function (extensibilityPoint) {
 	  for (var a = 0; a < this.plugins.length; a++) {
 	    if (this.plugins[a].supports(extensibilityPoint)) {
 	      return this.plugins[a].init();
 	    }
 	  }
-
 	  return null;
 	};
 
@@ -6216,24 +6174,17 @@
 	  // eslint-disable-next-line
 	  var bytes = new Uint8Array(length);
 	  var result = [];
-	  var charset =
-	    '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._~';
-
-	  var cryptoObj =
-	    windowHelper.getWindow().crypto || windowHelper.getWindow().msCrypto;
+	  var charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._~';
+	  var cryptoObj = windowHelper.getWindow().crypto || windowHelper.getWindow().msCrypto;
 	  if (!cryptoObj) {
 	    return null;
 	  }
-
 	  var random = cryptoObj.getRandomValues(bytes);
-
 	  for (var a = 0; a < random.length; a++) {
 	    result.push(charset[random[a] % charset.length]);
 	  }
-
 	  return result.join('');
 	}
-
 	var random = {
 	  randomString: randomString
 	};
@@ -6242,59 +6193,34 @@
 	var MINUTES_30 = 1 / 48;
 
 	var DEFAULT_NAMESPACE = 'com.auth0.auth.';
-
 	function TransactionManager(options) {
 	  var transaction = options.transaction || {};
 	  this.namespace = transaction.namespace || DEFAULT_NAMESPACE;
 	  this.keyLength = transaction.keyLength || 32;
 	  // Passed option is in minutes, convert to days
-	  this.stateExpiration = options.stateExpiration ? (options.stateExpiration / 60 / 24) : MINUTES_30;
+	  this.stateExpiration = options.stateExpiration ? options.stateExpiration / 60 / 24 : MINUTES_30;
 	  this.storage = new Storage(options);
 	  this.options = options;
 	}
-
-	TransactionManager.prototype.process = function(options) {
+	TransactionManager.prototype.process = function (options) {
 	  if (!options.responseType) {
 	    throw new Error('responseType is required');
 	  }
 	  var lastUsedConnection = options.realm || options.connection;
-	  var responseTypeIncludesIdToken =
-	    options.responseType.indexOf('id_token') !== -1;
-
-	  var transaction = this.generateTransaction(
-	    options.appState,
-	    options.state,
-	    options.nonce,
-	    lastUsedConnection,
-	    responseTypeIncludesIdToken,
-	    options.organization
-	  );
-
+	  var responseTypeIncludesIdToken = options.responseType.indexOf('id_token') !== -1;
+	  var transaction = this.generateTransaction(options.appState, options.state, options.nonce, lastUsedConnection, responseTypeIncludesIdToken, options.organization);
 	  if (!options.state) {
 	    options.state = transaction.state;
 	  }
-
 	  if (responseTypeIncludesIdToken && !options.nonce) {
 	    options.nonce = transaction.nonce;
 	  }
-
 	  return options;
 	};
-
-	TransactionManager.prototype.generateTransaction = function(
-	  appState,
-	  state,
-	  nonce,
-	  lastUsedConnection,
-	  generateNonce,
-	  organization
-	) {
+	TransactionManager.prototype.generateTransaction = function (appState, state, nonce, lastUsedConnection, generateNonce, organization) {
 	  state = state || random.randomString(this.keyLength);
 	  nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
-
-	  var isHostedLoginPage =
-	    windowHelper.getWindow().location.host === this.options.domain;
-
+	  var isHostedLoginPage = windowHelper.getWindow().location.host === this.options.domain;
 	  if (!isHostedLoginPage) {
 	    var transactionPayload = {
 	      nonce: nonce,
@@ -6302,31 +6228,25 @@
 	      state: state,
 	      lastUsedConnection: lastUsedConnection
 	    };
-
 	    if (organization) {
 	      transactionPayload.organization = organization;
 	    }
-
 	    this.storage.setItem(this.namespace + state, transactionPayload, {
 	      expires: this.stateExpiration
 	    });
 	  }
-
 	  return {
 	    state: state,
 	    nonce: nonce
 	  };
 	};
-
-	TransactionManager.prototype.getStoredTransaction = function(state) {
+	TransactionManager.prototype.getStoredTransaction = function (state) {
 	  var transactionData;
-
 	  transactionData = this.storage.getItem(this.namespace + state);
 	  this.clearTransaction(state);
 	  return transactionData;
 	};
-
-	TransactionManager.prototype.clearTransaction = function(state) {
+	TransactionManager.prototype.clearTransaction = function (state) {
 	  this.storage.removeItem(this.namespace + state);
 	};
 
@@ -6343,28 +6263,24 @@
 	  this.proxyEventListener = null;
 	  // If no event identifier specified, set default
 	  this.eventValidator = options.eventValidator || {
-	    isValid: function() {
+	    isValid: function isValid() {
 	      return true;
 	    }
 	  };
-
 	  if (typeof this.callback !== 'function') {
 	    throw new Error('options.callback must be a function');
 	  }
 	}
-
-	IframeHandler.prototype.init = function() {
+	IframeHandler.prototype.init = function () {
 	  var _this = this;
 	  var _window = windowHelper.getWindow();
-
 	  this.iframe = _window.document.createElement('iframe');
 	  this.iframe.style.display = 'none';
 
 	  // Workaround to avoid using bind that does not work in IE8
-	  this.proxyEventListener = function(e) {
+	  this.proxyEventListener = function (e) {
 	    _this.eventListener(e);
 	  };
-
 	  switch (this.eventListenerType) {
 	    case 'message':
 	      this.eventSourceObject = _window;
@@ -6373,81 +6289,58 @@
 	      this.eventSourceObject = this.iframe;
 	      break;
 	    default:
-	      throw new Error(
-	        'Unsupported event listener type: ' + this.eventListenerType
-	      );
+	      throw new Error('Unsupported event listener type: ' + this.eventListenerType);
 	  }
-
-	  this.eventSourceObject.addEventListener(
-	    this.eventListenerType,
-	    this.proxyEventListener,
-	    false
-	  );
-
+	  this.eventSourceObject.addEventListener(this.eventListenerType, this.proxyEventListener, false);
 	  _window.document.body.appendChild(this.iframe);
-
 	  this.iframe.src = this.url;
-
-	  this.timeoutHandle = setTimeout(function() {
+	  this.timeoutHandle = setTimeout(function () {
 	    _this.timeoutHandler();
 	  }, this.timeout);
 	};
-
-	IframeHandler.prototype.eventListener = function(event) {
-	  var eventData = { event: event, sourceObject: this.eventSourceObject };
-
+	IframeHandler.prototype.eventListener = function (event) {
+	  var eventData = {
+	    event: event,
+	    sourceObject: this.eventSourceObject
+	  };
 	  if (!this.eventValidator.isValid(eventData)) {
 	    return;
 	  }
-
 	  this.destroy();
 	  this.callback(eventData);
 	};
-
-	IframeHandler.prototype.timeoutHandler = function() {
+	IframeHandler.prototype.timeoutHandler = function () {
 	  this.destroy();
 	  if (this.timeoutCallback) {
 	    this.timeoutCallback();
 	  }
 	};
-
-	IframeHandler.prototype.destroy = function() {
+	IframeHandler.prototype.destroy = function () {
 	  var _this = this;
-
 	  clearTimeout(this.timeoutHandle);
-
-	  this._destroyTimeout = setTimeout(function() {
-	    _this.eventSourceObject.removeEventListener(
-	      _this.eventListenerType,
-	      _this.proxyEventListener,
-	      false
-	    );
-
+	  this._destroyTimeout = setTimeout(function () {
+	    _this.eventSourceObject.removeEventListener(_this.eventListenerType, _this.proxyEventListener, false);
 	    if (_this.iframe.parentNode) {
 	      _this.iframe.parentNode.removeChild(_this.iframe);
 	    }
 	  }, 0);
 	};
 
-	function runWebMessageFlow(authorizeUrl, options, callback) {
+	function runWebMessageFlow(authorizeUrl, options, _callback) {
 	  var handler = new IframeHandler({
 	    url: authorizeUrl,
 	    eventListenerType: 'message',
-	    callback: function(eventData) {
-	      callback(null, eventData);
+	    callback: function callback(eventData) {
+	      _callback(null, eventData);
 	    },
 	    timeout: options.timeout,
 	    eventValidator: {
-	      isValid: function(eventData) {
-	        return !!(
-	          eventData.event.data &&
-	          eventData.event.data.type === 'authorization_response' &&
-	          options.state === eventData.event.data.response.state
-	        );
+	      isValid: function isValid(eventData) {
+	        return !!(eventData.event.data && eventData.event.data.type === 'authorization_response' && options.state === eventData.event.data.response.state);
 	      }
 	    },
-	    timeoutCallback: function() {
-	      callback({
+	    timeoutCallback: function timeoutCallback() {
+	      _callback({
 	        error: 'timeout',
 	        error_description: 'Timeout during executing web_message communication',
 	        state: options.state
@@ -6456,59 +6349,37 @@
 	  });
 	  handler.init();
 	}
-
 	function WebMessageHandler(webAuth) {
 	  this.webAuth = webAuth;
 	  this.warn = new Warn(webAuth.baseOptions);
 	}
-
-	WebMessageHandler.prototype.run = function(options, cb) {
+	WebMessageHandler.prototype.run = function (options, cb) {
 	  var _this = this;
 	  options.responseMode = 'web_message';
 	  options.prompt = 'none';
-
 	  var currentOrigin = windowHelper.getOrigin();
 	  var redirectUriOrigin = objectHelper.getOriginFromUrl(options.redirectUri);
 	  if (redirectUriOrigin && currentOrigin !== redirectUriOrigin) {
 	    return cb({
 	      error: 'origin_mismatch',
-	      error_description:
-	        "The redirectUri's origin (" +
-	        redirectUriOrigin +
-	        ") should match the window's origin (" +
-	        currentOrigin +
-	        ').'
+	      error_description: "The redirectUri's origin (" + redirectUriOrigin + ") should match the window's origin (" + currentOrigin + ').'
 	    });
 	  }
-
-	  runWebMessageFlow(
-	    this.webAuth.client.buildAuthorizeUrl(options),
-	    options,
-	    function(err, eventData) {
-	      var error = err;
-	      if (!err && eventData.event.data.response.error) {
-	        error = eventData.event.data.response;
-	      }
-	      if (!error) {
-	        var parsedHash = eventData.event.data.response;
-	        return _this.webAuth.validateAuthenticationResponse(
-	          options,
-	          parsedHash,
-	          cb
-	        );
-	      }
-	      if (
-	        error.error === 'consent_required' &&
-	        windowHelper.getWindow().location.hostname === 'localhost'
-	      ) {
-	        _this.warn.warning(
-	          "Consent Required. Consent can't be skipped on localhost. Read more here: https://auth0.com/docs/api-auth/user-consent#skipping-consent-for-first-party-clients"
-	        );
-	      }
-	      _this.webAuth.transactionManager.clearTransaction(error.state);
-	      return cb(objectHelper.pick(error, ['error', 'error_description']));
+	  runWebMessageFlow(this.webAuth.client.buildAuthorizeUrl(options), options, function (err, eventData) {
+	    var error = err;
+	    if (!err && eventData.event.data.response.error) {
+	      error = eventData.event.data.response;
 	    }
-	  );
+	    if (!error) {
+	      var parsedHash = eventData.event.data.response;
+	      return _this.webAuth.validateAuthenticationResponse(options, parsedHash, cb);
+	    }
+	    if (error.error === 'consent_required' && windowHelper.getWindow().location.hostname === 'localhost') {
+	      _this.warn.warning("Consent Required. Consent can't be skipped on localhost. Read more here: https://auth0.com/docs/api-auth/user-consent#skipping-consent-for-first-party-clients");
+	    }
+	    _this.webAuth.transactionManager.clearTransaction(error.state);
+	    return cb(objectHelper.pick(error, ['error', 'error_description']));
+	  });
 	};
 
 	function CrossOriginAuthentication(webAuth, options) {
@@ -6518,25 +6389,16 @@
 	  this.webMessageHandler = new WebMessageHandler(webAuth);
 	  this.storage = new Storage(options);
 	}
-
 	function getFragment(name) {
 	  var theWindow = windowHelper.getWindow();
 	  var value = '&' + theWindow.location.hash.substring(1);
 	  var parts = value.split('&' + name + '=');
 	  if (parts.length === 2) {
-	    return parts
-	      .pop()
-	      .split('&')
-	      .shift();
+	    return parts.pop().split('&').shift();
 	  }
 	}
-
 	function createKey(origin, coId) {
-	  return [
-	    'co/verifier',
-	    encodeURIComponent(origin),
-	    encodeURIComponent(coId)
-	  ].join('/');
+	  return ['co/verifier', encodeURIComponent(origin), encodeURIComponent(coId)].join('/');
 	}
 
 	/**
@@ -6560,95 +6422,67 @@
 	 * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
 	 * @ignore
 	 */
-	CrossOriginAuthentication.prototype.login = function(options, cb) {
+	CrossOriginAuthentication.prototype.login = function (options, cb) {
 	  var _this = this;
 	  var url = urlJoin(this.baseOptions.rootUrl, '/co/authenticate');
-
 	  options.username = options.username || options.email;
 	  delete options.email;
-
 	  var authenticateBody = {
 	    client_id: options.clientID || this.baseOptions.clientID,
 	    username: options.username
 	  };
-
 	  if (options.password) {
 	    authenticateBody.password = options.password;
 	  }
-
 	  if (options.otp) {
 	    authenticateBody.otp = options.otp;
 	  }
-
 	  var realm = options.realm || this.baseOptions.realm;
-
 	  if (realm) {
-	    var credentialType =
-	      options.credentialType ||
-	      this.baseOptions.credentialType ||
-	      'http://auth0.com/oauth/grant-type/password-realm';
-
+	    var credentialType = options.credentialType || this.baseOptions.credentialType || 'http://auth0.com/oauth/grant-type/password-realm';
 	    authenticateBody.realm = realm;
 	    authenticateBody.credential_type = credentialType;
 	  } else {
 	    authenticateBody.credential_type = 'password';
 	  }
-
-	  this.request
-	    .post(url)
-	    .withCredentials()
-	    .send(authenticateBody)
-	    .end(function(err, data) {
-	      if (err) {
-	        var errorObject = (err.response && err.response.body) || {
-	          error: 'request_error',
-	          error_description: JSON.stringify(err)
-	        };
-
-	        return wrapCallback(cb, { forceLegacyError: true })(errorObject);
-	      }
-
-	      function doAuth() {
-	        var popupMode = options.popup === true;
-
-	        options = objectHelper.blacklist(options, [
-	          'password',
-	          'credentialType',
-	          'otp',
-	          'popup',
-	          'onRedirecting'
-	        ]);
-
-	        var authorizeOptions = objectHelper
-	          .merge(options)
-	          .with({ loginTicket: data.body.login_ticket });
-
-	        var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
-
-	        _this.storage.setItem(key, data.body.co_verifier, {
-	          expires: MINUTES_15
-	        });
-
-	        if (popupMode) {
-	          _this.webMessageHandler.run(
-	            authorizeOptions,
-	            wrapCallback(cb, { forceLegacyError: true })
-	          );
-	        } else {
-	          _this.webAuth.authorize(authorizeOptions);
-	        }
-	      }
-
-	      // Handle pre-redirecting to login, then proceed with '/authorize' once that is complete
-	      if (typeof options.onRedirecting === 'function') {
-	        options.onRedirecting(doAuth);
+	  this.request.post(url).withCredentials().send(authenticateBody).end(function (err, data) {
+	    if (err) {
+	      var errorObject = err.response && err.response.body || {
+	        error: 'request_error',
+	        error_description: JSON.stringify(err)
+	      };
+	      return wrapCallback(cb, {
+	        forceLegacyError: true
+	      })(errorObject);
+	    }
+	    function doAuth() {
+	      var popupMode = options.popup === true;
+	      options = objectHelper.blacklist(options, ['password', 'credentialType', 'otp', 'popup', 'onRedirecting']);
+	      var authorizeOptions = objectHelper.merge(options).with({
+	        loginTicket: data.body.login_ticket
+	      });
+	      var key = createKey(_this.baseOptions.rootUrl, data.body.co_id);
+	      _this.storage.setItem(key, data.body.co_verifier, {
+	        expires: MINUTES_15
+	      });
+	      if (popupMode) {
+	        _this.webMessageHandler.run(authorizeOptions, wrapCallback(cb, {
+	          forceLegacyError: true
+	        }));
 	      } else {
-	        // If not handling pre-redirect, just do the login as before
-	        doAuth();
+	        _this.webAuth.authorize(authorizeOptions);
 	      }
-	    });
-	};
+	    }
 
+	    // Handle pre-redirecting to login, then proceed with '/authorize' once that is complete
+	    if (typeof options.onRedirecting === 'function') {
+	      options.onRedirecting(doAuth);
+	    } else {
+	      // If not handling pre-redirect, just do the login as before
+	      doAuth();
+	    }
+	  });
+	};
 	function tryGetVerifier(storage, key) {
 	  try {
 	    var verifier = storage.getItem(key);
@@ -6665,30 +6499,26 @@
 	 * @method callback
 	 * @ignore
 	 */
-	CrossOriginAuthentication.prototype.callback = function() {
+	CrossOriginAuthentication.prototype.callback = function () {
 	  var targetOrigin = decodeURIComponent(getFragment('origin'));
 	  var theWindow = windowHelper.getWindow();
 	  var _this = this;
-
-	  theWindow.addEventListener('message', function(evt) {
+	  theWindow.addEventListener('message', function (evt) {
 	    if (evt.data.type !== 'co_verifier_request') {
 	      return;
 	    }
 	    var key = createKey(evt.origin, evt.data.request.id);
 	    var verifier = tryGetVerifier(_this.storage, key);
-
-	    evt.source.postMessage(
-	      {
-	        type: 'co_verifier_response',
-	        response: {
-	          verifier: verifier
-	        }
-	      },
-	      evt.origin
-	    );
+	    evt.source.postMessage({
+	      type: 'co_verifier_response',
+	      response: {
+	        verifier: verifier
+	      }
+	    }, evt.origin);
 	  });
-
-	  theWindow.parent.postMessage({ type: 'ready' }, targetOrigin);
+	  theWindow.parent.postMessage({
+	    type: 'ready'
+	  }, targetOrigin);
 	};
 
 	/**
@@ -6699,11 +6529,7 @@
 	function Redirect(auth0, options) {
 	  this.webAuth = auth0;
 	  this.baseOptions = options;
-	  this.crossOriginAuthentication = new CrossOriginAuthentication(
-	    auth0,
-	    this.baseOptions
-	  );
-
+	  this.crossOriginAuthentication = new CrossOriginAuthentication(auth0, this.baseOptions);
 	  this.warn = new Warn({
 	    disableWarnings: !!options._disableDeprecationWarnings
 	  });
@@ -6745,15 +6571,12 @@
 	 */
 	Redirect.prototype.signupAndLogin = function (options, cb) {
 	  var _this = this;
-
 	  return this.webAuth.client.dbConnection.signup(options, function (err) {
 	    if (err) {
 	      return cb(err);
 	    }
-
 	    options.realm = options.realm || options.connection;
 	    delete options.connection;
-
 	    return _this.webAuth.login(options, cb);
 	  });
 	};
@@ -7081,94 +6904,65 @@
 	  if (m) return m[1];
 	  return url;
 	}
-
 	var urlHelper = {
 	  extractOrigin: extractOrigin
 	};
 
 	/* eslint-disable no-restricted-syntax */
-
 	function PopupHandler() {
 	  this._current_popup = null;
 	}
-
-	PopupHandler.prototype.calculatePosition = function(options) {
+	PopupHandler.prototype.calculatePosition = function (options) {
 	  var width = options.width || 500;
 	  var height = options.height || 600;
 	  var _window = windowHelper.getWindow();
-
-	  var screenX =
-	    typeof _window.screenX !== 'undefined'
-	      ? _window.screenX
-	      : _window.screenLeft;
-	  var screenY =
-	    typeof _window.screenY !== 'undefined'
-	      ? _window.screenY
-	      : _window.screenTop;
-
-	  var outerWidth =
-	    typeof _window.outerWidth !== 'undefined'
-	      ? _window.outerWidth
-	      : _window.document.body.clientWidth;
-
-	  var outerHeight =
-	    typeof _window.outerHeight !== 'undefined'
-	      ? _window.outerHeight
-	      : _window.document.body.clientHeight;
-
+	  var screenX = typeof _window.screenX !== 'undefined' ? _window.screenX : _window.screenLeft;
+	  var screenY = typeof _window.screenY !== 'undefined' ? _window.screenY : _window.screenTop;
+	  var outerWidth = typeof _window.outerWidth !== 'undefined' ? _window.outerWidth : _window.document.body.clientWidth;
+	  var outerHeight = typeof _window.outerHeight !== 'undefined' ? _window.outerHeight : _window.document.body.clientHeight;
 	  var left = options.left || screenX + (outerWidth - width) / 2;
 	  var top = options.top || screenY + (outerHeight - height) / 2;
-
-	  return { width: width, height: height, left: left, top: top };
+	  return {
+	    width: width,
+	    height: height,
+	    left: left,
+	    top: top
+	  };
 	};
-
-	PopupHandler.prototype.preload = function(options) {
+	PopupHandler.prototype.preload = function (options) {
 	  var _this = this;
 	  var _window = windowHelper.getWindow();
 	  var popupPosition = this.calculatePosition(options.popupOptions || {});
-	  var popupOptions = objectHelper
-	    .merge(popupPosition)
-	    .with(options.popupOptions);
+	  var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
 	  var url = options.url || 'about:blank';
 	  var windowFeatures = lib.stringify(popupOptions, {
 	    encode: false,
 	    delimiter: ','
 	  });
-
 	  if (this._current_popup && !this._current_popup.closed) {
 	    return this._current_popup;
 	  }
-
 	  this._current_popup = _window.open(url, 'auth0_signup_popup', windowFeatures);
-
-	  this._current_popup.kill = function() {
+	  this._current_popup.kill = function () {
 	    this.close();
 	    _this._current_popup = null;
 	  };
-
 	  return this._current_popup;
 	};
-
-	PopupHandler.prototype.load = function(url, relayUrl, options, cb) {
+	PopupHandler.prototype.load = function (url, relayUrl, options, cb) {
 	  var _this = this;
 	  var popupPosition = this.calculatePosition(options.popupOptions || {});
-	  var popupOptions = objectHelper
-	    .merge(popupPosition)
-	    .with(options.popupOptions);
-
-	  var winchanOptions = objectHelper
-	    .merge({
-	      url: url,
-	      relay_url: relayUrl,
-	      window_features: lib.stringify(popupOptions, {
-	        delimiter: ',',
-	        encode: false
-	      }),
-	      popup: this._current_popup
-	    })
-	    .with(options);
-
-	  var popup = winchan.open(winchanOptions, function(err, data) {
+	  var popupOptions = objectHelper.merge(popupPosition).with(options.popupOptions);
+	  var winchanOptions = objectHelper.merge({
+	    url: url,
+	    relay_url: relayUrl,
+	    window_features: lib.stringify(popupOptions, {
+	      delimiter: ',',
+	      encode: false
+	    }),
+	    popup: this._current_popup
+	  }).with(options);
+	  var popup = winchan.open(winchanOptions, function (err, data) {
 	    // Ignores messages sent by browser extensions.
 	    if (err && err.name === 'SyntaxError') {
 	      return;
@@ -7176,9 +6970,7 @@
 	    _this._current_popup = null;
 	    return cb(err, data);
 	  });
-
 	  popup.focus();
-
 	  return popup;
 	};
 
@@ -7192,12 +6984,8 @@
 	  this.baseOptions.popupOrigin = options.popupOrigin;
 	  this.client = webAuth.client;
 	  this.webAuth = webAuth;
-
 	  this.transactionManager = new TransactionManager(this.baseOptions);
-	  this.crossOriginAuthentication = new CrossOriginAuthentication(
-	    webAuth,
-	    this.baseOptions
-	  );
+	  this.crossOriginAuthentication = new CrossOriginAuthentication(webAuth, this.baseOptions);
 	  this.warn = new Warn({
 	    disableWarnings: !!options._disableDeprecationWarnings
 	  });
@@ -7209,13 +6997,11 @@
 	 * @method buildPopupHandler
 	 * @private
 	 */
-	Popup.prototype.buildPopupHandler = function() {
+	Popup.prototype.buildPopupHandler = function () {
 	  var pluginHandler = this.baseOptions.plugins.get('popup.getPopupHandler');
-
 	  if (pluginHandler) {
 	    return pluginHandler.getPopupHandler();
 	  }
-
 	  return new PopupHandler();
 	};
 
@@ -7226,11 +7012,9 @@
 	 * @param {Object} options receives the window height and width and any other window feature to be sent to window.open
 	 * @memberof Popup.prototype
 	 */
-	Popup.prototype.preload = function(options) {
+	Popup.prototype.preload = function (options) {
 	  options = options || {};
-
 	  var popup = this.buildPopupHandler();
-
 	  popup.preload(options);
 	  return popup;
 	};
@@ -7241,15 +7025,13 @@
 	 * @method getPopupHandler
 	 * @private
 	 */
-	Popup.prototype.getPopupHandler = function(options, preload) {
+	Popup.prototype.getPopupHandler = function (options, preload) {
 	  if (options.popupHandler) {
 	    return options.popupHandler;
 	  }
-
 	  if (preload) {
 	    return this.preload(options);
 	  }
-
 	  return this.buildPopupHandler();
 	};
 
@@ -7264,45 +7046,35 @@
 	 * @see   {@link parseHash}
 	 * @memberof Popup.prototype
 	 */
-	Popup.prototype.callback = function(options) {
+	Popup.prototype.callback = function (options) {
 	  var _this = this;
 	  var theWindow = windowHelper.getWindow();
 	  options = options || {};
-	  var originUrl =
-	    options.popupOrigin ||
-	    this.baseOptions.popupOrigin ||
-	    windowHelper.getOrigin();
+	  var originUrl = options.popupOrigin || this.baseOptions.popupOrigin || windowHelper.getOrigin();
 
 	  /*
 	    in IE 11, there's a bug that makes window.opener return undefined.
 	    The callback page will still call `popup.callback()` which will run this method
 	    in the relay page. WinChan expects the relay page to have a global `doPost` function,
 	    which will be called with the response.
-
-	    IE11 Bug: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/110920/
+	     IE11 Bug: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/110920/
 	   */
 	  if (!theWindow.opener) {
-	    theWindow.doPost = function(msg) {
+	    theWindow.doPost = function (msg) {
 	      if (theWindow.parent) {
 	        theWindow.parent.postMessage(msg, originUrl);
 	      }
 	    };
 	    return;
 	  }
-
-	  winchan.onOpen(function(popupOrigin, r, cb) {
+	  winchan.onOpen(function (popupOrigin, r, cb) {
 	    if (popupOrigin !== originUrl) {
 	      return cb({
 	        error: 'origin_mismatch',
-	        error_description:
-	          "The popup's origin (" +
-	          popupOrigin +
-	          ') should match the `popupOrigin` parameter (' +
-	          originUrl +
-	          ').'
+	        error_description: "The popup's origin (" + popupOrigin + ') should match the `popupOrigin` parameter (' + originUrl + ').'
 	      });
 	    }
-	    _this.webAuth.parseHash(options || {}, function(err, data) {
+	    _this.webAuth.parseHash(options || {}, function (err, data) {
 	      return cb(err || data);
 	    });
 	  });
@@ -7328,42 +7100,22 @@
 	 * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
 	 * @memberof Popup.prototype
 	 */
-	Popup.prototype.authorize = function(options, cb) {
+	Popup.prototype.authorize = function (options, cb) {
 	  var popup;
 	  var url;
 	  var relayUrl;
 	  var popOpts = {};
-
 	  var pluginHandler = this.baseOptions.plugins.get('popup.authorize');
-
-	  var params = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'scope',
-	      'domain',
-	      'audience',
-	      'tenant',
-	      'responseType',
-	      'redirectUri',
-	      '_csrf',
-	      'state',
-	      '_intstate',
-	      'nonce',
-	      'organization',
-	      'invitation'
-	    ])
-	    .with(objectHelper.blacklist(options, ['popupHandler']));
-
-	  assert.check(
-	    params,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      responseType: {
-	        type: 'string',
-	        message: 'responseType option is required'
-	      }
+	  var params = objectHelper.merge(this.baseOptions, ['clientID', 'scope', 'domain', 'audience', 'tenant', 'responseType', 'redirectUri', '_csrf', 'state', '_intstate', 'nonce', 'organization', 'invitation']).with(objectHelper.blacklist(options, ['popupHandler']));
+	  assert.check(params, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    responseType: {
+	      type: 'string',
+	      message: 'responseType option is required'
 	    }
-	  );
+	  });
 
 	  // the relay page should not be necessary as long it happens in the same domain
 	  // (a redirectUri shoul be provided). It is necessary when using OWP
@@ -7378,34 +7130,20 @@
 	    popOpts.origin = urlHelper.extractOrigin(params.redirectUri);
 	    relayUrl = params.redirectUri;
 	  }
-
 	  if (options.popupOptions) {
-	    popOpts.popupOptions = objectHelper.pick(options.popupOptions, [
-	      'width',
-	      'height',
-	      'top',
-	      'left'
-	    ]);
+	    popOpts.popupOptions = objectHelper.pick(options.popupOptions, ['width', 'height', 'top', 'left']);
 	  }
-
 	  if (pluginHandler) {
 	    params = pluginHandler.processParams(params);
 	  }
-
 	  params = this.transactionManager.process(params);
 	  params.scope = params.scope || 'openid profile email';
 	  delete params.domain;
-
 	  url = this.client.buildAuthorizeUrl(params);
-
 	  popup = this.getPopupHandler(options);
-
-	  return popup.load(
-	    url,
-	    relayUrl,
-	    popOpts,
-	    wrapCallback(cb, { keepOriginalCasing: true })
-	  );
+	  return popup.load(url, relayUrl, popOpts, wrapCallback(cb, {
+	    keepOriginalCasing: true
+	  }));
 	};
 
 	/**
@@ -7426,16 +7164,7 @@
 	Popup.prototype.loginWithCredentials = function (options, cb) {
 	  options.realm = options.realm || options.connection;
 	  options.popup = true;
-	  options = objectHelper
-	    .merge(this.baseOptions, [
-	      'redirectUri',
-	      'responseType',
-	      'state',
-	      'nonce',
-	      'timeout'
-	    ])
-	    .with(objectHelper.blacklist(options, ['popupHandler', 'connection']));
-
+	  options = objectHelper.merge(this.baseOptions, ['redirectUri', 'responseType', 'state', 'nonce', 'timeout']).with(objectHelper.blacklist(options, ['popupHandler', 'connection']));
 	  options = this.transactionManager.process(options);
 	  this.crossOriginAuthentication.login(options, cb);
 	};
@@ -7453,26 +7182,20 @@
 	 * @param {Function} cb
 	 * @memberof Popup.prototype
 	 */
-	Popup.prototype.passwordlessVerify = function(options, cb) {
+	Popup.prototype.passwordlessVerify = function (options, cb) {
 	  var _this = this;
-	  return this.client.passwordless.verify(
-	    objectHelper.blacklist(options, ['popupHandler']),
-	    function(err) {
-	      if (err) {
-	        return cb(err);
-	      }
-
-	      options.username = options.phoneNumber || options.email;
-	      options.password = options.verificationCode;
-
-	      delete options.email;
-	      delete options.phoneNumber;
-	      delete options.verificationCode;
-	      delete options.type;
-
-	      _this.client.loginWithResourceOwner(options, cb);
+	  return this.client.passwordless.verify(objectHelper.blacklist(options, ['popupHandler']), function (err) {
+	    if (err) {
+	      return cb(err);
 	    }
-	  );
+	    options.username = options.phoneNumber || options.email;
+	    options.password = options.verificationCode;
+	    delete options.email;
+	    delete options.phoneNumber;
+	    delete options.verificationCode;
+	    delete options.type;
+	    _this.client.loginWithResourceOwner(options, cb);
+	  });
 	};
 
 	/**
@@ -7489,10 +7212,9 @@
 	 * @param {credentialsCallback} cb
 	 * @memberof Popup.prototype
 	 */
-	Popup.prototype.signupAndLogin = function(options, cb) {
+	Popup.prototype.signupAndLogin = function (options, cb) {
 	  var _this = this;
-
-	  return this.client.dbConnection.signup(options, function(err) {
+	  return this.client.dbConnection.signup(options, function (err) {
 	    if (err) {
 	      return cb(err);
 	    }
@@ -7507,25 +7229,12 @@
 	  this.postMessageDataType = options.postMessageDataType || false;
 
 	  // prefer origin from options, fallback to origin from browser, and some browsers (for example MS Edge) don't support origin; fallback to construct origin manually
-	  this.postMessageOrigin =
-	    options.postMessageOrigin ||
-	    windowHelper.getWindow().location.origin ||
-	    windowHelper.getWindow().location.protocol +
-	      '//' +
-	      windowHelper.getWindow().location.hostname +
-	      (windowHelper.getWindow().location.port
-	        ? ':' + windowHelper.getWindow().location.port
-	        : '');
+	  this.postMessageOrigin = options.postMessageOrigin || windowHelper.getWindow().location.origin || windowHelper.getWindow().location.protocol + '//' + windowHelper.getWindow().location.hostname + (windowHelper.getWindow().location.port ? ':' + windowHelper.getWindow().location.port : '');
 	}
-
-	SilentAuthenticationHandler.create = function(options) {
+	SilentAuthenticationHandler.create = function (options) {
 	  return new SilentAuthenticationHandler(options);
 	};
-
-	SilentAuthenticationHandler.prototype.login = function(
-	  usePostMessage,
-	  callback
-	) {
+	SilentAuthenticationHandler.prototype.login = function (usePostMessage, callback) {
 	  this.handler = new IframeHandler({
 	    auth0: this.auth0,
 	    url: this.authenticationUrl,
@@ -7533,29 +7242,21 @@
 	    callback: this.getCallbackHandler(callback, usePostMessage),
 	    timeout: this.timeout,
 	    eventValidator: this.getEventValidator(),
-	    timeoutCallback: function() {
-	      callback(
-	        null,
-	        '#error=timeout&error_description=Timeout+during+authentication+renew.'
-	      );
+	    timeoutCallback: function timeoutCallback() {
+	      callback(null, '#error=timeout&error_description=Timeout+during+authentication+renew.');
 	    },
 	    usePostMessage: usePostMessage || false
 	  });
-
 	  this.handler.init();
 	};
-
-	SilentAuthenticationHandler.prototype.getEventValidator = function() {
+	SilentAuthenticationHandler.prototype.getEventValidator = function () {
 	  var _this = this;
 	  return {
-	    isValid: function(eventData) {
+	    isValid: function isValid(eventData) {
 	      switch (eventData.event.type) {
 	        case 'message':
 	          // Message must come from the expected origin and iframe window.
-	          if (
-	            eventData.event.origin !== _this.postMessageOrigin ||
-	            eventData.event.source !== _this.handler.iframe.contentWindow
-	          ) {
+	          if (eventData.event.origin !== _this.postMessageOrigin || eventData.event.source !== _this.handler.iframe.contentWindow) {
 	            return false;
 	          }
 
@@ -7563,16 +7264,9 @@
 	          if (_this.postMessageDataType === false) {
 	            return true;
 	          }
-
-	          return (
-	            eventData.event.data.type &&
-	            eventData.event.data.type === _this.postMessageDataType
-	          );
-
+	          return eventData.event.data.type && eventData.event.data.type === _this.postMessageDataType;
 	        case 'load':
-	          if (
-	            eventData.sourceObject.contentWindow.location.protocol === 'about:'
-	          ) {
+	          if (eventData.sourceObject.contentWindow.location.protocol === 'about:') {
 	            // Chrome is automatically loading the about:blank page, we ignore this.
 	            return false;
 	          }
@@ -7583,19 +7277,12 @@
 	    }
 	  };
 	};
-
-	SilentAuthenticationHandler.prototype.getCallbackHandler = function(
-	  callback,
-	  usePostMessage
-	) {
-	  return function(eventData) {
+	SilentAuthenticationHandler.prototype.getCallbackHandler = function (callback, usePostMessage) {
+	  return function (eventData) {
 	    var callbackValue;
 	    if (!usePostMessage) {
 	      callbackValue = eventData.sourceObject.contentWindow.location.hash;
-	    } else if (
-	      typeof eventData.event.data === 'object' &&
-	      eventData.event.data.hash
-	    ) {
+	    } else if (_typeof(eventData.event.data) === 'object' && eventData.event.data.hash) {
 	      callbackValue = eventData.event.data.hash;
 	    } else {
 	      callbackValue = eventData.event.data;
@@ -7609,47 +7296,26 @@
 	  this.request = new RequestBuilder(options);
 	  this.transactionManager = new TransactionManager(this.baseOptions);
 	}
-
-	UsernamePassword.prototype.login = function(options, cb) {
+	UsernamePassword.prototype.login = function (options, cb) {
 	  var url;
 	  var body;
-
 	  url = urlJoin(this.baseOptions.rootUrl, 'usernamepassword', 'login');
-
 	  options.username = options.username || options.email; // eslint-disable-line
 
 	  options = objectHelper.blacklist(options, ['email', 'onRedirecting']); // eslint-disable-line
 
-	  body = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'redirectUri',
-	      'tenant',
-	      'responseType',
-	      'responseMode',
-	      'scope',
-	      'audience'
-	    ])
-	    .with(options);
+	  body = objectHelper.merge(this.baseOptions, ['clientID', 'redirectUri', 'tenant', 'responseType', 'responseMode', 'scope', 'audience']).with(options);
 	  body = this.transactionManager.process(body);
-
 	  body = objectHelper.toSnakeCase(body, ['auth0Client']);
-
-	  return this.request
-	    .post(url)
-	    .send(body)
-	    .end(wrapCallback(cb));
+	  return this.request.post(url).send(body).end(wrapCallback(cb));
 	};
-
-	UsernamePassword.prototype.callback = function(formHtml) {
+	UsernamePassword.prototype.callback = function (formHtml) {
 	  var div;
 	  var form;
 	  var _document = windowHelper.getDocument();
-
 	  div = _document.createElement('div');
 	  div.innerHTML = formHtml;
 	  form = _document.body.appendChild(div).children[0];
-
 	  form.submit();
 	};
 
@@ -7658,7 +7324,6 @@
 	  this.client = client;
 	  this.baseOptions.universalLoginPage = true;
 	  this.request = new RequestBuilder(this.baseOptions);
-
 	  this.warn = new Warn({
 	    disableWarnings: !!options._disableDeprecationWarnings
 	  });
@@ -7696,59 +7361,34 @@
 	 * @param {credentialsCallback} cb
 	 * @ignore
 	 */
-	HostedPages.prototype.login = function(options, cb) {
+	HostedPages.prototype.login = function (options, cb) {
 	  if (windowHelper.getWindow().location.host !== this.baseOptions.domain) {
-	    throw new Error(
-	      'This method is meant to be used only inside the Universal Login Page.'
-	    );
+	    throw new Error('This method is meant to be used only inside the Universal Login Page.');
 	  }
-
 	  var usernamePassword;
-
-	  var params = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'redirectUri',
-	      'tenant',
-	      'responseType',
-	      'responseMode',
-	      'scope',
-	      'audience',
-	      '_csrf',
-	      'state',
-	      '_intstate',
-	      'nonce'
-	    ])
-	    .with(options);
-
-	  assert.check(
-	    params,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      responseType: {
-	        type: 'string',
-	        message: 'responseType option is required'
-	      }
+	  var params = objectHelper.merge(this.baseOptions, ['clientID', 'redirectUri', 'tenant', 'responseType', 'responseMode', 'scope', 'audience', '_csrf', 'state', '_intstate', 'nonce']).with(options);
+	  assert.check(params, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    responseType: {
+	      type: 'string',
+	      message: 'responseType option is required'
 	    }
-	  );
-
+	  });
 	  usernamePassword = new UsernamePassword(this.baseOptions);
-
-	  return usernamePassword.login(params, function(err, data) {
+	  return usernamePassword.login(params, function (err, data) {
 	    if (err) {
 	      return cb(err);
 	    }
-
 	    function doAuth() {
 	      usernamePassword.callback(data);
 	    }
-
 	    if (typeof options.onRedirecting === 'function') {
-	      return options.onRedirecting(function() {
+	      return options.onRedirecting(function () {
 	        doAuth();
 	      });
 	    }
-
 	    doAuth();
 	  });
 	};
@@ -7764,62 +7404,53 @@
 	 * @param {credentialsCallback} cb
 	 * @ignore
 	 */
-	HostedPages.prototype.signupAndLogin = function(options, cb) {
+	HostedPages.prototype.signupAndLogin = function (options, cb) {
 	  var _this = this;
-	  return _this.client.client.dbConnection.signup(options, function(err) {
+	  return _this.client.client.dbConnection.signup(options, function (err) {
 	    if (err) {
 	      return cb(err);
 	    }
 	    return _this.login(options, cb);
 	  });
 	};
-
-	HostedPages.prototype.getSSOData = function(withActiveDirectories, cb) {
+	HostedPages.prototype.getSSOData = function (withActiveDirectories, cb) {
 	  var url;
 	  var params = '';
-
 	  if (typeof withActiveDirectories === 'function') {
 	    cb = withActiveDirectories;
 	    withActiveDirectories = false;
 	  }
-
 	  assert.check(withActiveDirectories, {
 	    type: 'boolean',
 	    message: 'withActiveDirectories parameter is not valid'
 	  });
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  if (withActiveDirectories) {
-	    params =
-	      '?' +
-	      lib.stringify({
-	        ldaps: 1,
-	        client_id: this.baseOptions.clientID
-	      });
+	    params = '?' + lib.stringify({
+	      ldaps: 1,
+	      client_id: this.baseOptions.clientID
+	    });
 	  }
-
 	  url = urlJoin(this.baseOptions.rootUrl, 'user', 'ssodata', params);
-
-	  return this.request
-	    .get(url, { noHeaders: true })
-	    .withCredentials()
-	    .end(wrapCallback(cb));
+	  return this.request.get(url, {
+	    noHeaders: true
+	  }).withCredentials().end(wrapCallback(cb));
 	};
 
 	// eslint-disable-next-line no-unused-vars
-
-	var noop = function () { };
+	var noop = function noop() {};
 	var captchaSolved = noop;
 	var done = noop;
 	var captchaReloaded = false;
-
 	var Flow = {
 	  DEFAULT: 'default',
 	  SIGNUP: 'signup',
 	  PASSWORDLESS: 'passwordless',
 	  PASSWORD_RESET: 'password_reset'
 	};
-
 	var RECAPTCHA_V2_PROVIDER = 'recaptcha_v2';
 	var RECAPTCHA_ENTERPRISE_PROVIDER = 'recaptcha_enterprise';
 	var HCAPTCHA_PROVIDER = 'hcaptcha';
@@ -7828,63 +7459,43 @@
 	var AUTH0_PROVIDER = 'auth0';
 	var AUTH0_V2_CAPTCHA_PROVIDER = 'auth0_v2';
 	var MAX_RETRY = 3;
-
-	var defaults$2 = {
+	var defaults$3 = {
 	  lang: 'en',
 	  templates: {
-	    auth0: function (challenge) {
-	      var message =
-	        challenge.type === 'code'
-	          ? 'Enter the code shown above'
-	          : 'Solve the formula shown above';
-	      return (
-	        '<div class="captcha-challenge">\n' +
-	        '  <img src="' +
-	        challenge.image +
-	        '" />\n' +
-	        '  <button type="button" class="captcha-reload">↺</button>\n' +
-	        '</div>\n' +
-	        '<input type="text" name="captcha"\n' +
-	        '  class="form-control captcha-control"\n' +
-	        '  placeholder="' +
-	        message +
-	        '" />'
-	      );
+	    auth0: function auth0(challenge) {
+	      var message = challenge.type === 'code' ? 'Enter the code shown above' : 'Solve the formula shown above';
+	      return '<div class="captcha-challenge">\n' + '  <img src="' + challenge.image + '" />\n' + '  <button type="button" class="captcha-reload">↺</button>\n' + '</div>\n' + '<input type="text" name="captcha"\n' + '  class="form-control captcha-control"\n' + '  placeholder="' + message + '" />';
 	    },
-	    recaptcha_v2: function () {
+	    recaptcha_v2: function recaptcha_v2() {
 	      return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
 	    },
-	    recaptcha_enterprise: function () {
+	    recaptcha_enterprise: function recaptcha_enterprise() {
 	      return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
 	    },
-	    hcaptcha: function () {
+	    hcaptcha: function hcaptcha() {
 	      return '<div class="hcaptcha" ></div><input type="hidden" name="captcha" />';
 	    },
-	    friendly_captcha: function () {
+	    friendly_captcha: function friendly_captcha() {
 	      return '<div class="friendly-captcha" ></div><input type="hidden" name="captcha" />';
 	    },
-	    arkose: function () {
+	    arkose: function arkose() {
 	      return '<div class="arkose" ></div><input type="hidden" name="captcha" />';
 	    },
-	    auth0_v2: function () {
+	    auth0_v2: function auth0_v2() {
 	      return '<div class="auth0_v2" ></div><input type="hidden" name="captcha" />';
 	    },
-	    error: function () {
+	    error: function error() {
 	      return '<div class="error" style="color: red;">Error getting the bot detection challenge. Please contact the system administrator.</div>';
 	    }
 	  }
 	};
-
 	function handleAuth0Provider(element, options, challenge, load) {
 	  element.innerHTML = options.templates[challenge.provider](challenge);
-	  element
-	    .querySelector('.captcha-reload')
-	    .addEventListener('click', function (e) {
-	      e.preventDefault();
-	      load();
-	    });
+	  element.querySelector('.captcha-reload').addEventListener('click', function (e) {
+	    e.preventDefault();
+	    load();
+	  });
 	}
-
 	function globalForCaptchaProvider(provider) {
 	  switch (provider) {
 	    case RECAPTCHA_V2_PROVIDER:
@@ -7903,54 +7514,25 @@
 	      throw new Error('Unknown captcha provider');
 	  }
 	}
-
-	function scriptForCaptchaProvider(
-	  provider,
-	  lang,
-	  callback,
-	  clientSubdomain,
-	  siteKey
-	) {
+	function scriptForCaptchaProvider(provider, lang, callback, clientSubdomain, siteKey) {
 	  switch (provider) {
 	    case RECAPTCHA_V2_PROVIDER:
-	      return (
-	        'https://www.recaptcha.net/recaptcha/api.js?hl=' +
-	        lang +
-	        '&onload=' +
-	        callback
-	      );
+	      return 'https://www.recaptcha.net/recaptcha/api.js?hl=' + lang + '&onload=' + callback;
 	    case RECAPTCHA_ENTERPRISE_PROVIDER:
-	      return (
-	        'https://www.recaptcha.net/recaptcha/enterprise.js?render=explicit&hl=' +
-	        lang +
-	        '&onload=' +
-	        callback
-	      );
+	      return 'https://www.recaptcha.net/recaptcha/enterprise.js?render=explicit&hl=' + lang + '&onload=' + callback;
 	    case HCAPTCHA_PROVIDER:
-	      return (
-	        'https://js.hcaptcha.com/1/api.js?hl=' + lang + '&onload=' + callback
-	      );
+	      return 'https://js.hcaptcha.com/1/api.js?hl=' + lang + '&onload=' + callback;
 	    case FRIENDLY_CAPTCHA_PROVIDER:
 	      return 'https://cdn.jsdelivr.net/npm/friendly-challenge@0.9.12/widget.min.js';
 	    case ARKOSE_PROVIDER:
-	      return (
-	        'https://' +
-	        clientSubdomain +
-	        '.arkoselabs.com/v2/' +
-	        siteKey +
-	        '/api.js'
-	      );
+	      return 'https://' + clientSubdomain + '.arkoselabs.com/v2/' + siteKey + '/api.js';
 	    case AUTH0_V2_CAPTCHA_PROVIDER:
-	      return (
-	        'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=' +
-	        callback
-	      );
+	      return 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=' + callback;
 	    /* istanbul ignore next */
 	    default:
 	      throw new Error('Unknown captcha provider');
 	  }
 	}
-
 	function loadScript(url, attributes) {
 	  var script = window.document.createElement('script');
 	  for (var attr in attributes) {
@@ -7963,32 +7545,20 @@
 	  script.src = url;
 	  window.document.body.appendChild(script);
 	}
-
 	function removeScript(url) {
 	  var scripts = window.document.querySelectorAll('script[src="' + url + '"]');
 	  scripts.forEach(function (script) {
 	    script.remove();
 	  });
 	}
-
 	function injectCaptchaScript(opts, callback, setValue) {
-	  var callbackName =
-	    opts.provider + 'Callback_' + Math.floor(Math.random() * 1000001);
+	  var callbackName = opts.provider + 'Callback_' + Math.floor(Math.random() * 1000001);
 	  var attributes = {
 	    async: true,
 	    defer: true
 	  };
-	  var scriptSrc = scriptForCaptchaProvider(
-	    opts.provider,
-	    opts.lang,
-	    callbackName,
-	    opts.clientSubdomain,
-	    opts.siteKey
-	  );
-	  if (
-	    opts.provider === ARKOSE_PROVIDER ||
-	    opts.provider === AUTH0_V2_CAPTCHA_PROVIDER
-	  ) {
+	  var scriptSrc = scriptForCaptchaProvider(opts.provider, opts.lang, callbackName, opts.clientSubdomain, opts.siteKey);
+	  if (opts.provider === ARKOSE_PROVIDER || opts.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
 	    var retryCount = 0;
 	    attributes['data-callback'] = callbackName;
 	    attributes['onerror'] = function () {
@@ -8018,27 +7588,17 @@
 	  }
 	  loadScript(scriptSrc, attributes);
 	}
-
 	function handleCaptchaProvider(element, options, challenge) {
-	  var widgetId =
-	    element.hasAttribute('data-wid') && element.getAttribute('data-wid');
-
+	  var widgetId = element.hasAttribute('data-wid') && element.getAttribute('data-wid');
 	  function setValue(value) {
 	    var input = element.querySelector('input[name="captcha"]');
 	    input.value = value || '';
 	  }
-
-	  if (
-	    challenge.provider === FRIENDLY_CAPTCHA_PROVIDER &&
-	    window.auth0FCInstance
-	  ) {
+	  if (challenge.provider === FRIENDLY_CAPTCHA_PROVIDER && window.auth0FCInstance) {
 	    setValue();
 	    window.auth0FCInstance.reset();
 	    return;
-	  } else if (
-	    challenge.provider === ARKOSE_PROVIDER &&
-	    globalForCaptchaProvider(challenge.provider)
-	  ) {
+	  } else if (challenge.provider === ARKOSE_PROVIDER && globalForCaptchaProvider(challenge.provider)) {
 	    setValue();
 	    globalForCaptchaProvider(challenge.provider).reset();
 	    return;
@@ -8047,9 +7607,7 @@
 	    globalForCaptchaProvider(challenge.provider).reset(widgetId);
 	    return;
 	  }
-
 	  element.innerHTML = options.templates[challenge.provider](challenge);
-
 	  var captchaClass;
 	  switch (challenge.provider) {
 	    case RECAPTCHA_ENTERPRISE_PROVIDER:
@@ -8072,105 +7630,99 @@
 	      break;
 	  }
 	  var captchaDiv = element.querySelector(captchaClass);
-
-	  injectCaptchaScript(
-	    {
-	      lang: options.lang,
-	      provider: challenge.provider,
-	      clientSubdomain: challenge.clientSubdomain,
-	      siteKey: challenge.siteKey
-	    },
-	    function (arkose) {
-	      var global = globalForCaptchaProvider(challenge.provider);
-	      if (challenge.provider === ARKOSE_PROVIDER) {
-	        var retryCount = 0;
-	        var arkoseLoaded = false;
-	        arkose.setConfig({
-	          onReady: function () {
-	            if (!arkoseLoaded || captchaReloaded) {
-	              done(null, {
-	                triggerCaptcha: function (solvedCallback) {
-	                  arkose.run();
-	                  captchaSolved = solvedCallback;
-	                }
-	              });
-	              if (captchaReloaded) {
-	                captchaReloaded = false;
+	  injectCaptchaScript({
+	    lang: options.lang,
+	    provider: challenge.provider,
+	    clientSubdomain: challenge.clientSubdomain,
+	    siteKey: challenge.siteKey
+	  }, function (arkose) {
+	    var global = globalForCaptchaProvider(challenge.provider);
+	    if (challenge.provider === ARKOSE_PROVIDER) {
+	      var retryCount = 0;
+	      var arkoseLoaded = false;
+	      arkose.setConfig({
+	        onReady: function onReady() {
+	          if (!arkoseLoaded || captchaReloaded) {
+	            done(null, {
+	              triggerCaptcha: function triggerCaptcha(solvedCallback) {
+	                arkose.run();
+	                captchaSolved = solvedCallback;
 	              }
+	            });
+	            if (captchaReloaded) {
+	              captchaReloaded = false;
+	            }
+	            arkoseLoaded = true;
+	          }
+	        },
+	        onCompleted: function onCompleted(response) {
+	          setValue(response.token);
+	          captchaSolved();
+	        },
+	        onError: function onError(response) {
+	          if (retryCount < MAX_RETRY) {
+	            setValue();
+	            arkose.reset();
+	            // To ensure reset is successful, we need to set a timeout here
+	            setTimeout(function () {
+	              arkose.run();
+	            }, 500);
+	            retryCount++;
+	          } else {
+	            if (!arkoseLoaded) {
+	              done(new Error(response.error.error));
 	              arkoseLoaded = true;
 	            }
-	          },
-	          onCompleted: function (response) {
-	            setValue(response.token);
-	            captchaSolved();
-	          },
-	          onError: function (response) {
-	            if (retryCount < MAX_RETRY) {
-	              setValue();
-	              arkose.reset();
-	              // To ensure reset is successful, we need to set a timeout here
-	              setTimeout(function () {
-	                arkose.run();
-	              }, 500);
-	              retryCount++;
-	            } else {
-	              if (!arkoseLoaded) {
-	                done(new Error(response.error.error));
-	                arkoseLoaded = true;
-	              }
-	              // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
-	              setValue('BYPASS_CAPTCHA');
-	            }
+	            // Optimzation to tell auth0 to fail open if Arkose is configured to fail open
+	            setValue('BYPASS_CAPTCHA');
 	          }
-	        });
-	      } else if (challenge.provider === FRIENDLY_CAPTCHA_PROVIDER) {
-	        window.auth0FCInstance = new global.WidgetInstance(captchaDiv, {
-	          sitekey: challenge.siteKey,
-	          language: options.lang,
-	          doneCallback: function (solution) {
-	            setValue(solution);
-	          },
-	          errorCallback: function () {
-	            setValue();
-	          }
-	        });
-	        done();
-	      } else {
-	        var renderParams = {
-	          callback: setValue,
-	          'expired-callback': function () {
-	            setValue();
-	          },
-	          'error-callback': function () {
-	            setValue();
-	          },
-	          sitekey: challenge.siteKey
-	        };
-
-	        if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
-	          retryCount = 0;
-	          renderParams.language = options.lang;
-	          renderParams.theme = 'light';
-	          renderParams.retry = 'never';
-	          renderParams['response-field'] = false;
-	          renderParams['error-callback'] = function () {
-	            if (retryCount < MAX_RETRY) {
-	              setValue();
-	              globalForCaptchaProvider(challenge.provider).reset(widgetId);
-	              retryCount++;
-	            } else {
-	              setValue('BYPASS_CAPTCHA');
-	            }
-	            return true;
-	          };
 	        }
-	        widgetId = global.render(captchaDiv, renderParams);
-	        element.setAttribute('data-wid', widgetId);
-	        done();
+	      });
+	    } else if (challenge.provider === FRIENDLY_CAPTCHA_PROVIDER) {
+	      window.auth0FCInstance = new global.WidgetInstance(captchaDiv, {
+	        sitekey: challenge.siteKey,
+	        language: options.lang,
+	        doneCallback: function doneCallback(solution) {
+	          setValue(solution);
+	        },
+	        errorCallback: function errorCallback() {
+	          setValue();
+	        }
+	      });
+	      done();
+	    } else {
+	      var renderParams = {
+	        callback: setValue,
+	        'expired-callback': function expiredCallback() {
+	          setValue();
+	        },
+	        'error-callback': function errorCallback() {
+	          setValue();
+	        },
+	        sitekey: challenge.siteKey
+	      };
+	      if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
+	        retryCount = 0;
+	        renderParams.language = options.lang;
+	        renderParams.theme = 'light';
+	        renderParams.retry = 'never';
+	        renderParams['response-field'] = false;
+	        renderParams['error-callback'] = function () {
+	          if (retryCount < MAX_RETRY) {
+	            setValue();
+	            globalForCaptchaProvider(challenge.provider).reset(widgetId);
+	            retryCount++;
+	          } else {
+	            setValue('BYPASS_CAPTCHA');
+	          }
+	          return true;
+	        };
 	      }
-	    },
-	    setValue
-	  );
+	      widgetId = global.render(captchaDiv, renderParams);
+	      element.setAttribute('data-wid', widgetId);
+	      done();
+	    }
+	  }, setValue);
 	}
 
 	/**
@@ -8195,7 +7747,7 @@
 	 * @ignore
 	 */
 	function render(auth0Client, flow, element, options, callback) {
-	  options = objectHelper.merge(defaults$2).with(options || {});
+	  options = objectHelper.merge(defaults$3).with(options || {});
 	  function load(loadDone) {
 	    done = loadDone || noop;
 	    function challengeCallback(err, challenge) {
@@ -8212,18 +7764,10 @@
 	      if (challenge.provider === AUTH0_PROVIDER) {
 	        handleAuth0Provider(element, options, challenge, load);
 	        done();
-	      } else if (
-	        challenge.provider === RECAPTCHA_V2_PROVIDER ||
-	        challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER ||
-	        challenge.provider === HCAPTCHA_PROVIDER ||
-	        challenge.provider === FRIENDLY_CAPTCHA_PROVIDER ||
-	        challenge.provider === ARKOSE_PROVIDER ||
-	        challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER
-	      ) {
+	      } else if (challenge.provider === RECAPTCHA_V2_PROVIDER || challenge.provider === RECAPTCHA_ENTERPRISE_PROVIDER || challenge.provider === HCAPTCHA_PROVIDER || challenge.provider === FRIENDLY_CAPTCHA_PROVIDER || challenge.provider === ARKOSE_PROVIDER || challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
 	        handleCaptchaProvider(element, options, challenge);
 	      }
 	    }
-
 	    if (flow === Flow.PASSWORDLESS) {
 	      auth0Client.passwordless.getChallenge(challengeCallback);
 	    } else if (flow === Flow.PASSWORD_RESET) {
@@ -8234,7 +7778,6 @@
 	      auth0Client.getChallenge(challengeCallback);
 	    }
 	  }
-
 	  function getValue() {
 	    var captchaInput = element.querySelector('input[name="captcha"]');
 	    if (!captchaInput) {
@@ -8242,20 +7785,19 @@
 	    }
 	    return captchaInput.value;
 	  }
-
 	  load(callback);
-
 	  return {
-	    reload: function (reloadDone) {
+	    reload: function reload(reloadDone) {
 	      captchaReloaded = true;
 	      load(reloadDone);
 	    },
 	    getValue: getValue
 	  };
 	}
-
-
-	var captcha = { render: render, Flow: Flow };
+	var captcha = {
+	  render: render,
+	  Flow: Flow
+	};
 
 	function defaultClock() {
 	  return new Date();
@@ -8285,144 +7827,129 @@
 	 */
 	function WebAuth(options) {
 	  /* eslint-disable */
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      domain: { type: 'string', message: 'domain option is required' },
-	      clientID: { type: 'string', message: 'clientID option is required' },
-	      responseType: {
-	        optional: true,
-	        type: 'string',
-	        message: 'responseType is not valid'
-	      },
-	      responseMode: {
-	        optional: true,
-	        type: 'string',
-	        message: 'responseMode is not valid'
-	      },
-	      redirectUri: {
-	        optional: true,
-	        type: 'string',
-	        message: 'redirectUri is not valid'
-	      },
-	      scope: { optional: true, type: 'string', message: 'scope is not valid' },
-	      audience: {
-	        optional: true,
-	        type: 'string',
-	        message: 'audience is not valid'
-	      },
-	      popupOrigin: {
-	        optional: true,
-	        type: 'string',
-	        message: 'popupOrigin is not valid'
-	      },
-	      leeway: {
-	        optional: true,
-	        type: 'number',
-	        message: 'leeway is not valid'
-	      },
-	      plugins: {
-	        optional: true,
-	        type: 'array',
-	        message: 'plugins is not valid'
-	      },
-	      maxAge: {
-	        optional: true,
-	        type: 'number',
-	        message: 'maxAge is not valid'
-	      },
-	      stateExpiration: {
-	        optional: true,
-	        type: 'number',
-	        message: 'stateExpiration is not valid'
-	      },
-	      legacySameSiteCookie: {
-	        optional: true,
-	        type: 'boolean',
-	        message: 'legacySameSiteCookie option is not valid'
-	      },
-	      _disableDeprecationWarnings: {
-	        optional: true,
-	        type: 'boolean',
-	        message: '_disableDeprecationWarnings option is not valid'
-	      },
-	      _sendTelemetry: {
-	        optional: true,
-	        type: 'boolean',
-	        message: '_sendTelemetry option is not valid'
-	      },
-	      _telemetryInfo: {
-	        optional: true,
-	        type: 'object',
-	        message: '_telemetryInfo option is not valid'
-	      },
-	      _timesToRetryFailedRequests: {
-	        optional: true,
-	        type: 'number',
-	        message: '_timesToRetryFailedRequests option is not valid'
-	      }
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    domain: {
+	      type: 'string',
+	      message: 'domain option is required'
+	    },
+	    clientID: {
+	      type: 'string',
+	      message: 'clientID option is required'
+	    },
+	    responseType: {
+	      optional: true,
+	      type: 'string',
+	      message: 'responseType is not valid'
+	    },
+	    responseMode: {
+	      optional: true,
+	      type: 'string',
+	      message: 'responseMode is not valid'
+	    },
+	    redirectUri: {
+	      optional: true,
+	      type: 'string',
+	      message: 'redirectUri is not valid'
+	    },
+	    scope: {
+	      optional: true,
+	      type: 'string',
+	      message: 'scope is not valid'
+	    },
+	    audience: {
+	      optional: true,
+	      type: 'string',
+	      message: 'audience is not valid'
+	    },
+	    popupOrigin: {
+	      optional: true,
+	      type: 'string',
+	      message: 'popupOrigin is not valid'
+	    },
+	    leeway: {
+	      optional: true,
+	      type: 'number',
+	      message: 'leeway is not valid'
+	    },
+	    plugins: {
+	      optional: true,
+	      type: 'array',
+	      message: 'plugins is not valid'
+	    },
+	    maxAge: {
+	      optional: true,
+	      type: 'number',
+	      message: 'maxAge is not valid'
+	    },
+	    stateExpiration: {
+	      optional: true,
+	      type: 'number',
+	      message: 'stateExpiration is not valid'
+	    },
+	    legacySameSiteCookie: {
+	      optional: true,
+	      type: 'boolean',
+	      message: 'legacySameSiteCookie option is not valid'
+	    },
+	    _disableDeprecationWarnings: {
+	      optional: true,
+	      type: 'boolean',
+	      message: '_disableDeprecationWarnings option is not valid'
+	    },
+	    _sendTelemetry: {
+	      optional: true,
+	      type: 'boolean',
+	      message: '_sendTelemetry option is not valid'
+	    },
+	    _telemetryInfo: {
+	      optional: true,
+	      type: 'object',
+	      message: '_telemetryInfo option is not valid'
+	    },
+	    _timesToRetryFailedRequests: {
+	      optional: true,
+	      type: 'number',
+	      message: '_timesToRetryFailedRequests option is not valid'
 	    }
-	  );
-
+	  });
 	  if (options.overrides) {
-	    assert.check(
-	      options.overrides,
-	      { type: 'object', message: 'overrides option is not valid' },
-	      {
-	        __tenant: {
-	          optional: true,
-	          type: 'string',
-	          message: '__tenant option is required'
-	        },
-	        __token_issuer: {
-	          optional: true,
-	          type: 'string',
-	          message: '__token_issuer option is required'
-	        },
-	        __jwks_uri: {
-	          optional: true,
-	          type: 'string',
-	          message: '__jwks_uri is required'
-	        }
+	    assert.check(options.overrides, {
+	      type: 'object',
+	      message: 'overrides option is not valid'
+	    }, {
+	      __tenant: {
+	        optional: true,
+	        type: 'string',
+	        message: '__tenant option is required'
+	      },
+	      __token_issuer: {
+	        optional: true,
+	        type: 'string',
+	        message: '__token_issuer option is required'
+	      },
+	      __jwks_uri: {
+	        optional: true,
+	        type: 'string',
+	        message: '__jwks_uri is required'
 	      }
-	    );
+	    });
 	  }
 	  /* eslint-enable */
 
 	  this.baseOptions = options;
-	  this.baseOptions.plugins = new PluginHandler(
-	    this,
-	    this.baseOptions.plugins || []
-	  );
-
-	  this.baseOptions._sendTelemetry =
-	    this.baseOptions._sendTelemetry === false
-	      ? this.baseOptions._sendTelemetry
-	      : true;
-
-	  this.baseOptions._timesToRetryFailedRequests =
-	    options._timesToRetryFailedRequests
-	      ? parseInt(options._timesToRetryFailedRequests)
-	      : 0;
-
-	  this.baseOptions.tenant =
-	    (this.baseOptions.overrides && this.baseOptions.overrides.__tenant) ||
-	    this.baseOptions.domain.split('.')[0];
-
-	  this.baseOptions.token_issuer =
-	    (this.baseOptions.overrides && this.baseOptions.overrides.__token_issuer) ||
-	    'https://' + this.baseOptions.domain + '/';
-
-	  this.baseOptions.jwksURI =
-	    this.baseOptions.overrides && this.baseOptions.overrides.__jwks_uri;
-
+	  this.baseOptions.plugins = new PluginHandler(this, this.baseOptions.plugins || []);
+	  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ? this.baseOptions._sendTelemetry : true;
+	  this.baseOptions._timesToRetryFailedRequests = options._timesToRetryFailedRequests ? parseInt(options._timesToRetryFailedRequests) : 0;
+	  this.baseOptions.tenant = this.baseOptions.overrides && this.baseOptions.overrides.__tenant || this.baseOptions.domain.split('.')[0];
+	  this.baseOptions.token_issuer = this.baseOptions.overrides && this.baseOptions.overrides.__token_issuer || 'https://' + this.baseOptions.domain + '/';
+	  this.baseOptions.jwksURI = this.baseOptions.overrides && this.baseOptions.overrides.__jwks_uri;
 	  if (options.legacySameSiteCookie !== false) {
 	    this.baseOptions.legacySameSiteCookie = true;
 	  }
-
 	  this.transactionManager = new TransactionManager(this.baseOptions);
-
 	  this.client = new Authentication(this.baseOptions);
 
 	  /** @member {Redirect} */
@@ -8430,12 +7957,7 @@
 
 	  /** @member {Popup} */
 	  this.popup = new Popup(this, this.baseOptions);
-
-	  this.crossOriginAuthentication = new CrossOriginAuthentication(
-	    this,
-	    this.baseOptions
-	  );
-
+	  this.crossOriginAuthentication = new CrossOriginAuthentication(this, this.baseOptions);
 	  this.webMessageHandler = new WebMessageHandler(this);
 	  this._universalLogin = new HostedPages(this, this.baseOptions);
 	  this.ssodataStorage = new SSODataStorage(this.baseOptions);
@@ -8479,67 +8001,31 @@
 	WebAuth.prototype.parseHash = function (options, cb) {
 	  var parsedQs;
 	  var err;
-
 	  if (!cb && typeof options === 'function') {
 	    cb = options;
 	    options = {};
 	  } else {
 	    options = options || {};
 	  }
-
-	  var hashStr =
-	    options.hash === undefined
-	      ? windowHelper.getWindow().location.hash
-	      : options.hash;
+	  var hashStr = options.hash === undefined ? windowHelper.getWindow().location.hash : options.hash;
 	  hashStr = hashStr.replace(/^#?\/?/, '');
-
 	  parsedQs = lib.parse(hashStr);
-
 	  if (parsedQs.hasOwnProperty('error')) {
 	    err = error.buildResponse(parsedQs.error, parsedQs.error_description);
-
 	    if (parsedQs.state) {
 	      err.state = parsedQs.state;
 	    }
-
 	    return cb(err);
 	  }
-
-	  if (
-	    !parsedQs.hasOwnProperty('access_token') &&
-	    !parsedQs.hasOwnProperty('id_token') &&
-	    !parsedQs.hasOwnProperty('refresh_token')
-	  ) {
+	  if (!parsedQs.hasOwnProperty('access_token') && !parsedQs.hasOwnProperty('id_token') && !parsedQs.hasOwnProperty('refresh_token')) {
 	    return cb(null, null);
 	  }
-	  var responseTypes = (
-	    this.baseOptions.responseType ||
-	    options.responseType ||
-	    ''
-	  ).split(' ');
-	  if (
-	    responseTypes.length > 0 &&
-	    responseTypes.indexOf('token') !== -1 &&
-	    !parsedQs.hasOwnProperty('access_token')
-	  ) {
-	    return cb(
-	      error.buildResponse(
-	        'invalid_hash',
-	        'response_type contains `token`, but the parsed hash does not contain an `access_token` property'
-	      )
-	    );
+	  var responseTypes = (this.baseOptions.responseType || options.responseType || '').split(' ');
+	  if (responseTypes.length > 0 && responseTypes.indexOf('token') !== -1 && !parsedQs.hasOwnProperty('access_token')) {
+	    return cb(error.buildResponse('invalid_hash', 'response_type contains `token`, but the parsed hash does not contain an `access_token` property'));
 	  }
-	  if (
-	    responseTypes.length > 0 &&
-	    responseTypes.indexOf('id_token') !== -1 &&
-	    !parsedQs.hasOwnProperty('id_token')
-	  ) {
-	    return cb(
-	      error.buildResponse(
-	        'invalid_hash',
-	        'response_type contains `id_token`, but the parsed hash does not contain an `id_token` property'
-	      )
-	    );
+	  if (responseTypes.length > 0 && responseTypes.indexOf('id_token') !== -1 && !parsedQs.hasOwnProperty('id_token')) {
+	    return cb(error.buildResponse('invalid_hash', 'response_type contains `id_token`, but the parsed hash does not contain an `id_token` property'));
 	  }
 	  return this.validateAuthenticationResponse(options, parsedQs, cb);
 	};
@@ -8563,190 +8049,112 @@
 	 * @param {authorizeCallback} cb
 	 * @memberof WebAuth.prototype
 	 */
-	WebAuth.prototype.validateAuthenticationResponse = function (
-	  options,
-	  parsedHash,
-	  cb
-	) {
+	WebAuth.prototype.validateAuthenticationResponse = function (options, parsedHash, cb) {
 	  var _this = this;
-
-	  options.__enableIdPInitiatedLogin =
-	    options.__enableIdPInitiatedLogin || options.__enableImpersonation;
-
+	  options.__enableIdPInitiatedLogin = options.__enableIdPInitiatedLogin || options.__enableImpersonation;
 	  var state = parsedHash.state;
 	  var transaction = this.transactionManager.getStoredTransaction(state);
-
-	  var transactionState =
-	    options.state || (transaction && transaction.state) || null;
-
+	  var transactionState = options.state || transaction && transaction.state || null;
 	  var transactionStateMatchesState = transactionState === state;
-
-	  var shouldBypassStateChecking =
-	    !state && !transactionState && options.__enableIdPInitiatedLogin;
-
+	  var shouldBypassStateChecking = !state && !transactionState && options.__enableIdPInitiatedLogin;
 	  if (!shouldBypassStateChecking && !transactionStateMatchesState) {
 	    return cb({
 	      error: 'invalid_token',
 	      errorDescription: '`state` does not match.'
 	    });
 	  }
-
-	  var transactionNonce =
-	    options.nonce || (transaction && transaction.nonce) || null;
-
+	  var transactionNonce = options.nonce || transaction && transaction.nonce || null;
 	  var transactionOrganization = transaction && transaction.organization;
-	  var appState = options.state || (transaction && transaction.appState) || null;
-
-	  var callback = function (err, payload) {
+	  var appState = options.state || transaction && transaction.appState || null;
+	  var callback = function callback(err, payload) {
 	    if (err) {
 	      return cb(err);
 	    }
-
 	    if (transaction && transaction.lastUsedConnection) {
 	      var sub;
-
 	      if (payload) {
 	        sub = payload.sub;
 	      }
-
 	      _this.ssodataStorage.set(transaction.lastUsedConnection, sub);
 	    }
-
 	    return cb(null, buildParseHashResponse(parsedHash, appState, payload));
 	  };
-
 	  if (!parsedHash.id_token) {
 	    return callback(null, null);
 	  }
-
-	  return this.validateToken(
-	    parsedHash.id_token,
-	    transactionNonce,
-	    function (validationError, payload) {
-	      if (!validationError) {
-	        // Verify the organization
-	        if (transactionOrganization) {
-	          if (transactionOrganization.indexOf('org_') === 0) {
-	            if (!payload.org_id) {
-	              return callback(
-	                error.invalidToken(
-	                  'Organization Id (org_id) claim must be a string present in the ID token'
-	                )
-	              );
-	            }
-
-	            if (payload.org_id !== transactionOrganization) {
-	              return callback(
-	                error.invalidToken(
-	                  'Organization Id (org_id) claim value mismatch in the ID token; expected "' +
-	                  transactionOrganization +
-	                  '", found "' +
-	                  payload.org_id +
-	                  '"'
-	                )
-	              );
-	            }
-	          } else {
-	            if (!payload.org_name) {
-	              return callback(
-	                error.invalidToken(
-	                  'Organization Name (org_name) claim must be a string present in the ID token'
-	                )
-	              );
-	            }
-
-	            if (payload.org_name !== transactionOrganization.toLowerCase()) {
-	              return callback(
-	                error.invalidToken(
-	                  'Organization Name (org_name) claim value mismatch in the ID token; expected "' +
-	                  transactionOrganization +
-	                  '", found "' +
-	                  payload.org_name +
-	                  '"'
-	                )
-	              );
-	            }
+	  return this.validateToken(parsedHash.id_token, transactionNonce, function (validationError, payload) {
+	    if (!validationError) {
+	      // Verify the organization
+	      if (transactionOrganization) {
+	        if (transactionOrganization.indexOf('org_') === 0) {
+	          if (!payload.org_id) {
+	            return callback(error.invalidToken('Organization Id (org_id) claim must be a string present in the ID token'));
+	          }
+	          if (payload.org_id !== transactionOrganization) {
+	            return callback(error.invalidToken('Organization Id (org_id) claim value mismatch in the ID token; expected "' + transactionOrganization + '", found "' + payload.org_id + '"'));
+	          }
+	        } else {
+	          if (!payload.org_name) {
+	            return callback(error.invalidToken('Organization Name (org_name) claim must be a string present in the ID token'));
+	          }
+	          if (payload.org_name !== transactionOrganization.toLowerCase()) {
+	            return callback(error.invalidToken('Organization Name (org_name) claim value mismatch in the ID token; expected "' + transactionOrganization + '", found "' + payload.org_name + '"'));
 	          }
 	        }
-
-	        if (!parsedHash.access_token) {
-	          return callback(null, payload);
-	        }
-
-	        // id_token's generated by non-oidc applications don't have at_hash
-	        if (!payload.at_hash) {
-	          return callback(null, payload);
-	        }
-
-	        // here we're absolutely sure that the id_token's alg is RS256
-	        // and that the id_token is valid, so we can check the access_token
-	        return new I().validateAccessToken(
-	          parsedHash.access_token,
-	          'RS256',
-	          payload.at_hash,
-	          function (err) {
-	            if (err) {
-	              return callback(error.invalidToken(err.message));
-	            }
-	            return callback(null, payload);
-	          }
-	        );
 	      }
-
-	      if (
-	        validationError.error !== 'invalid_token' ||
-	        (validationError.errorDescription &&
-	          validationError.errorDescription.indexOf(
-	            'Nonce (nonce) claim value mismatch in the ID token'
-	          ) > -1)
-	      ) {
-	        return callback(validationError);
-	      }
-
-	      // if it's an invalid_token error, decode the token
-	      var decodedToken = new I().decode(parsedHash.id_token);
-
-	      // if the alg is not HS256, return the raw error
-	      if (decodedToken.header.alg !== 'HS256') {
-	        return callback(validationError);
-	      }
-
-	      if ((decodedToken.payload.nonce || null) !== transactionNonce) {
-	        return callback({
-	          error: 'invalid_token',
-	          errorDescription:
-	            'Nonce (nonce) claim value mismatch in the ID token; expected "' +
-	            transactionNonce +
-	            '", found "' +
-	            decodedToken.payload.nonce +
-	            '"'
-	        });
-	      }
-
 	      if (!parsedHash.access_token) {
-	        var noAccessTokenError = {
-	          error: 'invalid_token',
-	          description:
-	            'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this. Read more: https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
-	        };
-	        return callback(noAccessTokenError);
+	        return callback(null, payload);
 	      }
 
-	      // if the alg is HS256, use the /userinfo endpoint to build the payload
-	      return _this.client.userInfo(
-	        parsedHash.access_token,
-	        function (errUserInfo, profile) {
-	          // if the /userinfo request fails, use the validationError instead
-	          if (errUserInfo) {
-	            return callback(errUserInfo);
-	          }
-	          return callback(null, profile);
-	        }
-	      );
-	    }
-	  );
-	};
+	      // id_token's generated by non-oidc applications don't have at_hash
+	      if (!payload.at_hash) {
+	        return callback(null, payload);
+	      }
 
+	      // here we're absolutely sure that the id_token's alg is RS256
+	      // and that the id_token is valid, so we can check the access_token
+	      return new I().validateAccessToken(parsedHash.access_token, 'RS256', payload.at_hash, function (err) {
+	        if (err) {
+	          return callback(error.invalidToken(err.message));
+	        }
+	        return callback(null, payload);
+	      });
+	    }
+	    if (validationError.error !== 'invalid_token' || validationError.errorDescription && validationError.errorDescription.indexOf('Nonce (nonce) claim value mismatch in the ID token') > -1) {
+	      return callback(validationError);
+	    }
+
+	    // if it's an invalid_token error, decode the token
+	    var decodedToken = new I().decode(parsedHash.id_token);
+
+	    // if the alg is not HS256, return the raw error
+	    if (decodedToken.header.alg !== 'HS256') {
+	      return callback(validationError);
+	    }
+	    if ((decodedToken.payload.nonce || null) !== transactionNonce) {
+	      return callback({
+	        error: 'invalid_token',
+	        errorDescription: 'Nonce (nonce) claim value mismatch in the ID token; expected "' + transactionNonce + '", found "' + decodedToken.payload.nonce + '"'
+	      });
+	    }
+	    if (!parsedHash.access_token) {
+	      var noAccessTokenError = {
+	        error: 'invalid_token',
+	        description: 'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this. Read more: https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
+	      };
+	      return callback(noAccessTokenError);
+	    }
+
+	    // if the alg is HS256, use the /userinfo endpoint to build the payload
+	    return _this.client.userInfo(parsedHash.access_token, function (errUserInfo, profile) {
+	      // if the /userinfo request fails, use the validationError instead
+	      if (errUserInfo) {
+	        return callback(errUserInfo);
+	      }
+	      return callback(null, profile);
+	    });
+	  });
+	};
 	function buildParseHashResponse(qsParams, appState, token) {
 	  return {
 	    accessToken: qsParams.access_token || null,
@@ -8785,12 +8193,10 @@
 	    maxAge: this.baseOptions.maxAge,
 	    __clock: this.baseOptions.__clock || defaultClock
 	  });
-
 	  verifier.verify(token, nonce, function (err, payload) {
 	    if (err) {
 	      return cb(error.invalidToken(err.message));
 	    }
-
 	    cb(null, payload);
 	  });
 	};
@@ -8822,58 +8228,38 @@
 	  var handler;
 	  var usePostMessage = !!options.usePostMessage;
 	  var postMessageDataType = options.postMessageDataType || false;
-	  var postMessageOrigin =
-	    options.postMessageOrigin || windowHelper.getWindow().origin;
+	  var postMessageOrigin = options.postMessageOrigin || windowHelper.getWindow().origin;
 	  var timeout = options.timeout;
 	  var _this = this;
-
-	  var params = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'redirectUri',
-	      'responseType',
-	      'scope',
-	      'audience',
-	      '_csrf',
-	      'state',
-	      '_intstate',
-	      'nonce'
-	    ])
-	    .with(options);
-
+	  var params = objectHelper.merge(this.baseOptions, ['clientID', 'redirectUri', 'responseType', 'scope', 'audience', '_csrf', 'state', '_intstate', 'nonce']).with(options);
 	  params.responseType = params.responseType || 'token';
 	  params.responseMode = params.responseMode || 'fragment';
 	  params = this.transactionManager.process(params);
-
 	  assert.check(params, {
 	    type: 'object',
 	    message: 'options parameter is not valid'
 	  });
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  params.prompt = 'none';
-
-	  params = objectHelper.blacklist(params, [
-	    'usePostMessage',
-	    'tenant',
-	    'postMessageDataType',
-	    'postMessageOrigin'
-	  ]);
-
+	  params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType', 'postMessageOrigin']);
 	  handler = SilentAuthenticationHandler.create({
 	    authenticationUrl: this.client.buildAuthorizeUrl(params),
 	    postMessageDataType: postMessageDataType,
 	    postMessageOrigin: postMessageOrigin,
 	    timeout: timeout
 	  });
-
 	  handler.login(usePostMessage, function (err, hash) {
-	    if (typeof hash === 'object') {
+	    if (_typeof(hash) === 'object') {
 	      // hash was already parsed, so we just return it.
 	      // it's here to be backwards compatible and should be removed in the next major version.
 	      return cb(err, hash);
 	    }
-	    _this.parseHash({ hash: hash }, cb);
+	    _this.parseHash({
+	      hash: hash
+	    }, cb);
 	  });
 	};
 
@@ -8919,53 +8305,35 @@
 	 * @memberof WebAuth.prototype
 	 */
 	WebAuth.prototype.checkSession = function (options, cb) {
-	  var params = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'responseType',
-	      'redirectUri',
-	      'scope',
-	      'audience',
-	      '_csrf',
-	      'state',
-	      '_intstate',
-	      'nonce'
-	    ])
-	    .with(options);
-
+	  var params = objectHelper.merge(this.baseOptions, ['clientID', 'responseType', 'redirectUri', 'scope', 'audience', '_csrf', 'state', '_intstate', 'nonce']).with(options);
 	  if (params.responseType === 'code') {
 	    return cb({
 	      error: 'error',
 	      error_description: "responseType can't be `code`"
 	    });
 	  }
-
 	  if (!options.nonce) {
 	    params = this.transactionManager.process(params);
 	  }
-
 	  if (!params.redirectUri) {
 	    return cb({
 	      error: 'error',
 	      error_description: "redirectUri can't be empty"
 	    });
 	  }
-
 	  assert.check(params, {
 	    type: 'object',
 	    message: 'options parameter is not valid'
 	  });
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
-	  params = objectHelper.blacklist(params, [
-	    'usePostMessage',
-	    'tenant',
-	    'postMessageDataType'
-	  ]);
-	  this.webMessageHandler.run(
-	    params,
-	    wrapCallback(cb, { forceLegacyError: true, ignoreCasing: true })
-	  );
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
+	  params = objectHelper.blacklist(params, ['usePostMessage', 'tenant', 'postMessageDataType']);
+	  this.webMessageHandler.run(params, wrapCallback(cb, {
+	    forceLegacyError: true,
+	    ignoreCasing: true
+	  }));
 	};
 
 	/**
@@ -9000,20 +8368,7 @@
 	 * @memberof WebAuth.prototype
 	 */
 	WebAuth.prototype.passwordlessStart = function (options, cb) {
-	  var authParams = objectHelper
-	    .merge(this.baseOptions, [
-	      'responseType',
-	      'responseMode',
-	      'redirectUri',
-	      'scope',
-	      'audience',
-	      '_csrf',
-	      'state',
-	      '_intstate',
-	      'nonce'
-	    ])
-	    .with(options.authParams);
-
+	  var authParams = objectHelper.merge(this.baseOptions, ['responseType', 'responseMode', 'redirectUri', 'scope', 'audience', '_csrf', 'state', '_intstate', 'nonce']).with(options.authParams);
 	  options.authParams = this.transactionManager.process(authParams);
 	  return this.client.passwordless.start(options, cb);
 	};
@@ -9031,6 +8386,7 @@
 	 * @param {String} [options.name] The user's full name.
 	 * @param {String} [options.nickname] The user's nickname.
 	 * @param {String} [options.picture] A URI pointing to the user's picture.
+	 * @param {String} [options.captcha] captcha challenge response when required
 	 * @param {signUpCallback} cb
 	 * @see   {@link https://auth0.com/docs/api/authentication#signup}
 	 * @memberof WebAuth.prototype
@@ -9067,37 +8423,18 @@
 	 * @memberof WebAuth.prototype
 	 */
 	WebAuth.prototype.authorize = function (options) {
-	  var params = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'responseType',
-	      'responseMode',
-	      'redirectUri',
-	      'scope',
-	      'audience',
-	      '_csrf',
-	      'state',
-	      '_intstate',
-	      'nonce',
-	      'organization',
-	      'invitation'
-	    ])
-	    .with(options);
-
-	  assert.check(
-	    params,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      responseType: {
-	        type: 'string',
-	        message: 'responseType option is required'
-	      }
+	  var params = objectHelper.merge(this.baseOptions, ['clientID', 'responseType', 'responseMode', 'redirectUri', 'scope', 'audience', '_csrf', 'state', '_intstate', 'nonce', 'organization', 'invitation']).with(options);
+	  assert.check(params, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    responseType: {
+	      type: 'string',
+	      message: 'responseType option is required'
 	    }
-	  );
-
+	  });
 	  params = this.transactionManager.process(params);
 	  params.scope = params.scope || 'openid profile email';
-
 	  windowHelper.redirect(this.client.buildAuthorizeUrl(params));
 	};
 
@@ -9117,20 +8454,16 @@
 	 */
 	WebAuth.prototype.signupAndAuthorize = function (options, cb) {
 	  var _this = this;
-
-	  return this.client.dbConnection.signup(
-	    objectHelper.blacklist(options, ['popupHandler']),
-	    function (err) {
-	      if (err) {
-	        return cb(err);
-	      }
-	      options.realm = options.connection;
-	      if (!options.username) {
-	        options.username = options.email;
-	      }
-	      _this.client.login(options, cb);
+	  return this.client.dbConnection.signup(objectHelper.blacklist(options, ['popupHandler']), function (err) {
+	    if (err) {
+	      return cb(err);
 	    }
-	  );
+	    options.realm = options.connection;
+	    if (!options.username) {
+	      options.username = options.email;
+	    }
+	    _this.client.login(options, cb);
+	  });
 	};
 
 	/**
@@ -9164,28 +8497,9 @@
 	 * @memberof WebAuth.prototype
 	 */
 	WebAuth.prototype.login = function (options, cb) {
-	  var params = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'responseType',
-	      'redirectUri',
-	      'scope',
-	      'audience',
-	      '_csrf',
-	      'state',
-	      '_intstate',
-	      'nonce',
-	      'onRedirecting',
-	      'organization',
-	      'invitation'
-	    ])
-	    .with(options);
-
+	  var params = objectHelper.merge(this.baseOptions, ['clientID', 'responseType', 'redirectUri', 'scope', 'audience', '_csrf', 'state', '_intstate', 'nonce', 'onRedirecting', 'organization', 'invitation']).with(options);
 	  params = this.transactionManager.process(params);
-
-	  var isHostedLoginPage =
-	    windowHelper.getWindow().location.host === this.baseOptions.domain;
-
+	  var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
 	  if (isHostedLoginPage) {
 	    params.connection = params.realm;
 	    delete params.realm;
@@ -9215,44 +8529,18 @@
 	 * @memberof WebAuth.prototype
 	 */
 	WebAuth.prototype.passwordlessLogin = function (options, cb) {
-	  var params = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'responseType',
-	      'redirectUri',
-	      'scope',
-	      'audience',
-	      '_csrf',
-	      'state',
-	      '_intstate',
-	      'nonce',
-	      'onRedirecting'
-	    ])
-	    .with(options);
-
+	  var params = objectHelper.merge(this.baseOptions, ['clientID', 'responseType', 'redirectUri', 'scope', 'audience', '_csrf', 'state', '_intstate', 'nonce', 'onRedirecting']).with(options);
 	  params = this.transactionManager.process(params);
-
-	  var isHostedLoginPage =
-	    windowHelper.getWindow().location.host === this.baseOptions.domain;
-
+	  var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
 	  if (isHostedLoginPage) {
 	    this.passwordlessVerify(params, cb);
 	  } else {
-	    var crossOriginOptions = objectHelper.extend(
-	      {
-	        credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
-	        realm: params.connection,
-	        username: params.email || params.phoneNumber,
-	        otp: params.verificationCode
-	      },
-	      objectHelper.blacklist(params, [
-	        'connection',
-	        'email',
-	        'phoneNumber',
-	        'verificationCode'
-	      ])
-	    );
-
+	    var crossOriginOptions = objectHelper.extend({
+	      credentialType: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+	      realm: params.connection,
+	      username: params.email || params.phoneNumber,
+	      otp: params.verificationCode
+	    }, objectHelper.blacklist(params, ['connection', 'email', 'phoneNumber', 'verificationCode']));
 	    this.crossOriginAuthentication.login(crossOriginOptions, cb);
 	  }
 	};
@@ -9320,50 +8608,29 @@
 	 */
 	WebAuth.prototype.passwordlessVerify = function (options, cb) {
 	  var _this = this;
-	  var params = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'responseType',
-	      'responseMode',
-	      'redirectUri',
-	      'scope',
-	      'audience',
-	      '_csrf',
-	      'state',
-	      '_intstate',
-	      'nonce',
-	      'onRedirecting'
-	    ])
-	    .with(options);
-
-	  assert.check(
-	    params,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      responseType: {
-	        type: 'string',
-	        message: 'responseType option is required'
-	      }
+	  var params = objectHelper.merge(this.baseOptions, ['clientID', 'responseType', 'responseMode', 'redirectUri', 'scope', 'audience', '_csrf', 'state', '_intstate', 'nonce', 'onRedirecting']).with(options);
+	  assert.check(params, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    responseType: {
+	      type: 'string',
+	      message: 'responseType option is required'
 	    }
-	  );
-
+	  });
 	  params = this.transactionManager.process(params);
-
 	  return this.client.passwordless.verify(params, function (err) {
 	    if (err) {
 	      return cb(err);
 	    }
-
 	    function doAuth() {
 	      windowHelper.redirect(_this.client.passwordless.buildVerifyUrl(params));
 	    }
-
 	    if (typeof options.onRedirecting === 'function') {
 	      return options.onRedirecting(function () {
 	        doAuth();
 	      });
 	    }
-
 	    doAuth();
 	  });
 	};
@@ -9421,11 +8688,7 @@
 	 * @param {captchaLoadedCallback} [callback] An optional callback called after captcha is loaded
 	 * @memberof WebAuth.prototype
 	 */
-	WebAuth.prototype.renderSignupCaptcha = function (
-	  element,
-	  options,
-	  callback
-	) {
+	WebAuth.prototype.renderSignupCaptcha = function (element, options, callback) {
 	  return captcha.render(this.client, captcha.Flow.SIGNUP, element, options, callback);
 	};
 
@@ -9450,11 +8713,7 @@
 	 * @param {captchaLoadedCallback} [callback] An optional callback called after captcha is loaded
 	 * @memberof WebAuth.prototype
 	 */
-	WebAuth.prototype.renderPasswordlessCaptcha = function (
-	  element,
-	  options,
-	  callback
-	) {
+	WebAuth.prototype.renderPasswordlessCaptcha = function (element, options, callback) {
 	  return captcha.render(this.client, captcha.Flow.PASSWORDLESS, element, options, callback);
 	};
 
@@ -9479,11 +8738,7 @@
 	 * @param {captchaLoadedCallback} [callback] An optional callback called after captcha is loaded
 	 * @memberof WebAuth.prototype
 	 */
-	WebAuth.prototype.renderPasswordResetCaptcha = function (
-	  element,
-	  options,
-	  callback
-	) {
+	WebAuth.prototype.renderPasswordResetCaptcha = function (element, options, callback) {
 	  return captcha.render(this.client, captcha.Flow.PASSWORD_RESET, element, options, callback);
 	};
 
@@ -9491,216 +8746,168 @@
 	  this.baseOptions = options;
 	  this.request = request;
 	}
-
-	PasswordlessAuthentication.prototype.buildVerifyUrl = function(options) {
+	PasswordlessAuthentication.prototype.buildVerifyUrl = function (options) {
 	  var params;
 	  var qString;
 
 	  /* eslint-disable */
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      connection: { type: 'string', message: 'connection option is required' },
-	      verificationCode: {
-	        type: 'string',
-	        message: 'verificationCode option is required'
-	      },
-	      phoneNumber: {
-	        optional: false,
-	        type: 'string',
-	        message: 'phoneNumber option is required',
-	        condition: function(o) {
-	          return !o.email;
-	        }
-	      },
-	      email: {
-	        optional: false,
-	        type: 'string',
-	        message: 'email option is required',
-	        condition: function(o) {
-	          return !o.phoneNumber;
-	        }
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    connection: {
+	      type: 'string',
+	      message: 'connection option is required'
+	    },
+	    verificationCode: {
+	      type: 'string',
+	      message: 'verificationCode option is required'
+	    },
+	    phoneNumber: {
+	      optional: false,
+	      type: 'string',
+	      message: 'phoneNumber option is required',
+	      condition: function condition(o) {
+	        return !o.email;
+	      }
+	    },
+	    email: {
+	      optional: false,
+	      type: 'string',
+	      message: 'email option is required',
+	      condition: function condition(o) {
+	        return !o.phoneNumber;
 	      }
 	    }
-	  );
+	  });
 	  /* eslint-enable */
 
-	  params = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'responseType',
-	      'responseMode',
-	      'redirectUri',
-	      'scope',
-	      'audience',
-	      '_csrf',
-	      'state',
-	      '_intstate',
-	      'protocol',
-	      'nonce'
-	    ])
-	    .with(options);
+	  params = objectHelper.merge(this.baseOptions, ['clientID', 'responseType', 'responseMode', 'redirectUri', 'scope', 'audience', '_csrf', 'state', '_intstate', 'protocol', 'nonce']).with(options);
 
 	  // eslint-disable-next-line
 	  if (this.baseOptions._sendTelemetry) {
 	    params.auth0Client = this.request.getTelemetryData();
 	  }
-
 	  params = objectHelper.toSnakeCase(params, ['auth0Client']);
-
 	  qString = lib.stringify(params);
-
-	  return urlJoin(
-	    this.baseOptions.rootUrl,
-	    'passwordless',
-	    'verify_redirect',
-	    '?' + qString
-	  );
+	  return urlJoin(this.baseOptions.rootUrl, 'passwordless', 'verify_redirect', '?' + qString);
 	};
-
-	PasswordlessAuthentication.prototype.start = function(options, cb) {
+	PasswordlessAuthentication.prototype.start = function (options, cb) {
 	  var url;
 	  var body;
 
 	  /* eslint-disable */
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      connection: { type: 'string', message: 'connection option is required' },
-	      send: {
-	        type: 'string',
-	        message: 'send option is required',
-	        values: ['link', 'code'],
-	        value_message: 'send is not valid ([link, code])'
-	      },
-	      phoneNumber: {
-	        optional: true,
-	        type: 'string',
-	        message: 'phoneNumber option is required',
-	        condition: function(o) {
-	          return o.send === 'code' || !o.email;
-	        }
-	      },
-	      email: {
-	        optional: true,
-	        type: 'string',
-	        message: 'email option is required',
-	        condition: function(o) {
-	          return o.send === 'link' || !o.phoneNumber;
-	        }
-	      },
-	      authParams: {
-	        optional: true,
-	        type: 'object',
-	        message: 'authParams option is required'
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    connection: {
+	      type: 'string',
+	      message: 'connection option is required'
+	    },
+	    send: {
+	      type: 'string',
+	      message: 'send option is required',
+	      values: ['link', 'code'],
+	      value_message: 'send is not valid ([link, code])'
+	    },
+	    phoneNumber: {
+	      optional: true,
+	      type: 'string',
+	      message: 'phoneNumber option is required',
+	      condition: function condition(o) {
+	        return o.send === 'code' || !o.email;
 	      }
+	    },
+	    email: {
+	      optional: true,
+	      type: 'string',
+	      message: 'email option is required',
+	      condition: function condition(o) {
+	        return o.send === 'link' || !o.phoneNumber;
+	      }
+	    },
+	    authParams: {
+	      optional: true,
+	      type: 'object',
+	      message: 'authParams option is required'
 	    }
-	  );
+	  });
 	  /* eslint-enable */
 
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  url = urlJoin(this.baseOptions.rootUrl, 'passwordless', 'start');
-
 	  var xRequestLanguage = options.xRequestLanguage;
 	  delete options.xRequestLanguage;
-
-	  body = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'responseType',
-	      'redirectUri',
-	      'scope'
-	    ])
-	    .with(options);
-
+	  body = objectHelper.merge(this.baseOptions, ['clientID', 'responseType', 'redirectUri', 'scope']).with(options);
 	  if (body.scope) {
 	    body.authParams = body.authParams || {};
 	    body.authParams.scope = body.authParams.scope || body.scope;
 	  }
-
 	  if (body.redirectUri) {
 	    body.authParams = body.authParams || {};
-	    body.authParams.redirect_uri =
-	      body.authParams.redirectUri || body.redirectUri;
+	    body.authParams.redirect_uri = body.authParams.redirectUri || body.redirectUri;
 	  }
-
 	  if (body.responseType) {
 	    body.authParams = body.authParams || {};
-	    body.authParams.response_type =
-	      body.authParams.responseType || body.responseType;
+	    body.authParams.response_type = body.authParams.responseType || body.responseType;
 	  }
-
 	  delete body.redirectUri;
 	  delete body.responseType;
 	  delete body.scope;
-
 	  body = objectHelper.toSnakeCase(body, ['auth0Client', 'authParams']);
-
-	  var postOptions = xRequestLanguage
-	    ? { xRequestLanguage: xRequestLanguage }
-	    : undefined;
-
-	  return this.request
-	    .post(url, postOptions)
-	    .send(body)
-	    .end(wrapCallback(cb));
+	  var postOptions = xRequestLanguage ? {
+	    xRequestLanguage: xRequestLanguage
+	  } : undefined;
+	  return this.request.post(url, postOptions).send(body).end(wrapCallback(cb));
 	};
-
-	PasswordlessAuthentication.prototype.verify = function(options, cb) {
+	PasswordlessAuthentication.prototype.verify = function (options, cb) {
 	  var url;
 	  var cleanOption;
 
 	  /* eslint-disable */
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      connection: { type: 'string', message: 'connection option is required' },
-	      verificationCode: {
-	        type: 'string',
-	        message: 'verificationCode option is required'
-	      },
-	      phoneNumber: {
-	        optional: false,
-	        type: 'string',
-	        message: 'phoneNumber option is required',
-	        condition: function(o) {
-	          return !o.email;
-	        }
-	      },
-	      email: {
-	        optional: false,
-	        type: 'string',
-	        message: 'email option is required',
-	        condition: function(o) {
-	          return !o.phoneNumber;
-	        }
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    connection: {
+	      type: 'string',
+	      message: 'connection option is required'
+	    },
+	    verificationCode: {
+	      type: 'string',
+	      message: 'verificationCode option is required'
+	    },
+	    phoneNumber: {
+	      optional: false,
+	      type: 'string',
+	      message: 'phoneNumber option is required',
+	      condition: function condition(o) {
+	        return !o.email;
+	      }
+	    },
+	    email: {
+	      optional: false,
+	      type: 'string',
+	      message: 'email option is required',
+	      condition: function condition(o) {
+	        return !o.phoneNumber;
 	      }
 	    }
-	  );
+	  });
 	  /* eslint-enable */
 
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
-	  cleanOption = objectHelper.pick(options, [
-	    'connection',
-	    'verificationCode',
-	    'phoneNumber',
-	    'email',
-	    'auth0Client',
-	    'clientID'
-	  ]);
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
+	  cleanOption = objectHelper.pick(options, ['connection', 'verificationCode', 'phoneNumber', 'email', 'auth0Client', 'clientID']);
 	  cleanOption = objectHelper.toSnakeCase(cleanOption, ['auth0Client']);
-
 	  url = urlJoin(this.baseOptions.rootUrl, 'passwordless', 'verify');
-
-	  return this.request
-	    .post(url)
-	    .send(cleanOption)
-	    .end(wrapCallback(cb));
+	  return this.request.post(url).send(cleanOption).end(wrapCallback(cb));
 	};
 
 	/**
@@ -9711,19 +8918,20 @@
 	 * @param {callback} cb
 	 * @memberof PasswordlessAuthentication.prototype
 	 */
-	PasswordlessAuthentication.prototype.getChallenge = function(cb) {
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	PasswordlessAuthentication.prototype.getChallenge = function (cb) {
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  if (!this.baseOptions.state) {
 	    return cb();
 	  }
-
 	  var url = urlJoin(this.baseOptions.rootUrl, 'passwordless', 'challenge');
-
-	  return this.request
-	    .post(url)
-	    .send({ state: this.baseOptions.state })
-	    .end(wrapCallback(cb, { ignoreCasing: true }));
+	  return this.request.post(url).send({
+	    state: this.baseOptions.state
+	  }).end(wrapCallback(cb, {
+	    ignoreCasing: true
+	  }));
 	};
 
 	function DBConnection(request, options) {
@@ -9754,6 +8962,7 @@
 	 * @param {String} [options.nickname] The user's nickname.
 	 * @param {String} [options.picture] A URI pointing to the user's picture.
 	 * @param {String} options.connection name of the connection where the user will be created
+	 * @param {String} [options.captcha] captcha challenge response when required
 	 * @param {Object} [options.user_metadata] additional signup attributes used for creating the user. Will be stored in `user_metadata`
 	 * @param {signUpCallback} cb
 	 * @see   {@link https://auth0.com/docs/api/authentication#signup}
@@ -9763,42 +8972,36 @@
 	  var url;
 	  var body;
 	  var metadata;
-
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      connection: { type: 'string', message: 'connection option is required' },
-	      email: { type: 'string', message: 'email option is required' },
-	      password: { type: 'string', message: 'password option is required' }
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    connection: {
+	      type: 'string',
+	      message: 'connection option is required'
+	    },
+	    email: {
+	      type: 'string',
+	      message: 'email option is required'
+	    },
+	    password: {
+	      type: 'string',
+	      message: 'password option is required'
 	    }
-	  );
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  });
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  url = urlJoin(this.baseOptions.rootUrl, 'dbconnections', 'signup');
-
-	  body = objectHelper
-	    .merge(this.baseOptions, ['clientID', 'state'])
-	    .with(options);
-
+	  body = objectHelper.merge(this.baseOptions, ['clientID', 'state']).with(options);
 	  metadata = body.user_metadata || body.userMetadata;
-
-	  body = objectHelper.blacklist(body, [
-	    'scope',
-	    'userMetadata',
-	    'user_metadata'
-	  ]);
-
+	  body = objectHelper.blacklist(body, ['scope', 'userMetadata', 'user_metadata']);
 	  body = objectHelper.toSnakeCase(body, ['auth0Client']);
-
 	  if (metadata) {
 	    body.user_metadata = metadata;
 	  }
-
-	  return this.request
-	    .post(url)
-	    .send(body)
-	    .end(wrapCallback(cb));
+	  return this.request.post(url).send(body).end(wrapCallback(cb));
 	};
 
 	/**
@@ -9821,60 +9024,57 @@
 	DBConnection.prototype.changePassword = function (options, cb) {
 	  var url;
 	  var body;
-
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      connection: { type: 'string', message: 'connection option is required' },
-	      email: { type: 'string', message: 'email option is required' }
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    connection: {
+	      type: 'string',
+	      message: 'connection option is required'
+	    },
+	    email: {
+	      type: 'string',
+	      message: 'email option is required'
 	    }
-	  );
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  });
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  url = urlJoin(this.baseOptions.rootUrl, 'dbconnections', 'change_password');
-
-	  body = objectHelper
-	    .merge(this.baseOptions, ['clientID', 'state'])
-	    .with(options, ['email', 'connection', 'captcha']);
-
+	  body = objectHelper.merge(this.baseOptions, ['clientID', 'state']).with(options, ['email', 'connection', 'captcha']);
 	  body = objectHelper.toSnakeCase(body, ['auth0Client']);
-
-	  return this.request
-	    .post(url)
-	    .send(body)
-	    .end(wrapCallback(cb));
+	  return this.request.post(url).send(body).end(wrapCallback(cb));
 	};
-
 	DBConnection.prototype.getPasswordResetChallenge = function (cb) {
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  if (!this.baseOptions.state) {
 	    return cb();
 	  }
-
 	  var url = urlJoin(this.baseOptions.rootUrl, 'dbconnections', 'change_password', 'challenge');
-
-	  return this.request
-	    .post(url)
-	    .send({ state: this.baseOptions.state })
-	    .end(wrapCallback(cb, { ignoreCasing: true }));
+	  return this.request.post(url).send({
+	    state: this.baseOptions.state
+	  }).end(wrapCallback(cb, {
+	    ignoreCasing: true
+	  }));
 	};
-
-
 	DBConnection.prototype.getSignupChallenge = function (cb) {
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  if (!this.baseOptions.state) {
 	    return cb();
 	  }
-
 	  var url = urlJoin(this.baseOptions.rootUrl, 'dbconnections', 'signup', 'challenge');
-
-	  return this.request
-	    .post(url)
-	    .send({ state: this.baseOptions.state })
-	    .end(wrapCallback(cb, { ignoreCasing: true }));
+	  return this.request.post(url).send({
+	    state: this.baseOptions.state
+	  }).end(wrapCallback(cb, {
+	    ignoreCasing: true
+	  }));
 	};
 
 	/**
@@ -9902,72 +9102,67 @@
 	  }
 
 	  /* eslint-disable */
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      domain: { type: 'string', message: 'domain option is required' },
-	      clientID: { type: 'string', message: 'clientID option is required' },
-	      responseType: {
-	        optional: true,
-	        type: 'string',
-	        message: 'responseType is not valid'
-	      },
-	      responseMode: {
-	        optional: true,
-	        type: 'string',
-	        message: 'responseMode is not valid'
-	      },
-	      redirectUri: {
-	        optional: true,
-	        type: 'string',
-	        message: 'redirectUri is not valid'
-	      },
-	      scope: { optional: true, type: 'string', message: 'scope is not valid' },
-	      audience: {
-	        optional: true,
-	        type: 'string',
-	        message: 'audience is not valid'
-	      },
-	      _disableDeprecationWarnings: {
-	        optional: true,
-	        type: 'boolean',
-	        message: '_disableDeprecationWarnings option is not valid'
-	      },
-	      _sendTelemetry: {
-	        optional: true,
-	        type: 'boolean',
-	        message: '_sendTelemetry option is not valid'
-	      },
-	      _telemetryInfo: {
-	        optional: true,
-	        type: 'object',
-	        message: '_telemetryInfo option is not valid'
-	      }
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    domain: {
+	      type: 'string',
+	      message: 'domain option is required'
+	    },
+	    clientID: {
+	      type: 'string',
+	      message: 'clientID option is required'
+	    },
+	    responseType: {
+	      optional: true,
+	      type: 'string',
+	      message: 'responseType is not valid'
+	    },
+	    responseMode: {
+	      optional: true,
+	      type: 'string',
+	      message: 'responseMode is not valid'
+	    },
+	    redirectUri: {
+	      optional: true,
+	      type: 'string',
+	      message: 'redirectUri is not valid'
+	    },
+	    scope: {
+	      optional: true,
+	      type: 'string',
+	      message: 'scope is not valid'
+	    },
+	    audience: {
+	      optional: true,
+	      type: 'string',
+	      message: 'audience is not valid'
+	    },
+	    _disableDeprecationWarnings: {
+	      optional: true,
+	      type: 'boolean',
+	      message: '_disableDeprecationWarnings option is not valid'
+	    },
+	    _sendTelemetry: {
+	      optional: true,
+	      type: 'boolean',
+	      message: '_sendTelemetry option is not valid'
+	    },
+	    _telemetryInfo: {
+	      optional: true,
+	      type: 'object',
+	      message: '_telemetryInfo option is not valid'
 	    }
-	  );
+	  });
 	  /* eslint-enable */
 
 	  this.baseOptions = options;
-	  this.baseOptions._sendTelemetry =
-	    this.baseOptions._sendTelemetry === false
-	      ? this.baseOptions._sendTelemetry
-	      : true;
-
-	  this.baseOptions.rootUrl =
-	    this.baseOptions.domain &&
-	      this.baseOptions.domain.toLowerCase().indexOf('http') === 0
-	      ? this.baseOptions.domain
-	      : 'https://' + this.baseOptions.domain;
-
+	  this.baseOptions._sendTelemetry = this.baseOptions._sendTelemetry === false ? this.baseOptions._sendTelemetry : true;
+	  this.baseOptions.rootUrl = this.baseOptions.domain && this.baseOptions.domain.toLowerCase().indexOf('http') === 0 ? this.baseOptions.domain : 'https://' + this.baseOptions.domain;
 	  this.request = new RequestBuilder(this.baseOptions);
-
-	  this.passwordless = new PasswordlessAuthentication(
-	    this.request,
-	    this.baseOptions
-	  );
+	  this.passwordless = new PasswordlessAuthentication(this.request, this.baseOptions);
 	  this.dbConnection = new DBConnection(this.request, this.baseOptions);
-
 	  this.warn = new Warn({
 	    disableWarnings: !!options._disableDeprecationWarnings
 	  });
@@ -9994,84 +9189,61 @@
 	Authentication.prototype.buildAuthorizeUrl = function (options) {
 	  var params;
 	  var qString;
-
 	  assert.check(options, {
 	    type: 'object',
 	    message: 'options parameter is not valid'
 	  });
-
-	  params = objectHelper
-	    .merge(this.baseOptions, [
-	      'clientID',
-	      'responseType',
-	      'responseMode',
-	      'redirectUri',
-	      'scope',
-	      'audience'
-	    ])
-	    .with(options);
+	  params = objectHelper.merge(this.baseOptions, ['clientID', 'responseType', 'responseMode', 'redirectUri', 'scope', 'audience']).with(options);
 
 	  /* eslint-disable */
-	  assert.check(
-	    params,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      clientID: { type: 'string', message: 'clientID option is required' },
-	      redirectUri: {
-	        optional: true,
-	        type: 'string',
-	        message: 'redirectUri option is required'
-	      },
-	      responseType: {
-	        type: 'string',
-	        message: 'responseType option is required'
-	      },
-	      nonce: {
-	        type: 'string',
-	        message: 'nonce option is required',
-	        condition: function (o) {
-	          return (
-	            o.responseType.indexOf('code') === -1 &&
-	            o.responseType.indexOf('id_token') !== -1
-	          );
-	        }
-	      },
-	      scope: {
-	        optional: true,
-	        type: 'string',
-	        message: 'scope option is required'
-	      },
-	      audience: {
-	        optional: true,
-	        type: 'string',
-	        message: 'audience option is required'
+	  assert.check(params, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    clientID: {
+	      type: 'string',
+	      message: 'clientID option is required'
+	    },
+	    redirectUri: {
+	      optional: true,
+	      type: 'string',
+	      message: 'redirectUri option is required'
+	    },
+	    responseType: {
+	      type: 'string',
+	      message: 'responseType option is required'
+	    },
+	    nonce: {
+	      type: 'string',
+	      message: 'nonce option is required',
+	      condition: function condition(o) {
+	        return o.responseType.indexOf('code') === -1 && o.responseType.indexOf('id_token') !== -1;
 	      }
+	    },
+	    scope: {
+	      optional: true,
+	      type: 'string',
+	      message: 'scope option is required'
+	    },
+	    audience: {
+	      optional: true,
+	      type: 'string',
+	      message: 'audience option is required'
 	    }
-	  );
+	  });
 	  /* eslint-enable */
 
 	  // eslint-disable-next-line
 	  if (this.baseOptions._sendTelemetry) {
 	    params.auth0Client = this.request.getTelemetryData();
 	  }
-
 	  if (params.connection_scope && assert.isArray(params.connection_scope)) {
 	    params.connection_scope = params.connection_scope.join(',');
 	  }
-
-	  params = objectHelper.blacklist(params, [
-	    'username',
-	    'popupOptions',
-	    'domain',
-	    'tenant',
-	    'timeout',
-	    'appState'
-	  ]);
+	  params = objectHelper.blacklist(params, ['username', 'popupOptions', 'domain', 'tenant', 'timeout', 'appState']);
 	  params = objectHelper.toSnakeCase(params, ['auth0Client']);
 	  params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
-
 	  qString = lib.stringify(params);
-
 	  return urlJoin(this.baseOptions.rootUrl, 'authorize', '?' + qString);
 	};
 
@@ -10093,34 +9265,22 @@
 	Authentication.prototype.buildLogoutUrl = function (options) {
 	  var params;
 	  var qString;
-
 	  assert.check(options, {
 	    optional: true,
 	    type: 'object',
 	    message: 'options parameter is not valid'
 	  });
-
-	  params = objectHelper
-	    .merge(this.baseOptions, ['clientID'])
-	    .with(options || {});
+	  params = objectHelper.merge(this.baseOptions, ['clientID']).with(options || {});
 
 	  // eslint-disable-next-line
 	  if (this.baseOptions._sendTelemetry) {
 	    params.auth0Client = this.request.getTelemetryData();
 	  }
-
 	  params = objectHelper.toSnakeCase(params, ['auth0Client', 'returnTo']);
-
 	  qString = lib.stringify(objectHelper.blacklist(params, ['federated']));
-	  if (
-	    options &&
-	    options.federated !== undefined &&
-	    options.federated !== false &&
-	    options.federated !== 'false'
-	  ) {
+	  if (options && options.federated !== undefined && options.federated !== false && options.federated !== 'false') {
 	    qString += '&federated';
 	  }
-
 	  return urlJoin(this.baseOptions.rootUrl, 'v2', 'logout', '?' + qString);
 	};
 
@@ -10161,27 +9321,30 @@
 	 * @memberof Authentication.prototype
 	 */
 	Authentication.prototype.loginWithDefaultDirectory = function (options, cb) {
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      username: { type: 'string', message: 'username option is required' },
-	      password: { type: 'string', message: 'password option is required' },
-	      scope: {
-	        optional: true,
-	        type: 'string',
-	        message: 'scope option is required'
-	      },
-	      audience: {
-	        optional: true,
-	        type: 'string',
-	        message: 'audience option is required'
-	      }
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    username: {
+	      type: 'string',
+	      message: 'username option is required'
+	    },
+	    password: {
+	      type: 'string',
+	      message: 'password option is required'
+	    },
+	    scope: {
+	      optional: true,
+	      type: 'string',
+	      message: 'scope option is required'
+	    },
+	    audience: {
+	      optional: true,
+	      type: 'string',
+	      message: 'audience option is required'
 	    }
-	  );
-
+	  });
 	  options.grantType = 'password';
-
 	  return this.oauthToken(options, cb);
 	};
 
@@ -10200,28 +9363,34 @@
 	 * @memberof Authentication.prototype
 	 */
 	Authentication.prototype.login = function (options, cb) {
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      username: { type: 'string', message: 'username option is required' },
-	      password: { type: 'string', message: 'password option is required' },
-	      realm: { type: 'string', message: 'realm option is required' },
-	      scope: {
-	        optional: true,
-	        type: 'string',
-	        message: 'scope option is required'
-	      },
-	      audience: {
-	        optional: true,
-	        type: 'string',
-	        message: 'audience option is required'
-	      }
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    username: {
+	      type: 'string',
+	      message: 'username option is required'
+	    },
+	    password: {
+	      type: 'string',
+	      message: 'password option is required'
+	    },
+	    realm: {
+	      type: 'string',
+	      message: 'realm option is required'
+	    },
+	    scope: {
+	      optional: true,
+	      type: 'string',
+	      message: 'scope option is required'
+	    },
+	    audience: {
+	      optional: true,
+	      type: 'string',
+	      message: 'audience option is required'
 	    }
-	  );
-
+	  });
 	  options.grantType = 'http://auth0.com/oauth/grant-type/password-realm';
-
 	  return this.oauthToken(options, cb);
 	};
 
@@ -10234,45 +9403,42 @@
 	Authentication.prototype.oauthToken = function (options, cb) {
 	  var url;
 	  var body;
-
 	  assert.check(options, {
 	    type: 'object',
 	    message: 'options parameter is not valid'
 	  });
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  url = urlJoin(this.baseOptions.rootUrl, 'oauth', 'token');
-
-	  body = objectHelper
-	    .merge(this.baseOptions, ['clientID', 'scope', 'audience'])
-	    .with(options);
-
-	  assert.check(
-	    body,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      clientID: { type: 'string', message: 'clientID option is required' },
-	      grantType: { type: 'string', message: 'grantType option is required' },
-	      scope: {
-	        optional: true,
-	        type: 'string',
-	        message: 'scope option is required'
-	      },
-	      audience: {
-	        optional: true,
-	        type: 'string',
-	        message: 'audience option is required'
-	      }
+	  body = objectHelper.merge(this.baseOptions, ['clientID', 'scope', 'audience']).with(options);
+	  assert.check(body, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    clientID: {
+	      type: 'string',
+	      message: 'clientID option is required'
+	    },
+	    grantType: {
+	      type: 'string',
+	      message: 'grantType option is required'
+	    },
+	    scope: {
+	      optional: true,
+	      type: 'string',
+	      message: 'scope option is required'
+	    },
+	    audience: {
+	      optional: true,
+	      type: 'string',
+	      message: 'audience option is required'
 	    }
-	  );
-
+	  });
 	  body = objectHelper.toSnakeCase(body, ['auth0Client']);
 	  body = parametersWhitelist.oauthTokenParams(this.warn, body);
-
-	  return this.request
-	    .post(url)
-	    .send(body)
-	    .end(wrapCallback(cb));
+	  return this.request.post(url).send(body).end(wrapCallback(cb));
 	};
 
 	/**
@@ -10295,37 +9461,37 @@
 	Authentication.prototype.loginWithResourceOwner = function (options, cb) {
 	  var url;
 	  var body;
-
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      username: { type: 'string', message: 'username option is required' },
-	      password: { type: 'string', message: 'password option is required' },
-	      connection: { type: 'string', message: 'connection option is required' },
-	      scope: {
-	        optional: true,
-	        type: 'string',
-	        message: 'scope option is required'
-	      }
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    username: {
+	      type: 'string',
+	      message: 'username option is required'
+	    },
+	    password: {
+	      type: 'string',
+	      message: 'password option is required'
+	    },
+	    connection: {
+	      type: 'string',
+	      message: 'connection option is required'
+	    },
+	    scope: {
+	      optional: true,
+	      type: 'string',
+	      message: 'scope option is required'
 	    }
-	  );
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  });
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  url = urlJoin(this.baseOptions.rootUrl, 'oauth', 'ro');
-
-	  body = objectHelper
-	    .merge(this.baseOptions, ['clientID', 'scope'])
-	    .with(options, ['username', 'password', 'scope', 'connection', 'device']);
-
+	  body = objectHelper.merge(this.baseOptions, ['clientID', 'scope']).with(options, ['username', 'password', 'scope', 'connection', 'device']);
 	  body = objectHelper.toSnakeCase(body, ['auth0Client']);
-
 	  body.grant_type = body.grant_type || 'password';
-
-	  return this.request
-	    .post(url)
-	    .send(body)
-	    .end(wrapCallback(cb));
+	  return this.request.post(url).send(body).end(wrapCallback(cb));
 	};
 
 	/**
@@ -10341,55 +9507,54 @@
 	  if (!this.auth0) {
 	    this.auth0 = new WebAuth(this.baseOptions);
 	  }
-	  var isHostedLoginPage =
-	    windowHelper.getWindow().location.host === this.baseOptions.domain;
+	  var isHostedLoginPage = windowHelper.getWindow().location.host === this.baseOptions.domain;
 	  if (isHostedLoginPage) {
 	    return this.auth0._universalLogin.getSSOData(withActiveDirectories, cb);
 	  }
 	  if (typeof withActiveDirectories === 'function') {
 	    cb = withActiveDirectories;
 	  }
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  var clientId = this.baseOptions.clientID;
 	  var ssodataInformation = this.ssodataStorage.get() || {};
-
-	  this.auth0.checkSession(
-	    {
-	      responseType: 'token id_token',
-	      scope: 'openid profile email',
-	      connection: ssodataInformation.lastUsedConnection,
-	      timeout: 5000
-	    },
-	    function (err, result) {
-	      if (err) {
-	        if (err.error === 'login_required') {
-	          return cb(null, { sso: false });
-	        }
-	        if (err.error === 'consent_required') {
-	          err.error_description =
-	            'Consent required. When using `getSSOData`, the user has to be authenticated with the following scope: `openid profile email`.';
-	        }
-	        return cb(err, { sso: false });
+	  this.auth0.checkSession({
+	    responseType: 'token id_token',
+	    scope: 'openid profile email',
+	    connection: ssodataInformation.lastUsedConnection,
+	    timeout: 5000
+	  }, function (err, result) {
+	    if (err) {
+	      if (err.error === 'login_required') {
+	        return cb(null, {
+	          sso: false
+	        });
 	      }
-	      if (
-	        ssodataInformation.lastUsedSub &&
-	        ssodataInformation.lastUsedSub !== result.idTokenPayload.sub
-	      ) {
-	        return cb(err, { sso: false });
+	      if (err.error === 'consent_required') {
+	        err.error_description = 'Consent required. When using `getSSOData`, the user has to be authenticated with the following scope: `openid profile email`.';
 	      }
-	      return cb(null, {
-	        lastUsedConnection: {
-	          name: ssodataInformation.lastUsedConnection
-	        },
-	        lastUsedUserID: result.idTokenPayload.sub,
-	        lastUsedUsername:
-	          result.idTokenPayload.email || result.idTokenPayload.name,
-	        lastUsedClientID: clientId,
-	        sessionClients: [clientId],
-	        sso: true
+	      return cb(err, {
+	        sso: false
 	      });
 	    }
-	  );
+	    if (ssodataInformation.lastUsedSub && ssodataInformation.lastUsedSub !== result.idTokenPayload.sub) {
+	      return cb(err, {
+	        sso: false
+	      });
+	    }
+	    return cb(null, {
+	      lastUsedConnection: {
+	        name: ssodataInformation.lastUsedConnection
+	      },
+	      lastUsedUserID: result.idTokenPayload.sub,
+	      lastUsedUsername: result.idTokenPayload.email || result.idTokenPayload.name,
+	      lastUsedClientID: clientId,
+	      sessionClients: [clientId],
+	      sso: true
+	    });
+	  });
 	};
 
 	/**
@@ -10410,19 +9575,18 @@
 	 */
 	Authentication.prototype.userInfo = function (accessToken, cb) {
 	  var url;
-
 	  assert.check(accessToken, {
 	    type: 'string',
 	    message: 'accessToken parameter is not valid'
 	  });
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  url = urlJoin(this.baseOptions.rootUrl, 'userinfo');
-
-	  return this.request
-	    .get(url)
-	    .set('Authorization', 'Bearer ' + accessToken)
-	    .end(wrapCallback(cb, { ignoreCasing: true }));
+	  return this.request.get(url).set('Authorization', 'Bearer ' + accessToken).end(wrapCallback(cb, {
+	    ignoreCasing: true
+	  }));
 	};
 
 	/**
@@ -10434,18 +9598,19 @@
 	 * @memberof Authentication.prototype
 	 */
 	Authentication.prototype.getChallenge = function (cb) {
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  if (!this.baseOptions.state) {
 	    return cb();
 	  }
-
 	  var url = urlJoin(this.baseOptions.rootUrl, 'usernamepassword', 'challenge');
-
-	  return this.request
-	    .post(url)
-	    .send({ state: this.baseOptions.state })
-	    .end(wrapCallback(cb, { ignoreCasing: true }));
+	  return this.request.post(url).send({
+	    state: this.baseOptions.state
+	  }).end(wrapCallback(cb, {
+	    ignoreCasing: true
+	  }));
 	};
 
 	/**
@@ -10475,26 +9640,23 @@
 	Authentication.prototype.delegation = function (options, cb) {
 	  var url;
 	  var body;
-
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      grant_type: { type: 'string', message: 'grant_type option is required' }
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    grant_type: {
+	      type: 'string',
+	      message: 'grant_type option is required'
 	    }
-	  );
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  });
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  url = urlJoin(this.baseOptions.rootUrl, 'delegation');
-
 	  body = objectHelper.merge(this.baseOptions, ['clientID']).with(options);
-
 	  body = objectHelper.toSnakeCase(body, ['auth0Client']);
-
-	  return this.request
-	    .post(url)
-	    .send(body)
-	    .end(wrapCallback(cb));
+	  return this.request.post(url).send(body).end(wrapCallback(cb));
 	};
 
 	/**
@@ -10507,11 +9669,11 @@
 	 */
 	Authentication.prototype.getUserCountry = function (cb) {
 	  var url;
-
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  url = urlJoin(this.baseOptions.rootUrl, 'user', 'geoloc', 'country');
-
 	  return this.request.get(url).end(wrapCallback(cb));
 	};
 
@@ -10524,38 +9686,37 @@
 	 */
 	function Management(options) {
 	  /* eslint-disable */
-	  assert.check(
-	    options,
-	    { type: 'object', message: 'options parameter is not valid' },
-	    {
-	      domain: { type: 'string', message: 'domain option is required' },
-	      token: { type: 'string', message: 'token option is required' },
-	      _sendTelemetry: {
-	        optional: true,
-	        type: 'boolean',
-	        message: '_sendTelemetry option is not valid'
-	      },
-	      _telemetryInfo: {
-	        optional: true,
-	        type: 'object',
-	        message: '_telemetryInfo option is not valid'
-	      }
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    domain: {
+	      type: 'string',
+	      message: 'domain option is required'
+	    },
+	    token: {
+	      type: 'string',
+	      message: 'token option is required'
+	    },
+	    _sendTelemetry: {
+	      optional: true,
+	      type: 'boolean',
+	      message: '_sendTelemetry option is not valid'
+	    },
+	    _telemetryInfo: {
+	      optional: true,
+	      type: 'object',
+	      message: '_telemetryInfo option is not valid'
 	    }
-	  );
+	  });
 	  /* eslint-enable */
 
 	  this.baseOptions = options;
-
 	  this.baseOptions.headers = {
 	    Authorization: 'Bearer ' + this.baseOptions.token
 	  };
-
 	  this.request = new RequestBuilder(this.baseOptions);
-	  this.baseOptions.rootUrl = urlJoin(
-	    'https://' + this.baseOptions.domain,
-	    'api',
-	    'v2'
-	  );
+	  this.baseOptions.rootUrl = urlJoin('https://' + this.baseOptions.domain, 'api', 'v2');
 	}
 
 	/**
@@ -10574,18 +9735,20 @@
 	 * @see https://auth0.com/docs/api/management/v2#!/Users/get_users_by_id
 	 * @memberof Management.prototype
 	 */
-	Management.prototype.getUser = function(userId, cb) {
+	Management.prototype.getUser = function (userId, cb) {
 	  var url;
-
 	  assert.check(userId, {
 	    type: 'string',
 	    message: 'userId parameter is not valid'
 	  });
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  url = urlJoin(this.baseOptions.rootUrl, 'users', userId);
-
-	  return this.request.get(url).end(wrapCallback(cb, { ignoreCasing: true }));
+	  return this.request.get(url).end(wrapCallback(cb, {
+	    ignoreCasing: true
+	  }));
 	};
 
 	/**
@@ -10599,9 +9762,8 @@
 	 * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id}
 	 * @memberof Management.prototype
 	 */
-	Management.prototype.patchUserMetadata = function(userId, userMetadata, cb) {
+	Management.prototype.patchUserMetadata = function (userId, userMetadata, cb) {
 	  var url;
-
 	  assert.check(userId, {
 	    type: 'string',
 	    message: 'userId parameter is not valid'
@@ -10610,14 +9772,16 @@
 	    type: 'object',
 	    message: 'userMetadata parameter is not valid'
 	  });
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  url = urlJoin(this.baseOptions.rootUrl, 'users', userId);
-
-	  return this.request
-	    .patch(url)
-	    .send({ user_metadata: userMetadata })
-	    .end(wrapCallback(cb, { ignoreCasing: true }));
+	  return this.request.patch(url).send({
+	    user_metadata: userMetadata
+	  }).end(wrapCallback(cb, {
+	    ignoreCasing: true
+	  }));
 	};
 
 	/**
@@ -10630,9 +9794,8 @@
 	 * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/patch_users_by_id}
 	 * @memberof Management.prototype
 	 */
-	Management.prototype.patchUserAttributes = function(userId, user, cb) {
+	Management.prototype.patchUserAttributes = function (userId, user, cb) {
 	  var url;
-
 	  assert.check(userId, {
 	    type: 'string',
 	    message: 'userId parameter is not valid'
@@ -10641,14 +9804,14 @@
 	    type: 'object',
 	    message: 'user parameter is not valid'
 	  });
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
-
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  url = urlJoin(this.baseOptions.rootUrl, 'users', userId);
-
-	  return this.request
-	    .patch(url)
-	    .send(user)
-	    .end(wrapCallback(cb, { ignoreCasing: true }));
+	  return this.request.patch(url).send(user).end(wrapCallback(cb, {
+	    ignoreCasing: true
+	  }));
 	};
 
 	/**
@@ -10661,7 +9824,7 @@
 	 * @see   {@link https://auth0.com/docs/api/management/v2#!/Users/post_identities}
 	 * @memberof Management.prototype
 	 */
-	Management.prototype.linkUser = function(userId, secondaryUserToken, cb) {
+	Management.prototype.linkUser = function (userId, secondaryUserToken, cb) {
 	  var url;
 	  /* eslint-disable */
 	  assert.check(userId, {
@@ -10672,15 +9835,18 @@
 	    type: 'string',
 	    message: 'secondaryUserToken parameter is not valid'
 	  });
-	  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
 	  /* eslint-enable */
 
 	  url = urlJoin(this.baseOptions.rootUrl, 'users', userId, 'identities');
-
-	  return this.request
-	    .post(url)
-	    .send({ link_with: secondaryUserToken })
-	    .end(wrapCallback(cb, { ignoreCasing: true }));
+	  return this.request.post(url).send({
+	    link_with: secondaryUserToken
+	  }).end(wrapCallback(cb, {
+	    ignoreCasing: true
+	  }));
 	};
 
 	var index = {
