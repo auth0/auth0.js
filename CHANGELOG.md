@@ -5,16 +5,13 @@
 
 **Added**
 - docs(core): fix missing captcha param in signup method jsdoc #1471 [\#1522](https://github.com/auth0/auth0.js/pull/1522) ([amitsingh05667](https://github.com/amitsingh05667))
-- chore : update mocha and selenium webdriver dependencies [\#1521](https://github.com/auth0/auth0.js/pull/1521) ([amitsingh05667](https://github.com/amitsingh05667))
 - feat: add Claude Code PR Review workflow [\#1517](https://github.com/auth0/auth0.js/pull/1517) ([amitsingh05667](https://github.com/amitsingh05667))
-- chore: update mocha to version 11.7.3 [\#1516](https://github.com/auth0/auth0.js/pull/1516) ([amitsingh05667](https://github.com/amitsingh05667))
-- chore: update regenerator-runtime and selenium-webdriver [\#1514](https://github.com/auth0/auth0.js/pull/1514) ([amitsingh05667](https://github.com/amitsingh05667))
-- chore: Upgrade Node.js to 22 and update dependencies [\#1509](https://github.com/auth0/auth0.js/pull/1509) ([subhankarmaiti](https://github.com/subhankarmaiti))
-- chore(ci): Remove Semgrep GHA Workflow [\#1502](https://github.com/auth0/auth0.js/pull/1502) ([eduardoboronat-okta](https://github.com/eduardoboronat-okta))
 - Add a Refresh Token example using MRRT [\#1499](https://github.com/auth0/auth0.js/pull/1499) ([ivan-vazquez](https://github.com/ivan-vazquez))
-- fix: replace deprecated @babel/polyfill with modern core-js approach [\#1497](https://github.com/auth0/auth0.js/pull/1497) ([harekrishnarai](https://github.com/harekrishnarai))
 - Add refresh token example [\#1496](https://github.com/auth0/auth0.js/pull/1496) ([arpit-jn](https://github.com/arpit-jn))
 - Add a Refresh Token example [\#1488](https://github.com/auth0/auth0.js/pull/1488) ([ivan-vazquez](https://github.com/ivan-vazquez))
+
+**Fixed**
+- fix: replace deprecated @babel/polyfill with modern core-js approach [\#1497](https://github.com/auth0/auth0.js/pull/1497) ([harekrishnarai](https://github.com/harekrishnarai))
 
 ## [v9.28.0](https://github.com/auth0/auth0.js/tree/v9.28.0) (2024-10-21)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.27.0...v9.28.0)
