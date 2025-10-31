@@ -397,7 +397,7 @@ function render(auth0Client, flow, element, options, callback) {
         element.innerHTML = options.templates.error(err);
         return done(err);
       }
-      if (!challenge.required) {
+      if (!challenge?.required) {
         element.style.display = 'none';
         element.innerHTML = '';
         return done();
