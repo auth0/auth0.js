@@ -13,7 +13,9 @@ function runWebMessageFlow(authorizeUrl, options, callback) {
     timeout: options.timeout,
     eventValidator: {
       isValid: function(eventData) {
+        var expectedOrigin = objectHelper.getOriginFromUrl(authorizeUrl);
         return !!(
+          eventData.event.origin === expectedOrigin &&
           eventData.event.data &&
           eventData.event.data.type === 'authorization_response' &&
           options.state === eventData.event.data.response.state
