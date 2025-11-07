@@ -32,6 +32,7 @@ function DBConnection(request, options) {
  * @param {String} [options.nickname] The user's nickname.
  * @param {String} [options.picture] A URI pointing to the user's picture.
  * @param {String} options.connection name of the connection where the user will be created
+ * @param {String} [options.captcha] captcha challenge response when required
  * @param {Object} [options.user_metadata] additional signup attributes used for creating the user. Will be stored in `user_metadata`
  * @param {signUpCallback} cb
  * @see   {@link https://auth0.com/docs/api/authentication#signup}

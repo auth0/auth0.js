@@ -1,5 +1,18 @@
 # Change Log
 
+## [v9.29.0](https://github.com/auth0/auth0.js/tree/v9.29.0) (2025-10-06)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.28.0...v9.29.0)
+
+**Added**
+- docs(core): fix missing captcha param in signup method jsdoc #1471 [\#1522](https://github.com/auth0/auth0.js/pull/1522) ([amitsingh05667](https://github.com/amitsingh05667))
+- feat: add Claude Code PR Review workflow [\#1517](https://github.com/auth0/auth0.js/pull/1517) ([amitsingh05667](https://github.com/amitsingh05667))
+- Add a Refresh Token example using MRRT [\#1499](https://github.com/auth0/auth0.js/pull/1499) ([ivan-vazquez](https://github.com/ivan-vazquez))
+- Add refresh token example [\#1496](https://github.com/auth0/auth0.js/pull/1496) ([arpit-jn](https://github.com/arpit-jn))
+- Add a Refresh Token example [\#1488](https://github.com/auth0/auth0.js/pull/1488) ([ivan-vazquez](https://github.com/ivan-vazquez))
+
+**Fixed**
+- fix: replace deprecated @babel/polyfill with modern core-js approach [\#1497](https://github.com/auth0/auth0.js/pull/1497) ([harekrishnarai](https://github.com/harekrishnarai))
+
 ## [v9.28.0](https://github.com/auth0/auth0.js/tree/v9.28.0) (2024-10-21)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.27.0...v9.28.0)
 

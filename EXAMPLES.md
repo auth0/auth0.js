@@ -181,4 +181,17 @@ webAuth.client.oauthToken(
     clientID: '{YOUR_CLIENT_ID}',
     refresh_token: '{THE_REFRESH_TOKEN}',
   }
+);
+```
+Additionally, if your tenant supports [Multi-Resource Refresh Token (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token), you can use a `refresh_token` to get an `access_token` with a different audience and/or scope.
+```js
+webAuth.client.oauthToken(
+  {
+    grantType: 'refresh_token',
+    clientID: '{YOUR_CLIENT_ID}',
+    refresh_token: '{THE_REFRESH_TOKEN}',
+    audience: '{OTHER_AUDIENCE}',
+    scope: '{OTHER_SCOPE}'
+  }
+);
 ```
