@@ -1,4 +1,5 @@
 import windowHelper from './window';
+import objectHelper from '../helper/object';
 
 function IframeHandler(options) {
   this.url = options.url;
@@ -11,10 +12,12 @@ function IframeHandler(options) {
   this._destroyTimeout = null;
   this.transientMessageEventListener = null;
   this.proxyEventListener = null;
-  // If no event identifier specified, set default
+
+  var expectedOrigin = objectHelper.getOriginFromUrl(this.url);
+
   this.eventValidator = options.eventValidator || {
-    isValid: function() {
-      return true;
+    isValid: function (eventData) {
+      return eventData.event.origin === expectedOrigin;
     }
   };
 
