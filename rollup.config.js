@@ -1,15 +1,18 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import replace from 'rollup-plugin-replace';
+import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import dev from 'rollup-plugin-dev';
 import license from 'rollup-plugin-license';
-import json from 'rollup-plugin-json';
+import json from '@rollup/plugin-json';
 import { babel } from '@rollup/plugin-babel';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import pkg from './package.json' with { type: 'json' };
+import { createRequire } from 'module';
 import createApp from './scripts/oidc-provider.js';
+
+const require = createRequire(import.meta.url);
+const pkg = require('./package.json');
 
 // Plugin to fix ES5 compatibility by replacing optional catch bindings
 const fixES5 = () => ({
@@ -53,7 +56,8 @@ const getPlugins = prod => [
   }),
   replace({
     __DEV__: prod ? 'false' : 'true',
-    'process.env.NODE_ENV': prod ? "'production'" : "'development'"
+    'process.env.NODE_ENV': prod ? "'production'" : "'development'",
+    preventAssignment: true
   }),
   prod &&
   terser({
