@@ -24,7 +24,7 @@
   "scripts": {
     "clean": "rm -rf dist && rm -rf build",
     "start": "npm run clean && rollup -c --watch",
-    "build": "npm run clean && PROD=true rollup -c && cp -rf dist build",
+    "build": "npm run clean && cross-env PROD=true rollup -c && cp -rf dist build",
     "test": "cross-env BABEL_ENV=test mocha --require @babel/register --require jsdom-global/register test/**/*.test.js --exit",
     "test:coverage": "nyc --check-coverage -- npm test",
     "test:e2e": "cross-env BABEL_ENV=test npm run test:e2e:services",

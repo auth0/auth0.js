@@ -9,21 +9,46 @@ import { babel } from '@rollup/plugin-babel';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { createRequire } from 'module';
+import MagicString from 'magic-string';
 import createApp from './scripts/oidc-provider.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('./package.json');
 
 // Plugin to fix ES5 compatibility by replacing optional catch bindings
+// This is needed because Rollup 4.x can generate optional catch bindings (catch {})
+// which are not ES5 compatible. We need to add an error parameter for IE9 support.
 const fixES5 = () => ({
   name: 'fix-es5',
   renderChunk(code, chunk, options) {
-    // Replace optional catch bindings with explicit error variable for both UMD and ES formats
+    // Only apply to UMD and ES formats
     if (options.format === 'umd' || options.format === 'es') {
-      return {
-        code: code.replace(/catch\s*\{\s*\}/g, 'catch (e) {}'),
-        map: null
-      };
+      // Use MagicString for proper source map handling
+      const magicString = new MagicString(code);
+      let hasReplacements = false;
+
+      // More robust regex that matches optional catch bindings
+      // This pattern looks for 'catch' followed by optional whitespace and an opening brace
+      // We use a more specific pattern to avoid false positives in strings/comments
+      const catchRegex = /}\s*catch\s*\{\s*/g;
+      let match;
+
+      while ((match = catchRegex.exec(code)) !== null) {
+        const startPos = match.index;
+        const endPos = startPos + match[0].length;
+        const originalText = match[0];
+        const replacement = originalText.replace(/catch\s*\{/, 'catch (e) {');
+
+        magicString.overwrite(startPos, endPos, replacement);
+        hasReplacements = true;
+      }
+
+      if (hasReplacements) {
+        return {
+          code: magicString.toString(),
+          map: magicString.generateMap({ hires: true })
+        };
+      }
     }
     return null;
   }
@@ -39,7 +64,11 @@ const getPlugins = prod => [
     browser: true
   }),
   commonjs({
+    // Safe to ignore dynamic requires since the codebase doesn't use them
+    // Verified via grep - no require() calls in src/
     ignoreDynamicRequires: true,
+    // Keep default behavior for better compatibility with CommonJS modules
+    // 'auto' attempts to detect the correct export style, which is safer for mixed module types
     defaultIsModuleExports: 'auto'
   }),
   json(),
@@ -61,9 +90,10 @@ const getPlugins = prod => [
   }),
   prod &&
   terser({
-    compress: { warnings: false },
+    compress: true,
     output: { comments: false },
-    mangle: false
+    // Enable mangle for better minification in production builds
+    mangle: true
   }),
   license({
     banner: `
