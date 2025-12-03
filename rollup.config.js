@@ -6,8 +6,6 @@ import dev from 'rollup-plugin-dev';
 import license from 'rollup-plugin-license';
 import json from '@rollup/plugin-json';
 import { babel } from '@rollup/plugin-babel';
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
 import { createRequire } from 'module';
 import MagicString from 'magic-string';
 import createApp from './scripts/oidc-provider.js';
@@ -29,15 +27,22 @@ const fixES5 = () => ({
 
       // More robust regex that matches optional catch bindings
       // This pattern looks for 'catch' followed by optional whitespace and an opening brace
-      // We use a more specific pattern to avoid false positives in strings/comments
-      const catchRegex = /}\s*catch\s*\{\s*/g;
+      const catchRegex = /catch\s*\{\s*\}/g;
+      const matches = [];
       let match;
 
+      // Collect all matches first
       while ((match = catchRegex.exec(code)) !== null) {
+        matches.push(match);
+      }
+
+      // Apply replacements in reverse order to avoid position shifting issues
+      for (let i = matches.length - 1; i >= 0; i--) {
+        const match = matches[i];
         const startPos = match.index;
         const endPos = startPos + match[0].length;
-        const originalText = match[0];
-        const replacement = originalText.replace(/catch\s*\{/, 'catch (e) {');
+        // Direct string replacement - add error parameter
+        const replacement = 'catch (e) {}';
 
         magicString.overwrite(startPos, endPos, replacement);
         hasReplacements = true;
@@ -54,9 +59,7 @@ const fixES5 = () => ({
   }
 });
 
-const argv = yargs(hideBin(process.argv)).argv;
-
-const isProduction = process.env.PROD === 'true' || argv.prod === true;
+const isProduction = process.env.PRODUCTION === 'true';
 const OUTPUT_PATH = 'dist';
 
 const getPlugins = prod => [
@@ -64,12 +67,10 @@ const getPlugins = prod => [
     browser: true
   }),
   commonjs({
-    // Safe to ignore dynamic requires since the codebase doesn't use them
-    // Verified via grep - no require() calls in src/
-    ignoreDynamicRequires: true,
-    // Keep default behavior for better compatibility with CommonJS modules
-    // 'auto' attempts to detect the correct export style, which is safer for mixed module types
-    defaultIsModuleExports: 'auto'
+    // Safe to ignore dynamic requires - verified no dynamic require(variable) patterns exist
+    // Source code (src/) uses ES6 imports, dependencies use only static require('string')
+    // Dynamic requires would be patterns like: require(variableName) or require('./' + path)
+    ignoreDynamicRequires: true
   }),
   json(),
   babel({
@@ -91,9 +92,7 @@ const getPlugins = prod => [
   prod &&
   terser({
     compress: true,
-    output: { comments: false },
-    // Enable mangle for better minification in production builds
-    mangle: true
+    output: { comments: false }
   }),
   license({
     banner: `
@@ -103,6 +102,7 @@ const getPlugins = prod => [
     License: MIT
     `
   }),
+  // Always apply ES5 compatibility fixes since all builds need to support IE9
   fixES5()
 ];
 
