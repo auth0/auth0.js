@@ -18,7 +18,7 @@ const pkg = require('./package.json');
 // which are not ES5 compatible. We need to add an error parameter for IE9 support.
 const fixES5 = () => ({
   name: 'fix-es5',
-  renderChunk(code, chunk, options) {
+  renderChunk(code, _chunk, options) {
     // Only apply to UMD and ES formats
     if (options.format === 'umd' || options.format === 'es') {
       // Use MagicString for proper source map handling
