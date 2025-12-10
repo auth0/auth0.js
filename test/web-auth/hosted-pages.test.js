@@ -402,7 +402,10 @@ describe('auth0.WebAuth._universalLogin', function() {
             },
             name: 'ValidationError',
             code: 'invalid_user_password',
-            description: 'Wrong email or password.',
+            description: 'Signup succeeded, but login failed. Your account was created successfully. Please try logging in. Wrong email or password.',
+            errorDescription: 'Signup succeeded, but login failed. Your account was created successfully. Please try logging in. Wrong email or password.',
+            error_description: 'Signup succeeded, but login failed. Your account was created successfully. Please try logging in. Wrong email or password.',
+            signupSucceeded: true,
             statusCode: 400
           });
           done();

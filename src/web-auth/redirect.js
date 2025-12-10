@@ -64,7 +64,24 @@ Redirect.prototype.signupAndLogin = function (options, cb) {
     options.realm = options.realm || options.connection;
     delete options.connection;
 
-    return _this.webAuth.login(options, cb);
+    return _this.webAuth.login(options, function (loginErr, result) {
+      if (loginErr) {
+        // Signup succeeded but login failed - enhance error message
+        var originalDescription =
+          loginErr.description ||
+          loginErr.error_description ||
+          loginErr.errorDescription ||
+          '';
+        loginErr.description =
+          'Signup succeeded, but login failed. Your account was created successfully. Please try logging in. ' +
+          originalDescription;
+        loginErr.errorDescription = loginErr.description;
+        loginErr.error_description = loginErr.description;
+        loginErr.signupSucceeded = true;
+        return cb(loginErr);
+      }
+      return cb(null, result);
+    });
   });
 };
 
