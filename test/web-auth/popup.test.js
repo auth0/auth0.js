@@ -756,6 +756,69 @@ describe('auth0.WebAuth.popup', function () {
         }
       );
     });
+
+    it('should enhance error when signup succeeds but login fails', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
+        expect(url).to.be('https://me.auth0.com/dbconnections/signup');
+
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            connection: 'the_connection',
+            email: 'me@example.com',
+            password: '123456'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function (cb) {
+            cb(null, {
+              body: {
+                _id: '...',
+                email_verified: false,
+                email: 'me@example.com'
+              }
+            });
+          }
+        });
+      });
+
+      sinon
+        .stub(CrossOriginAuthentication.prototype, 'login')
+        .callsFake(function (options, cb) {
+          delete options.popupHandler;
+          expect(options.email).to.be('me@example.com');
+          expect(options.password).to.be('123456');
+          expect(options.scope).to.be('openid');
+          expect(options.realm).to.be('the_connection');
+          expect(options.popup).to.be(true);
+          cb({
+            code: 'invalid_user_password',
+            description: 'Wrong email or password.',
+            statusCode: 401
+          });
+        });
+
+      this.auth0.popup.signupAndLogin(
+        {
+          connection: 'the_connection',
+          email: 'me@example.com',
+          password: '123456',
+          scope: 'openid'
+        },
+        function (err, data) {
+          expect(data).to.be(undefined);
+          expect(err.signupSucceeded).to.be(true);
+          expect(err.code).to.be('invalid_user_password');
+          expect(err.statusCode).to.be(401);
+          expect(err.description).to.contain('Your account was created successfully');
+          expect(err.description).to.contain('automatic login failed');
+          expect(err.description).to.contain('Please try logging in with your email and password');
+          expect(err.description).to.contain('Wrong email or password');
+          done();
+        }
+      );
+    });
   });
 
   context('callback', function () {

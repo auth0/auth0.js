@@ -64,7 +64,20 @@ Redirect.prototype.signupAndLogin = function (options, cb) {
     options.realm = options.realm || options.connection;
     delete options.connection;
 
-    return _this.webAuth.login(options, cb);
+    // Wrap the login callback to enhance error with signup success info
+    return _this.webAuth.login(options, function (loginErr, result) {
+      if (loginErr) {
+        // Signup succeeded but login failed - enhance the error
+        var originalErrorMessage = loginErr.description || loginErr.error_description || 'Unknown error';
+        loginErr.signupSucceeded = true;
+        loginErr.description =
+          'Your account was created successfully! However, automatic login failed. ' +
+          'Please try logging in with your email and password. ' +
+          'Error details: ' + originalErrorMessage;
+        return cb(loginErr);
+      }
+      return cb(null, result);
+    });
   });
 };
 

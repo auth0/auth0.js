@@ -126,7 +126,20 @@ HostedPages.prototype.signupAndLogin = function(options, cb) {
     if (err) {
       return cb(err);
     }
-    return _this.login(options, cb);
+    // Wrap the login callback to enhance error with signup success info
+    return _this.login(options, function (loginErr, result) {
+      if (loginErr) {
+        // Signup succeeded but login failed - enhance the error
+        var originalErrorMessage = loginErr.description || loginErr.error_description || 'Unknown error';
+        loginErr.signupSucceeded = true;
+        loginErr.description =
+          'Your account was created successfully! However, automatic login failed. ' +
+          'Please try logging in with your email and password. ' +
+          'Error details: ' + originalErrorMessage;
+        return cb(loginErr);
+      }
+      return cb(null, result);
+    });
   });
 };
 

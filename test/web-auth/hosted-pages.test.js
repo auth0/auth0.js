@@ -389,22 +389,13 @@ describe('auth0.WebAuth._universalLogin', function() {
         },
         function(err, data) {
           expect(data).to.be(undefined);
-          expect(err).to.eql({
-            original: {
-              response: {
-                body: {
-                  name: 'ValidationError',
-                  code: 'invalid_user_password',
-                  description: 'Wrong email or password.'
-                },
-                statusCode: 400
-              }
-            },
-            name: 'ValidationError',
-            code: 'invalid_user_password',
-            description: 'Wrong email or password.',
-            statusCode: 400
-          });
+          expect(err.signupSucceeded).to.be(true);
+          expect(err.code).to.be('invalid_user_password');
+          expect(err.statusCode).to.be(400);
+          expect(err.description).to.contain('Your account was created successfully');
+          expect(err.description).to.contain('automatic login failed');
+          expect(err.description).to.contain('Please try logging in with your email and password');
+          expect(err.description).to.contain('Wrong email or password');
           done();
         }
       );
