@@ -39,7 +39,7 @@ jobs:
           node: ${{ env.NODE_VERSION }}
 
       - name: Save build artifacts
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .
           key: ${{ env.CACHE_KEY }}
@@ -63,7 +63,7 @@ jobs:
           cache: npm
 
       - name: Restore build artifacts
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: .
           key: ${{ env.CACHE_KEY }}
