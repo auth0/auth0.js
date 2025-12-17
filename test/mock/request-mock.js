@@ -38,4 +38,4 @@ RequestMock.prototype.retry = function(times) {
   return this;
 };
 
-export default RequestMock;
+module.exports = RequestMock;
