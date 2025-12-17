@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.29.1](https://github.com/auth0/auth0.js/tree/v9.29.1) (2025-12-17)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.29.0...v9.29.1)
+
+**Added**
+- fix: add null check for challenge in captcha rendering [\#1541](https://github.com/auth0/auth0.js/pull/1541) ([amitsingh05667](https://github.com/amitsingh05667))
+
 ## [v9.29.0](https://github.com/auth0/auth0.js/tree/v9.29.0) (2025-10-06)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.28.0...v9.29.0)
 
