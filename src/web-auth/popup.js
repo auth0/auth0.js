@@ -325,7 +325,24 @@ Popup.prototype.signupAndLogin = function(options, cb) {
     if (err) {
       return cb(err);
     }
-    _this.loginWithCredentials(options, cb);
+    _this.loginWithCredentials(options, function(loginErr, result) {
+      if (loginErr) {
+        // Signup succeeded but login failed - enhance error message
+        var originalDescription =
+          loginErr.description ||
+          loginErr.error_description ||
+          loginErr.errorDescription ||
+          '';
+        loginErr.description =
+          'Signup succeeded, but login failed. Your account was created successfully. Please try logging in. ' +
+          originalDescription;
+        loginErr.errorDescription = loginErr.description;
+        loginErr.error_description = loginErr.description;
+        loginErr.signupSucceeded = true;
+        return cb(loginErr);
+      }
+      return cb(null, result);
+    });
   });
 };
 

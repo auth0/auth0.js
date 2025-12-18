@@ -134,6 +134,9 @@ describe('auth0.WebAuth.redirect', function () {
 
     afterEach(function () {
       request.post.restore();
+      if (this.auth0.login.restore) {
+        this.auth0.login.restore();
+      }
     });
 
     after(function () {
@@ -236,6 +239,70 @@ describe('auth0.WebAuth.redirect', function () {
             description: 'The user already exists.',
             statusCode: 400
           });
+          done();
+        }
+      );
+    });
+
+    it('should return enhanced error when signup succeeds but login fails', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
+        if (url === 'https://me.auth0.com/dbconnections/signup') {
+          return new RequestMock({
+            body: {
+              client_id: '...',
+              connection: 'the_connection',
+              email: 'me@example.com',
+              password: '123456'
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            cb: function (cb) {
+              cb(null, {
+                body: {
+                  _id: '...',
+                  email_verified: false,
+                  email: 'me@example.com'
+                }
+              });
+            }
+          });
+        }
+        throw new Error('Invalid URL');
+      });
+
+      sinon.stub(this.auth0, 'login').callsFake(function (options, cb) {
+        cb({
+          original: {
+            response: {
+              body: {
+                name: 'ValidationError',
+                code: 'invalid_user_password',
+                description: 'Wrong email or password.'
+              },
+              statusCode: 400
+            }
+          },
+          name: 'ValidationError',
+          code: 'invalid_user_password',
+          description: 'Wrong email or password.',
+          statusCode: 400
+        });
+      });
+
+      this.auth0.redirect.signupAndLogin(
+        {
+          connection: 'the_connection',
+          email: 'me@example.com',
+          password: '123456',
+          scope: 'openid'
+        },
+        function (err, data) {
+          expect(data).to.be(undefined);
+          expect(err.signupSucceeded).to.be(true);
+          expect(err.code).to.be('invalid_user_password');
+          expect(err.description).to.contain('Signup succeeded, but login failed');
+          expect(err.description).to.contain('Wrong email or password.');
           done();
         }
       );
