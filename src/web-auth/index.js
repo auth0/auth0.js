@@ -575,6 +575,7 @@ WebAuth.prototype.validateToken = function (token, nonce, cb) {
  * @param {String} [options.postMessageOrigin] origin of redirectUri to expect postMessage response from.  Defaults to the origin of the receiving window. Only used if usePostMessage is truthy.
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
  * @param {Boolean} [options.usePostMessage] use postMessage to comunicate between the silent callback and the SPA. When false the SDK will attempt to parse the url hash should ignore the url hash and no extra behaviour is needed
+ * @param {String} [options.sandbox] attribute values for the hidden iframe. Defaults to `allow-same-origin allow-scripts`
  * @param {authorizeCallback} cb
  * @see {@link https://auth0.com/docs/api/authentication#authorize-client}
  * @memberof WebAuth.prototype
@@ -586,6 +587,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
   var postMessageOrigin =
     options.postMessageOrigin || windowHelper.getWindow().origin;
   var timeout = options.timeout;
+  var sandbox = options.sandbox;
   var _this = this;
 
   var params = objectHelper
@@ -625,7 +627,8 @@ WebAuth.prototype.renewAuth = function (options, cb) {
     authenticationUrl: this.client.buildAuthorizeUrl(params),
     postMessageDataType: postMessageDataType,
     postMessageOrigin: postMessageOrigin,
-    timeout: timeout
+    timeout: timeout,
+    sandbox: sandbox
   });
 
   handler.login(usePostMessage, function (err, hash) {
@@ -675,6 +678,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
  * @param {String} [options.organization] the id or name of an organization to log in to
+ * @param {String} [options.sandbox] attribute values for the hidden iframe. Defaults to `allow-same-origin allow-scripts`
  * @param {checkSessionCallback} cb
  * @see {@link https://auth0.com/docs/libraries/auth0js/v9#using-checksession-to-acquire-new-tokens}
  * @memberof WebAuth.prototype
