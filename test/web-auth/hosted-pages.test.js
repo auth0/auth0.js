@@ -13,33 +13,33 @@ var telemetryInfo = new RequestBuilder({
   universalLoginPage: true
 }).getTelemetryData();
 
-describe('auth0.WebAuth._universalLogin', function() {
-  beforeEach(function() {
+describe('auth0.WebAuth._universalLogin', function () {
+  beforeEach(function () {
     sinon
       .stub(TransactionManager.prototype, 'process')
-      .callsFake(function(params) {
+      .callsFake(function (params) {
         return params;
       });
   });
-  afterEach(function() {
+  afterEach(function () {
     TransactionManager.prototype.process.restore();
   });
-  context('login', function() {
-    beforeEach(function() {
-      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
+  context('login', function () {
+    beforeEach(function () {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function () {
         return {
           location: {
             host: 'me.auth0.com'
           },
           crypto: {
-            getRandomValues: function() {
+            getRandomValues: function () {
               return [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
             }
           }
         };
       });
     });
-    afterEach(function() {
+    afterEach(function () {
       windowHelper.getWindow.restore();
       if (request.post.restore) {
         request.post.restore();
@@ -48,7 +48,7 @@ describe('auth0.WebAuth._universalLogin', function() {
         windowHelper.getDocument.restore();
       }
     });
-    it('should throw an error if window.location.host !== domain', function() {
+    it('should throw an error if window.location.host !== domain', function () {
       var configuration = {
         domain: 'other-domain.auth0.com',
         redirectUri: 'https://localhost:3000/example/',
@@ -58,7 +58,7 @@ describe('auth0.WebAuth._universalLogin', function() {
 
       var auth0 = new WebAuth(configuration);
 
-      expect(function() {
+      expect(function () {
         auth0._universalLogin.login({
           connection: 'tests',
           email: 'me@example.com',
@@ -70,8 +70,8 @@ describe('auth0.WebAuth._universalLogin', function() {
       );
     });
 
-    it('should authenticate the user, render the callback form and submit it', function(done) {
-      sinon.stub(request, 'post').callsFake(function(url) {
+    it('should authenticate the user, render the callback form and submit it', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         expect(url).to.be('https://me.auth0.com/usernamepassword/login');
         return new RequestMock({
           body: {
@@ -88,7 +88,7 @@ describe('auth0.WebAuth._universalLogin', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
+          cb: function (cb) {
             cb(null, {
               text: 'the_form_html',
               type: 'text/html'
@@ -97,13 +97,13 @@ describe('auth0.WebAuth._universalLogin', function() {
         });
       });
 
-      sinon.stub(windowHelper, 'getDocument').callsFake(function() {
+      sinon.stub(windowHelper, 'getDocument').callsFake(function () {
         return {
-          createElement: function() {
+          createElement: function () {
             return {};
           },
           body: {
-            appendChild: function(element) {
+            appendChild: function (element) {
               expect(element.innerHTML).to.eql('the_form_html');
               return {
                 children: [
@@ -133,13 +133,13 @@ describe('auth0.WebAuth._universalLogin', function() {
           password: '1234',
           scope: 'openid'
         },
-        function(err) {
+        function (err) {
           console.log(err);
         }
       );
     });
-    it('should call onRedirecting if available before submitting the redirect form', function(done) {
-      sinon.stub(request, 'post').callsFake(function(url) {
+    it('should call onRedirecting if available before submitting the redirect form', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         expect(url).to.be('https://me.auth0.com/usernamepassword/login');
         return new RequestMock({
           body: {
@@ -156,7 +156,7 @@ describe('auth0.WebAuth._universalLogin', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
+          cb: function (cb) {
             cb(null, {
               text: 'the_form_html',
               type: 'text/html'
@@ -165,18 +165,18 @@ describe('auth0.WebAuth._universalLogin', function() {
         });
       });
 
-      sinon.stub(windowHelper, 'getDocument').callsFake(function() {
+      sinon.stub(windowHelper, 'getDocument').callsFake(function () {
         return {
-          createElement: function() {
+          createElement: function () {
             return {};
           },
           body: {
-            appendChild: function(element) {
+            appendChild: function (element) {
               expect(element.innerHTML).to.eql('the_form_html');
               return {
                 children: [
                   {
-                    submit: function() {
+                    submit: function () {
                       expect(redirectingSpy.getCall(0)).to.be.ok();
                       done();
                     }
@@ -200,7 +200,7 @@ describe('auth0.WebAuth._universalLogin', function() {
         username: 'me@example.com',
         password: '1234',
         scope: 'openid',
-        onRedirecting: function(cb) {
+        onRedirecting: function (cb) {
           cb();
         }
       };
@@ -208,12 +208,12 @@ describe('auth0.WebAuth._universalLogin', function() {
       var redirectingSpy = sinon.spy(loginOptions, 'onRedirecting');
       var auth0 = new WebAuth(configuration);
 
-      auth0._universalLogin.login(loginOptions, function(err) {
+      auth0._universalLogin.login(loginOptions, function (err) {
         console.log(err);
       });
     });
-    it('should use transactionManager.process', function(done) {
-      sinon.stub(request, 'post').callsFake(function() {
+    it('should use transactionManager.process', function (done) {
+      sinon.stub(request, 'post').callsFake(function () {
         expect(TransactionManager.prototype.process.calledOnce).to.be(true);
         done();
       });
@@ -232,8 +232,8 @@ describe('auth0.WebAuth._universalLogin', function() {
         scope: 'openid'
       });
     });
-    it('should propagate the error', function(done) {
-      sinon.stub(request, 'post').callsFake(function(url) {
+    it('should propagate the error', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         expect(url).to.be('https://me.auth0.com/usernamepassword/login');
         return new RequestMock({
           body: {
@@ -250,7 +250,7 @@ describe('auth0.WebAuth._universalLogin', function() {
             'Content-Type': 'application/json',
             'Auth0-Client': telemetryInfo
           },
-          cb: function(cb) {
+          cb: function (cb) {
             cb({
               name: 'ValidationError',
               code: 'invalid_user_password',
@@ -276,7 +276,7 @@ describe('auth0.WebAuth._universalLogin', function() {
           password: '1234',
           scope: 'openid'
         },
-        function(err) {
+        function (err) {
           expect(err).to.eql({
             original: {
               name: 'ValidationError',
@@ -293,8 +293,8 @@ describe('auth0.WebAuth._universalLogin', function() {
     });
   });
 
-  context('signup and login', function() {
-    before(function() {
+  context('signup and login', function () {
+    before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -302,13 +302,13 @@ describe('auth0.WebAuth._universalLogin', function() {
         responseType: 'token',
         _sendTelemetry: false
       });
-      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function () {
         return {
           location: {
             host: 'me.auth0.com'
           },
           crypto: {
-            getRandomValues: function() {
+            getRandomValues: function () {
               return [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
             }
           }
@@ -316,16 +316,16 @@ describe('auth0.WebAuth._universalLogin', function() {
       });
     });
 
-    afterEach(function() {
+    afterEach(function () {
       request.post.restore();
     });
 
-    after(function() {
+    after(function () {
       windowHelper.getWindow.restore();
     });
 
-    it('should call db-connection signup with all the options', function(done) {
-      sinon.stub(request, 'post').callsFake(function(url) {
+    it('should call db-connection signup with all the options', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         if (url === 'https://me.auth0.com/usernamepassword/login') {
           return new RequestMock({
             body: {
@@ -341,7 +341,7 @@ describe('auth0.WebAuth._universalLogin', function() {
             headers: {
               'Content-Type': 'application/json'
             },
-            cb: function(cb) {
+            cb: function (cb) {
               cb({
                 response: {
                   body: {
@@ -365,7 +365,7 @@ describe('auth0.WebAuth._universalLogin', function() {
             headers: {
               'Content-Type': 'application/json'
             },
-            cb: function(cb) {
+            cb: function (cb) {
               cb(null, {
                 body: {
                   _id: '...',
@@ -387,10 +387,13 @@ describe('auth0.WebAuth._universalLogin', function() {
           password: '123456',
           scope: 'openid'
         },
-        function(err, data) {
+        function (err, data) {
           expect(data).to.be(undefined);
-          expect(err.code).to.be('signup_and_login_error');
-          expect(err.cause).to.be('login_error');
+          expect(err.code).to.be('invalid_user_password');
+          expect(err.cause).to.eql({
+            error_code: 'login_error',
+            error_description: 'Wrong email or password.'
+          });
           expect(err.description).to.be('Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.');
           expect(err.errorDescription).to.be(err.description);
           expect(err.error_description).to.be(err.description);
@@ -400,8 +403,8 @@ describe('auth0.WebAuth._universalLogin', function() {
       );
     });
 
-    it('should propagate signup errors', function(done) {
-      sinon.stub(request, 'post').callsFake(function(url) {
+    it('should propagate signup errors', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
         expect(url).to.be('https://me.auth0.com/dbconnections/signup');
 
         return new RequestMock({
@@ -414,7 +417,7 @@ describe('auth0.WebAuth._universalLogin', function() {
           headers: {
             'Content-Type': 'application/json'
           },
-          cb: function(cb) {
+          cb: function (cb) {
             cb({
               response: {
                 statusCode: 400,
@@ -435,7 +438,7 @@ describe('auth0.WebAuth._universalLogin', function() {
           password: '123456',
           scope: 'openid'
         },
-        function(err, data) {
+        function (err, data) {
           expect(data).to.be(undefined);
           expect(err).to.eql({
             original: {
@@ -457,8 +460,8 @@ describe('auth0.WebAuth._universalLogin', function() {
     });
   });
 
-  context('getSSOData', function() {
-    before(function() {
+  context('getSSOData', function () {
+    before(function () {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -468,16 +471,16 @@ describe('auth0.WebAuth._universalLogin', function() {
       });
     });
 
-    afterEach(function() {
+    afterEach(function () {
       request.get.restore();
     });
 
-    it('should call /user/ssodata with no options', function(done) {
-      sinon.stub(request, 'get').callsFake(function(url) {
+    it('should call /user/ssodata with no options', function (done) {
+      sinon.stub(request, 'get').callsFake(function (url) {
         expect(url).to.be('https://me.auth0.com/user/ssodata');
         return new RequestMock({
           headers: {},
-          cb: function(cb) {
+          cb: function (cb) {
             cb(null, {
               body: {
                 sso: false
@@ -487,7 +490,7 @@ describe('auth0.WebAuth._universalLogin', function() {
         });
       });
 
-      this.auth0._universalLogin.getSSOData(function(err, data) {
+      this.auth0._universalLogin.getSSOData(function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
           sso: false
@@ -495,14 +498,14 @@ describe('auth0.WebAuth._universalLogin', function() {
         done();
       });
     });
-    it('should call /user/ssodata with all the AD options', function(done) {
-      sinon.stub(request, 'get').callsFake(function(url) {
+    it('should call /user/ssodata with all the AD options', function (done) {
+      sinon.stub(request, 'get').callsFake(function (url) {
         expect(url).to.be(
           'https://me.auth0.com/user/ssodata?ldaps=1&client_id=...'
         );
         return new RequestMock({
           headers: {},
-          cb: function(cb) {
+          cb: function (cb) {
             cb(null, {
               body: {
                 sso: false
@@ -512,7 +515,7 @@ describe('auth0.WebAuth._universalLogin', function() {
         });
       });
 
-      this.auth0._universalLogin.getSSOData(true, function(err, data) {
+      this.auth0._universalLogin.getSSOData(true, function (err, data) {
         expect(err).to.be(null);
         expect(data).to.eql({
           sso: false

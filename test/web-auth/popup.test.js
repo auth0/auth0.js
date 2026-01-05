@@ -97,7 +97,7 @@ describe('auth0.WebAuth.popup', function () {
           'width=500,height=600,left=1250,top=1200'
         );
 
-        return { close: function () {} };
+        return { close: function () { } };
       };
 
       var handler = new PopupHandler();
@@ -130,7 +130,7 @@ describe('auth0.WebAuth.popup', function () {
         TransactionManager.prototype.process.restore();
         done();
       });
-      sinon.stub(Storage.prototype, 'setItem').callsFake(function () {});
+      sinon.stub(Storage.prototype, 'setItem').callsFake(function () { });
       sinon
         .stub(TransactionManager.prototype, 'process')
         .callsFake(function (options) {
@@ -168,7 +168,7 @@ describe('auth0.WebAuth.popup', function () {
         done();
       });
 
-      sinon.stub(Storage.prototype, 'setItem').callsFake(function () {});
+      sinon.stub(Storage.prototype, 'setItem').callsFake(function () { });
 
       sinon
         .stub(TransactionManager.prototype, 'process')
@@ -196,7 +196,7 @@ describe('auth0.WebAuth.popup', function () {
         done();
       });
 
-      sinon.stub(Storage.prototype, 'setItem').callsFake(function () {});
+      sinon.stub(Storage.prototype, 'setItem').callsFake(function () { });
 
       sinon
         .stub(TransactionManager.prototype, 'process')
@@ -592,7 +592,7 @@ describe('auth0.WebAuth.popup', function () {
           outerHeight: 500,
           open: function () {
             return {
-              close: function () {}
+              close: function () { }
             };
           }
         };
@@ -814,8 +814,11 @@ describe('auth0.WebAuth.popup', function () {
         },
         function (err, data) {
           expect(data).to.be(undefined);
-          expect(err.code).to.be('signup_and_login_error');
-          expect(err.cause).to.be('login_error');
+          expect(err.code).to.be('invalid_user_password');
+          expect(err.cause).to.eql({
+            error_code: 'login_error',
+            error_description: 'Wrong email or password.'
+          });
           expect(err.description).to.be('Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.');
           expect(err.errorDescription).to.be(err.description);
           expect(err.error_description).to.be(err.description);

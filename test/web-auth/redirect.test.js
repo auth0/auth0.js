@@ -299,8 +299,11 @@ describe('auth0.WebAuth.redirect', function () {
         },
         function (err, data) {
           expect(data).to.be(undefined);
-          expect(err.code).to.be('signup_and_login_error');
-          expect(err.cause).to.be('login_error');
+          expect(err.code).to.be('invalid_user_password');
+          expect(err.cause).to.eql({
+            error_code: 'login_error',
+            error_description: 'Wrong email or password.'
+          });
           expect(err.description).to.be('Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.');
           expect(err.errorDescription).to.be(err.description);
           expect(err.error_description).to.be(err.description);
@@ -329,7 +332,7 @@ describe('auth0.WebAuth.redirect', function () {
       sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
         expect(url).to.be(
           'https://me.auth0.com/passwordless/verify_redirect?client_id=test-client-id&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&auth0Client=' +
-            encodeURIComponent(telemetryInfo)
+          encodeURIComponent(telemetryInfo)
         );
         done();
       });
@@ -362,7 +365,7 @@ describe('auth0.WebAuth.redirect', function () {
           phoneNumber: '123456',
           verificationCode: 'abc'
         },
-        function (err) {}
+        function (err) { }
       );
     });
 
@@ -370,7 +373,7 @@ describe('auth0.WebAuth.redirect', function () {
       sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
         expect(url).to.be(
           'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&auth0Client=' +
-            encodeURIComponent(telemetryInfo)
+          encodeURIComponent(telemetryInfo)
         );
         done();
       });
@@ -402,7 +405,7 @@ describe('auth0.WebAuth.redirect', function () {
           phoneNumber: '123456',
           verificationCode: 'abc'
         },
-        function (err) {}
+        function (err) { }
       );
     });
   });
@@ -457,7 +460,7 @@ describe('auth0.WebAuth.redirect', function () {
           phoneNumber: '123456',
           verificationCode: 'abc'
         },
-        function (err) {}
+        function (err) { }
       );
     });
   });

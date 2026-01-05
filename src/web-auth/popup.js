@@ -327,8 +327,15 @@ Popup.prototype.signupAndLogin = function(options, cb) {
     }
     _this.loginWithCredentials(options, function(loginErr, result) {
       if (loginErr) {
-        loginErr.code = 'signup_and_login_error';
-        loginErr.cause = 'login_error';
+        var originalDescription =
+          loginErr.description ||
+          loginErr.error_description ||
+          loginErr.errorDescription ||
+          '';
+        loginErr.cause = {
+          error_code: 'login_error',
+          error_description: originalDescription
+        };
         loginErr.description =
           'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.';
         loginErr.errorDescription = loginErr.description;
