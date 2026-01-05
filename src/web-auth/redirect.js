@@ -66,18 +66,12 @@ Redirect.prototype.signupAndLogin = function (options, cb) {
 
     return _this.webAuth.login(options, function (loginErr, result) {
       if (loginErr) {
-        // Signup succeeded but login failed - enhance error message
-        var originalDescription =
-          loginErr.description ||
-          loginErr.error_description ||
-          loginErr.errorDescription ||
-          '';
+        loginErr.code = 'signup_and_login_error';
+        loginErr.cause = 'login_error';
         loginErr.description =
-          'Signup succeeded, but login failed. Your account was created successfully. Please try logging in. ' +
-          originalDescription;
+          'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.';
         loginErr.errorDescription = loginErr.description;
         loginErr.error_description = loginErr.description;
-        loginErr.signupSucceeded = true;
         return cb(loginErr);
       }
       return cb(null, result);
