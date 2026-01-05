@@ -299,10 +299,11 @@ describe('auth0.WebAuth.redirect', function () {
         },
         function (err, data) {
           expect(data).to.be(undefined);
-          expect(err.signupSucceeded).to.be(true);
-          expect(err.code).to.be('invalid_user_password');
-          expect(err.description).to.contain('Signup succeeded, but login failed');
-          expect(err.description).to.contain('Wrong email or password.');
+          expect(err.code).to.be('signup_and_login_error');
+          expect(err.cause).to.be('login_error');
+          expect(err.description).to.be('Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.');
+          expect(err.errorDescription).to.be(err.description);
+          expect(err.error_description).to.be(err.description);
           done();
         }
       );
