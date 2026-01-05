@@ -8,7 +8,7 @@ import json from '@rollup/plugin-json';
 import { babel } from '@rollup/plugin-babel';
 import { createRequire } from 'module';
 import MagicString from 'magic-string';
-import createApp from './scripts/oidc-provider.js';
+import createApp from './scripts/oidc-provider.mjs';
 
 const require = createRequire(import.meta.url);
 const pkg = require('./package.json');

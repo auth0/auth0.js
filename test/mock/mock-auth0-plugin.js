@@ -20,4 +20,4 @@ MockPlugin.prototype.init = function() {
   return this.handler;
 };
 
-module.exports = MockPlugin;
+export default MockPlugin;
