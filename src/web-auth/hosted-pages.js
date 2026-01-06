@@ -128,14 +128,9 @@ HostedPages.prototype.signupAndLogin = function(options, cb) {
     }
     return _this.login(options, function(loginErr, result) {
       if (loginErr) {
-        var originalDescription =
-          loginErr.description ||
-          loginErr.error_description ||
-          loginErr.errorDescription ||
-          '';
         loginErr.cause = {
           error_code: 'login_error',
-          error_description: originalDescription
+          error_description: loginErr.error_description || loginErr.errorDescription || loginErr.description || ''
         };
         loginErr.description =
           'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.';
