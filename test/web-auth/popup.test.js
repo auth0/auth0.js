@@ -816,7 +816,7 @@ describe('auth0.WebAuth.popup', function() {
           expect(data).to.be(undefined);
           expect(err.code).to.be('invalid_user_password');
           expect(err.description).to.be('Wrong email or password.');
-          expect(err.cause).to.eql({
+          expect(err.errorInfo).to.eql({
             error_code: 'login_error',
             message: 'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.'
           });

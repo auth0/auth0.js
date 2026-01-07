@@ -66,7 +66,7 @@ Redirect.prototype.signupAndLogin = function (options, cb) {
 
     return _this.webAuth.login(options, function (loginErr, result) {
       if (loginErr) {
-        loginErr.cause = {
+        loginErr.errorInfo = {
           error_code: 'login_error',
           message: 'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.'
         };
