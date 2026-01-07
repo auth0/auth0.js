@@ -13,33 +13,33 @@ var telemetryInfo = new RequestBuilder({
   universalLoginPage: true
 }).getTelemetryData();
 
-describe('auth0.WebAuth._universalLogin', function () {
-  beforeEach(function () {
+describe('auth0.WebAuth._universalLogin', function() {
+  beforeEach(function() {
     sinon
       .stub(TransactionManager.prototype, 'process')
       .callsFake(function (params) {
         return params;
       });
   });
-  afterEach(function () {
+  afterEach(function() {
     TransactionManager.prototype.process.restore();
   });
-  context('login', function () {
-    beforeEach(function () {
-      sinon.stub(windowHelper, 'getWindow').callsFake(function () {
+  context('login', function() {
+    beforeEach(function() {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {
           location: {
             host: 'me.auth0.com'
           },
           crypto: {
-            getRandomValues: function () {
+            getRandomValues: function() {
               return [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
             }
           }
         };
       });
     });
-    afterEach(function () {
+    afterEach(function() {
       windowHelper.getWindow.restore();
       if (request.post.restore) {
         request.post.restore();
@@ -48,7 +48,7 @@ describe('auth0.WebAuth._universalLogin', function () {
         windowHelper.getDocument.restore();
       }
     });
-    it('should throw an error if window.location.host !== domain', function () {
+    it('should throw an error if window.location.host !== domain', function() {
       var configuration = {
         domain: 'other-domain.auth0.com',
         redirectUri: 'https://localhost:3000/example/',
@@ -58,7 +58,7 @@ describe('auth0.WebAuth._universalLogin', function () {
 
       var auth0 = new WebAuth(configuration);
 
-      expect(function () {
+      expect(function() {
         auth0._universalLogin.login({
           connection: 'tests',
           email: 'me@example.com',
@@ -97,9 +97,9 @@ describe('auth0.WebAuth._universalLogin', function () {
         });
       });
 
-      sinon.stub(windowHelper, 'getDocument').callsFake(function () {
+      sinon.stub(windowHelper, 'getDocument').callsFake(function() {
         return {
-          createElement: function () {
+          createElement: function() {
             return {};
           },
           body: {
@@ -165,9 +165,9 @@ describe('auth0.WebAuth._universalLogin', function () {
         });
       });
 
-      sinon.stub(windowHelper, 'getDocument').callsFake(function () {
+      sinon.stub(windowHelper, 'getDocument').callsFake(function() {
         return {
-          createElement: function () {
+          createElement: function() {
             return {};
           },
           body: {
@@ -176,7 +176,7 @@ describe('auth0.WebAuth._universalLogin', function () {
               return {
                 children: [
                   {
-                    submit: function () {
+                    submit: function() {
                       expect(redirectingSpy.getCall(0)).to.be.ok();
                       done();
                     }
@@ -213,7 +213,7 @@ describe('auth0.WebAuth._universalLogin', function () {
       });
     });
     it('should use transactionManager.process', function (done) {
-      sinon.stub(request, 'post').callsFake(function () {
+      sinon.stub(request, 'post').callsFake(function() {
         expect(TransactionManager.prototype.process.calledOnce).to.be(true);
         done();
       });
@@ -293,8 +293,8 @@ describe('auth0.WebAuth._universalLogin', function () {
     });
   });
 
-  context('signup and login', function () {
-    before(function () {
+  context('signup and login', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -302,13 +302,13 @@ describe('auth0.WebAuth._universalLogin', function () {
         responseType: 'token',
         _sendTelemetry: false
       });
-      sinon.stub(windowHelper, 'getWindow').callsFake(function () {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {
           location: {
             host: 'me.auth0.com'
           },
           crypto: {
-            getRandomValues: function () {
+            getRandomValues: function() {
               return [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
             }
           }
@@ -316,11 +316,11 @@ describe('auth0.WebAuth._universalLogin', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       request.post.restore();
     });
 
-    after(function () {
+    after(function() {
       windowHelper.getWindow.restore();
     });
 
@@ -390,13 +390,11 @@ describe('auth0.WebAuth._universalLogin', function () {
         function (err, data) {
           expect(data).to.be(undefined);
           expect(err.code).to.be('invalid_user_password');
+          expect(err.description).to.be('Wrong email or password.');
           expect(err.cause).to.eql({
             error_code: 'login_error',
-            error_description: 'Wrong email or password.'
+            message: 'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.'
           });
-          expect(err.description).to.be('Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.');
-          expect(err.errorDescription).to.be(err.description);
-          expect(err.error_description).to.be(err.description);
           expect(err.statusCode).to.be(400);
           done();
         }
@@ -460,8 +458,8 @@ describe('auth0.WebAuth._universalLogin', function () {
     });
   });
 
-  context('getSSOData', function () {
-    before(function () {
+  context('getSSOData', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -471,7 +469,7 @@ describe('auth0.WebAuth._universalLogin', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       request.get.restore();
     });
 

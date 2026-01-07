@@ -68,12 +68,8 @@ Redirect.prototype.signupAndLogin = function (options, cb) {
       if (loginErr) {
         loginErr.cause = {
           error_code: 'login_error',
-          error_description: loginErr.error_description || loginErr.errorDescription || loginErr.description || ''
+          message: 'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.'
         };
-        loginErr.description =
-          'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.';
-        loginErr.errorDescription = loginErr.description;
-        loginErr.error_description = loginErr.description;
         return cb(loginErr);
       }
       return cb(null, result);
