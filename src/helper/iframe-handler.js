@@ -11,6 +11,8 @@ function IframeHandler(options) {
   this._destroyTimeout = null;
   this.transientMessageEventListener = null;
   this.proxyEventListener = null;
+  this.sandbox = options.sandbox == null ?
+    'allow-same-origin allow-scripts' : options.sandbox;
   // If no event identifier specified, set default
   this.eventValidator = options.eventValidator || {
     isValid: function() {
@@ -57,6 +59,7 @@ IframeHandler.prototype.init = function() {
   _window.document.body.appendChild(this.iframe);
 
   this.iframe.src = this.url;
+  this.iframe.sandbox = this.sandbox;
 
   this.timeoutHandle = setTimeout(function() {
     _this.timeoutHandler();
