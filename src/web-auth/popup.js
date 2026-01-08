@@ -325,7 +325,16 @@ Popup.prototype.signupAndLogin = function(options, cb) {
     if (err) {
       return cb(err);
     }
-    _this.loginWithCredentials(options, cb);
+    _this.loginWithCredentials(options, function(loginErr, result) {
+      if (loginErr) {
+        loginErr.errorInfo = {
+          error_code: 'login_error',
+          message: 'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.'
+        };
+        return cb(loginErr);
+      }
+      return cb(null, result);
+    });
   });
 };
 

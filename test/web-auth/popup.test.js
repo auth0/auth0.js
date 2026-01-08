@@ -13,18 +13,18 @@ import WebAuth from '../../src/web-auth';
 import CrossOriginAuthentication from '../../src/web-auth/cross-origin-authentication';
 import TransactionManager from '../../src/web-auth/transaction-manager';
 
-describe('auth0.WebAuth.popup', function () {
-  beforeEach(function () {
+describe('auth0.WebAuth.popup', function() {
+  beforeEach(function() {
     sinon
       .stub(TransactionManager.prototype, 'generateTransaction')
       .callsFake(function (appState, state, nonce) {
         return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
       });
   });
-  afterEach(function () {
+  afterEach(function() {
     TransactionManager.prototype.generateTransaction.restore();
   });
-  before(function () {
+  before(function() {
     this.auth0 = new WebAuth({
       domain: 'me.auth0.com',
       clientID: '...',
@@ -35,13 +35,13 @@ describe('auth0.WebAuth.popup', function () {
     });
   });
 
-  describe('getPopupHandler', function () {
-    it('should return a new instance', function () {
+  describe('getPopupHandler', function() {
+    it('should return a new instance', function() {
       var handler1 = this.auth0.popup.getPopupHandler({});
       var handler2 = this.auth0.popup.getPopupHandler({});
       expect(handler1).to.not.be(handler2);
     });
-    it('should return not a new instance', function () {
+    it('should return not a new instance', function() {
       var handler1 = this.auth0.popup.getPopupHandler({});
       var handler2 = this.auth0.popup.getPopupHandler({
         popupHandler: handler1
@@ -50,26 +50,26 @@ describe('auth0.WebAuth.popup', function () {
     });
   });
 
-  describe('getPopupHandler should preload when requested', function () {
-    afterEach(function () {
+  describe('getPopupHandler should preload when requested', function() {
+    afterEach(function() {
       PopupHandler.prototype.preload.restore();
     });
 
-    it('should call preload', function () {
+    it('should call preload', function() {
       var preloadStub = sinon.stub(PopupHandler.prototype, 'preload');
       this.auth0.popup.getPopupHandler({}, true);
       expect(preloadStub.called).to.be(true);
     });
 
-    it('should not call preload', function () {
+    it('should not call preload', function() {
       var preloadStub = sinon.stub(PopupHandler.prototype, 'preload');
       this.auth0.popup.getPopupHandler({}, false);
       expect(preloadStub.called).to.be(false);
     });
   });
 
-  describe('preload should open the popup', function () {
-    before(function () {
+  describe('preload should open the popup', function() {
+    before(function() {
       global.window = {};
       global.window.screenX = 500;
       global.window.screenY = 500;
@@ -85,11 +85,11 @@ describe('auth0.WebAuth.popup', function () {
       });
     });
 
-    after(function () {
+    after(function() {
       delete global.window;
     });
 
-    it('should open the window', function () {
+    it('should open the window', function() {
       global.window.open = function (url, name, windowFeatures) {
         expect(url).to.eql('about:blank');
         expect(name).to.eql('auth0_signup_popup');
@@ -97,7 +97,7 @@ describe('auth0.WebAuth.popup', function () {
           'width=500,height=600,left=1250,top=1200'
         );
 
-        return { close: function () {} };
+        return { close: function() { } };
       };
 
       var handler = new PopupHandler();
@@ -106,8 +106,8 @@ describe('auth0.WebAuth.popup', function () {
     });
   });
 
-  context('authorize', function () {
-    before(function () {
+  context('authorize', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -117,7 +117,7 @@ describe('auth0.WebAuth.popup', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       PopupHandler.prototype.load.restore();
     });
 
@@ -130,7 +130,7 @@ describe('auth0.WebAuth.popup', function () {
         TransactionManager.prototype.process.restore();
         done();
       });
-      sinon.stub(Storage.prototype, 'setItem').callsFake(function () {});
+      sinon.stub(Storage.prototype, 'setItem').callsFake(function() { });
       sinon
         .stub(TransactionManager.prototype, 'process')
         .callsFake(function (options) {
@@ -168,7 +168,7 @@ describe('auth0.WebAuth.popup', function () {
         done();
       });
 
-      sinon.stub(Storage.prototype, 'setItem').callsFake(function () {});
+      sinon.stub(Storage.prototype, 'setItem').callsFake(function() { });
 
       sinon
         .stub(TransactionManager.prototype, 'process')
@@ -196,7 +196,7 @@ describe('auth0.WebAuth.popup', function () {
         done();
       });
 
-      sinon.stub(Storage.prototype, 'setItem').callsFake(function () {});
+      sinon.stub(Storage.prototype, 'setItem').callsFake(function() { });
 
       sinon
         .stub(TransactionManager.prototype, 'process')
@@ -288,8 +288,8 @@ describe('auth0.WebAuth.popup', function () {
     });
   });
 
-  context('login', function () {
-    before(function () {
+  context('login', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -299,7 +299,7 @@ describe('auth0.WebAuth.popup', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       if (CrossOriginAuthentication.prototype.login.restore) {
         CrossOriginAuthentication.prototype.login.restore();
       }
@@ -332,7 +332,7 @@ describe('auth0.WebAuth.popup', function () {
           expect(options).to.be.eql(expectedOptions);
           return options;
         });
-      this.auth0.popup.loginWithCredentials(inputOptions, function () {
+      this.auth0.popup.loginWithCredentials(inputOptions, function() {
         return 'cb';
       });
     });
@@ -373,14 +373,14 @@ describe('auth0.WebAuth.popup', function () {
         timeout: 1234
       });
 
-      auth0.popup.loginWithCredentials(inputOptions, function () {
+      auth0.popup.loginWithCredentials(inputOptions, function() {
         return 'cb';
       });
     });
   });
 
-  context('passwordlessVerify', function () {
-    before(function () {
+  context('passwordlessVerify', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -390,7 +390,7 @@ describe('auth0.WebAuth.popup', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       request.post.restore();
     });
 
@@ -574,8 +574,8 @@ describe('auth0.WebAuth.popup', function () {
     });
   });
 
-  context('signup and login', function () {
-    before(function () {
+  context('signup and login', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -584,15 +584,15 @@ describe('auth0.WebAuth.popup', function () {
         _sendTelemetry: false
       });
 
-      sinon.stub(windowHandler, 'getWindow').callsFake(function () {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
         return {
           screenX: 500,
           screenY: 500,
           outerWidth: 2000,
           outerHeight: 500,
-          open: function () {
+          open: function() {
             return {
-              close: function () {}
+              close: function() { }
             };
           }
         };
@@ -620,7 +620,7 @@ describe('auth0.WebAuth.popup', function () {
         });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       request.post.restore();
       if (CrossOriginAuthentication.prototype.login.restore) {
         CrossOriginAuthentication.prototype.login.restore();
@@ -633,7 +633,7 @@ describe('auth0.WebAuth.popup', function () {
       }
     });
 
-    after(function () {
+    after(function() {
       windowHandler.getWindow.restore();
       PopupHandler.prototype.load.restore();
     });
@@ -756,17 +756,85 @@ describe('auth0.WebAuth.popup', function () {
         }
       );
     });
+
+    it('should return enhanced error when signup succeeds but login fails', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
+        if (url === 'https://me.auth0.com/dbconnections/signup') {
+          return new RequestMock({
+            body: {
+              client_id: '...',
+              connection: 'the_connection',
+              email: 'me@example.com',
+              password: '123456'
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            cb: function (cb) {
+              cb(null, {
+                body: {
+                  _id: '...',
+                  email_verified: false,
+                  email: 'me@example.com'
+                }
+              });
+            }
+          });
+        }
+        throw new Error('Invalid URL');
+      });
+
+      sinon
+        .stub(CrossOriginAuthentication.prototype, 'login')
+        .callsFake(function (options, cb) {
+          cb({
+            original: {
+              response: {
+                body: {
+                  name: 'ValidationError',
+                  code: 'invalid_user_password',
+                  description: 'Wrong email or password.'
+                },
+                statusCode: 400
+              }
+            },
+            name: 'ValidationError',
+            code: 'invalid_user_password',
+            description: 'Wrong email or password.',
+            statusCode: 400
+          });
+        });
+
+      this.auth0.popup.signupAndLogin(
+        {
+          connection: 'the_connection',
+          email: 'me@example.com',
+          password: '123456',
+          scope: 'openid'
+        },
+        function (err, data) {
+          expect(data).to.be(undefined);
+          expect(err.code).to.be('invalid_user_password');
+          expect(err.description).to.be('Wrong email or password.');
+          expect(err.errorInfo).to.eql({
+            error_code: 'login_error',
+            message: 'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.'
+          });
+          done();
+        }
+      );
+    });
   });
 
-  context('callback', function () {
-    beforeEach(function () {
-      sinon.stub(windowHandler, 'getWindow').callsFake(function () {
+  context('callback', function() {
+    beforeEach(function() {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
         return {
           opener: {}
         };
       });
     });
-    afterEach(function () {
+    afterEach(function() {
       if (WinChan.onOpen.restore) {
         WinChan.onOpen.restore();
       }
@@ -861,7 +929,7 @@ describe('auth0.WebAuth.popup', function () {
         responseType: 'id_token',
         _sendTelemetry: false
       });
-      sinon.stub(windowHandler, 'getOrigin').callsFake(function () {
+      sinon.stub(windowHandler, 'getOrigin').callsFake(function() {
         return 'https://window.popupOrigin.com';
       });
       sinon.stub(WinChan, 'onOpen').callsFake(function (onOpenCallback) {
@@ -893,10 +961,10 @@ describe('auth0.WebAuth.popup', function () {
           }
         }
       };
-      sinon.stub(windowHandler, 'getWindow').callsFake(function () {
+      sinon.stub(windowHandler, 'getWindow').callsFake(function() {
         return theWindow;
       });
-      sinon.stub(windowHandler, 'getOrigin').callsFake(function () {
+      sinon.stub(windowHandler, 'getOrigin').callsFake(function() {
         return 'https://window.popupOrigin.com';
       });
       var auth0 = new WebAuth({

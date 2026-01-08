@@ -64,7 +64,16 @@ Redirect.prototype.signupAndLogin = function (options, cb) {
     options.realm = options.realm || options.connection;
     delete options.connection;
 
-    return _this.webAuth.login(options, cb);
+    return _this.webAuth.login(options, function (loginErr, result) {
+      if (loginErr) {
+        loginErr.errorInfo = {
+          error_code: 'login_error',
+          message: 'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.'
+        };
+        return cb(loginErr);
+      }
+      return cb(null, result);
+    });
   });
 };
 

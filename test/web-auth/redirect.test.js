@@ -10,19 +10,19 @@ import CrossOriginAuthentication from '../../src/web-auth/cross-origin-authentic
 var telemetryInfo = new RequestBuilder({}).getTelemetryData();
 import TransactionManager from '../../src/web-auth/transaction-manager';
 
-describe('auth0.WebAuth.redirect', function () {
-  before(function () {
+describe('auth0.WebAuth.redirect', function() {
+  before(function() {
     sinon
       .stub(TransactionManager.prototype, 'generateTransaction')
       .callsFake(function (appState, state, nonce) {
         return { state: state || 'randomState', nonce: nonce || 'randomNonce' };
       });
   });
-  after(function () {
+  after(function() {
     TransactionManager.prototype.generateTransaction.restore();
   });
-  context('signup', function () {
-    before(function () {
+  context('signup', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -32,7 +32,7 @@ describe('auth0.WebAuth.redirect', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       request.post.restore();
     });
 
@@ -78,8 +78,8 @@ describe('auth0.WebAuth.redirect', function () {
     });
   });
 
-  context('login', function () {
-    before(function () {
+  context('login', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -88,7 +88,7 @@ describe('auth0.WebAuth.redirect', function () {
         _sendTelemetry: false
       });
     });
-    afterEach(function () {
+    afterEach(function() {
       if (CrossOriginAuthentication.prototype.login.restore) {
         CrossOriginAuthentication.prototype.login.restore();
       }
@@ -106,14 +106,14 @@ describe('auth0.WebAuth.redirect', function () {
           expect(cb()).to.be('cb');
           done();
         });
-      this.auth0.redirect.loginWithCredentials(inputOptions, function () {
+      this.auth0.redirect.loginWithCredentials(inputOptions, function() {
         return 'cb';
       });
     });
   });
 
-  context('signup and login', function () {
-    before(function () {
+  context('signup and login', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -121,10 +121,10 @@ describe('auth0.WebAuth.redirect', function () {
         responseType: 'token',
         _sendTelemetry: false
       });
-      sinon.stub(windowHelper, 'getWindow').callsFake(function () {
+      sinon.stub(windowHelper, 'getWindow').callsFake(function() {
         return {
           crypto: {
-            getRandomValues: function () {
+            getRandomValues: function() {
               return [10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
             }
           }
@@ -132,11 +132,14 @@ describe('auth0.WebAuth.redirect', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       request.post.restore();
+      if (this.auth0.login.restore) {
+        this.auth0.login.restore();
+      }
     });
 
-    after(function () {
+    after(function() {
       windowHelper.getWindow.restore();
     });
 
@@ -240,10 +243,76 @@ describe('auth0.WebAuth.redirect', function () {
         }
       );
     });
+
+    it('should return enhanced error when signup succeeds but login fails', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
+        if (url === 'https://me.auth0.com/dbconnections/signup') {
+          return new RequestMock({
+            body: {
+              client_id: '...',
+              connection: 'the_connection',
+              email: 'me@example.com',
+              password: '123456'
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            cb: function (cb) {
+              cb(null, {
+                body: {
+                  _id: '...',
+                  email_verified: false,
+                  email: 'me@example.com'
+                }
+              });
+            }
+          });
+        }
+        throw new Error('Invalid URL');
+      });
+
+      sinon.stub(this.auth0, 'login').callsFake(function (options, cb) {
+        cb({
+          original: {
+            response: {
+              body: {
+                name: 'ValidationError',
+                code: 'invalid_user_password',
+                description: 'Wrong email or password.'
+              },
+              statusCode: 400
+            }
+          },
+          name: 'ValidationError',
+          code: 'invalid_user_password',
+          description: 'Wrong email or password.',
+          statusCode: 400
+        });
+      });
+
+      this.auth0.redirect.signupAndLogin(
+        {
+          connection: 'the_connection',
+          email: 'me@example.com',
+          password: '123456',
+          scope: 'openid'
+        },
+        function (err, data) {
+          expect(data).to.be(undefined);
+          expect(err.code).to.be('invalid_user_password');
+          expect(err.description).to.be('Wrong email or password.');
+          expect(err.errorInfo).to.eql({
+            error_code: 'login_error',
+            message: 'Your account was created successfully, but we could not log you in automatically. Please try logging in with your new credentials.'
+          });
+          done();
+        }
+      );
+    });
   });
 
-  context('passwordlessVerify', function () {
-    before(function () {
+  context('passwordlessVerify', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -252,7 +321,7 @@ describe('auth0.WebAuth.redirect', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       request.post.restore();
       windowHelper.redirect.restore();
     });
@@ -261,7 +330,7 @@ describe('auth0.WebAuth.redirect', function () {
       sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
         expect(url).to.be(
           'https://me.auth0.com/passwordless/verify_redirect?client_id=test-client-id&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&auth0Client=' +
-            encodeURIComponent(telemetryInfo)
+          encodeURIComponent(telemetryInfo)
         );
         done();
       });
@@ -294,7 +363,7 @@ describe('auth0.WebAuth.redirect', function () {
           phoneNumber: '123456',
           verificationCode: 'abc'
         },
-        function (err) {}
+        function (err) { }
       );
     });
 
@@ -302,7 +371,7 @@ describe('auth0.WebAuth.redirect', function () {
       sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
         expect(url).to.be(
           'https://me.auth0.com/passwordless/verify_redirect?client_id=...&response_type=code&redirect_uri=http%3A%2F%2Fpage.com%2Fcallback&connection=the_connection&phone_number=123456&verification_code=abc&state=randomState&auth0Client=' +
-            encodeURIComponent(telemetryInfo)
+          encodeURIComponent(telemetryInfo)
         );
         done();
       });
@@ -334,13 +403,13 @@ describe('auth0.WebAuth.redirect', function () {
           phoneNumber: '123456',
           verificationCode: 'abc'
         },
-        function (err) {}
+        function (err) { }
       );
     });
   });
 
-  context('passwordlessVerify without telemetry', function () {
-    before(function () {
+  context('passwordlessVerify without telemetry', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -350,7 +419,7 @@ describe('auth0.WebAuth.redirect', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       request.post.restore();
       windowHelper.redirect.restore();
     });
@@ -389,12 +458,12 @@ describe('auth0.WebAuth.redirect', function () {
           phoneNumber: '123456',
           verificationCode: 'abc'
         },
-        function (err) {}
+        function (err) { }
       );
     });
   });
-  context('passwordlessVerify with error', function () {
-    before(function () {
+  context('passwordlessVerify with error', function() {
+    before(function() {
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
         clientID: '...',
@@ -404,7 +473,7 @@ describe('auth0.WebAuth.redirect', function () {
       });
     });
 
-    afterEach(function () {
+    afterEach(function() {
       request.post.restore();
     });
 
@@ -451,8 +520,8 @@ describe('auth0.WebAuth.redirect', function () {
     });
   });
 
-  describe('authenticate', function () {
-    beforeEach(function () {
+  describe('authenticate', function() {
+    beforeEach(function() {
       global.window = { location: '' };
       this.auth0 = new WebAuth({
         domain: 'me.auth0.com',
@@ -462,16 +531,16 @@ describe('auth0.WebAuth.redirect', function () {
       });
     });
 
-    it('should check that responseType is present', function () {
+    it('should check that responseType is present', function() {
       var _this = this;
-      expect(function () {
+      expect(function() {
         _this.auth0.authorize({ connection: 'facebook' });
       }).to.throwException(function (e) {
         expect(e.message).to.be('responseType option is required');
       });
     });
 
-    it('should redirect to authorize', function () {
+    it('should redirect to authorize', function() {
       this.auth0.authorize({
         responseType: 'code',
         connection: 'facebook',
@@ -483,7 +552,7 @@ describe('auth0.WebAuth.redirect', function () {
       );
     });
 
-    it('should redirect to logout', function () {
+    it('should redirect to logout', function() {
       this.auth0.logout({ redirect_to: 'http://example.com/logout' });
       expect(global.window.location).to.be(
         'https://me.auth0.com/v2/logout?client_id=...&redirect_to=http%3A%2F%2Fexample.com%2Flogout'
