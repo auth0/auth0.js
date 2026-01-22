@@ -1,5 +1,5 @@
 import urljoin from 'url-join';
-import qs from 'qs';
+import { stringify } from 'neoqs';
 
 import RequestBuilder from '../helper/request-builder';
 import objectHelper from '../helper/object';
@@ -206,7 +206,7 @@ Authentication.prototype.buildAuthorizeUrl = function (options) {
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
   params = parametersWhitelist.oauthAuthorizeParams(this.warn, params);
 
-  qString = qs.stringify(params);
+  qString = stringify(params);
 
   return urljoin(this.baseOptions.rootUrl, 'authorize', '?' + qString);
 };
@@ -247,7 +247,7 @@ Authentication.prototype.buildLogoutUrl = function (options) {
 
   params = objectHelper.toSnakeCase(params, ['auth0Client', 'returnTo']);
 
-  qString = qs.stringify(objectHelper.blacklist(params, ['federated']));
+  qString = stringify(objectHelper.blacklist(params, ['federated']));
   if (
     options &&
     options.federated !== undefined &&
