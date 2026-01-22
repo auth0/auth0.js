@@ -1,5 +1,5 @@
 import urljoin from 'url-join';
-import qs from 'qs';
+import { stringify } from 'neoqs';
 
 import UsernamePassword from './username-password';
 import RequestBuilder from '../helper/request-builder';
@@ -157,7 +157,7 @@ HostedPages.prototype.getSSOData = function(withActiveDirectories, cb) {
   if (withActiveDirectories) {
     params =
       '?' +
-      qs.stringify({
+      stringify({
         ldaps: 1,
         client_id: this.baseOptions.clientID
       });

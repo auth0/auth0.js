@@ -1,5 +1,5 @@
 import windowHandler from '../../src/helper/window';
-import qs from 'qs';
+import { stringify } from 'neoqs';
 import urljoin from 'url-join';
 
 function PopupHandler(webAuth) {
@@ -19,7 +19,7 @@ PopupHandler.prototype.preload = function(options) {
   delete popupOptions.width;
   delete popupOptions.height;
 
-  var windowFeatures = qs.stringify(popupOptions, {
+  var windowFeatures = stringify(popupOptions, {
     encode: false,
     delimiter: ','
   });

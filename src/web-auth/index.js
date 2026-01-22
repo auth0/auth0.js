@@ -1,5 +1,5 @@
 import IdTokenVerifier from 'idtoken-verifier';
-import qs from 'qs';
+import { parse } from 'neoqs';
 
 import assert from '../helper/assert';
 import error from '../helper/error';
@@ -254,7 +254,7 @@ WebAuth.prototype.parseHash = function (options, cb) {
       : options.hash;
   hashStr = hashStr.replace(/^#?\/?/, '');
 
-  parsedQs = qs.parse(hashStr);
+  parsedQs = parse(hashStr);
 
   if (parsedQs.hasOwnProperty('error')) {
     err = error.buildResponse(parsedQs.error, parsedQs.error_description);

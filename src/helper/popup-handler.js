@@ -4,7 +4,7 @@ import WinChan from 'winchan';
 
 import windowHandler from './window';
 import objectHelper from './object';
-import qs from 'qs';
+import { stringify } from 'neoqs';
 
 function PopupHandler() {
   this._current_popup = null;
@@ -48,7 +48,7 @@ PopupHandler.prototype.preload = function(options) {
     .merge(popupPosition)
     .with(options.popupOptions);
   var url = options.url || 'about:blank';
-  var windowFeatures = qs.stringify(popupOptions, {
+  var windowFeatures = stringify(popupOptions, {
     encode: false,
     delimiter: ','
   });
@@ -78,7 +78,7 @@ PopupHandler.prototype.load = function(url, relayUrl, options, cb) {
     .merge({
       url: url,
       relay_url: relayUrl,
-      window_features: qs.stringify(popupOptions, {
+      window_features: stringify(popupOptions, {
         delimiter: ',',
         encode: false
       }),

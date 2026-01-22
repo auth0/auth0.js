@@ -2,7 +2,7 @@ import urljoin from 'url-join';
 
 import objectHelper from '../helper/object';
 import assert from '../helper/assert';
-import qs from 'qs';
+import { stringify } from 'neoqs';
 import responseHandler from '../helper/response-handler';
 
 function PasswordlessAuthentication(request, options) {
@@ -67,7 +67,7 @@ PasswordlessAuthentication.prototype.buildVerifyUrl = function(options) {
 
   params = objectHelper.toSnakeCase(params, ['auth0Client']);
 
-  qString = qs.stringify(params);
+  qString = stringify(params);
 
   return urljoin(
     this.baseOptions.rootUrl,
