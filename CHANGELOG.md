@@ -1,5 +1,12 @@
 # Change Log
 
+## [v9.30.0](https://github.com/auth0/auth0.js/tree/v9.30.0) (2026-01-09)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.29.1...v9.30.0)
+
+**Added**
+- feat: Improve error handling when login fails after signup [\#1552](https://github.com/auth0/auth0.js/pull/1552) ([amitsingh05667](https://github.com/amitsingh05667))
+- fix: convert mock files to ES module exports [\#1563](https://github.com/auth0/auth0.js/pull/1563) ([amitsingh05667](https://github.com/amitsingh05667))
+
 ## [v9.29.1](https://github.com/auth0/auth0.js/tree/v9.29.1) (2025-12-17)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.29.0...v9.29.1)
 
