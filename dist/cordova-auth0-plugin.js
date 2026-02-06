@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.30.0
+ * auth0-js v9.30.1
  * Author: Auth0
- * Date: 2026-01-09
+ * Date: 2026-02-06
  * License: MIT
  */
 
@@ -52,7 +52,7 @@
 	  if (hasRequiredVersion) return version$1;
 	  hasRequiredVersion = 1;
 	  version$1 = {
-	    raw: '9.30.0'
+	    raw: '9.30.1'
 	  };
 	  return version$1;
 	}

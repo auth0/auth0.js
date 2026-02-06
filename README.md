@@ -24,7 +24,7 @@ From CDN:
 
 ```html
 <!-- Latest patch release -->
-<script src="https://cdn.auth0.com/js/auth0/9.30.0/auth0.min.js"></script>
+<script src="https://cdn.auth0.com/js/auth0/9.30.1/auth0.min.js"></script>
 ```
 
 From [npm](https://npmjs.org):
