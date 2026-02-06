@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.30.1](https://github.com/auth0/auth0.js/tree/v9.30.1) (2026-02-06)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.30.0...v9.30.1)
+
+**Added**
+- fix: randomString function to handle invalid length [\#1583](https://github.com/auth0/auth0.js/pull/1583) ([amitsingh05667](https://github.com/amitsingh05667))
+
 ## [v9.30.0](https://github.com/auth0/auth0.js/tree/v9.30.0) (2026-01-09)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.29.1...v9.30.0)
 
