@@ -6,6 +6,7 @@ function SilentAuthenticationHandler(options) {
   this.timeout = options.timeout || 60 * 1000;
   this.handler = null;
   this.postMessageDataType = options.postMessageDataType || false;
+  this.sandbox = options.sandbox;
 
   // prefer origin from options, fallback to origin from browser, and some browsers (for example MS Edge) don't support origin; fallback to construct origin manually
   this.postMessageOrigin =
@@ -40,7 +41,8 @@ SilentAuthenticationHandler.prototype.login = function(
         '#error=timeout&error_description=Timeout+during+authentication+renew.'
       );
     },
-    usePostMessage: usePostMessage || false
+    usePostMessage: usePostMessage || false,
+    sandbox: this.sandbox
   });
 
   this.handler.init();

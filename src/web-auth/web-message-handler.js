@@ -26,7 +26,8 @@ function runWebMessageFlow(authorizeUrl, options, callback) {
         error_description: 'Timeout during executing web_message communication',
         state: options.state
       });
-    }
+    },
+    sandbox: options.sandbox
   });
   handler.init();
 }
