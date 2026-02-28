@@ -1743,6 +1743,176 @@ describe('auth0.WebAuth', function () {
           }
         );
       });
+
+      context('Organization validation with HS256 tokens', function () {
+        it('should validate org_id from /userinfo profile against transaction organization', function (done) {
+          restoreAndStubStoredTransaction('foo', {
+            nonce: 'the-nonce',
+            state: 'foo',
+            appState: null,
+            organization: 'org_123'
+          });
+
+          var webAuth = new WebAuth({
+            domain: 'auth0-tests-lock.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+            responseType: 'token id_token',
+            organization: 'org_123'
+          });
+
+          sinon
+            .stub(webAuth.client, 'userInfo')
+            .callsFake(function (accessToken, cb) {
+              cb(null, { sub: 'user1', org_id: 'org_123' });
+            });
+
+          webAuth.parseHash(
+            {
+              hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjA4ODU1NzgsImV4cCI6MTU5MjQyMTU3OCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm5vbmNlIjoidGhlLW5vbmNlIn0.jb9aG21kGibxKPIyfn8FfvjQ3ykJGiBGcep2hDHHfqk&token_type=Bearer'
+            },
+            function (err, data) {
+              expect(err).to.be(null);
+              expect(data.idTokenPayload.org_id).to.eql('org_123');
+              done();
+            }
+          );
+        });
+
+        it('should fail if org_id from /userinfo does not match transaction organization', function (done) {
+          restoreAndStubStoredTransaction('foo', {
+            nonce: 'the-nonce',
+            state: 'foo',
+            appState: null,
+            organization: 'org_123'
+          });
+
+          var webAuth = new WebAuth({
+            domain: 'auth0-tests-lock.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+            responseType: 'token id_token',
+            organization: 'org_123'
+          });
+
+          sinon
+            .stub(webAuth.client, 'userInfo')
+            .callsFake(function (accessToken, cb) {
+              cb(null, { sub: 'user1', org_id: 'org_456' });
+            });
+
+          webAuth.parseHash(
+            {
+              hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjA4ODU1NzgsImV4cCI6MTU5MjQyMTU3OCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm5vbmNlIjoidGhlLW5vbmNlIn0.jb9aG21kGibxKPIyfn8FfvjQ3ykJGiBGcep2hDHHfqk&token_type=Bearer'
+            },
+            function (err, data) {
+              expect(err).not.to.be(null);
+              expect(err.errorDescription).to.contain('Organization Id (org_id) claim value mismatch');
+              done();
+            }
+          );
+        });
+
+        it('should fail if org_id is missing from /userinfo when transaction expects org_id', function (done) {
+          restoreAndStubStoredTransaction('foo', {
+            nonce: 'the-nonce',
+            state: 'foo',
+            appState: null,
+            organization: 'org_123'
+          });
+
+          var webAuth = new WebAuth({
+            domain: 'auth0-tests-lock.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+            responseType: 'token id_token',
+            organization: 'org_123'
+          });
+
+          sinon
+            .stub(webAuth.client, 'userInfo')
+            .callsFake(function (accessToken, cb) {
+              cb(null, { sub: 'user1' });
+            });
+
+          webAuth.parseHash(
+            {
+              hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjA4ODU1NzgsImV4cCI6MTU5MjQyMTU3OCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm5vbmNlIjoidGhlLW5vbmNlIn0.jb9aG21kGibxKPIyfn8FfvjQ3ykJGiBGcep2hDHHfqk&token_type=Bearer'
+            },
+            function (err, data) {
+              expect(err).not.to.be(null);
+              expect(err.errorDescription).to.contain('Organization Id (org_id) claim must be a string present in the ID token');
+              done();
+            }
+          );
+        });
+
+        it('should validate org_name from /userinfo profile against transaction organization', function (done) {
+          restoreAndStubStoredTransaction('foo', {
+            nonce: 'the-nonce',
+            state: 'foo',
+            appState: null,
+            organization: 'my-Organization'
+          });
+
+          var webAuth = new WebAuth({
+            domain: 'auth0-tests-lock.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+            responseType: 'token id_token'
+          });
+
+          sinon
+            .stub(webAuth.client, 'userInfo')
+            .callsFake(function (accessToken, cb) {
+              cb(null, { sub: 'user1', org_name: 'my-organization' });
+            });
+
+          webAuth.parseHash(
+            {
+              hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjA4ODU1NzgsImV4cCI6MTU5MjQyMTU3OCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm5vbmNlIjoidGhlLW5vbmNlIn0.jb9aG21kGibxKPIyfn8FfvjQ3ykJGiBGcep2hDHHfqk&token_type=Bearer'
+            },
+            function (err, data) {
+              expect(err).to.be(null);
+              expect(data.idTokenPayload.org_name).to.eql('my-organization');
+              done();
+            }
+          );
+        });
+
+        it('should fail if org_name from /userinfo does not match transaction organization', function (done) {
+          restoreAndStubStoredTransaction('foo', {
+            nonce: 'the-nonce',
+            state: 'foo',
+            appState: null,
+            organization: 'my-Organization'
+          });
+
+          var webAuth = new WebAuth({
+            domain: 'auth0-tests-lock.auth0.com',
+            redirectUri: 'http://example.com/callback',
+            clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+            responseType: 'token id_token'
+          });
+
+          sinon
+            .stub(webAuth.client, 'userInfo')
+            .callsFake(function (accessToken, cb) {
+              cb(null, { sub: 'user1', org_name: 'different-org' });
+            });
+
+          webAuth.parseHash(
+            {
+              hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjA4ODU1NzgsImV4cCI6MTU5MjQyMTU3OCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm5vbmNlIjoidGhlLW5vbmNlIn0.jb9aG21kGibxKPIyfn8FfvjQ3ykJGiBGcep2hDHHfqk&token_type=Bearer'
+            },
+            function (err, data) {
+              expect(err).not.to.be(null);
+              expect(err.errorDescription).to.contain('Organization Name (org_name) claim value mismatch');
+              done();
+            }
+          );
+        });
+      });
     });
   });
 
