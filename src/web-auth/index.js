@@ -501,6 +501,52 @@ WebAuth.prototype.validateAuthenticationResponse = function (
           if (errUserInfo) {
             return callback(errUserInfo);
           }
+
+          // Verify the organization for HS256 tokens (same check as RS256 path)
+          if (transactionOrganization) {
+            if (transactionOrganization.indexOf('org_') === 0) {
+              if (!profile.org_id) {
+                return callback(
+                  error.invalidToken(
+                    'Organization Id (org_id) claim must be a string present in the ID token'
+                  )
+                );
+              }
+
+              if (profile.org_id !== transactionOrganization) {
+                return callback(
+                  error.invalidToken(
+                    'Organization Id (org_id) claim value mismatch in the ID token; expected "' +
+                    transactionOrganization +
+                    '", found "' +
+                    profile.org_id +
+                    '"'
+                  )
+                );
+              }
+            } else {
+              if (!profile.org_name) {
+                return callback(
+                  error.invalidToken(
+                    'Organization Name (org_name) claim must be a string present in the ID token'
+                  )
+                );
+              }
+
+              if (profile.org_name !== transactionOrganization.toLowerCase()) {
+                return callback(
+                  error.invalidToken(
+                    'Organization Name (org_name) claim value mismatch in the ID token; expected "' +
+                    transactionOrganization +
+                    '", found "' +
+                    profile.org_name +
+                    '"'
+                  )
+                );
+              }
+            }
+          }
+
           return callback(null, profile);
         }
       );
