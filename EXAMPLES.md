@@ -4,6 +4,7 @@
 - [Organizations](#organizations)
 - [WebAuth.client.login(options, callback)](#webauthclientloginoptions-callback)
 - [Get and use a Refresh token](#get-and-use-a-refresh-token)
+- [Custom Token Exchange](#custom-token-exchange)
 
 ## Passwordless Login
 
@@ -192,6 +193,141 @@ webAuth.client.oauthToken(
     refresh_token: '{THE_REFRESH_TOKEN}',
     audience: '{OTHER_AUDIENCE}',
     scope: '{OTHER_SCOPE}'
+  }
+);
+```
+
+## Custom Token Exchange
+
+[Custom Token Exchange](https://auth0.com/docs/authenticate/custom-token-exchange) allows you to exchange an external subject token (from a third-party identity provider, legacy system, or custom authentication mechanism) for Auth0 tokens using [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693).
+
+For more information, please read [Custom Token Exchange on Auth0 Docs](https://auth0.com/docs/authenticate/custom-token-exchange).
+
+### Basic usage
+
+```js
+var auth0 = new auth0.WebAuth({
+  domain: '{YOUR_AUTH0_DOMAIN}',
+  clientID: '{YOUR_AUTH0_CLIENT_ID}'
+});
+
+auth0.client.customTokenExchange(
+  {
+    subjectToken: 'eyJhbGciOiJSUzI1NiIs...',
+    subjectTokenType: 'urn:acme:legacy-system-token'
+  },
+  function (err, result) {
+    if (err) {
+      console.error('Token exchange failed:', err.code, err.description);
+      return;
+    }
+    console.log('Access token:', result.accessToken);
+    console.log('ID token:', result.idToken);
+  }
+);
+```
+
+You can also call `customTokenExchange` directly on the `WebAuth` instance:
+
+```js
+auth0.customTokenExchange(
+  {
+    subjectToken: 'eyJhbGciOiJSUzI1NiIs...',
+    subjectTokenType: 'urn:acme:legacy-system-token'
+  },
+  function (err, result) {
+    // Auth tokens in the result or an error
+  }
+);
+```
+
+### With audience and scope
+
+Override the default `audience` and `scope` configured on the client:
+
+```js
+auth0.client.customTokenExchange(
+  {
+    subjectToken: 'eyJhbGciOiJSUzI1NiIs...',
+    subjectTokenType: 'urn:acme:legacy-system-token',
+    audience: 'https://mystore.com/api/v2',
+    scope: 'openid profile read:orders'
+  },
+  function (err, result) {
+    // result.accessToken is scoped to the specified audience
+  }
+);
+```
+
+If `audience` or `scope` are not provided, they fall back to the values configured when creating the `WebAuth` or `Authentication` client.
+
+### With an organization
+
+```js
+auth0.client.customTokenExchange(
+  {
+    subjectToken: 'eyJhbGciOiJSUzI1NiIs...',
+    subjectTokenType: 'urn:acme:sso-token',
+    organization: 'org_12345'
+  },
+  function (err, result) {
+    // Tokens are scoped to the specified organization
+  }
+);
+```
+
+### Custom parameters
+
+Arbitrary parameters can be included and are forwarded to the `/oauth/token` endpoint. These are accessible in [Auth0 Actions](https://auth0.com/docs/customize/actions) via `event.request.body`.
+
+```js
+auth0.client.customTokenExchange(
+  {
+    subjectToken: 'firebase-id-token',
+    subjectTokenType: 'urn:acme:firebase-token',
+    migrationSource: 'firebase',
+    userRegion: 'eu-west-1'
+  },
+  function (err, result) {
+    // Auth0 Action can read event.request.body.migration_source
+    // and event.request.body.user_region
+  }
+);
+```
+
+> **Note:** Parameter keys are converted from camelCase to snake_case before being sent. For example, `migrationSource` becomes `migration_source` in the request body.
+
+### Error handling
+
+Client-side validation errors (missing required parameters) are thrown synchronously:
+
+```js
+try {
+  auth0.client.customTokenExchange(
+    { subjectTokenType: 'urn:acme:token' }, // subjectToken is missing
+    function () {}
+  );
+} catch (e) {
+  console.error(e.message); // "subjectToken option is required"
+}
+```
+
+Server-side errors are returned via the callback:
+
+```js
+auth0.client.customTokenExchange(
+  {
+    subjectToken: 'invalid-token',
+    subjectTokenType: 'urn:acme:token'
+  },
+  function (err, result) {
+    if (err) {
+      // err.code — e.g., 'invalid_grant', 'unauthorized_client', 'access_denied'
+      // err.description — human-readable error description
+      // err.statusCode — HTTP status code
+      console.error(err.code + ': ' + err.description);
+      return;
+    }
   }
 );
 ```

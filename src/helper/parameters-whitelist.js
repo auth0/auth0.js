@@ -5,11 +5,15 @@
 
 import objectHelper from './object';
 
+var CTE_GRANT_TYPE =
+  'urn:ietf:params:oauth:grant-type:token-exchange';
+
 var tokenParams = [
   // auth0
   'realm',
   'audience',
   'otp',
+  'organization',
   // oauth2
   'client_id',
   'client_secret',
@@ -23,7 +27,10 @@ var tokenParams = [
   'assertion',
   'client_assertion',
   'client_assertion_type',
-  'code_verifier'
+  'code_verifier',
+  // rfc 8693 token exchange
+  'subject_token',
+  'subject_token_type'
 ];
 
 var authorizeParams = [
@@ -88,6 +95,13 @@ function oauthAuthorizeParams(warn, params) {
 }
 
 function oauthTokenParams(warn, params) {
+  // Bypass whitelist for Custom Token Exchange (RFC 8693).
+  // CTE supports arbitrary custom parameters accessible in
+  // Auth0 Actions via event.request.body. The grant_type key
+  // is already snake_cased by toSnakeCase() before this point.
+  if (params.grant_type === CTE_GRANT_TYPE) {
+    return params;
+  }
   return objectHelper.pick(params, tokenParams);
 }
 

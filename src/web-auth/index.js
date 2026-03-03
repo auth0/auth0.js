@@ -1249,4 +1249,19 @@ WebAuth.prototype.renderPasswordResetCaptcha = function (
   return captcha.render(this.client, captcha.Flow.PASSWORD_RESET, element, options, callback);
 };
 
+/**
+ * Performs a Custom Token Exchange (RFC 8693) by calling the
+ * `/oauth/token` endpoint.
+ *
+ * @method customTokenExchange
+ * @param {Object} options same as {@link Authentication.customTokenExchange}
+ * @param {tokenCallback} cb
+ * @see {@link https://www.rfc-editor.org/rfc/rfc8693 RFC 8693 - OAuth 2.0 Token Exchange}
+ * @see {@link https://auth0.com/docs/authenticate/custom-token-exchange Custom Token Exchange}
+ * @memberof WebAuth.prototype
+ */
+WebAuth.prototype.customTokenExchange = function (options, cb) {
+  return this.client.customTokenExchange(options, cb);
+};
+
 export default WebAuth;

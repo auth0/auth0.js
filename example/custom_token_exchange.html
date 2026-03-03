@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Custom Token Exchange - auth0.js</title>
+  <link rel="stylesheet" href="https://cdn.auth0.com/styleguide/core/2.0.5/core.min.css" />
+  <link rel="stylesheet" href="https://cdn.auth0.com/styleguide/components/2.0.0/components.min.css" />
+  <script src="/auth0.js"></script>
+  <style>
+    .row {
+      margin: 10px 0;
+    }
+
+    pre {
+      margin: 10px 0;
+      min-height: 200px;
+      background: #f5f5f5;
+      padding: 10px;
+      overflow: auto;
+    }
+
+    .error {
+      color: #c0392b;
+    }
+
+    .success {
+      color: #27ae60;
+    }
+
+    h2 {
+      margin: 20px 0 10px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+    }
+
+    textarea {
+      height: 80px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .hint {
+      color: #888;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+
+<body class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <h1>Custom Token Exchange (RFC 8693)</h1>
+      <p>
+        Test the <code>customTokenExchange</code> method on
+        <code>auth0.WebAuth</code> and <code>auth0.Authentication</code>.
+      </p>
+    </div>
+
+    <div class="col-xs-6">
+      <h2>Configuration</h2>
+
+      <label>Domain</label>
+      <input type="text" class="form-control" id="domain" value="" placeholder="your-tenant.auth0.com" />
+
+      <label>Client ID</label>
+      <input type="text" class="form-control" id="client-id" value="" placeholder="your-client-id" />
+
+      <h2>Token Exchange Parameters</h2>
+
+      <label>Subject Token <span class="error">*</span></label>
+      <input type="text" class="form-control" id="subject-token" value=""
+        placeholder="The external token to exchange" />
+
+      <label>Subject Token Type <span class="error">*</span></label>
+      <input type="text" class="form-control" id="subject-token-type" value=""
+        placeholder="urn:your-namespace:token-type" />
+      <div class="hint">A namespaced URI identifying the token type (e.g. urn:acme:legacy-token)</div>
+
+      <label>Audience (optional)</label>
+      <input type="text" class="form-control" id="audience" value="" placeholder="https://your-api.example.com" />
+
+      <label>Scope (optional)</label>
+      <input type="text" class="form-control" id="scope" value="openid" placeholder="openid profile email" />
+
+      <label>Organization (optional)</label>
+      <input type="text" class="form-control" id="organization" value="" placeholder="org_xxxxx" />
+
+      <label>Custom Parameters (optional, JSON)</label>
+      <textarea class="form-control" id="custom-params" placeholder='{"customParam": "value"}'></textarea>
+      <div class="hint">Arbitrary key-value pairs forwarded to /oauth/token (accessible in Auth0 Actions)</div>
+
+      <br />
+
+      <h2>Call Method</h2>
+      <input type="button" class="btn btn-success" id="btn-webauth" value="WebAuth.customTokenExchange" />
+      <input type="button" class="btn btn-default" id="btn-auth" value="Authentication.customTokenExchange" />
+      <br /><br />
+      <input type="button" class="btn btn-default btn-sm" id="btn-clear" value="Clear Output" />
+    </div>
+
+    <div class="col-xs-6">
+      <h2>Output</h2>
+      <pre><code id="output"></code></pre>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var outputEl = document.getElementById('output');
+
+    function log(label, data, isError) {
+      var timestamp = new Date().toLocaleTimeString();
+      var cls = isError ? 'error' : 'success';
+      var text = '[' + timestamp + '] ' + label + '\n';
+      text += JSON.stringify(data, null, 2) + '\n\n';
+
+      var span = document.createElement('span');
+      span.className = cls;
+      span.textContent = text;
+      outputEl.appendChild(span);
+      outputEl.scrollTop = outputEl.scrollHeight;
+    }
+
+    function getOptions() {
+      var opts = {
+        subjectToken: document.getElementById('subject-token').value,
+        subjectTokenType: document.getElementById('subject-token-type').value
+      };
+
+      var audience = document.getElementById('audience').value;
+      if (audience) opts.audience = audience;
+
+      var scope = document.getElementById('scope').value;
+      if (scope) opts.scope = scope;
+
+      var organization = document.getElementById('organization').value;
+      if (organization) opts.organization = organization;
+
+      var customParamsStr = document.getElementById('custom-params').value.trim();
+      if (customParamsStr) {
+        try {
+          var customParams = JSON.parse(customParamsStr);
+          for (var key in customParams) {
+            if (customParams.hasOwnProperty(key)) {
+              opts[key] = customParams[key];
+            }
+          }
+        } catch (e) {
+          log('JSON parse error in custom params', { error: e.message }, true);
+          return null;
+        }
+      }
+
+      return opts;
+    }
+
+    function getWebAuth() {
+      return new auth0.WebAuth({
+        domain: document.getElementById('domain').value,
+        clientID: document.getElementById('client-id').value,
+        responseType: 'token'
+      });
+    }
+
+    document.getElementById('btn-webauth').addEventListener('click', function (e) {
+      e.preventDefault();
+      var opts = getOptions();
+      if (!opts) return;
+
+      log('Calling WebAuth.customTokenExchange with:', opts);
+
+      try {
+        var webAuth = getWebAuth();
+        webAuth.customTokenExchange(opts, function (err, data) {
+          if (err) {
+            log('Error (callback)', err, true);
+            return;
+          }
+          log('Success', data);
+        });
+      } catch (err) {
+        log('Error (thrown)', { message: err.message }, true);
+      }
+    });
+
+    document.getElementById('btn-auth').addEventListener('click', function (e) {
+      e.preventDefault();
+      var opts = getOptions();
+      if (!opts) return;
+
+      log('Calling Authentication.customTokenExchange with:', opts);
+
+      try {
+        var webAuth = getWebAuth();
+        webAuth.client.customTokenExchange(opts, function (err, data) {
+          if (err) {
+            log('Error (callback)', err, true);
+            return;
+          }
+          log('Success', data);
+        });
+      } catch (err) {
+        log('Error (thrown)', { message: err.message }, true);
+      }
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', function () {
+      outputEl.innerHTML = '';
+    });
+  </script>
+</body>
+
+</html>

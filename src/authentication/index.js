@@ -651,4 +651,72 @@ Authentication.prototype.getUserCountry = function (cb) {
   return this.request.get(url).end(responseHandler(cb));
 };
 
+/**
+ * Performs a Custom Token Exchange (RFC 8693) by calling the
+ * `/oauth/token` endpoint with the
+ * `urn:ietf:params:oauth:grant-type:token-exchange` grant type.
+ *
+ * Exchanges an external subject token for Auth0 tokens. This is a
+ * stateless operation — tokens are returned via the callback and
+ * no session state is modified.
+ *
+ * Custom parameters (any additional keys on options) are forwarded
+ * to the token endpoint and accessible in Auth0 Actions via
+ * `event.request.body`.
+ *
+ * Note: Custom parameter values with nested object keys will be
+ * recursively converted to snake_case by the SDK's internal
+ * `toSnakeCase()` utility.
+ *
+ * @method customTokenExchange
+ * @param {Object} options
+ * @param {String} options.subjectToken the external token to exchange
+ * @param {String} options.subjectTokenType a URI identifying the type of the subject token
+ * @param {String} [options.audience] target API audience; falls back to the audience configured at construction
+ * @param {String} [options.scope] requested scopes; falls back to the scope configured at construction
+ * @param {String} [options.organization] organization ID for org-scoped authentication
+ * @param {tokenCallback} cb
+ * @see {@link https://www.rfc-editor.org/rfc/rfc8693 RFC 8693 - OAuth 2.0 Token Exchange}
+ * @see {@link https://auth0.com/docs/authenticate/custom-token-exchange Custom Token Exchange}
+ * @memberof Authentication.prototype
+ */
+Authentication.prototype.customTokenExchange = function (options, cb) {
+  assert.check(
+    options,
+    { type: 'object', message: 'options parameter is not valid' },
+    {
+      subjectToken: {
+        type: 'string',
+        message: 'subjectToken option is required'
+      },
+      subjectTokenType: {
+        type: 'string',
+        message: 'subjectTokenType option is required'
+      },
+      audience: {
+        optional: true,
+        type: 'string',
+        message: 'audience option is required'
+      },
+      scope: {
+        optional: true,
+        type: 'string',
+        message: 'scope option is required'
+      },
+      organization: {
+        optional: true,
+        type: 'string',
+        message: 'organization option is required'
+      }
+    }
+  );
+  assert.check(cb, { type: 'function', message: 'cb parameter is not valid' });
+
+  options = objectHelper.merge({}, []).with(options);
+  options.grantType =
+    'urn:ietf:params:oauth:grant-type:token-exchange';
+
+  return this.oauthToken(options, cb);
+};
+
 export default Authentication;

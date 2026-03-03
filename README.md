@@ -82,6 +82,7 @@ var auth0 = new auth0.Management({
 - [authorize(options)](https://auth0.github.io/auth0.js/WebAuth.html#authorize)
 - [changePassword(options)](https://auth0.github.io/auth0.js/WebAuth.html#changePassword)
 - [checkSession(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#checkSession)
+- [customTokenExchange(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#customTokenExchange)
 - [login(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#login)
 - [logout(options)](https://auth0.github.io/auth0.js/WebAuth.html#logout)
 - [parseHash(options, callback)](https://auth0.github.io/auth0.js/WebAuth.html#parseHash)
@@ -98,6 +99,7 @@ var auth0 = new auth0.Management({
 
 - [buildAuthorizeUrl(options)](https://auth0.github.io/auth0.js/Authentication.html#buildAuthorizeUrl)
 - [buildLogoutUrl(options)](https://auth0.github.io/auth0.js/Authentication.html#buildLogoutUrl)
+- [customTokenExchange(options, callback)](https://auth0.github.io/auth0.js/Authentication.html#customTokenExchange)
 - [delegation(options, callback)](https://auth0.github.io/auth0.js/Authentication.html#delegation)
 - [getChallenge(callback)](https://auth0.github.io/auth0.js/Authentication.html#getChallenge)
 - [getSSOData(withActiveDirectories, callback)](https://auth0.github.io/auth0.js/Authentication.html#getSSOData)
