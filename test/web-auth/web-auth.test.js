@@ -3434,4 +3434,76 @@ describe('auth0.WebAuth', function () {
       expect(result).to.equal(captcha);
     });
   });
+
+  context('customTokenExchange', function () {
+    before(function () {
+      this.auth0 = new WebAuth({
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    afterEach(function () {
+      if (request.post.restore) {
+        request.post.restore();
+      }
+    });
+
+    it('should delegate to Authentication and POST to /oauth/token', function (done) {
+      sinon.stub(request, 'post').callsFake(function (url) {
+        expect(url).to.be('https://me.auth0.com/oauth/token');
+        return new RequestMock({
+          body: {
+            client_id: '...',
+            grant_type:
+              'urn:ietf:params:oauth:grant-type:token-exchange',
+            subject_token: 'ext-token',
+            subject_token_type: 'urn:acme:legacy'
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cb: function (cb) {
+            cb(null, {
+              body: {
+                token_type: 'Bearer',
+                expires_in: 86400,
+                access_token: 'at_webauth'
+              }
+            });
+          }
+        });
+      });
+
+      this.auth0.customTokenExchange(
+        {
+          subjectToken: 'ext-token',
+          subjectTokenType: 'urn:acme:legacy'
+        },
+        function (err, data) {
+          expect(err).to.be(null);
+          expect(data.accessToken).to.be('at_webauth');
+          expect(data.tokenType).to.be('Bearer');
+          expect(data.expiresIn).to.be(86400);
+          done();
+        }
+      );
+    });
+
+    it('should propagate validation errors from Authentication', function () {
+      var auth0 = this.auth0;
+
+      expect(function () {
+        auth0.customTokenExchange(
+          { subjectTokenType: 'urn:acme:token' },
+          function () {}
+        );
+      }).to.throwException(function (e) {
+        expect(e.message).to.be('subjectToken option is required');
+      });
+    });
+  });
 });

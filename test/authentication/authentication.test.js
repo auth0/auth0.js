@@ -820,4 +820,283 @@ describe('auth0.authentication', function() {
       });
     });
   });
+
+  context('customTokenExchange', function() {
+    before(function() {
+      this.auth0 = new Authentication(this.webAuthSpy, {
+        domain: 'me.auth0.com',
+        clientID: '...',
+        redirectUri: 'http://page.com/callback',
+        responseType: 'code',
+        _sendTelemetry: false
+      });
+    });
+
+    it('should throw when required params are missing or cb is invalid', function() {
+      var auth0 = this.auth0;
+
+      expect(function() {
+        auth0.customTokenExchange(undefined, function() {});
+      }).to.throwException(function(e) {
+        expect(e.message).to.be('options parameter is not valid');
+      });
+
+      expect(function() {
+        auth0.customTokenExchange(
+          { subjectTokenType: 'urn:acme:token' },
+          function() {}
+        );
+      }).to.throwException(function(e) {
+        expect(e.message).to.be('subjectToken option is required');
+      });
+
+      expect(function() {
+        auth0.customTokenExchange(
+          { subjectToken: 'token' },
+          function() {}
+        );
+      }).to.throwException(function(e) {
+        expect(e.message).to.be(
+          'subjectTokenType option is required'
+        );
+      });
+
+      expect(function() {
+        auth0.customTokenExchange(
+          {
+            subjectToken: 'token',
+            subjectTokenType: 'urn:acme:token'
+          },
+          'not-a-function'
+        );
+      }).to.throwException(function(e) {
+        expect(e.message).to.be('cb parameter is not valid');
+      });
+    });
+
+    context('delegation to oauthToken', function() {
+      afterEach(function() {
+        this.auth0.oauthToken.restore();
+      });
+
+      it('should call oauthToken with CTE grant type and all params', function(done) {
+        sinon
+          .stub(this.auth0, 'oauthToken')
+          .callsFake(function(options, cb) {
+            expect(options.grantType).to.be(
+              'urn:ietf:params:oauth:grant-type:token-exchange'
+            );
+            expect(options.subjectToken).to.be('ext-token');
+            expect(options.subjectTokenType).to.be(
+              'urn:acme:legacy'
+            );
+            expect(options.audience).to.be(
+              'https://api.example.com'
+            );
+            expect(options.scope).to.be('openid profile');
+            expect(options.organization).to.be('org_123');
+            expect(options.customParam).to.be('custom_value');
+            cb();
+          });
+
+        this.auth0.customTokenExchange(
+          {
+            subjectToken: 'ext-token',
+            subjectTokenType: 'urn:acme:legacy',
+            audience: 'https://api.example.com',
+            scope: 'openid profile',
+            organization: 'org_123',
+            customParam: 'custom_value'
+          },
+          function(err, data) {
+            done();
+          }
+        );
+      });
+
+      it('should not mutate the original options object', function(done) {
+        var originalOptions = {
+          subjectToken: 'ext-token',
+          subjectTokenType: 'urn:acme:legacy'
+        };
+
+        sinon
+          .stub(this.auth0, 'oauthToken')
+          .callsFake(function(options, cb) {
+            cb();
+          });
+
+        this.auth0.customTokenExchange(
+          originalOptions,
+          function(err, data) {
+            expect(originalOptions).to.not.have.property(
+              'grantType'
+            );
+            done();
+          }
+        );
+      });
+    });
+
+    context('full request round trip', function() {
+      afterEach(function() {
+        request.post.restore();
+      });
+
+      it('should POST to /oauth/token with correct body and return camelCase response', function(done) {
+        sinon.stub(request, 'post').callsFake(function(url) {
+          expect(url).to.be('https://me.auth0.com/oauth/token');
+          return new RequestMock({
+            body: {
+              client_id: '...',
+              grant_type:
+                'urn:ietf:params:oauth:grant-type:token-exchange',
+              subject_token: 'ext-token',
+              subject_token_type: 'urn:acme:legacy',
+              audience: 'https://api.example.com',
+              scope: 'openid',
+              custom_param: 'value'
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            cb: function(cb) {
+              cb(null, {
+                body: {
+                  token_type: 'Bearer',
+                  expires_in: 86400,
+                  access_token: 'at_123',
+                  id_token: 'idt_456',
+                  scope: 'openid',
+                  refresh_token: 'rt_789'
+                }
+              });
+            }
+          });
+        });
+
+        this.auth0.customTokenExchange(
+          {
+            subjectToken: 'ext-token',
+            subjectTokenType: 'urn:acme:legacy',
+            audience: 'https://api.example.com',
+            scope: 'openid',
+            customParam: 'value'
+          },
+          function(err, data) {
+            expect(err).to.be(null);
+            expect(data).to.eql({
+              tokenType: 'Bearer',
+              expiresIn: 86400,
+              accessToken: 'at_123',
+              idToken: 'idt_456',
+              scope: 'openid',
+              refreshToken: 'rt_789'
+            });
+            done();
+          }
+        );
+      });
+
+      it('should fall back to baseOptions for audience and scope', function(done) {
+        var auth0WithDefaults = new Authentication(
+          this.webAuthSpy,
+          {
+            domain: 'me.auth0.com',
+            clientID: '...',
+            redirectUri: 'http://page.com/callback',
+            responseType: 'code',
+            _sendTelemetry: false,
+            audience: 'https://default-api.example.com',
+            scope: 'openid profile'
+          }
+        );
+
+        sinon.stub(request, 'post').callsFake(function(url) {
+          expect(url).to.be('https://me.auth0.com/oauth/token');
+          return new RequestMock({
+            body: {
+              client_id: '...',
+              grant_type:
+                'urn:ietf:params:oauth:grant-type:token-exchange',
+              subject_token: 'ext-token',
+              subject_token_type: 'urn:acme:legacy',
+              audience: 'https://default-api.example.com',
+              scope: 'openid profile'
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            cb: function(cb) {
+              cb(null, {
+                body: {
+                  token_type: 'Bearer',
+                  access_token: 'at_default'
+                }
+              });
+            }
+          });
+        });
+
+        auth0WithDefaults.customTokenExchange(
+          {
+            subjectToken: 'ext-token',
+            subjectTokenType: 'urn:acme:legacy'
+          },
+          function(err, data) {
+            expect(err).to.be(null);
+            expect(data.accessToken).to.be('at_default');
+            done();
+          }
+        );
+      });
+
+      it('should return normalized error on server error', function(done) {
+        sinon.stub(request, 'post').callsFake(function(url) {
+          expect(url).to.be('https://me.auth0.com/oauth/token');
+          return new RequestMock({
+            body: {
+              client_id: '...',
+              grant_type:
+                'urn:ietf:params:oauth:grant-type:token-exchange',
+              subject_token: 'ext-token',
+              subject_token_type: 'urn:acme:legacy'
+            },
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            cb: function(cb) {
+              cb({
+                response: {
+                  statusCode: 403,
+                  statusText: 'Forbidden',
+                  body: {
+                    error: 'invalid_grant',
+                    error_description: 'Token exchange rejected'
+                  }
+                }
+              });
+            }
+          });
+        });
+
+        this.auth0.customTokenExchange(
+          {
+            subjectToken: 'ext-token',
+            subjectTokenType: 'urn:acme:legacy'
+          },
+          function(err, data) {
+            expect(err).to.not.be(null);
+            expect(err.code).to.be('invalid_grant');
+            expect(err.description).to.be(
+              'Token exchange rejected'
+            );
+            expect(err.statusCode).to.be(403);
+            expect(data).to.be(undefined);
+            done();
+          }
+        );
+      });
+    });
+  });
 });
