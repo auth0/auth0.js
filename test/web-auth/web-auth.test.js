@@ -242,12 +242,14 @@ describe('auth0.WebAuth', function () {
         webAuth.renewAuth(options, function (err, data) { });
       });
 
-      it('should use postMessageOrigin if provided', function (done) {
+      it('should use postMessageOrigin and sandbox if provided', function (done) {
         var postMessageOrigin = 'foobar1';
+        var sandbox = 'allow-same-origin'
         sinon
           .stub(SilentAuthenticationHandler, 'create')
           .callsFake(function (options) {
             expect(options.postMessageOrigin).to.eql(postMessageOrigin);
+            expect(options.sandbox).to.eql(sandbox);
             done();
             return {
               login: function () { }
@@ -267,7 +269,8 @@ describe('auth0.WebAuth', function () {
         var options = {
           nonce: '123',
           state: '456',
-          postMessageOrigin: postMessageOrigin
+          postMessageOrigin: postMessageOrigin,
+          sandbox: sandbox
         };
 
         webAuth.renewAuth(options, function (err, data) { });
