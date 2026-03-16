@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.30.1
+ * auth0-js v9.31.0
  * Author: Auth0
- * Date: 2026-02-06
+ * Date: 2026-03-16
  * License: MIT
  */
 
@@ -2153,7 +2153,7 @@
 		var hexTable = (function () {
 		    var array = [];
 		    for (var i = 0; i < 256; ++i) {
-		        array.push('%' + ((i < 16 ? '0' : '') + i.toString(16)).toUpperCase());
+		        array[array.length] = '%' + ((i < 16 ? '0' : '') + i.toString(16)).toUpperCase();
 		    }
 
 		    return array;
@@ -2169,7 +2169,7 @@
 
 		            for (var j = 0; j < obj.length; ++j) {
 		                if (typeof obj[j] !== 'undefined') {
-		                    compacted.push(obj[j]);
+		                    compacted[compacted.length] = obj[j];
 		                }
 		            }
 
@@ -2197,13 +2197,19 @@
 
 		    if (typeof source !== 'object' && typeof source !== 'function') {
 		        if (isArray(target)) {
-		            target.push(source);
+		            var nextIndex = target.length;
+		            if (options && typeof options.arrayLimit === 'number' && nextIndex > options.arrayLimit) {
+		                return markOverflow(arrayToObject(target.concat(source), options), nextIndex);
+		            }
+		            target[nextIndex] = source;
 		        } else if (target && typeof target === 'object') {
 		            if (isOverflow(target)) {
 		                // Add at next numeric index for overflow objects
 		                var newIndex = getMaxIndex(target) + 1;
 		                target[newIndex] = source;
 		                setMaxIndex(target, newIndex);
+		            } else if (options && options.strictMerge) {
+		                return [target, source];
 		            } else if (
 		                (options && (options.plainObjects || options.allowPrototypes))
 		                || !has.call(Object.prototype, source)
@@ -2230,7 +2236,11 @@
 		            }
 		            return markOverflow(result, getMaxIndex(source) + 1);
 		        }
-		        return [target].concat(source);
+		        var combined = [target].concat(source);
+		        if (options && typeof options.arrayLimit === 'number' && combined.length > options.arrayLimit) {
+		            return markOverflow(arrayToObject(combined, options), combined.length - 1);
+		        }
+		        return combined;
 		    }
 
 		    var mergeTarget = target;
@@ -2245,7 +2255,7 @@
 		                if (targetItem && typeof targetItem === 'object' && item && typeof item === 'object') {
 		                    target[i] = merge(targetItem, item, options);
 		                } else {
-		                    target.push(item);
+		                    target[target.length] = item;
 		                }
 		            } else {
 		                target[i] = item;
@@ -2262,6 +2272,17 @@
 		        } else {
 		            acc[key] = value;
 		        }
+
+		        if (isOverflow(source) && !isOverflow(acc)) {
+		            markOverflow(acc, getMaxIndex(source));
+		        }
+		        if (isOverflow(acc)) {
+		            var keyNum = parseInt(key, 10);
+		            if (String(keyNum) === key && keyNum >= 0 && keyNum > getMaxIndex(acc)) {
+		                setMaxIndex(acc, keyNum);
+		            }
+		        }
+
 		        return acc;
 		    }, mergeTarget);
 		};
@@ -2378,8 +2399,8 @@
 		            var key = keys[j];
 		            var val = obj[key];
 		            if (typeof val === 'object' && val !== null && refs.indexOf(val) === -1) {
-		                queue.push({ obj: obj, prop: key });
-		                refs.push(val);
+		                queue[queue.length] = { obj: obj, prop: key };
+		                refs[refs.length] = val;
 		            }
 		        }
 		    }
@@ -2421,7 +2442,7 @@
 		    if (isArray(val)) {
 		        var mapped = [];
 		        for (var i = 0; i < val.length; i += 1) {
-		            mapped.push(fn(val[i]));
+		            mapped[mapped.length] = fn(val[i]);
 		        }
 		        return mapped;
 		    }
@@ -2438,6 +2459,7 @@
 		    isBuffer: isBuffer,
 		    isOverflow: isOverflow,
 		    isRegExp: isRegExp,
+		    markOverflow: markOverflow,
 		    maybeMap: maybeMap,
 		    merge: merge
 		};
@@ -2840,6 +2862,7 @@
 		    parseArrays: true,
 		    plainObjects: false,
 		    strictDepth: false,
+		    strictMerge: true,
 		    strictNullHandling: false,
 		    throwOnLimitExceeded: false
 		};
@@ -2878,7 +2901,7 @@
 		    var cleanStr = options.ignoreQueryPrefix ? str.replace(/^\?/, '') : str;
 		    cleanStr = cleanStr.replace(/%5B/gi, '[').replace(/%5D/gi, ']');
 
-		    var limit = options.parameterLimit === Infinity ? undefined : options.parameterLimit;
+		    var limit = options.parameterLimit === Infinity ? void undefined : options.parameterLimit;
 		    var parts = cleanStr.split(
 		        options.delimiter,
 		        options.throwOnLimitExceeded ? limit + 1 : limit
@@ -2945,9 +2968,16 @@
 		            val = isArray(val) ? [val] : val;
 		        }
 
+		        if (options.comma && isArray(val) && val.length > options.arrayLimit) {
+		            if (options.throwOnLimitExceeded) {
+		                throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		            }
+		            val = utils.combine([], val, options.arrayLimit, options.plainObjects);
+		        }
+
 		        if (key !== null) {
 		            var existing = has.call(obj, key);
-		            if (existing && options.duplicates === 'combine') {
+		            if (existing && (options.duplicates === 'combine' || part.indexOf('[]=') > -1)) {
 		                obj[key] = utils.combine(
 		                    obj[key],
 		                    val,
@@ -2995,17 +3025,21 @@
 		            var cleanRoot = root.charAt(0) === '[' && root.charAt(root.length - 1) === ']' ? root.slice(1, -1) : root;
 		            var decodedRoot = options.decodeDotInKeys ? cleanRoot.replace(/%2E/g, '.') : cleanRoot;
 		            var index = parseInt(decodedRoot, 10);
-		            if (!options.parseArrays && decodedRoot === '') {
-		                obj = { 0: leaf };
-		            } else if (
-		                !isNaN(index)
+		            var isValidArrayIndex = !isNaN(index)
 		                && root !== decodedRoot
 		                && String(index) === decodedRoot
 		                && index >= 0
-		                && (options.parseArrays && index <= options.arrayLimit)
-		            ) {
+		                && options.parseArrays;
+		            if (!options.parseArrays && decodedRoot === '') {
+		                obj = { 0: leaf };
+		            } else if (isValidArrayIndex && index < options.arrayLimit) {
 		                obj = [];
 		                obj[index] = leaf;
+		            } else if (isValidArrayIndex && options.throwOnLimitExceeded) {
+		                throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		            } else if (isValidArrayIndex) {
+		                obj[index] = leaf;
+		                utils.markOverflow(obj, index);
 		            } else if (decodedRoot !== '__proto__') {
 		                obj[decodedRoot] = leaf;
 		            }
@@ -3045,7 +3079,7 @@
 		            }
 		        }
 
-		        keys.push(parent);
+		        keys[keys.length] = parent;
 		    }
 
 		    var i = 0;
@@ -3059,7 +3093,7 @@
 		            }
 		        }
 
-		        keys.push(segment[1]);
+		        keys[keys.length] = segment[1];
 		    }
 
 		    if (segment) {
@@ -3067,7 +3101,7 @@
 		            throw new RangeError('Input depth exceeded depth option of ' + options.depth + ' and strictDepth is true');
 		        }
 
-		        keys.push('[' + key.slice(segment.index) + ']');
+		        keys[keys.length] = '[' + key.slice(segment.index) + ']';
 		    }
 
 		    return keys;
@@ -3143,6 +3177,7 @@
 		        parseArrays: opts.parseArrays !== false,
 		        plainObjects: typeof opts.plainObjects === 'boolean' ? opts.plainObjects : defaults.plainObjects,
 		        strictDepth: typeof opts.strictDepth === 'boolean' ? !!opts.strictDepth : defaults.strictDepth,
+		        strictMerge: typeof opts.strictMerge === 'boolean' ? !!opts.strictMerge : defaults.strictMerge,
 		        strictNullHandling: typeof opts.strictNullHandling === 'boolean' ? opts.strictNullHandling : defaults.strictNullHandling,
 		        throwOnLimitExceeded: typeof opts.throwOnLimitExceeded === 'boolean' ? opts.throwOnLimitExceeded : false
 		    };
@@ -6012,7 +6047,7 @@
 	  if (hasRequiredVersion) return version$1;
 	  hasRequiredVersion = 1;
 	  version$1 = {
-	    raw: '9.30.1'
+	    raw: '9.31.0'
 	  };
 	  return version$1;
 	}
@@ -6827,11 +6862,14 @@
 	// defined by the specification, or existing parameters that we
 	// need for compatibility
 
+	var CTE_GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:token-exchange';
 	var tokenParams = [
 	// auth0
-	'realm', 'audience', 'otp',
+	'realm', 'audience', 'otp', 'organization',
 	// oauth2
-	'client_id', 'client_secret', 'redirect_uri', 'scope', 'code', 'grant_type', 'username', 'password', 'refresh_token', 'assertion', 'client_assertion', 'client_assertion_type', 'code_verifier'];
+	'client_id', 'client_secret', 'redirect_uri', 'scope', 'code', 'grant_type', 'username', 'password', 'refresh_token', 'assertion', 'client_assertion', 'client_assertion_type', 'code_verifier',
+	// rfc 8693 token exchange
+	'subject_token', 'subject_token_type'];
 	var authorizeParams = [
 	// auth0
 	'connection', 'connection_scope', 'auth0Client', 'owp', 'device', 'realm', 'organization', 'invitation', 'protocol', '_csrf', '_intstate', 'login_ticket',
@@ -6848,6 +6886,13 @@
 	  return params;
 	}
 	function oauthTokenParams(warn, params) {
+	  // Bypass whitelist for Custom Token Exchange (RFC 8693).
+	  // CTE supports arbitrary custom parameters accessible in
+	  // Auth0 Actions via event.request.body. The grant_type key
+	  // is already snake_cased by toSnakeCase() before this point.
+	  if (params.grant_type === CTE_GRANT_TYPE) {
+	    return params;
+	  }
 	  return objectHelper.pick(params, tokenParams);
 	}
 	var parametersWhitelist = {
@@ -9501,6 +9546,21 @@
 	  return captcha.render(this.client, captcha.Flow.PASSWORD_RESET, element, options, callback);
 	};
 
+	/**
+	 * Performs a Custom Token Exchange (RFC 8693) by calling the
+	 * `/oauth/token` endpoint.
+	 *
+	 * @method customTokenExchange
+	 * @param {Object} options same as {@link Authentication.customTokenExchange}
+	 * @param {tokenCallback} cb
+	 * @see {@link https://www.rfc-editor.org/rfc/rfc8693 RFC 8693 - OAuth 2.0 Token Exchange}
+	 * @see {@link https://auth0.com/docs/authenticate/custom-token-exchange Custom Token Exchange}
+	 * @memberof WebAuth.prototype
+	 */
+	WebAuth.prototype.customTokenExchange = function (options, cb) {
+	  return this.client.customTokenExchange(options, cb);
+	};
+
 	function PasswordlessAuthentication(request, options) {
 	  this.baseOptions = options;
 	  this.request = request;
@@ -10434,6 +10494,73 @@
 	  });
 	  url = urljoin(this.baseOptions.rootUrl, 'user', 'geoloc', 'country');
 	  return this.request.get(url).end(wrapCallback(cb));
+	};
+
+	/**
+	 * Performs a Custom Token Exchange (RFC 8693) by calling the
+	 * `/oauth/token` endpoint with the
+	 * `urn:ietf:params:oauth:grant-type:token-exchange` grant type.
+	 *
+	 * Exchanges an external subject token for Auth0 tokens. This is a
+	 * stateless operation — tokens are returned via the callback and
+	 * no session state is modified.
+	 *
+	 * Custom parameters (any additional keys on options) are forwarded
+	 * to the token endpoint and accessible in Auth0 Actions via
+	 * `event.request.body`.
+	 *
+	 * Note: Custom parameter values with nested object keys will be
+	 * recursively converted to snake_case by the SDK's internal
+	 * `toSnakeCase()` utility.
+	 *
+	 * @method customTokenExchange
+	 * @param {Object} options
+	 * @param {String} options.subjectToken the external token to exchange
+	 * @param {String} options.subjectTokenType a URI identifying the type of the subject token
+	 * @param {String} [options.audience] target API audience; falls back to the audience configured at construction
+	 * @param {String} [options.scope] requested scopes; falls back to the scope configured at construction
+	 * @param {String} [options.organization] organization ID for org-scoped authentication
+	 * @param {tokenCallback} cb
+	 * @see {@link https://www.rfc-editor.org/rfc/rfc8693 RFC 8693 - OAuth 2.0 Token Exchange}
+	 * @see {@link https://auth0.com/docs/authenticate/custom-token-exchange Custom Token Exchange}
+	 * @memberof Authentication.prototype
+	 */
+	Authentication.prototype.customTokenExchange = function (options, cb) {
+	  assert.check(options, {
+	    type: 'object',
+	    message: 'options parameter is not valid'
+	  }, {
+	    subjectToken: {
+	      type: 'string',
+	      message: 'subjectToken option is required'
+	    },
+	    subjectTokenType: {
+	      type: 'string',
+	      message: 'subjectTokenType option is required'
+	    },
+	    audience: {
+	      optional: true,
+	      type: 'string',
+	      message: 'audience option is required'
+	    },
+	    scope: {
+	      optional: true,
+	      type: 'string',
+	      message: 'scope option is required'
+	    },
+	    organization: {
+	      optional: true,
+	      type: 'string',
+	      message: 'organization option is required'
+	    }
+	  });
+	  assert.check(cb, {
+	    type: 'function',
+	    message: 'cb parameter is not valid'
+	  });
+	  options = objectHelper.merge({}, []).with(options);
+	  options.grantType = 'urn:ietf:params:oauth:grant-type:token-exchange';
+	  return this.oauthToken(options, cb);
 	};
 
 	/**
