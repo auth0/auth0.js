@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.31.0](https://github.com/auth0/auth0.js/tree/v9.31.0) (2026-03-16)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.30.1...v9.31.0)
+
+**Added**
+- feat: add Custom Token Exchange support [\#1604](https://github.com/auth0/auth0.js/pull/1604) ([gyaneshgouraw-okta](https://github.com/gyaneshgouraw-okta))
+
 ## [v9.30.1](https://github.com/auth0/auth0.js/tree/v9.30.1) (2026-02-06)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.30.0...v9.30.1)
 
