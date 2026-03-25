@@ -3,9 +3,7 @@
 ## [v9.32.0](https://github.com/auth0/auth0.js/tree/v9.32.0) (2026-03-25)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.31.0...v9.32.0)
 
-**Added**
-- chore: add .nojekyll file to docs directory [\#1614](https://github.com/auth0/auth0.js/pull/1614) ([amitsingh05667](https://github.com/amitsingh05667))
-- chore: update @auth0/component-cdn-uploader to version 2.5.0 [\#1613](https://github.com/auth0/auth0.js/pull/1613) ([amitsingh05667](https://github.com/amitsingh05667))
+
 
 ## [v9.31.0](https://github.com/auth0/auth0.js/tree/v9.31.0) (2026-03-16)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.30.1...v9.31.0)
