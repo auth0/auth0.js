@@ -16,4 +16,5 @@ if (fs.existsSync('docs')) {
   execSync('rm -r docs', { stdio: 'inherit' });
 }
 execSync(`mv out/auth0-js/${library.version}/ docs`, { stdio: 'inherit' });
+fs.writeFileSync('docs/.nojekyll', '');
 execSync('git add docs');
