@@ -1,5 +1,11 @@
 # Change Log
 
+## [v9.33.0](https://github.com/auth0/auth0.js/tree/v9.33.0) (2026-03-26)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v9.32.0...v9.33.0)
+
+**Fixed**
+- chore: update @auth0/component-cdn-uploader to version 3.0.2 [\#1618](https://github.com/auth0/auth0.js/pull/1618) ([amitsingh05667](https://github.com/amitsingh05667))
+
 ## [v9.32.0](https://github.com/auth0/auth0.js/tree/v9.32.0) (2026-03-25)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.31.0...v9.32.0)
 
