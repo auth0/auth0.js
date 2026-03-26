@@ -63,7 +63,7 @@
     "winchan": "^0.2.2"
   },
   "devDependencies": {
-    "@auth0/component-cdn-uploader": "^3.0.1",
+    "@auth0/component-cdn-uploader": "^3.0.2",
     "@babel/core": "^7.15.5",
     "@babel/eslint-parser": "^7.15.7",
     "@babel/preset-env": "^7.15.6",
