@@ -1547,124 +1547,82 @@ describe('auth0.WebAuth', function () {
       });
 
       afterEach(function () {
-        if (this.webAuth.client.userInfo.restore) {
-          this.webAuth.client.userInfo.restore();
-        }
         if (IdTokenVerifier.prototype.verify.restore) {
           IdTokenVerifier.prototype.verify.restore();
         }
       });
 
-      it('should use result from /userinfo as idTokenPayload', function (done) {
+      it('should return a validation error instead of falling back to /userinfo', function (done) {
         sinon
-          .stub(this.webAuth.client, 'userInfo')
-          .callsFake(function (accessToken, cb) {
-            expect(accessToken).to.be('VjubIMBmpgQ2W2');
-            cb(null, { from: 'userinfo' });
+          .stub(IdTokenVerifier.prototype, 'verify')
+          .callsFake(function (_, __, cb) {
+            cb({ message: 'Signature verification failed' });
           });
 
         this.webAuth.parseHash(
           {
             nonce: 'the-nonce',
-            hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjA4ODU1NzgsImV4cCI6MTU5MjQyMTU3OCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm5vbmNlIjoidGhlLW5vbmNlIn0.jb9aG21kGibxKPIyfn8FfvjQ3ykJGiBGcep2hDHHfqk&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-          },
-          function (err, data) {
-            expect(err).to.be(null);
-            expect(data).to.be.eql({
-              accessToken: 'VjubIMBmpgQ2W2',
-              idToken:
-                'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjA4ODU1NzgsImV4cCI6MTU5MjQyMTU3OCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm5vbmNlIjoidGhlLW5vbmNlIn0.jb9aG21kGibxKPIyfn8FfvjQ3ykJGiBGcep2hDHHfqk',
-              idTokenPayload: { from: 'userinfo' },
-              appState: null,
-              refreshToken: 'kajshdgfkasdjhgfas',
-              state: 'foo',
-              expiresIn: null,
-              tokenType: 'Bearer',
-              scope: null
-            });
-            done();
-          }
-        );
-      });
-
-      it('should not throw an error when the payload.nonce is undefined and transactionNonce is null', function (done) {
-        TransactionManager.prototype.getStoredTransaction.restore();
-        sinon
-          .stub(TransactionManager.prototype, 'getStoredTransaction')
-          .callsFake(function () {
-            return {
-              nonce: null,
-              state: 'foo'
-            };
-          });
-        var webAuth = new WebAuth({
-          domain: 'auth0-tests-lock.auth0.com',
-          redirectUri: 'http://example.com/callback',
-          clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'id_token'
-        });
-
-        sinon
-          .stub(webAuth.client, 'userInfo')
-          .callsFake(function (accessToken, cb) {
-            expect(accessToken).to.be('VjubIMBmpgQ2W2');
-            cb(null, { from: 'userinfo' });
-          });
-
-        sinon
-          .stub(IdTokenVerifier.prototype, 'verify')
-          .callsFake(function (_, __, cb) {
-            cb({ error: true });
-          });
-
-        //nonce: undefined
-        webAuth.parseHash(
-          {
-            hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjE2NjM3ODMsImV4cCI6MTU5MzE5OTc4MywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSJ9.Hoq1Go3McuHgSMg9rWVxQsEenoDWYi5MEumc32Ah9CQ&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-          },
-          function (err, data) {
-            expect(err).to.be(null);
-            expect(data).to.be.eql({
-              accessToken: 'VjubIMBmpgQ2W2',
-              idToken:
-                'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjE2NjM3ODMsImV4cCI6MTU5MzE5OTc4MywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSJ9.Hoq1Go3McuHgSMg9rWVxQsEenoDWYi5MEumc32Ah9CQ',
-              idTokenPayload: { from: 'userinfo' },
-              appState: null,
-              refreshToken: 'kajshdgfkasdjhgfas',
-              state: 'foo',
-              expiresIn: null,
-              tokenType: 'Bearer',
-              scope: null
-            });
-            done();
-          }
-        );
-      });
-
-      it('should still throw an error with an invalid nonce', function (done) {
-        var webAuth = new WebAuth({
-          domain: 'auth0-tests-lock.auth0.com',
-          redirectUri: 'http://example.com/callback',
-          clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'id_token'
-        });
-        sinon
-          .stub(IdTokenVerifier.prototype, 'verify')
-          .callsFake(function (_, __, cb) {
-            cb({ error: true });
-          });
-
-        //nonce: the-nonce
-        webAuth.parseHash(
-          {
-            hash: '#state=foo&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjA4ODU1NzgsImV4cCI6MTU5MjQyMTU3OCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm5vbmNlIjoidGhlLW5vbmNlIn0.jb9aG21kGibxKPIyfn8FfvjQ3ykJGiBGcep2hDHHfqk&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+            hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJub25jZSI6InRoZS1ub25jZSIsImlhdCI6MTU2MDg4NTU3OCwiZXhwIjo0NTkyNDIxNTc4fQ.79KMRcgyMPF0IGv-bTv58pb6HCSRy8fDjcLgDRDqeFc&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
           },
           function (err, data) {
             expect(err).to.be.eql({
               error: 'invalid_token',
-              errorDescription:
-                'Nonce (nonce) claim value mismatch in the ID token; expected "asfd", found "the-nonce"'
+              errorDescription: 'Signature verification failed'
             });
+            expect(data).to.be(undefined);
+            done();
+          }
+        );
+      });
+
+      it('should not call /userinfo when id_token verification fails', function (done) {
+        sinon
+          .stub(IdTokenVerifier.prototype, 'verify')
+          .callsFake(function (_, __, cb) {
+            cb({ message: 'Signature verification failed' });
+          });
+
+        var userInfoSpy = sinon.spy(this.webAuth.client, 'userInfo');
+
+        this.webAuth.parseHash(
+          {
+            nonce: 'the-nonce',
+            hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJub25jZSI6InRoZS1ub25jZSIsImlhdCI6MTU2MDg4NTU3OCwiZXhwIjo0NTkyNDIxNTc4fQ.79KMRcgyMPF0IGv-bTv58pb6HCSRy8fDjcLgDRDqeFc&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function (err, data) {
+            expect(err).to.not.be(null);
+            expect(err.error).to.be('invalid_token');
+            expect(userInfoSpy.called).to.be(false);
+            userInfoSpy.restore();
+            done();
+          }
+        );
+      });
+
+      it('should return validation error for HS256 token without access_token', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'auth0-tests-lock.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
+          responseType: 'id_token'
+        });
+        sinon
+          .stub(IdTokenVerifier.prototype, 'verify')
+          .callsFake(function (_, __, cb) {
+            cb({ message: 'Signature verification failed' });
+          });
+
+        webAuth.parseHash(
+          {
+            nonce: 'the-nonce',
+            hash: '#state=foo&id_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJub25jZSI6InRoZS1ub25jZSIsImlhdCI6MTU2MDg4NTU3OCwiZXhwIjo0NTkyNDIxNTc4fQ.79KMRcgyMPF0IGv-bTv58pb6HCSRy8fDjcLgDRDqeFc&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+          },
+          function (err, data) {
+            expect(err).to.be.eql({
+              error: 'invalid_token',
+              errorDescription: 'Signature verification failed'
+            });
+            expect(data).to.be(undefined);
             done();
           }
         );
@@ -1680,65 +1638,18 @@ describe('auth0.WebAuth', function () {
         sinon
           .stub(IdTokenVerifier.prototype, 'verify')
           .callsFake(function (_, __, cb) {
-            cb({ error: true });
+            cb({ message: 'Signature verification failed' });
           });
 
-        //nonce: the-nonce
         webAuth.parseHash(
           {
-            hash: '#state=ignore-test-state-check&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjA4ODU1NzgsImV4cCI6MTU5MjQyMTU3OCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm5vbmNlIjoidGhlLW5vbmNlIn0.jb9aG21kGibxKPIyfn8FfvjQ3ykJGiBGcep2hDHHfqk&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
+            hash: '#state=ignore-test-state-check&id_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJhdWQiOiJpeGVPSEZoRDdOU1B4RVFLNkNGY3N3alVzYTVZa2NYUyIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJub25jZSI6InRoZS1ub25jZSIsImlhdCI6MTU2MDg4NTU3OCwiZXhwIjo0NTkyNDIxNTc4fQ.79KMRcgyMPF0IGv-bTv58pb6HCSRy8fDjcLgDRDqeFc&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
           },
           function (err, data) {
             expect(err).to.be.eql({
               error: 'invalid_token',
               errorDescription: '`state` does not match.'
             });
-            done();
-          }
-        );
-      });
-      it('should throw an error when there is no access_token to call /userinfo', function (done) {
-        var webAuth = new WebAuth({
-          domain: 'auth0-tests-lock.auth0.com',
-          redirectUri: 'http://example.com/callback',
-          clientID: 'ixeOHFhD7NSPxEQK6CFcswjUsa5YkcXS',
-          responseType: 'id_token'
-        });
-        sinon
-          .stub(webAuth.client, 'userInfo')
-          .callsFake(function (accessToken, cb) {
-            cb({ any: 'error' });
-          });
-
-        webAuth.parseHash(
-          {
-            nonce: 'the-nonce',
-            hash: '#state=foo&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjA4ODU1NzgsImV4cCI6MTU5MjQyMTU3OCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm5vbmNlIjoidGhlLW5vbmNlIn0.jb9aG21kGibxKPIyfn8FfvjQ3ykJGiBGcep2hDHHfqk&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-          },
-          function (err, data) {
-            expect(err).to.be.eql({
-              error: 'invalid_token',
-              description:
-                'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this. Read more: https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
-            });
-            done();
-          }
-        );
-      });
-      it('should throw original userinfo error when /userinfo call has an error', function (done) {
-        sinon
-          .stub(this.webAuth.client, 'userInfo')
-          .callsFake(function (accessToken, cb) {
-            cb({ any: 'error' });
-          });
-
-        this.webAuth.parseHash(
-          {
-            nonce: 'the-nonce',
-            hash: '#state=foo&access_token=VjubIMBmpgQ2W2&id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE1NjA4ODU1NzgsImV4cCI6MTU5MjQyMTU3OCwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsIm5vbmNlIjoidGhlLW5vbmNlIn0.jb9aG21kGibxKPIyfn8FfvjQ3ykJGiBGcep2hDHHfqk&token_type=Bearer&refresh_token=kajshdgfkasdjhgfas'
-          },
-          function (err, data) {
-            expect(err).to.be.eql({ any: 'error' });
             done();
           }
         );
@@ -3499,7 +3410,7 @@ describe('auth0.WebAuth', function () {
       expect(function () {
         auth0.customTokenExchange(
           { subjectTokenType: 'urn:acme:token' },
-          function () {}
+          function () { }
         );
       }).to.throwException(function (e) {
         expect(e.message).to.be('subjectToken option is required');
