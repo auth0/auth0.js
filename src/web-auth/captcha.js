@@ -25,6 +25,7 @@ var MAX_RETRY = 3;
 
 var defaults = {
   lang: 'en',
+  appearance: 'always',
   templates: {
     auth0: function (challenge) {
       var message =
@@ -354,6 +355,7 @@ function handleCaptchaProvider(element, options, challenge) {
         if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
           retryCount = 0;
           renderParams.language = options.lang;
+          renderParams.appearance = options.appearance;
           renderParams.theme = 'light';
           renderParams.retry = 'never';
           renderParams['response-field'] = false;
@@ -395,6 +397,7 @@ function handleCaptchaProvider(element, options, challenge) {
  * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
+ * @param {String} [options.appearance=always] When the widget is visible: 'always', 'execute', 'interaction-only'
  * @param {Function} [callback] An optional callback called after captcha is loaded
  * @ignore
  */
@@ -457,6 +460,5 @@ function render(auth0Client, flow, element, options, callback) {
     getValue: getValue
   };
 }
-
 
 export default { render: render, Flow: Flow };
