@@ -1,7 +1,7 @@
 /**
- * auth0-js v9.32.0
+ * auth0-js v10.0.0
  * Author: Auth0
- * Date: 2026-03-25
+ * Date: 2026-05-06
  * License: MIT
  */
 
@@ -6047,7 +6047,7 @@
 	  if (hasRequiredVersion) return version$1;
 	  hasRequiredVersion = 1;
 	  version$1 = {
-	    raw: '9.32.0'
+	    raw: '10.0.0'
 	  };
 	  return version$1;
 	}
@@ -8772,9 +8772,7 @@
 	 *
 	 * Only validates id_tokens signed by Auth0 using the RS256 algorithm using the public key exposed
 	 * by the `/.well-known/jwks.json` endpoint of your account.
-	 * Tokens signed with the HS256 algorithm cannot be properly validated.
-	 * Instead, a call to {@link userInfo} will be made with the parsed `access_token`.
-	 * If the {@link userInfo} call fails, the {@link userInfo} error will be passed to the callback.
+	 * Tokens signed with the HS256 algorithm cannot be properly validated and will result in an error.
 	 * Tokens signed with other algorithms will not be accepted.
 	 *
 	 * @example
@@ -8839,9 +8837,7 @@
 	 *
 	 * Only validates id_tokens signed by Auth0 using the RS256 algorithm using the public key exposed
 	 * by the `/.well-known/jwks.json` endpoint of your account.
-	 * Tokens signed with the HS256 algorithm cannot be properly validated.
-	 * Instead, a call to {@link userInfo} will be made with the parsed `access_token`.
-	 * If the {@link userInfo} call fails, the {@link userInfo} error will be passed to the callback.
+	 * Tokens signed with the HS256 algorithm cannot be properly validated and will result in an error.
 	 * Tokens signed with other algorithms will not be accepted.
 	 *
 	 * @method validateAuthenticationResponse
@@ -8924,39 +8920,7 @@
 	        return callback(null, payload);
 	      });
 	    }
-	    if (validationError.error !== 'invalid_token' || validationError.errorDescription && validationError.errorDescription.indexOf('Nonce (nonce) claim value mismatch in the ID token') > -1) {
-	      return callback(validationError);
-	    }
-
-	    // if it's an invalid_token error, decode the token
-	    var decodedToken = new I().decode(parsedHash.id_token);
-
-	    // if the alg is not HS256, return the raw error
-	    if (decodedToken.header.alg !== 'HS256') {
-	      return callback(validationError);
-	    }
-	    if ((decodedToken.payload.nonce || null) !== transactionNonce) {
-	      return callback({
-	        error: 'invalid_token',
-	        errorDescription: 'Nonce (nonce) claim value mismatch in the ID token; expected "' + transactionNonce + '", found "' + decodedToken.payload.nonce + '"'
-	      });
-	    }
-	    if (!parsedHash.access_token) {
-	      var noAccessTokenError = {
-	        error: 'invalid_token',
-	        description: 'The id_token cannot be validated because it was signed with the HS256 algorithm and public clients (like a browser) can’t store secrets. Please read the associated doc for possible ways to fix this. Read more: https://auth0.com/docs/errors/libraries/auth0-js/invalid-token#parsing-an-hs256-signed-id-token-without-an-access-token'
-	      };
-	      return callback(noAccessTokenError);
-	    }
-
-	    // if the alg is HS256, use the /userinfo endpoint to build the payload
-	    return _this.client.userInfo(parsedHash.access_token, function (errUserInfo, profile) {
-	      // if the /userinfo request fails, use the validationError instead
-	      if (errUserInfo) {
-	        return callback(errUserInfo);
-	      }
-	      return callback(null, profile);
-	    });
+	    return callback(validationError);
 	  });
 	};
 	function buildParseHashResponse(qsParams, appState, token) {

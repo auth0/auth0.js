@@ -1398,7 +1398,7 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line804">line 804</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line751">line 751</a>
     </li></ul></dd>
     
 
@@ -1647,7 +1647,7 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line732">line 732</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line679">line 679</a>
     </li></ul></dd>
     
 
@@ -2137,7 +2137,7 @@ Remember to add the URL where the authorization request originates from to the A
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line641">line 641</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line588">line 588</a>
     </li></ul></dd>
     
 
@@ -2245,7 +2245,7 @@ function(err, authResult) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1022">line 1022</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line969">line 969</a>
     </li></ul></dd>
     
 
@@ -2333,7 +2333,7 @@ function(err, authResult) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1033">line 1033</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line980">line 980</a>
     </li></ul></dd>
     
 
@@ -2494,7 +2494,7 @@ function(err, authResult) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1252">line 1252</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1199">line 1199</a>
     </li></ul></dd>
     
 
@@ -2896,7 +2896,7 @@ After the redirect to <code>redirectUri</code>, use <code>parseHash</code> to re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line908">line 908</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line855">line 855</a>
     </li></ul></dd>
     
 
@@ -3184,7 +3184,7 @@ After the redirect to <code>redirectUri</code>, use <code>parseHash</code> to re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1043">line 1043</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line990">line 990</a>
     </li></ul></dd>
     
 
@@ -3238,9 +3238,7 @@ After the redirect to <code>redirectUri</code>, use <code>parseHash</code> to re
     <p>Parse the url hash and extract the Auth response from a Auth flow started with <code>authorize</code></p>
 <p>Only validates id_tokens signed by Auth0 using the RS256 algorithm using the public key exposed
 by the <code>/.well-known/jwks.json</code> endpoint of your account.
-Tokens signed with the HS256 algorithm cannot be properly validated.
-Instead, a call to <code>userInfo</code> will be made with the parsed <code>access_token</code>.
-If the <code>userInfo</code> call fails, the <code>userInfo</code> error will be passed to the callback.
+Tokens signed with the HS256 algorithm cannot be properly validated and will result in an error.
 Tokens signed with other algorithms will not be accepted.</p>
 </div>
 
@@ -3834,7 +3832,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line965">line 965</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line912">line 912</a>
     </li></ul></dd>
     
 
@@ -4249,7 +4247,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line747">line 747</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line694">line 694</a>
     </li></ul></dd>
     
 
@@ -4603,7 +4601,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1068">line 1068</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1015">line 1015</a>
     </li></ul></dd>
     
 
@@ -5213,7 +5211,7 @@ This function can only be used in the context of a Classic Universal Login Page.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1140">line 1140</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1087">line 1087</a>
     </li></ul></dd>
     
 
@@ -5823,7 +5821,7 @@ This function can only be used in the context of a Classic Universal Login Page.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1223">line 1223</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1170">line 1170</a>
     </li></ul></dd>
     
 
@@ -6433,7 +6431,7 @@ This function can only be used in the context of a Classic Universal Login Page.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1194">line 1194</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1141">line 1141</a>
     </li></ul></dd>
     
 
@@ -7043,7 +7041,7 @@ This function can only be used in the context of a Classic Universal Login Page.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1165">line 1165</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1112">line 1112</a>
     </li></ul></dd>
     
 
@@ -7649,7 +7647,7 @@ Watch out! If you're not using the hosted login page to do social logins, you ha
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line559">line 559</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line506">line 506</a>
     </li></ul></dd>
     
 
@@ -8135,7 +8133,7 @@ Watch out! If you're not using the hosted login page to do social logins, you ha
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line782">line 782</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line729">line 729</a>
     </li></ul></dd>
     
 
@@ -8398,7 +8396,7 @@ The login will be done using /oauth/token with password-realm grant type.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line866">line 866</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line813">line 813</a>
     </li></ul></dd>
     
 
@@ -8454,9 +8452,7 @@ The login will be done using /oauth/token with password-realm grant type.</p>
     <p>Validates an Auth response from a Auth flow started with <code>authorize</code></p>
 <p>Only validates id_tokens signed by Auth0 using the RS256 algorithm using the public key exposed
 by the <code>/.well-known/jwks.json</code> endpoint of your account.
-Tokens signed with the HS256 algorithm cannot be properly validated.
-Instead, a call to <code>userInfo</code> will be made with the parsed <code>access_token</code>.
-If the <code>userInfo</code> call fails, the <code>userInfo</code> error will be passed to the callback.
+Tokens signed with the HS256 algorithm cannot be properly validated and will result in an error.
 Tokens signed with other algorithms will not be accepted.</p>
 </div>
 
@@ -8721,7 +8717,7 @@ Tokens signed with other algorithms will not be accepted.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line308">line 308</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line306">line 306</a>
     </li></ul></dd>
     
 
@@ -8773,7 +8769,7 @@ Tokens signed with other algorithms will not be accepted.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Mar 25 2026 14:26:16 GMT+0530 (India Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed May 06 2026 14:16:09 GMT+0530 (India Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
