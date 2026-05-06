@@ -14,9 +14,9 @@
 | Apps using RS256 | No breaking change |
 | Apps using HS256 | `parseHash()` now returns an `invalid_token` error instead of silently succeeding. Must switch to RS256 in the Auth0 Dashboard: Applications → your app → Settings → Advanced Settings → OAuth → JsonWebToken Signature Algorithm → `RS256` |
 
-
 ## [v9.32.0](https://github.com/auth0/auth0.js/tree/v9.32.0) (2026-03-25)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.31.0...v9.32.0)
+
 
 
 ## [v9.31.0](https://github.com/auth0/auth0.js/tree/v9.31.0) (2026-03-16)
