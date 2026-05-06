@@ -18,7 +18,6 @@
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.31.0...v9.32.0)
 
 
-
 ## [v9.31.0](https://github.com/auth0/auth0.js/tree/v9.31.0) (2026-03-16)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.30.1...v9.31.0)
 
