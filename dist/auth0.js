@@ -1,7 +1,7 @@
 /**
  * auth0-js v10.0.0
  * Author: Auth0
- * Date: 2026-05-06
+ * Date: 2026-05-14
  * License: MIT
  */
 
@@ -8244,7 +8244,10 @@
 	  }).withCredentials().end(wrapCallback(cb));
 	};
 
-	// eslint-disable-next-line no-unused-vars
+	/**
+	 * @typedef {import('../authentication').default} Authentication
+	 */
+
 	var noop = function noop() {};
 	var captchaSolved = noop;
 	var done = noop;

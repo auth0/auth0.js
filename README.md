@@ -39,6 +39,75 @@ After installing the `auth0-js` module using [npm](https://npmjs.org), you'll ne
 import auth0 from 'auth0-js';
 ```
 
+### Modern bundle (smaller, evergreen-only)
+
+For applications that don't need to support legacy browsers (IE9–IE11), auth0-js v10 also ships a "modern" bundle that's substantially smaller. It replaces several legacy npm dependencies (`qs`, `superagent`, `es6-promise`, `unfetch`, `base64-js`) with thin shims over native browser APIs (`URLSearchParams`, `fetch`, `Promise`, `btoa`/`atob`).
+
+| Bundle | Raw size | Gzipped |
+|---|---|---|
+| Default (`auth0-js`) | ~174 KB | ~51 KB |
+| Modern (`auth0-js/modern`) | **~101 KB** | **~29 KB** |
+
+**Browser support floor for the modern bundle:**
+
+| Browser | Minimum version | Released |
+|---|---|---|
+| Chrome / Chromium-Edge | 70 | Oct 2018 |
+| Firefox | 65 | Jan 2019 |
+| Safari | 12 | Sep 2018 |
+
+Earlier browsers (including any version of IE) are *not* supported by the modern bundle. Consumers needing those should keep using the default import path.
+
+#### Usage — direct import
+
+```js
+import auth0 from 'auth0-js/modern';
+```
+
+The API surface is identical to the default — `WebAuth`, `Authentication`, and `Management` are all exposed the same way. Switching is a one-line change at each call site.
+
+#### Usage — bundler alias (transparent swap)
+
+To route every `import ... from 'auth0-js'` in your codebase to the modern bundle without editing import statements, alias it in your bundler config:
+
+**webpack** (`webpack.config.js`):
+```js
+module.exports = {
+  resolve: {
+    alias: { 'auth0-js$': 'auth0-js/modern' }
+  }
+};
+```
+
+**Vite** (`vite.config.js`):
+```js
+export default {
+  resolve: {
+    alias: { 'auth0-js': 'auth0-js/modern' }
+  }
+};
+```
+
+**esbuild**:
+```js
+build({
+  alias: { 'auth0-js': 'auth0-js/modern' }
+});
+```
+
+**Rollup** (with `@rollup/plugin-alias`):
+```js
+import alias from '@rollup/plugin-alias';
+
+export default {
+  plugins: [
+    alias({ entries: [{ find: 'auth0-js', replacement: 'auth0-js/modern' }] })
+  ]
+};
+```
+
+The default `import auth0 from 'auth0-js'` continues to resolve to the IE-compatible legacy bundle, so consumers who don't opt in are unaffected.
+
 ### Configure the SDK
 
 #### auth0.WebAuth

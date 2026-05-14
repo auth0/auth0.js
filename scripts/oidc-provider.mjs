@@ -8,7 +8,9 @@ const config = {
       application_type: 'web',
       redirect_uris: [
         'http://127.0.0.1:3000/test.html',
-        'http://bs-local:3000/test.html'
+        'http://bs-local:3000/test.html',
+        'http://127.0.0.1:3000/test-modern.html',
+        'http://bs-local:3000/test-modern.html'
       ],
       token_endpoint_auth_method: 'none',
       grant_types: ['implicit', 'authorization_code'],
