@@ -69,6 +69,8 @@ var defaults = {
 
 function handleAuth0Provider(element, options, challenge, load) {
   element.innerHTML = options.templates[challenge.provider](challenge);
+  // Use setAttribute to safely assign challenge.image — avoids HTML injection via innerHTML string concat.
+  // If a custom template is used that omits .captcha-challenge img, src will not be set (by design).
   var img = element.querySelector('.captcha-challenge img');
   if (img) {
     img.setAttribute('src', challenge.image || '');
