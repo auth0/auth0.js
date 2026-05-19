@@ -33,9 +33,7 @@ var defaults = {
           : 'Solve the formula shown above';
       return (
         '<div class="captcha-challenge">\n' +
-        '  <img src="' +
-        challenge.image +
-        '" />\n' +
+        '  <img src="" />\n' +
         '  <button type="button" class="captcha-reload">↺</button>\n' +
         '</div>\n' +
         '<input type="text" name="captcha"\n' +
@@ -71,6 +69,10 @@ var defaults = {
 
 function handleAuth0Provider(element, options, challenge, load) {
   element.innerHTML = options.templates[challenge.provider](challenge);
+  var img = element.querySelector('.captcha-challenge img');
+  if (img) {
+    img.setAttribute('src', challenge.image || '');
+  }
   element
     .querySelector('.captcha-reload')
     .addEventListener('click', function (e) {

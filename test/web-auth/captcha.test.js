@@ -123,6 +123,18 @@ describe('captcha rendering', function () {
       expect(imgEl.src).to.equal(challenges[0].image);
     });
 
+    it('should not inject HTML attributes when challenge.image contains a malicious payload', function () {
+      const { window: w } = new JSDOM('<body><div class="captcha" style="display: none;" /></body>');
+      const el = w.document.querySelector('.captcha');
+      const maliciousChallenge = { required: true, provider: 'auth0', image: 'x" onerror="alert(1)" x="' };
+      const mockClient = { getChallenge: cb => cb(null, maliciousChallenge) };
+      captcha.render(mockClient, captcha.Flow.DEFAULT, el, {});
+      const imgEl = el.querySelector('img');
+      expect(imgEl).to.be.ok();
+      expect(imgEl.getAttribute('onerror')).to.equal(null);
+      expect(imgEl.getAttribute('src')).to.equal(maliciousChallenge.image);
+    });
+
     it('should contain an input tag with name captcha', function () {
       const inputEl = element.querySelector('input[name="captcha"]');
       expect(inputEl).to.be.ok();
