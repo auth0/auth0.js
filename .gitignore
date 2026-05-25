@@ -37,3 +37,4 @@ out/
 
 # Yarn lock file
 yarn.lock
+.npmrc
