@@ -1,6 +1,8 @@
-// eslint-disable-next-line no-unused-vars
-import Authentication from '../authentication';
 import object from '../helper/object';
+
+/**
+ * @typedef {import('../authentication').default} Authentication
+ */
 
 var noop = function () { };
 var captchaSolved = noop;

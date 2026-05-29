@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Auth0.js Modern-Bundle Smoke Test</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  </head>
+  <body class="container">
+    <input id="login-username" value="" />
+    <input id="login-password" type="password" value="" />
+    <input id="login-scope" value="" />
+    <input id="login-response-type" value="" />
+
+    <input
+      type="button"
+      class="login-redirect-usernamepassword"
+      value="redirect usernamepassword"
+    />
+
+    <input
+      type="button"
+      class="login-redirect-authorize"
+      value="redirect authorize"
+    />
+
+    <input type="button" value="logout" class="logout-button" />
+
+    <input type="button" class="reset-button" value="reset" />
+
+    <div id="err"></div>
+    <div id="result"></div>
+
+    <script type="module">
+      import auth0 from '/auth0.modern.min.esm.js';
+      window.auth0 = auth0; // exposed for the selenium smoke test
+
+      const webAuth = new auth0.WebAuth({
+        domain: 'http://127.0.0.1:3000',
+        redirectUri: window.location.href,
+        clientID: 'testing',
+        leeway: 30,
+        overrides: {
+          __token_issuer: 'http://127.0.0.1:3000/'
+        },
+        prompt: 'login'
+      });
+
+      $('.login-redirect-usernamepassword').click(function (e) {
+        e.preventDefault();
+        webAuth.redirect.loginWithCredentials(
+          {
+            connection: 'tests',
+            username: $('#login-username').val(),
+            password: $('#login-password').val(),
+            scope: $('#login-scope').val(),
+            responseType: $('#login-response-type').val()
+          },
+          function (err) {
+            $('#err').html(JSON.stringify(err));
+          }
+        );
+      });
+
+      $('.login-redirect-authorize').click(function (e) {
+        e.preventDefault();
+        webAuth.authorize({
+          scope: $('#login-scope').val(),
+          responseType: $('#login-response-type').val()
+        });
+      });
+
+      $('.logout-button').click(function (e) {
+        e.preventDefault();
+        webAuth.logout({ returnTo: 'http://127.0.0.1:3000/test-modern.html' });
+      });
+
+      $('.reset-button').click(function (e) {
+        e.preventDefault();
+        window.location.href = 'http://127.0.0.1:3000/test-modern.html';
+      });
+
+      webAuth.parseHash(function (err, result) {
+        if (err) {
+          $('#err').html(JSON.stringify(err));
+          $(document.body).append($('<div id="parsed"></div>'));
+        }
+        if (result) {
+          $('#result').html(JSON.stringify(result));
+          $(document.body).append($('<div id="parsed"></div>'));
+        }
+      });
+
+      $(document).ready(function () {
+        $(document.body).append($('<div id="loaded"></div>'));
+      });
+    </script>
+  </body>
+</html>

@@ -1,3 +1,4 @@
+import path from 'path';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
@@ -9,6 +10,31 @@ import { babel } from '@rollup/plugin-babel';
 import { createRequire } from 'module';
 import MagicString from 'magic-string';
 import createApp from './scripts/oidc-provider.mjs';
+
+// Modern build only: redirect packages whose only purpose (or whose modern
+// equivalent) is already a built-in browser API. Legacy builds continue to
+// bundle the originals for older browser support.
+const MODERN_ALIASES = {
+  qs: 'src/helper/qs-shim.js',
+  'es6-promise': 'src/helper/es6-promise-shim.js',
+  unfetch: 'src/helper/unfetch-shim.js',
+  'base64-js': 'src/helper/base64-js-shim.js',
+  superagent: 'src/helper/superagent-shim.js',
+  // idtoken-verifier publishes a pre-bundled artifact that inlines es6-promise
+  // and unfetch as bytes, so our aliases above never see those specifiers.
+  // Redirect to the unbundled source so the shims actually take effect.
+  'idtoken-verifier': 'node_modules/idtoken-verifier/src/index.js'
+};
+
+const aliasModernShims = () => ({
+  name: 'alias-modern-shims',
+  resolveId(id) {
+    if (Object.prototype.hasOwnProperty.call(MODERN_ALIASES, id)) {
+      return path.resolve(MODERN_ALIASES[id]);
+    }
+    return null;
+  }
+});
 
 const require = createRequire(import.meta.url);
 const pkg = require('./package.json');
@@ -62,7 +88,19 @@ const fixES5 = () => ({
 const isProduction = process.env.PRODUCTION === 'true';
 const OUTPUT_PATH = 'dist';
 
-const getPlugins = prod => [
+const LEGACY_TARGETS = { ie: '9' };
+// Modern target floor sits just below where optional chaining (ES2020) became
+// native — Babel transpiles `?.` and any other post-2018 syntax. Picked to widen
+// coverage to late-2018 evergreens at a small (~tens of bytes) bundle cost.
+const MODERN_TARGETS = {
+  chrome: '70',
+  firefox: '65',
+  safari: '12',
+  edge: '79'
+};
+
+const getPlugins = (prod, { modern = false } = {}) => [
+  modern && aliasModernShims(),
   resolve({
     browser: true
   }),
@@ -77,12 +115,13 @@ const getPlugins = prod => [
     babelHelpers: 'bundled',
     presets: [
       ['@babel/preset-env', {
-        targets: {
-          ie: '9'
-        }
+        targets: modern ? MODERN_TARGETS : LEGACY_TARGETS,
+        bugfixes: modern
       }]
     ],
-    include: ['src/**', 'node_modules/superagent/**']
+    include: modern
+      ? ['src/**', 'node_modules/idtoken-verifier/**']
+      : ['src/**', 'node_modules/superagent/**']
   }),
   replace({
     __DEV__: prod ? 'false' : 'true',
@@ -102,9 +141,9 @@ const getPlugins = prod => [
     License: MIT
     `
   }),
-  // Always apply ES5 compatibility fixes since all builds need to support IE9
-  fixES5()
-];
+  // Legacy builds need ES5 compatibility fixes for IE9; modern builds skip this
+  !modern && fixES5()
+].filter(Boolean);
 
 const prodFiles = [
   {
@@ -124,6 +163,15 @@ const prodFiles = [
       }
     ],
     plugins: getPlugins(isProduction)
+  },
+  {
+    input: 'src/index.js',
+    output: {
+      file: `${OUTPUT_PATH}/auth0.modern.min.esm.js`,
+      format: 'es',
+      sourcemap: true
+    },
+    plugins: getPlugins(isProduction, { modern: true })
   },
   {
     input: 'plugins/cordova/index.js',
@@ -159,6 +207,15 @@ const devFiles = [
       })
       // !isProduction && livereload()
     ]
+  },
+  {
+    input: 'src/index.js',
+    output: {
+      file: `${OUTPUT_PATH}/auth0.modern.min.esm.js`,
+      format: 'es',
+      sourcemap: isProduction ? false : 'inline'
+    },
+    plugins: getPlugins(false, { modern: true })
   },
   {
     input: 'plugins/cordova/index.js',
