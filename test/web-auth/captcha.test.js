@@ -450,6 +450,88 @@ describe('captcha rendering', function () {
             expect(finalRetry).to.equal(true);
             expect(input.value).to.equal('BYPASS_CAPTCHA');
           });
+
+          it('should pass the default appearance option to turnstile', function () {
+            expect(renderOptions.appearance).to.equal('always');
+          });
+
+          it('should pass a custom appearance option to turnstile', function () {
+            const { window: customWindow } = new JSDOM(
+              '<body><div class="captcha" /></body>'
+            );
+            const customElement =
+              customWindow.document.querySelector('.captcha');
+            global.window = customWindow;
+            let customRenderOptions;
+            customWindow.turnstile = {
+              render(element, options) {
+                customRenderOptions = options;
+                return 0;
+              },
+              reset() {}
+            };
+            const mockClient = {
+              getChallenge(cb) {
+                cb(null, challenge);
+              }
+            };
+            captcha.render(mockClient, captcha.Flow.DEFAULT, customElement, {
+              appearance: 'interaction-only'
+            });
+            const customScript = [
+              ...customWindow.document.querySelectorAll('script')
+            ].find(s => s.src.match('cloudflare'));
+            const customOnLoad =
+              customWindow[
+                url.parse(customScript.src, true).query.onload
+              ];
+            customOnLoad();
+            expect(customRenderOptions.appearance).to.equal(
+              'interaction-only'
+            );
+            delete global.window;
+          });
+
+          it('should call successCallback when the captcha is solved', function () {
+            const successCallback = sinon.stub();
+            const { window: customWindow } = new JSDOM(
+              '<body><div class="captcha" /></body>'
+            );
+            const customElement =
+              customWindow.document.querySelector('.captcha');
+            global.window = customWindow;
+            let customRenderOptions;
+            customWindow.turnstile = {
+              render(element, options) {
+                customRenderOptions = options;
+                return 0;
+              },
+              reset() {}
+            };
+            const mockClient = {
+              getChallenge(cb) {
+                cb(null, challenge);
+              }
+            };
+            captcha.render(mockClient, captcha.Flow.DEFAULT, customElement, {
+              successCallback
+            });
+            const customScript = [
+              ...customWindow.document.querySelectorAll('script')
+            ].find(s => s.src.match('cloudflare'));
+            const customOnLoad =
+              customWindow[
+                url.parse(customScript.src, true).query.onload
+              ];
+            customOnLoad();
+            const mockToken = 'token xxxxxx';
+            customRenderOptions.callback(mockToken);
+            expect(successCallback.calledOnce).to.be.ok();
+            expect(
+              customElement.querySelector('input[name="captcha"]').value
+            ).to.equal(mockToken);
+            delete global.window;
+          });
         }
 
         it('should clean the value and reset when reloading', function () {

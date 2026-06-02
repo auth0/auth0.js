@@ -2,7 +2,7 @@
 import Authentication from '../authentication';
 import object from '../helper/object';
 
-var noop = function () { };
+var noop = function () {};
 var captchaSolved = noop;
 var done = noop;
 var captchaReloaded = false;
@@ -26,6 +26,7 @@ var MAX_RETRY = 3;
 var defaults = {
   lang: 'en',
   appearance: 'always',
+  successCallback: noop,
   templates: {
     auth0: function (challenge) {
       var message =
@@ -342,7 +343,12 @@ function handleCaptchaProvider(element, options, challenge) {
         done();
       } else {
         var renderParams = {
-          callback: setValue,
+          callback: function (token) {
+            setValue(token);
+            if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
+              options.successCallback();
+            }
+          },
           'expired-callback': function () {
             setValue();
           },
@@ -397,7 +403,8 @@ function handleCaptchaProvider(element, options, challenge) {
  * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
- * @param {String} [options.appearance=always] When the widget is visible: 'always', 'execute', 'interaction-only'
+ * @param {String} [options.appearance=always] When the widget is visible: 'always', 'interaction-only'. Only applies to the auth0_v2 provider.
+ * @param {Function} [options.successCallback] A callback function that is called when the captcha is solved successfully. Only applies to the auth0_v2 provider.
  * @param {Function} [callback] An optional callback called after captcha is loaded
  * @ignore
  */

@@ -1103,6 +1103,7 @@ WebAuth.prototype.passwordlessVerify = function (options, cb) {
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
  * @param {String} [options.appearance=always] When the widget is visible: 'always', 'execute', 'interaction-only'
+ * @param {Function} [options.successCallback] A callback function that is called when the captcha is solved successfully. Only applies to the auth0_v2 provider.\
  * @param {captchaLoadedCallback} [callback] An optional callback called after captcha is loaded
  * @memberof WebAuth.prototype
  */
@@ -1127,6 +1128,8 @@ WebAuth.prototype.renderCaptcha = function (element, options, callback) {
  * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
+ * @param {String} [options.appearance=always] When the widget is visible: 'always', 'execute', 'interaction-only'
+ * @param {Function} [options.successCallback] A callback function that is called when the captcha is solved successfully. Only applies to the auth0_v2 provider.
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
  * @param {captchaLoadedCallback} [callback] An optional callback called after captcha is loaded
  * @memberof WebAuth.prototype
@@ -1186,6 +1189,8 @@ WebAuth.prototype.renderPasswordlessCaptcha = function (
  * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
+ * @param {String} [options.appearance=always] When the widget is visible: 'always', 'execute', 'interaction-only'
+ * @param {Function} [options.successCallback] A callback function that is called when the captcha is solved successfully. Only applies to the auth0_v2 provider.
  * @param {captchaLoadedCallback} [callback] An optional callback called after captcha is loaded
  * @memberof WebAuth.prototype
  */
