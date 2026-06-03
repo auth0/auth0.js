@@ -67,20 +67,26 @@ var defaults = {
   }
 };
 
+function escapeAttr(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
 function handleAuth0Provider(element, options, challenge, load) {
-  element.innerHTML = options.templates[challenge.provider](challenge);
-  // Use setAttribute to safely assign challenge.image — avoids HTML injection via innerHTML string concat.
-  // If a custom template is used that omits .captcha-challenge img, src will not be set (by design).
+  var safeChallenge = Object.assign({}, challenge, {
+    image: escapeAttr(challenge.image)
+  });
+  element.innerHTML = options.templates[challenge.provider](safeChallenge);
   var img = element.querySelector('.captcha-challenge img');
   if (img) {
     img.setAttribute('src', challenge.image || '');
   }
-  element
-    .querySelector('.captcha-reload')
-    .addEventListener('click', function (e) {
+  var reloadBtn = element.querySelector('.captcha-reload');
+  if (reloadBtn) {
+    reloadBtn.addEventListener('click', function (e) {
       e.preventDefault();
       load();
     });
+  }
 }
 
 function globalForCaptchaProvider(provider) {

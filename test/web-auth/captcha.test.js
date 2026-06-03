@@ -4,6 +4,17 @@ import sinon from 'sinon';
 import captcha from '../../src/web-auth/captcha';
 import expect from 'expect.js';
 
+function assertNoInjection(flow, makeClient) {
+  const { window: w } = new JSDOM('<body><div class="captcha" style="display: none;" /></body>');
+  const el = w.document.querySelector('.captcha');
+  const maliciousChallenge = { required: true, provider: 'auth0', image: 'x" onerror="alert(1)" x="' };
+  captcha.render(makeClient(maliciousChallenge), flow, el, {});
+  const imgEl = el.querySelector('img');
+  expect(imgEl).to.be.ok();
+  expect(imgEl.getAttribute('onerror')).to.equal(null);
+  expect(imgEl.getAttribute('src')).to.equal(maliciousChallenge.image);
+}
+
 describe('captcha rendering', function () {
   describe('when challenge is not required', function () {
     const { window } = new JSDOM('<body><div class="captcha" /></body>');
@@ -124,15 +135,7 @@ describe('captcha rendering', function () {
     });
 
     it('should not inject HTML attributes when challenge.image contains a malicious payload', function () {
-      const { window: w } = new JSDOM('<body><div class="captcha" style="display: none;" /></body>');
-      const el = w.document.querySelector('.captcha');
-      const maliciousChallenge = { required: true, provider: 'auth0', image: 'x" onerror="alert(1)" x="' };
-      const mockClient = { getChallenge: cb => cb(null, maliciousChallenge) };
-      captcha.render(mockClient, captcha.Flow.DEFAULT, el, {});
-      const imgEl = el.querySelector('img');
-      expect(imgEl).to.be.ok();
-      expect(imgEl.getAttribute('onerror')).to.equal(null);
-      expect(imgEl.getAttribute('src')).to.equal(maliciousChallenge.image);
+      assertNoInjection(captcha.Flow.DEFAULT, mc => ({ getChallenge: cb => cb(null, mc) }));
     });
 
     it('should contain an input tag with name captcha', function () {
@@ -775,15 +778,7 @@ describe('passwordless captcha rendering', function () {
     });
 
     it('should not inject HTML attributes when challenge.image contains a malicious payload', function () {
-      const { window: w } = new JSDOM('<body><div class="captcha" style="display: none;" /></body>');
-      const el = w.document.querySelector('.captcha');
-      const maliciousChallenge = { required: true, provider: 'auth0', image: 'x" onerror="alert(1)" x="' };
-      const mockClient = { passwordless: { getChallenge: cb => cb(null, maliciousChallenge) } };
-      captcha.render(mockClient, captcha.Flow.PASSWORDLESS, el, {});
-      const imgEl = el.querySelector('img');
-      expect(imgEl).to.be.ok();
-      expect(imgEl.getAttribute('onerror')).to.equal(null);
-      expect(imgEl.getAttribute('src')).to.equal(maliciousChallenge.image);
+      assertNoInjection(captcha.Flow.PASSWORDLESS, mc => ({ passwordless: { getChallenge: cb => cb(null, mc) } }));
     });
 
     it('should contain an input tag with name captcha', function () {
@@ -1403,15 +1398,7 @@ describe('password reset captcha rendering', function () {
     });
 
     it('should not inject HTML attributes when challenge.image contains a malicious payload', function () {
-      const { window: w } = new JSDOM('<body><div class="captcha" style="display: none;" /></body>');
-      const el = w.document.querySelector('.captcha');
-      const maliciousChallenge = { required: true, provider: 'auth0', image: 'x" onerror="alert(1)" x="' };
-      const mockClient = { dbConnection: { getPasswordResetChallenge: cb => cb(null, maliciousChallenge) } };
-      captcha.render(mockClient, captcha.Flow.PASSWORD_RESET, el, {});
-      const imgEl = el.querySelector('img');
-      expect(imgEl).to.be.ok();
-      expect(imgEl.getAttribute('onerror')).to.equal(null);
-      expect(imgEl.getAttribute('src')).to.equal(maliciousChallenge.image);
+      assertNoInjection(captcha.Flow.PASSWORD_RESET, mc => ({ dbConnection: { getPasswordResetChallenge: cb => cb(null, mc) } }));
     });
 
     it('should contain an input tag with name captcha', function () {
