@@ -33,9 +33,7 @@ var defaults = {
           : 'Solve the formula shown above';
       return (
         '<div class="captcha-challenge">\n' +
-        '  <img src="' +
-        challenge.image +
-        '" />\n' +
+        '  <img src="" />\n' +
         '  <button type="button" class="captcha-reload">↺</button>\n' +
         '</div>\n' +
         '<input type="text" name="captcha"\n' +
@@ -69,14 +67,26 @@ var defaults = {
   }
 };
 
+function escapeAttr(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
 function handleAuth0Provider(element, options, challenge, load) {
-  element.innerHTML = options.templates[challenge.provider](challenge);
-  element
-    .querySelector('.captcha-reload')
-    .addEventListener('click', function (e) {
+  var safeChallenge = Object.assign({}, challenge, {
+    image: escapeAttr(challenge.image)
+  });
+  element.innerHTML = options.templates[challenge.provider](safeChallenge);
+  var img = element.querySelector('.captcha-challenge img');
+  if (img) {
+    img.setAttribute('src', challenge.image || '');
+  }
+  var reloadBtn = element.querySelector('.captcha-reload');
+  if (reloadBtn) {
+    reloadBtn.addEventListener('click', function (e) {
       e.preventDefault();
       load();
     });
+  }
 }
 
 function globalForCaptchaProvider(provider) {
