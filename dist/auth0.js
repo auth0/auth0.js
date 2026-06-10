@@ -1,7 +1,7 @@
 /**
- * auth0-js v10.0.0
+ * auth0-js v10.1.0
  * Author: Auth0
- * Date: 2026-05-06
+ * Date: 2026-06-10
  * License: MIT
  */
 
@@ -2591,7 +2591,7 @@
 
 		    if (obj === null) {
 		        if (strictNullHandling) {
-		            return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset, 'key', format) : prefix;
+		            return formatter(encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset, 'key', format) : prefix);
 		        }
 
 		        obj = '';
@@ -2615,7 +2615,9 @@
 		    if (generateArrayPrefix === 'comma' && isArray(obj)) {
 		        // we need to join elements in
 		        if (encodeValuesOnly && encoder) {
-		            obj = utils.maybeMap(obj, encoder);
+		            obj = utils.maybeMap(obj, function (v) {
+		                return v == null ? v : encoder(v);
+		            });
 		        }
 		        objKeys = [{ value: obj.length > 0 ? obj.join(',') || null : void undefined }];
 		    } else if (isArray(filter)) {
@@ -2785,6 +2787,11 @@
 		    var sideChannel = getSideChannel();
 		    for (var i = 0; i < objKeys.length; ++i) {
 		        var key = objKeys[i];
+
+		        if (typeof key === 'undefined' || key === null) {
+		            continue;
+		        }
+
 		        var value = obj[key];
 
 		        if (options.skipNulls && value === null) {
@@ -2818,10 +2825,10 @@
 		    if (options.charsetSentinel) {
 		        if (options.charset === 'iso-8859-1') {
 		            // encodeURIComponent('&#10003;'), the "numeric entity" representation of a checkmark
-		            prefix += 'utf8=%26%2310003%3B&';
+		            prefix += 'utf8=%26%2310003%3B' + options.delimiter;
 		        } else {
 		            // encodeURIComponent('✓')
-		            prefix += 'utf8=%E2%9C%93&';
+		            prefix += 'utf8=%E2%9C%93' + options.delimiter;
 		        }
 		    }
 
@@ -2904,10 +2911,10 @@
 		    var limit = options.parameterLimit === Infinity ? void undefined : options.parameterLimit;
 		    var parts = cleanStr.split(
 		        options.delimiter,
-		        options.throwOnLimitExceeded ? limit + 1 : limit
+		        options.throwOnLimitExceeded && typeof limit !== 'undefined' ? limit + 1 : limit
 		    );
 
-		    if (options.throwOnLimitExceeded && parts.length > limit) {
+		    if (options.throwOnLimitExceeded && typeof limit !== 'undefined' && parts.length > limit) {
 		        throw new RangeError('Parameter limit exceeded. Only ' + limit + ' parameter' + (limit === 1 ? '' : 's') + ' allowed.');
 		    }
 
@@ -3051,9 +3058,12 @@
 		    return leaf;
 		};
 
-		var splitKeyIntoSegments = function splitKeyIntoSegments(givenKey, options) {
-		    var key = options.allowDots ? givenKey.replace(/\.([^.[]+)/g, '[$1]') : givenKey;
+		// Split a key like "a[b][c[]]" into ['a', '[b]', '[c[]]'] while preserving
+		// qs parse semantics for depth/prototype guards.
+		var splitKeyIntoSegments = function splitKeyIntoSegments(originalKey, options) {
+		    var key = options.allowDots ? originalKey.replace(/\.([^.[]+)/g, '[$1]') : originalKey;
 
+		    // depth <= 0 keeps the whole key as one segment
 		    if (options.depth <= 0) {
 		        if (!options.plainObjects && has.call(Object.prototype, key)) {
 		            if (!options.allowPrototypes) {
@@ -3064,14 +3074,11 @@
 		        return [key];
 		    }
 
-		    var brackets = /(\[[^[\]]*])/;
-		    var child = /(\[[^[\]]*])/g;
+		    var segments = [];
 
-		    var segment = brackets.exec(key);
-		    var parent = segment ? key.slice(0, segment.index) : key;
-
-		    var keys = [];
-
+		    // parent before the first '[' (may be empty if key starts with '[')
+		    var first = key.indexOf('[');
+		    var parent = first >= 0 ? key.slice(0, first) : key;
 		    if (parent) {
 		        if (!options.plainObjects && has.call(Object.prototype, parent)) {
 		            if (!options.allowPrototypes) {
@@ -3079,32 +3086,62 @@
 		            }
 		        }
 
-		        keys[keys.length] = parent;
+		        segments[segments.length] = parent;
 		    }
 
-		    var i = 0;
-		    while ((segment = child.exec(key)) !== null && i < options.depth) {
-		        i += 1;
+		    var n = key.length;
+		    var open = first;
+		    var collected = 0;
 
-		        var segmentContent = segment[1].slice(1, -1);
-		        if (!options.plainObjects && has.call(Object.prototype, segmentContent)) {
-		            if (!options.allowPrototypes) {
-		                return;
+		    while (open >= 0 && collected < options.depth) {
+		        var level = 1;
+		        var i = open + 1;
+		        var close = -1;
+
+		        // balance nested '[' and ']' inside this bracket group using a nesting level counter
+		        while (i < n && close < 0) {
+		            var cu = key.charCodeAt(i);
+		            if (cu === 0x5B) { // '['
+		                level += 1;
+		            } else if (cu === 0x5D) { // ']'
+		                level -= 1;
+		                if (level === 0) {
+		                    close = i; // found matching close; loop will exit by condition
+		                }
 		            }
+		            i += 1;
 		        }
 
-		        keys[keys.length] = segment[1];
+		        if (close < 0) {
+		            // Unterminated group: wrap the raw remainder in one bracket pair so it stays
+		            // a single literal segment (e.g. "[[]b" -> "[[]b]"); we do not infer missing ']'.
+		            segments[segments.length] = '[' + key.slice(open) + ']';
+		            return segments;
+		        }
+
+		        var seg = key.slice(open, close + 1);
+		        // prototype guard for the content of this group
+		        var content = seg.slice(1, -1);
+		        if (!options.plainObjects && has.call(Object.prototype, content) && !options.allowPrototypes) {
+		            return;
+		        }
+
+		        segments[segments.length] = seg;
+		        collected += 1;
+
+		        // find the next '[' after this balanced group
+		        open = key.indexOf('[', close + 1);
 		    }
 
-		    if (segment) {
+		    if (open >= 0) {
 		        if (options.strictDepth === true) {
 		            throw new RangeError('Input depth exceeded depth option of ' + options.depth + ' and strictDepth is true');
 		        }
 
-		        keys[keys.length] = '[' + key.slice(segment.index) + ']';
+		        segments[segments.length] = '[' + key.slice(open) + ']';
 		    }
 
-		    return keys;
+		    return segments;
 		};
 
 		var parseKeys = function parseQueryStringKeys(givenKey, val, options, valuesParsed) {
@@ -3822,7 +3859,7 @@
 	function requireUtils() {
 	  if (hasRequiredUtils) return utils;
 	  hasRequiredUtils = 1;
-	  (function (exports$1) {
+	  (function (exports) {
 
 	    /**
 	     * Return the mime type for the given `str`.
@@ -3831,7 +3868,7 @@
 	     * @return {String}
 	     * @api private
 	     */
-	    exports$1.type = function (string_) {
+	    exports.type = function (string_) {
 	      return string_.split(/ *; */).shift();
 	    };
 
@@ -3843,7 +3880,7 @@
 	     * @api private
 	     */
 
-	    exports$1.params = function (value) {
+	    exports.params = function (value) {
 	      var object = {};
 	      var _iterator = _createForOfIteratorHelper(value.split(/ *; */)),
 	        _step;
@@ -3871,7 +3908,7 @@
 	     * @api private
 	     */
 
-	    exports$1.parseLinks = function (value) {
+	    exports.parseLinks = function (value) {
 	      var object = {};
 	      var _iterator2 = _createForOfIteratorHelper(value.split(/ *, */)),
 	        _step2;
@@ -3899,7 +3936,7 @@
 	     * @api private
 	     */
 
-	    exports$1.cleanHeader = function (header, changesOrigin) {
+	    exports.cleanHeader = function (header, changesOrigin) {
 	      delete header['content-type'];
 	      delete header['content-length'];
 	      delete header['transfer-encoding'];
@@ -3911,7 +3948,7 @@
 	      }
 	      return header;
 	    };
-	    exports$1.normalizeHostname = function (hostname) {
+	    exports.normalizeHostname = function (hostname) {
 	      var _ref = hostname.match(/^\[([^\]]+)\]$/) || [],
 	        _ref2 = _slicedToArray(_ref, 2),
 	        normalized = _ref2[1];
@@ -3925,7 +3962,7 @@
 	     * @return {Boolean}
 	     * @api private
 	     */
-	    exports$1.isObject = function (object) {
+	    exports.isObject = function (object) {
 	      return object !== null && _typeof(object) === 'object';
 	    };
 
@@ -3935,15 +3972,15 @@
 	     * @type {(object: object, property: string) => boolean} object
 	     * @api private
 	     */
-	    exports$1.hasOwn = Object.hasOwn || function (object, property) {
+	    exports.hasOwn = Object.hasOwn || function (object, property) {
 	      if (object == null) {
 	        throw new TypeError('Cannot convert undefined or null to object');
 	      }
 	      return Object.prototype.hasOwnProperty.call(new Object(object), property);
 	    };
-	    exports$1.mixin = function (target, source) {
+	    exports.mixin = function (target, source) {
 	      for (var key in source) {
-	        if (exports$1.hasOwn(source, key)) {
+	        if (exports.hasOwn(source, key)) {
 	          target[key] = source[key];
 	        }
 	      }
@@ -3955,7 +3992,7 @@
 	     * @return {Boolean}
 	     */
 
-	    exports$1.isGzipOrDeflateEncoding = function (res) {
+	    exports.isGzipOrDeflateEncoding = function (res) {
 	      return new RegExp(/^\s*(?:deflate|gzip)\s*$/).test(res.headers['content-encoding']);
 	    };
 
@@ -3965,7 +4002,7 @@
 	     * @return {Boolean}
 	     */
 
-	    exports$1.isBrotliEncoding = function (res) {
+	    exports.isBrotliEncoding = function (res) {
 	      return new RegExp(/^\s*(?:br)\s*$/).test(res.headers['content-encoding']);
 	    };
 	  })(utils);
@@ -4876,7 +4913,7 @@
 	function requireClient() {
 	  if (hasRequiredClient) return client.exports;
 	  hasRequiredClient = 1;
-	  (function (module, exports$1) {
+	  (function (module, exports) {
 
 	    /**
 	     * Root reference for iframes.
@@ -4917,18 +4954,18 @@
 	    module.exports = function (method, url) {
 	      // callback
 	      if (typeof url === 'function') {
-	        return new exports$1.Request('GET', method).end(url);
+	        return new exports.Request('GET', method).end(url);
 	      }
 
 	      // url first
 	      if (arguments.length === 1) {
-	        return new exports$1.Request('GET', method);
+	        return new exports.Request('GET', method);
 	      }
-	      return new exports$1.Request(method, url);
+	      return new exports.Request(method, url);
 	    };
-	    exports$1 = module.exports;
-	    var request = exports$1;
-	    exports$1.Request = Request;
+	    exports = module.exports;
+	    var request = exports;
+	    exports.Request = Request;
 
 	    /**
 	     * Determine XHR.
@@ -6047,7 +6084,7 @@
 	  if (hasRequiredVersion) return version$1;
 	  hasRequiredVersion = 1;
 	  version$1 = {
-	    raw: '10.0.0'
+	    raw: '10.1.0'
 	  };
 	  return version$1;
 	}
@@ -6474,7 +6511,7 @@
 	function requireJs_cookie () {
 		if (hasRequiredJs_cookie) return js_cookie.exports;
 		hasRequiredJs_cookie = 1;
-		(function (module, exports$1) {
+		(function (module, exports) {
 	(function (factory) {
 				var registeredInModuleLoader;
 				{
@@ -8268,7 +8305,7 @@
 	  templates: {
 	    auth0: function auth0(challenge) {
 	      var message = challenge.type === 'code' ? 'Enter the code shown above' : 'Solve the formula shown above';
-	      return '<div class="captcha-challenge">\n' + '  <img src="' + challenge.image + '" />\n' + '  <button type="button" class="captcha-reload">↺</button>\n' + '</div>\n' + '<input type="text" name="captcha"\n' + '  class="form-control captcha-control"\n' + '  placeholder="' + message + '" />';
+	      return '<div class="captcha-challenge">\n' + '  <img src="" />\n' + '  <button type="button" class="captcha-reload">↺</button>\n' + '</div>\n' + '<input type="text" name="captcha"\n' + '  class="form-control captcha-control"\n' + '  placeholder="' + message + '" />';
 	    },
 	    recaptcha_v2: function recaptcha_v2() {
 	      return '<div class="recaptcha" ></div><input type="hidden" name="captcha" />';
@@ -8293,12 +8330,25 @@
 	    }
 	  }
 	};
+	function escapeAttr(str) {
+	  return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+	}
 	function handleAuth0Provider(element, options, challenge, load) {
-	  element.innerHTML = options.templates[challenge.provider](challenge);
-	  element.querySelector('.captcha-reload').addEventListener('click', function (e) {
-	    e.preventDefault();
-	    load();
+	  var safeChallenge = Object.assign({}, challenge, {
+	    image: escapeAttr(challenge.image)
 	  });
+	  element.innerHTML = options.templates[challenge.provider](safeChallenge);
+	  var img = element.querySelector('.captcha-challenge img');
+	  if (img) {
+	    img.setAttribute('src', challenge.image || '');
+	  }
+	  var reloadBtn = element.querySelector('.captcha-reload');
+	  if (reloadBtn) {
+	    reloadBtn.addEventListener('click', function (e) {
+	      e.preventDefault();
+	      load();
+	    });
+	  }
 	}
 	function globalForCaptchaProvider(provider) {
 	  switch (provider) {
