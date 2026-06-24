@@ -82,7 +82,7 @@ const getPlugins = prod => [
         }
       }]
     ],
-    include: ['src/**', 'node_modules/superagent/**']
+    include: ['src/**', 'node_modules/superagent/**', 'node_modules/js-cookie/**']
   }),
   replace({
     __DEV__: prod ? 'false' : 'true',
