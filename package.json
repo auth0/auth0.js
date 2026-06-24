@@ -7,6 +7,16 @@
   "type": "module",
   "module": "dist/auth0.min.esm.js",
   "main": "dist/auth0.min.js",
+  "exports": {
+    ".": {
+      "import": "./dist/auth0.min.esm.js",
+      "require": "./dist/auth0.min.js",
+      "default": "./dist/auth0.min.esm.js"
+    },
+    "./dist/*": "./dist/*",
+    "./build/*": "./build/*",
+    "./package.json": "./package.json"
+  },
   "files": [
     "src",
     "plugins",
