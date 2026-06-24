@@ -1,5 +1,11 @@
 # Change Log
 
+## [v10.1.0](https://github.com/auth0/auth0.js/tree/v10.1.0) (2026-06-10)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v10.0.0...v10.1.0)
+
+**Added**
+- fix(captcha): prevent injection of malicious payloads in challenge.image [\#1652](https://github.com/auth0/auth0.js/pull/1652) ([amitsingh05667](https://github.com/amitsingh05667))
+
 ## [v10.0.0](https://github.com/auth0/auth0.js/tree/v10.0.0) (2026-05-06)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.32.0...v10.0.0)
 
@@ -13,6 +19,7 @@
 |---|---|
 | Apps using RS256 | No breaking change |
 | Apps using HS256 | `parseHash()` now returns an `invalid_token` error instead of silently succeeding. Must switch to RS256 in the Auth0 Dashboard: Applications → your app → Settings → Advanced Settings → OAuth → JsonWebToken Signature Algorithm → `RS256` |
+
 
 ## [v9.32.0](https://github.com/auth0/auth0.js/tree/v9.32.0) (2026-03-25)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v9.31.0...v9.32.0)

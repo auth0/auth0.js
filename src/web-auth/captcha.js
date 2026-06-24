@@ -2,7 +2,7 @@
 import Authentication from '../authentication';
 import object from '../helper/object';
 
-var noop = function () { };
+var noop = function () {};
 var captchaSolved = noop;
 var done = noop;
 var captchaReloaded = false;
@@ -25,6 +25,8 @@ var MAX_RETRY = 3;
 
 var defaults = {
   lang: 'en',
+  appearance: 'always',
+  successCallback: noop,
   templates: {
     auth0: function (challenge) {
       var message =
@@ -33,9 +35,7 @@ var defaults = {
           : 'Solve the formula shown above';
       return (
         '<div class="captcha-challenge">\n' +
-        '  <img src="' +
-        challenge.image +
-        '" />\n' +
+        '  <img src="" />\n' +
         '  <button type="button" class="captcha-reload">↺</button>\n' +
         '</div>\n' +
         '<input type="text" name="captcha"\n' +
@@ -69,14 +69,26 @@ var defaults = {
   }
 };
 
+function escapeAttr(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
 function handleAuth0Provider(element, options, challenge, load) {
-  element.innerHTML = options.templates[challenge.provider](challenge);
-  element
-    .querySelector('.captcha-reload')
-    .addEventListener('click', function (e) {
+  var safeChallenge = Object.assign({}, challenge, {
+    image: escapeAttr(challenge.image)
+  });
+  element.innerHTML = options.templates[challenge.provider](safeChallenge);
+  var img = element.querySelector('.captcha-challenge img');
+  if (img) {
+    img.setAttribute('src', challenge.image || '');
+  }
+  var reloadBtn = element.querySelector('.captcha-reload');
+  if (reloadBtn) {
+    reloadBtn.addEventListener('click', function (e) {
       e.preventDefault();
       load();
     });
+  }
 }
 
 function globalForCaptchaProvider(provider) {
@@ -331,7 +343,12 @@ function handleCaptchaProvider(element, options, challenge) {
         done();
       } else {
         var renderParams = {
-          callback: setValue,
+          callback: function (token) {
+            setValue(token);
+            if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
+              options.successCallback();
+            }
+          },
           'expired-callback': function () {
             setValue();
           },
@@ -344,6 +361,7 @@ function handleCaptchaProvider(element, options, challenge) {
         if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
           retryCount = 0;
           renderParams.language = options.lang;
+          renderParams.appearance = options.appearance;
           renderParams.theme = 'light';
           renderParams.retry = 'never';
           renderParams['response-field'] = false;
@@ -385,6 +403,8 @@ function handleCaptchaProvider(element, options, challenge) {
  * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
  * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
  * @param {String} [options.lang=en] the ISO code of the language for recaptcha
+ * @param {String} [options.appearance=always] When the widget is visible: 'always', 'interaction-only'. Only applies to the auth0_v2 provider.
+ * @param {Function} [options.successCallback] A callback function that is called when the captcha is solved successfully. Only applies to the auth0_v2 provider.
  * @param {Function} [callback] An optional callback called after captcha is loaded
  * @ignore
  */
@@ -447,6 +467,5 @@ function render(auth0Client, flow, element, options, callback) {
     getValue: getValue
   };
 }
-
 
 export default { render: render, Flow: Flow };
