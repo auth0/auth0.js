@@ -1,7 +1,7 @@
 /**
- * auth0-js v10.1.0
+ * auth0-js v10.2.0
  * Author: Auth0
- * Date: 2026-06-10
+ * Date: 2026-06-25
  * License: MIT
  */
 
@@ -6084,7 +6084,7 @@
 	  if (hasRequiredVersion) return version$1;
 	  hasRequiredVersion = 1;
 	  version$1 = {
-	    raw: '10.1.0'
+	    raw: '10.2.0'
 	  };
 	  return version$1;
 	}
@@ -6505,167 +6505,135 @@
 	 * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
 	 * Released under the MIT license
 	 */
-
 	var hasRequiredJs_cookie;
+	function requireJs_cookie() {
+	  if (hasRequiredJs_cookie) return js_cookie.exports;
+	  hasRequiredJs_cookie = 1;
+	  (function (module, exports) {
+	    (function (factory) {
+	      var registeredInModuleLoader;
+	      {
+	        module.exports = factory();
+	        registeredInModuleLoader = true;
+	      }
+	      if (!registeredInModuleLoader) {
+	        var OldCookies = window.Cookies;
+	        var api = window.Cookies = factory();
+	        api.noConflict = function () {
+	          window.Cookies = OldCookies;
+	          return api;
+	        };
+	      }
+	    })(function () {
+	      function extend() {
+	        var i = 0;
+	        var result = {};
+	        for (; i < arguments.length; i++) {
+	          var attributes = arguments[i];
+	          for (var key in attributes) {
+	            result[key] = attributes[key];
+	          }
+	        }
+	        return result;
+	      }
+	      function decode(s) {
+	        return s.replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent);
+	      }
+	      function init(converter) {
+	        function api() {}
+	        function set(key, value, attributes) {
+	          if (typeof document === 'undefined') {
+	            return;
+	          }
+	          attributes = extend({
+	            path: '/'
+	          }, api.defaults, attributes);
+	          if (typeof attributes.expires === 'number') {
+	            attributes.expires = new Date(new Date() * 1 + attributes.expires * 864e+5);
+	          }
 
-	function requireJs_cookie () {
-		if (hasRequiredJs_cookie) return js_cookie.exports;
-		hasRequiredJs_cookie = 1;
-		(function (module, exports) {
-	(function (factory) {
-				var registeredInModuleLoader;
-				{
-					module.exports = factory();
-					registeredInModuleLoader = true;
-				}
-				if (!registeredInModuleLoader) {
-					var OldCookies = window.Cookies;
-					var api = window.Cookies = factory();
-					api.noConflict = function () {
-						window.Cookies = OldCookies;
-						return api;
-					};
-				}
-			}(function () {
-				function extend () {
-					var i = 0;
-					var result = {};
-					for (; i < arguments.length; i++) {
-						var attributes = arguments[ i ];
-						for (var key in attributes) {
-							result[key] = attributes[key];
-						}
-					}
-					return result;
-				}
+	          // We're using "expires" because "max-age" is not supported by IE
+	          attributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';
+	          try {
+	            var result = JSON.stringify(value);
+	            if (/^[\{\[]/.test(result)) {
+	              value = result;
+	            }
+	          } catch (e) {}
+	          value = converter.write ? converter.write(value, key) : encodeURIComponent(String(value)).replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+	          key = encodeURIComponent(String(key)).replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent).replace(/[\(\)]/g, escape);
+	          var stringifiedAttributes = '';
+	          for (var attributeName in attributes) {
+	            if (!attributes[attributeName]) {
+	              continue;
+	            }
+	            stringifiedAttributes += '; ' + attributeName;
+	            if (attributes[attributeName] === true) {
+	              continue;
+	            }
 
-				function decode (s) {
-					return s.replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent);
-				}
-
-				function init (converter) {
-					function api() {}
-
-					function set (key, value, attributes) {
-						if (typeof document === 'undefined') {
-							return;
-						}
-
-						attributes = extend({
-							path: '/'
-						}, api.defaults, attributes);
-
-						if (typeof attributes.expires === 'number') {
-							attributes.expires = new Date(new Date() * 1 + attributes.expires * 864e+5);
-						}
-
-						// We're using "expires" because "max-age" is not supported by IE
-						attributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';
-
-						try {
-							var result = JSON.stringify(value);
-							if (/^[\{\[]/.test(result)) {
-								value = result;
-							}
-						} catch (e) {}
-
-						value = converter.write ?
-							converter.write(value, key) :
-							encodeURIComponent(String(value))
-								.replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
-
-						key = encodeURIComponent(String(key))
-							.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent)
-							.replace(/[\(\)]/g, escape);
-
-						var stringifiedAttributes = '';
-						for (var attributeName in attributes) {
-							if (!attributes[attributeName]) {
-								continue;
-							}
-							stringifiedAttributes += '; ' + attributeName;
-							if (attributes[attributeName] === true) {
-								continue;
-							}
-
-							// Considers RFC 6265 section 5.2:
-							// ...
-							// 3.  If the remaining unparsed-attributes contains a %x3B (";")
-							//     character:
-							// Consume the characters of the unparsed-attributes up to,
-							// not including, the first %x3B (";") character.
-							// ...
-							stringifiedAttributes += '=' + attributes[attributeName].split(';')[0];
-						}
-
-						return (document.cookie = key + '=' + value + stringifiedAttributes);
-					}
-
-					function get (key, json) {
-						if (typeof document === 'undefined') {
-							return;
-						}
-
-						var jar = {};
-						// To prevent the for loop in the first place assign an empty array
-						// in case there are no cookies at all.
-						var cookies = document.cookie ? document.cookie.split('; ') : [];
-						var i = 0;
-
-						for (; i < cookies.length; i++) {
-							var parts = cookies[i].split('=');
-							var cookie = parts.slice(1).join('=');
-
-							if (!json && cookie.charAt(0) === '"') {
-								cookie = cookie.slice(1, -1);
-							}
-
-							try {
-								var name = decode(parts[0]);
-								cookie = (converter.read || converter)(cookie, name) ||
-									decode(cookie);
-
-								if (json) {
-									try {
-										cookie = JSON.parse(cookie);
-									} catch (e) {}
-								}
-
-								jar[name] = cookie;
-
-								if (key === name) {
-									break;
-								}
-							} catch (e) {}
-						}
-
-						return key ? jar[key] : jar;
-					}
-
-					api.set = set;
-					api.get = function (key) {
-						return get(key, false /* read as raw */);
-					};
-					api.getJSON = function (key) {
-						return get(key, true /* read as json */);
-					};
-					api.remove = function (key, attributes) {
-						set(key, '', extend(attributes, {
-							expires: -1
-						}));
-					};
-
-					api.defaults = {};
-
-					api.withConverter = init;
-
-					return api;
-				}
-
-				return init(function () {});
-			})); 
-		} (js_cookie));
-		return js_cookie.exports;
+	            // Considers RFC 6265 section 5.2:
+	            // ...
+	            // 3.  If the remaining unparsed-attributes contains a %x3B (";")
+	            //     character:
+	            // Consume the characters of the unparsed-attributes up to,
+	            // not including, the first %x3B (";") character.
+	            // ...
+	            stringifiedAttributes += '=' + attributes[attributeName].split(';')[0];
+	          }
+	          return document.cookie = key + '=' + value + stringifiedAttributes;
+	        }
+	        function get(key, json) {
+	          if (typeof document === 'undefined') {
+	            return;
+	          }
+	          var jar = {};
+	          // To prevent the for loop in the first place assign an empty array
+	          // in case there are no cookies at all.
+	          var cookies = document.cookie ? document.cookie.split('; ') : [];
+	          var i = 0;
+	          for (; i < cookies.length; i++) {
+	            var parts = cookies[i].split('=');
+	            var cookie = parts.slice(1).join('=');
+	            if (!json && cookie.charAt(0) === '"') {
+	              cookie = cookie.slice(1, -1);
+	            }
+	            try {
+	              var name = decode(parts[0]);
+	              cookie = (converter.read || converter)(cookie, name) || decode(cookie);
+	              if (json) {
+	                try {
+	                  cookie = JSON.parse(cookie);
+	                } catch (e) {}
+	              }
+	              jar[name] = cookie;
+	              if (key === name) {
+	                break;
+	              }
+	            } catch (e) {}
+	          }
+	          return key ? jar[key] : jar;
+	        }
+	        api.set = set;
+	        api.get = function (key) {
+	          return get(key, false /* read as raw */);
+	        };
+	        api.getJSON = function (key) {
+	          return get(key, true /* read as json */);
+	        };
+	        api.remove = function (key, attributes) {
+	          set(key, '', extend(attributes, {
+	            expires: -1
+	          }));
+	        };
+	        api.defaults = {};
+	        api.withConverter = init;
+	        return api;
+	      }
+	      return init(function () {});
+	    });
+	  })(js_cookie);
+	  return js_cookie.exports;
 	}
 
 	var js_cookieExports = requireJs_cookie();
@@ -8302,6 +8270,8 @@
 	var MAX_RETRY = 3;
 	var defaults = {
 	  lang: 'en',
+	  appearance: 'always',
+	  successCallback: noop,
 	  templates: {
 	    auth0: function auth0(challenge) {
 	      var message = challenge.type === 'code' ? 'Enter the code shown above' : 'Solve the formula shown above';
@@ -8546,7 +8516,12 @@
 	      done();
 	    } else {
 	      var renderParams = {
-	        callback: setValue,
+	        callback: function callback(token) {
+	          setValue(token);
+	          if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
+	            options.successCallback();
+	          }
+	        },
 	        'expired-callback': function expiredCallback() {
 	          setValue();
 	        },
@@ -8558,6 +8533,7 @@
 	      if (challenge.provider === AUTH0_V2_CAPTCHA_PROVIDER) {
 	        retryCount = 0;
 	        renderParams.language = options.lang;
+	        renderParams.appearance = options.appearance;
 	        renderParams.theme = 'light';
 	        renderParams.retry = 'never';
 	        renderParams['response-field'] = false;
@@ -8597,6 +8573,8 @@
 	 * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for recaptcha
+	 * @param {String} [options.appearance=always] When the widget is visible: 'always', 'interaction-only'. Only applies to the auth0_v2 provider.
+	 * @param {Function} [options.successCallback] A callback function that is called when the captcha is solved successfully. Only applies to the auth0_v2 provider.
 	 * @param {Function} [callback] An optional callback called after captcha is loaded
 	 * @ignore
 	 */
@@ -9478,6 +9456,8 @@
 	 * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
+	 * @param {String} [options.appearance=always] When the widget is visible: 'always', 'execute', 'interaction-only'
+	 * @param {Function} [options.successCallback] A callback function that is called when the captcha is solved successfully. Only applies to the auth0_v2 provider.\
 	 * @param {captchaLoadedCallback} [callback] An optional callback called after captcha is loaded
 	 * @memberof WebAuth.prototype
 	 */
@@ -9502,6 +9482,8 @@
 	 * @param {Function} [options.templates.arkose] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
+	 * @param {String} [options.appearance=always] When the widget is visible: 'always', 'execute', 'interaction-only'
+	 * @param {Function} [options.successCallback] A callback function that is called when the captcha is solved successfully. Only applies to the auth0_v2 provider.
 	 * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
 	 * @param {captchaLoadedCallback} [callback] An optional callback called after captcha is loaded
 	 * @memberof WebAuth.prototype
@@ -9553,6 +9535,8 @@
 	 * @param {Function} [options.templates.auth0_v2] template function receiving the challenge and returning a string
 	 * @param {Function} [options.templates.error] template function returning a custom error message when the challenge could not be fetched, receives the error as first argument
 	 * @param {String} [options.lang=en] the ISO code of the language for the captcha provider
+	 * @param {String} [options.appearance=always] When the widget is visible: 'always', 'execute', 'interaction-only'
+	 * @param {Function} [options.successCallback] A callback function that is called when the captcha is solved successfully. Only applies to the auth0_v2 provider.
 	 * @param {captchaLoadedCallback} [callback] An optional callback called after captcha is loaded
 	 * @memberof WebAuth.prototype
 	 */
