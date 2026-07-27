@@ -240,6 +240,7 @@ function handleCaptchaProvider(element, options, challenge) {
   ) {
     setValue();
     window.auth0FCInstance.reset();
+    done();
     return;
   } else if (
     challenge.provider === ARKOSE_PROVIDER &&
@@ -251,6 +252,7 @@ function handleCaptchaProvider(element, options, challenge) {
   } else if (widgetId) {
     setValue();
     globalForCaptchaProvider(challenge.provider).reset(widgetId);
+    done();
     return;
   }
 

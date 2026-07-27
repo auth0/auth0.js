@@ -542,6 +542,13 @@ describe('captcha rendering', function () {
           expect(resetted).to.be.ok();
         });
 
+        it('should call done callback when reloading an already-rendered widget', function () {
+          const doneStub = sinon.stub();
+          c.reload(doneStub);
+          expect(doneStub.calledOnce).to.be.ok();
+          expect(resetted).to.be.ok();
+        });
+
         it('should clean the value when there is an error', function () {
           const input = element.querySelector('input[name="captcha"]');
           input.value = 'expired token';
