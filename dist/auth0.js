@@ -1,7 +1,7 @@
 /**
- * auth0-js v10.2.0
+ * auth0-js v10.2.1
  * Author: Auth0
- * Date: 2026-06-25
+ * Date: 2026-08-06
  * License: MIT
  */
 
@@ -805,9 +805,8 @@
 					}
 				},
 				'delete': function (key) {
-					var root = $o && $o.next;
 					var deletedNode = listDelete($o, key);
-					if (deletedNode && root && root === deletedNode) {
+					if (deletedNode && $o && !$o.next) {
 						$o = void undefined;
 					}
 					return !!deletedNode;
@@ -829,7 +828,6 @@
 					listSet(/** @type {NonNullable<typeof $o>} */ ($o), key, value);
 				}
 			};
-			// @ts-expect-error TODO: figure out why this is erroring
 			return channel;
 		};
 		return sideChannelList;
@@ -2059,7 +2057,10 @@
 			var channel = {
 				assert: function (key) {
 					if (!channel.has(key)) {
-						throw new $TypeError('Side channel does not contain ' + inspect(key));
+						var keyDesc = key && Object(key) === key
+							? 'the given object key'
+							: inspect(key);
+						throw new $TypeError('Side channel does not contain ' + keyDesc);
 					}
 				},
 				'delete': function (key) {
@@ -2079,7 +2080,7 @@
 					$channelData.set(key, value);
 				}
 			};
-			// @ts-expect-error TODO: figure out why this is erroring
+
 			return channel;
 		};
 		return sideChannel;
@@ -2125,6 +2126,7 @@
 
 		var formats = /*@__PURE__*/ requireFormats();
 		var getSideChannel = requireSideChannel();
+		var defineProperty = /*@__PURE__*/ requireEsDefineProperty();
 
 		var has = Object.prototype.hasOwnProperty;
 		var isArray = Array.isArray;
@@ -2189,6 +2191,19 @@
 		    return obj;
 		};
 
+		var setProperty = function setProperty(obj, key, value) {
+		    if (key === '__proto__' && defineProperty) {
+		        defineProperty(obj, key, {
+		            configurable: true,
+		            enumerable: true,
+		            value: value,
+		            writable: true
+		        });
+		    } else {
+		        obj[key] = value;
+		    }
+		};
+
 		var merge = function merge(target, source, options) {
 		    /* eslint no-param-reassign: 0 */
 		    if (!source) {
@@ -2198,7 +2213,10 @@
 		    if (typeof source !== 'object' && typeof source !== 'function') {
 		        if (isArray(target)) {
 		            var nextIndex = target.length;
-		            if (options && typeof options.arrayLimit === 'number' && nextIndex > options.arrayLimit) {
+		            if (options && typeof options.arrayLimit === 'number' && nextIndex >= options.arrayLimit) {
+		                if (options.throwOnLimitExceeded) {
+		                    throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		                }
 		                return markOverflow(arrayToObject(target.concat(source), options), nextIndex);
 		            }
 		            target[nextIndex] = source;
@@ -2238,6 +2256,9 @@
 		        }
 		        var combined = [target].concat(source);
 		        if (options && typeof options.arrayLimit === 'number' && combined.length > options.arrayLimit) {
+		            if (options.throwOnLimitExceeded) {
+		                throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		            }
 		            return markOverflow(arrayToObject(combined, options), combined.length - 1);
 		        }
 		        return combined;
@@ -2261,6 +2282,12 @@
 		                target[i] = item;
 		            }
 		        });
+		        if (options && typeof options.arrayLimit === 'number' && target.length > options.arrayLimit) {
+		            if (options.throwOnLimitExceeded) {
+		                throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		            }
+		            return markOverflow(arrayToObject(target, options), target.length - 1);
+		        }
 		        return target;
 		    }
 
@@ -2268,9 +2295,9 @@
 		        var value = source[key];
 
 		        if (has.call(acc, key)) {
-		            acc[key] = merge(acc[key], value, options);
+		            setProperty(acc, key, merge(acc[key], value, options));
 		        } else {
-		            acc[key] = value;
+		            setProperty(acc, key, value);
 		        }
 
 		        if (isOverflow(source) && !isOverflow(acc)) {
@@ -2289,7 +2316,7 @@
 
 		var assign = function assignSingleSource(target, source) {
 		    return Object.keys(source).reduce(function (acc, key) {
-		        acc[key] = source[key];
+		        setProperty(acc, key, source[key]);
 		        return acc;
 		    }, target);
 		};
@@ -2335,6 +2362,13 @@
 		    var out = '';
 		    for (var j = 0; j < string.length; j += limit) {
 		        var segment = string.length >= limit ? string.slice(j, j + limit) : string;
+		        if (j + limit < string.length) {
+		            var last = segment.charCodeAt(segment.length - 1);
+		            if (last >= 0xD800 && last <= 0xDBFF) {
+		                segment = segment.slice(0, -1);
+		                j -= 1;
+		            }
+		        }
 		        var arr = [];
 
 		        for (var i = 0; i < segment.length; ++i) {
@@ -2388,7 +2422,7 @@
 
 		var compact = function compact(value) {
 		    var queue = [{ obj: { o: value }, prop: 'o' }];
-		    var refs = [];
+		    var refs = getSideChannel();
 
 		    for (var i = 0; i < queue.length; ++i) {
 		        var item = queue[i];
@@ -2398,9 +2432,9 @@
 		        for (var j = 0; j < keys.length; ++j) {
 		            var key = keys[j];
 		            var val = obj[key];
-		            if (typeof val === 'object' && val !== null && refs.indexOf(val) === -1) {
+		            if (typeof val === 'object' && val !== null && !refs.has(val)) {
 		                queue[queue.length] = { obj: obj, prop: key };
-		                refs[refs.length] = val;
+		                refs.set(val, true);
 		            }
 		        }
 		    }
@@ -2422,9 +2456,12 @@
 		    return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
 		};
 
-		var combine = function combine(a, b, arrayLimit, plainObjects) {
+		var combine = function combine(a, b, arrayLimit, plainObjects, throwOnLimitExceeded) {
 		    // If 'a' is already an overflow object, add to it
 		    if (isOverflow(a)) {
+		        if (throwOnLimitExceeded) {
+		            throw new RangeError('Array limit exceeded. Only ' + arrayLimit + ' element' + (arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		        }
 		        var newIndex = getMaxIndex(a) + 1;
 		        a[newIndex] = b;
 		        setMaxIndex(a, newIndex);
@@ -2433,6 +2470,9 @@
 
 		    var result = [].concat(a, b);
 		    if (result.length > arrayLimit) {
+		        if (throwOnLimitExceeded) {
+		            throw new RangeError('Array limit exceeded. Only ' + arrayLimit + ' element' + (arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		        }
 		        return markOverflow(arrayToObject(result, { plainObjects: plainObjects }), result.length - 1);
 		    }
 		    return result;
@@ -2880,8 +2920,19 @@
 		    });
 		};
 
-		var parseArrayValue = function (val, options, currentArrayLength) {
+		var parseArrayValue = function (val, options, currentArrayLength, isFlatArrayValue) {
 		    if (val && typeof val === 'string' && options.comma && val.indexOf(',') > -1) {
+		        if (isFlatArrayValue && options.throwOnLimitExceeded) {
+		            var commaCount = 0;
+		            var commaIndex = val.indexOf(',');
+		            while (commaIndex > -1) {
+		                commaCount += 1;
+		                if (commaCount >= options.arrayLimit) {
+		                    throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		                }
+		                commaIndex = val.indexOf(',', commaIndex + 1);
+		            }
+		        }
 		        return val.split(',');
 		    }
 
@@ -2958,7 +3009,8 @@
 		                    parseArrayValue(
 		                        part.slice(pos + 1),
 		                        options,
-		                        isArray(obj[key]) ? obj[key].length : 0
+		                        isArray(obj[key]) ? obj[key].length : 0,
+		                        part.indexOf('[]=') === -1
 		                    ),
 		                    function (encodedVal) {
 		                        return options.decoder(encodedVal, defaults.decoder, charset, 'value');
@@ -2976,10 +3028,7 @@
 		        }
 
 		        if (options.comma && isArray(val) && val.length > options.arrayLimit) {
-		            if (options.throwOnLimitExceeded) {
-		                throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
-		            }
-		            val = utils.combine([], val, options.arrayLimit, options.plainObjects);
+		            val = utils.combine([], val, options.arrayLimit, options.plainObjects, options.throwOnLimitExceeded);
 		        }
 
 		        if (key !== null) {
@@ -2989,7 +3038,8 @@
 		                    obj[key],
 		                    val,
 		                    options.arrayLimit,
-		                    options.plainObjects
+		                    options.plainObjects,
+		                    options.throwOnLimitExceeded
 		                );
 		            } else if (!existing || options.duplicates === 'last') {
 		                obj[key] = val;
@@ -3024,7 +3074,8 @@
 		                        [],
 		                        leaf,
 		                        options.arrayLimit,
-		                        options.plainObjects
+		                        options.plainObjects,
+		                        options.throwOnLimitExceeded
 		                    );
 		            }
 		        } else {
@@ -6084,7 +6135,7 @@
 	  if (hasRequiredVersion) return version$1;
 	  hasRequiredVersion = 1;
 	  version$1 = {
-	    raw: '10.2.0'
+	    raw: '10.2.1'
 	  };
 	  return version$1;
 	}
@@ -6496,148 +6547,112 @@
 	DummyStorage.prototype.removeItem = function () {};
 	DummyStorage.prototype.setItem = function () {};
 
-	var js_cookie = {exports: {}};
-
-	/*!
-	 * JavaScript Cookie v2.2.1
-	 * https://github.com/js-cookie/js-cookie
-	 *
-	 * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
-	 * Released under the MIT license
-	 */
-	var hasRequiredJs_cookie;
-	function requireJs_cookie() {
-	  if (hasRequiredJs_cookie) return js_cookie.exports;
-	  hasRequiredJs_cookie = 1;
-	  (function (module, exports) {
-	    (function (factory) {
-	      var registeredInModuleLoader;
-	      {
-	        module.exports = factory();
-	        registeredInModuleLoader = true;
-	      }
-	      if (!registeredInModuleLoader) {
-	        var OldCookies = window.Cookies;
-	        var api = window.Cookies = factory();
-	        api.noConflict = function () {
-	          window.Cookies = OldCookies;
-	          return api;
-	        };
-	      }
-	    })(function () {
-	      function extend() {
-	        var i = 0;
-	        var result = {};
-	        for (; i < arguments.length; i++) {
-	          var attributes = arguments[i];
-	          for (var key in attributes) {
-	            result[key] = attributes[key];
-	          }
-	        }
-	        return result;
-	      }
-	      function decode(s) {
-	        return s.replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent);
-	      }
-	      function init(converter) {
-	        function api() {}
-	        function set(key, value, attributes) {
-	          if (typeof document === 'undefined') {
-	            return;
-	          }
-	          attributes = extend({
-	            path: '/'
-	          }, api.defaults, attributes);
-	          if (typeof attributes.expires === 'number') {
-	            attributes.expires = new Date(new Date() * 1 + attributes.expires * 864e+5);
-	          }
-
-	          // We're using "expires" because "max-age" is not supported by IE
-	          attributes.expires = attributes.expires ? attributes.expires.toUTCString() : '';
-	          try {
-	            var result = JSON.stringify(value);
-	            if (/^[\{\[]/.test(result)) {
-	              value = result;
-	            }
-	          } catch (e) {}
-	          value = converter.write ? converter.write(value, key) : encodeURIComponent(String(value)).replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
-	          key = encodeURIComponent(String(key)).replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent).replace(/[\(\)]/g, escape);
-	          var stringifiedAttributes = '';
-	          for (var attributeName in attributes) {
-	            if (!attributes[attributeName]) {
-	              continue;
-	            }
-	            stringifiedAttributes += '; ' + attributeName;
-	            if (attributes[attributeName] === true) {
-	              continue;
-	            }
-
-	            // Considers RFC 6265 section 5.2:
-	            // ...
-	            // 3.  If the remaining unparsed-attributes contains a %x3B (";")
-	            //     character:
-	            // Consume the characters of the unparsed-attributes up to,
-	            // not including, the first %x3B (";") character.
-	            // ...
-	            stringifiedAttributes += '=' + attributes[attributeName].split(';')[0];
-	          }
-	          return document.cookie = key + '=' + value + stringifiedAttributes;
-	        }
-	        function get(key, json) {
-	          if (typeof document === 'undefined') {
-	            return;
-	          }
-	          var jar = {};
-	          // To prevent the for loop in the first place assign an empty array
-	          // in case there are no cookies at all.
-	          var cookies = document.cookie ? document.cookie.split('; ') : [];
-	          var i = 0;
-	          for (; i < cookies.length; i++) {
-	            var parts = cookies[i].split('=');
-	            var cookie = parts.slice(1).join('=');
-	            if (!json && cookie.charAt(0) === '"') {
-	              cookie = cookie.slice(1, -1);
-	            }
-	            try {
-	              var name = decode(parts[0]);
-	              cookie = (converter.read || converter)(cookie, name) || decode(cookie);
-	              if (json) {
-	                try {
-	                  cookie = JSON.parse(cookie);
-	                } catch (e) {}
-	              }
-	              jar[name] = cookie;
-	              if (key === name) {
-	                break;
-	              }
-	            } catch (e) {}
-	          }
-	          return key ? jar[key] : jar;
-	        }
-	        api.set = set;
-	        api.get = function (key) {
-	          return get(key, false /* read as raw */);
-	        };
-	        api.getJSON = function (key) {
-	          return get(key, true /* read as json */);
-	        };
-	        api.remove = function (key, attributes) {
-	          set(key, '', extend(attributes, {
-	            expires: -1
-	          }));
-	        };
-	        api.defaults = {};
-	        api.withConverter = init;
-	        return api;
-	      }
-	      return init(function () {});
-	    });
-	  })(js_cookie);
-	  return js_cookie.exports;
+	/*! js-cookie v3.0.8 | MIT */
+	function assign(target) {
+	  for (var i = 1; i < arguments.length; i++) {
+	    var source = arguments[i];
+	    for (var key in source) {
+	      if (key === '__proto__') continue;
+	      target[key] = source[key];
+	    }
+	  }
+	  return target;
 	}
+	var defaultConverter = {
+	  read: function read(value) {
+	    if (value[0] === '"') {
+	      value = value.slice(1, -1);
+	    }
+	    return value.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent);
+	  },
+	  write: function write(value) {
+	    return encodeURIComponent(value).replace(/%(2[346BF]|3[AC-F]|40|5[BDE]|60|7[BCD])/g, decodeURIComponent);
+	  }
+	};
+	function init(converter, defaultAttributes) {
+	  function set(name, value, attributes) {
+	    if (typeof document === 'undefined') {
+	      return;
+	    }
+	    attributes = assign({}, defaultAttributes, attributes);
+	    if (typeof attributes.expires === 'number') {
+	      attributes.expires = new Date(Date.now() + attributes.expires * 864e5);
+	    }
+	    if (attributes.expires) {
+	      attributes.expires = attributes.expires.toUTCString();
+	    }
+	    name = encodeURIComponent(name).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
+	    var stringifiedAttributes = '';
+	    for (var attributeName in attributes) {
+	      if (!attributes[attributeName]) {
+	        continue;
+	      }
+	      stringifiedAttributes += '; ' + attributeName;
+	      if (attributes[attributeName] === true) {
+	        continue;
+	      }
 
-	var js_cookieExports = requireJs_cookie();
-	var Cookie = /*@__PURE__*/getDefaultExportFromCjs(js_cookieExports);
+	      // Considers RFC 6265 section 5.2:
+	      // ...
+	      // 3.  If the remaining unparsed-attributes contains a %x3B (";")
+	      //     character:
+	      // Consume the characters of the unparsed-attributes up to,
+	      // not including, the first %x3B (";") character.
+	      // ...
+	      stringifiedAttributes += '=' + attributes[attributeName].split(';')[0];
+	    }
+	    return document.cookie = name + '=' + converter.write(value, name) + stringifiedAttributes;
+	  }
+	  function get(name) {
+	    if (typeof document === 'undefined' || arguments.length && !name) {
+	      return;
+	    }
+
+	    // To prevent the for loop in the first place assign an empty array
+	    // in case there are no cookies at all.
+	    var cookies = document.cookie ? document.cookie.split('; ') : [];
+	    var jar = {};
+	    for (var i = 0; i < cookies.length; i++) {
+	      var parts = cookies[i].split('=');
+	      var value = parts.slice(1).join('=');
+	      try {
+	        var found = decodeURIComponent(parts[0]);
+	        if (!(found in jar)) jar[found] = converter.read(value, found);
+	        if (name === found) {
+	          break;
+	        }
+	      } catch (_e) {
+	        // Do nothing...
+	      }
+	    }
+	    return name ? jar[name] : jar;
+	  }
+	  return Object.create({
+	    set: set,
+	    get: get,
+	    remove: function remove(name, attributes) {
+	      set(name, '', assign({}, attributes, {
+	        expires: -1
+	      }));
+	    },
+	    withAttributes: function withAttributes(attributes) {
+	      return init(this.converter, assign({}, this.attributes, attributes));
+	    },
+	    withConverter: function withConverter(converter) {
+	      return init(assign({}, this.converter, converter), this.attributes);
+	    }
+	  }, {
+	    attributes: {
+	      value: Object.freeze(defaultAttributes)
+	    },
+	    converter: {
+	      value: Object.freeze(converter)
+	    }
+	  });
+	}
+	var api = init(defaultConverter, {
+	  path: '/'
+	});
 
 	function buildCompatCookieKey(key) {
 	  return '_' + key + '_compat';
@@ -6646,16 +6661,16 @@
 	  this._options = options || {};
 	}
 	CookieStorage.prototype.getItem = function (key) {
-	  var cookie = Cookie.get(key);
-	  return cookie || Cookie.get(buildCompatCookieKey(key));
+	  var cookie = api.get(key);
+	  return cookie || api.get(buildCompatCookieKey(key));
 	};
 	CookieStorage.prototype.removeItem = function (key) {
 	  var params = {};
 	  if (this._options.cookieDomain) {
 	    params.domain = this._options.cookieDomain;
 	  }
-	  Cookie.remove(key, params);
-	  Cookie.remove(buildCompatCookieKey(key), params);
+	  api.remove(key, params);
+	  api.remove(buildCompatCookieKey(key), params);
 	};
 	CookieStorage.prototype.setItem = function (key, value, options) {
 	  var params = objectHelper.extend({
@@ -6667,13 +6682,13 @@
 	    if (this._options.legacySameSiteCookie) {
 	      // Save a compatibility cookie without sameSite='none' for browsers that don't support it.
 	      var legacyOptions = objectHelper.blacklist(params, ['sameSite']);
-	      Cookie.set(buildCompatCookieKey(key), value, legacyOptions);
+	      api.set(buildCompatCookieKey(key), value, legacyOptions);
 	    }
 	  }
 	  if (this._options.cookieDomain) {
 	    params.domain = this._options.cookieDomain;
 	  }
-	  Cookie.set(key, value, params);
+	  api.set(key, value, params);
 	};
 
 	/* eslint-disable no-console */

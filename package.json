@@ -1,6 +1,6 @@
 {
   "name": "auth0-js",
-  "version": "10.2.0",
+  "version": "10.2.1",
   "description": "Auth0 headless browser sdk",
   "author": "Auth0",
   "license": "MIT",
