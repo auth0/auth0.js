@@ -1,7 +1,7 @@
 /**
- * auth0-js v10.2.0
+ * auth0-js v10.2.1
  * Author: Auth0
- * Date: 2026-06-25
+ * Date: 2026-08-06
  * License: MIT
  */
 
@@ -52,7 +52,7 @@
 	  if (hasRequiredVersion) return version$1;
 	  hasRequiredVersion = 1;
 	  version$1 = {
-	    raw: '10.2.0'
+	    raw: '10.2.1'
 	  };
 	  return version$1;
 	}
@@ -1122,9 +1122,8 @@
 					}
 				},
 				'delete': function (key) {
-					var root = $o && $o.next;
 					var deletedNode = listDelete($o, key);
-					if (deletedNode && root && root === deletedNode) {
+					if (deletedNode && $o && !$o.next) {
 						$o = void undefined;
 					}
 					return !!deletedNode;
@@ -1146,7 +1145,6 @@
 					listSet(/** @type {NonNullable<typeof $o>} */ ($o), key, value);
 				}
 			};
-			// @ts-expect-error TODO: figure out why this is erroring
 			return channel;
 		};
 		return sideChannelList;
@@ -2376,7 +2374,10 @@
 			var channel = {
 				assert: function (key) {
 					if (!channel.has(key)) {
-						throw new $TypeError('Side channel does not contain ' + inspect(key));
+						var keyDesc = key && Object(key) === key
+							? 'the given object key'
+							: inspect(key);
+						throw new $TypeError('Side channel does not contain ' + keyDesc);
 					}
 				},
 				'delete': function (key) {
@@ -2396,7 +2397,7 @@
 					$channelData.set(key, value);
 				}
 			};
-			// @ts-expect-error TODO: figure out why this is erroring
+
 			return channel;
 		};
 		return sideChannel;
@@ -2442,6 +2443,7 @@
 
 		var formats = /*@__PURE__*/ requireFormats();
 		var getSideChannel = requireSideChannel();
+		var defineProperty = /*@__PURE__*/ requireEsDefineProperty();
 
 		var has = Object.prototype.hasOwnProperty;
 		var isArray = Array.isArray;
@@ -2506,6 +2508,19 @@
 		    return obj;
 		};
 
+		var setProperty = function setProperty(obj, key, value) {
+		    if (key === '__proto__' && defineProperty) {
+		        defineProperty(obj, key, {
+		            configurable: true,
+		            enumerable: true,
+		            value: value,
+		            writable: true
+		        });
+		    } else {
+		        obj[key] = value;
+		    }
+		};
+
 		var merge = function merge(target, source, options) {
 		    /* eslint no-param-reassign: 0 */
 		    if (!source) {
@@ -2515,7 +2530,10 @@
 		    if (typeof source !== 'object' && typeof source !== 'function') {
 		        if (isArray(target)) {
 		            var nextIndex = target.length;
-		            if (options && typeof options.arrayLimit === 'number' && nextIndex > options.arrayLimit) {
+		            if (options && typeof options.arrayLimit === 'number' && nextIndex >= options.arrayLimit) {
+		                if (options.throwOnLimitExceeded) {
+		                    throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		                }
 		                return markOverflow(arrayToObject(target.concat(source), options), nextIndex);
 		            }
 		            target[nextIndex] = source;
@@ -2555,6 +2573,9 @@
 		        }
 		        var combined = [target].concat(source);
 		        if (options && typeof options.arrayLimit === 'number' && combined.length > options.arrayLimit) {
+		            if (options.throwOnLimitExceeded) {
+		                throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		            }
 		            return markOverflow(arrayToObject(combined, options), combined.length - 1);
 		        }
 		        return combined;
@@ -2578,6 +2599,12 @@
 		                target[i] = item;
 		            }
 		        });
+		        if (options && typeof options.arrayLimit === 'number' && target.length > options.arrayLimit) {
+		            if (options.throwOnLimitExceeded) {
+		                throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		            }
+		            return markOverflow(arrayToObject(target, options), target.length - 1);
+		        }
 		        return target;
 		    }
 
@@ -2585,9 +2612,9 @@
 		        var value = source[key];
 
 		        if (has.call(acc, key)) {
-		            acc[key] = merge(acc[key], value, options);
+		            setProperty(acc, key, merge(acc[key], value, options));
 		        } else {
-		            acc[key] = value;
+		            setProperty(acc, key, value);
 		        }
 
 		        if (isOverflow(source) && !isOverflow(acc)) {
@@ -2606,7 +2633,7 @@
 
 		var assign = function assignSingleSource(target, source) {
 		    return Object.keys(source).reduce(function (acc, key) {
-		        acc[key] = source[key];
+		        setProperty(acc, key, source[key]);
 		        return acc;
 		    }, target);
 		};
@@ -2652,6 +2679,13 @@
 		    var out = '';
 		    for (var j = 0; j < string.length; j += limit) {
 		        var segment = string.length >= limit ? string.slice(j, j + limit) : string;
+		        if (j + limit < string.length) {
+		            var last = segment.charCodeAt(segment.length - 1);
+		            if (last >= 0xD800 && last <= 0xDBFF) {
+		                segment = segment.slice(0, -1);
+		                j -= 1;
+		            }
+		        }
 		        var arr = [];
 
 		        for (var i = 0; i < segment.length; ++i) {
@@ -2705,7 +2739,7 @@
 
 		var compact = function compact(value) {
 		    var queue = [{ obj: { o: value }, prop: 'o' }];
-		    var refs = [];
+		    var refs = getSideChannel();
 
 		    for (var i = 0; i < queue.length; ++i) {
 		        var item = queue[i];
@@ -2715,9 +2749,9 @@
 		        for (var j = 0; j < keys.length; ++j) {
 		            var key = keys[j];
 		            var val = obj[key];
-		            if (typeof val === 'object' && val !== null && refs.indexOf(val) === -1) {
+		            if (typeof val === 'object' && val !== null && !refs.has(val)) {
 		                queue[queue.length] = { obj: obj, prop: key };
-		                refs[refs.length] = val;
+		                refs.set(val, true);
 		            }
 		        }
 		    }
@@ -2739,9 +2773,12 @@
 		    return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
 		};
 
-		var combine = function combine(a, b, arrayLimit, plainObjects) {
+		var combine = function combine(a, b, arrayLimit, plainObjects, throwOnLimitExceeded) {
 		    // If 'a' is already an overflow object, add to it
 		    if (isOverflow(a)) {
+		        if (throwOnLimitExceeded) {
+		            throw new RangeError('Array limit exceeded. Only ' + arrayLimit + ' element' + (arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		        }
 		        var newIndex = getMaxIndex(a) + 1;
 		        a[newIndex] = b;
 		        setMaxIndex(a, newIndex);
@@ -2750,6 +2787,9 @@
 
 		    var result = [].concat(a, b);
 		    if (result.length > arrayLimit) {
+		        if (throwOnLimitExceeded) {
+		            throw new RangeError('Array limit exceeded. Only ' + arrayLimit + ' element' + (arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		        }
 		        return markOverflow(arrayToObject(result, { plainObjects: plainObjects }), result.length - 1);
 		    }
 		    return result;
@@ -3197,8 +3237,19 @@
 		    });
 		};
 
-		var parseArrayValue = function (val, options, currentArrayLength) {
+		var parseArrayValue = function (val, options, currentArrayLength, isFlatArrayValue) {
 		    if (val && typeof val === 'string' && options.comma && val.indexOf(',') > -1) {
+		        if (isFlatArrayValue && options.throwOnLimitExceeded) {
+		            var commaCount = 0;
+		            var commaIndex = val.indexOf(',');
+		            while (commaIndex > -1) {
+		                commaCount += 1;
+		                if (commaCount >= options.arrayLimit) {
+		                    throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
+		                }
+		                commaIndex = val.indexOf(',', commaIndex + 1);
+		            }
+		        }
 		        return val.split(',');
 		    }
 
@@ -3275,7 +3326,8 @@
 		                    parseArrayValue(
 		                        part.slice(pos + 1),
 		                        options,
-		                        isArray(obj[key]) ? obj[key].length : 0
+		                        isArray(obj[key]) ? obj[key].length : 0,
+		                        part.indexOf('[]=') === -1
 		                    ),
 		                    function (encodedVal) {
 		                        return options.decoder(encodedVal, defaults.decoder, charset, 'value');
@@ -3293,10 +3345,7 @@
 		        }
 
 		        if (options.comma && isArray(val) && val.length > options.arrayLimit) {
-		            if (options.throwOnLimitExceeded) {
-		                throw new RangeError('Array limit exceeded. Only ' + options.arrayLimit + ' element' + (options.arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
-		            }
-		            val = utils.combine([], val, options.arrayLimit, options.plainObjects);
+		            val = utils.combine([], val, options.arrayLimit, options.plainObjects, options.throwOnLimitExceeded);
 		        }
 
 		        if (key !== null) {
@@ -3306,7 +3355,8 @@
 		                    obj[key],
 		                    val,
 		                    options.arrayLimit,
-		                    options.plainObjects
+		                    options.plainObjects,
+		                    options.throwOnLimitExceeded
 		                );
 		            } else if (!existing || options.duplicates === 'last') {
 		                obj[key] = val;
@@ -3341,7 +3391,8 @@
 		                        [],
 		                        leaf,
 		                        options.arrayLimit,
-		                        options.plainObjects
+		                        options.plainObjects,
+		                        options.throwOnLimitExceeded
 		                    );
 		            }
 		        } else {
