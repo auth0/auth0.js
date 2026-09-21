@@ -521,6 +521,46 @@ describe('auth0.WebAuth', function () {
         }
       ); // eslint-disable-line
     });
+    context('maxAge validation', function () {
+      afterEach(function () {
+        if (WebAuth.prototype.validateToken.restore) {
+          WebAuth.prototype.validateToken.restore();
+        }
+      });
+
+      it('passes the maxAge stored in the transaction to validateToken', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          maxAge: 200
+        });
+
+        sinon
+          .stub(WebAuth.prototype, 'validateToken')
+          .callsFake(function (token, nonce, maxAge, cb) {
+            expect(maxAge).to.be(200);
+            cb(null, { sub: 'user' });
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'brucke.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&id_token=token' },
+          function (err) {
+            if (err) {
+              return done(err);
+            }
+            done();
+          }
+        );
+      });
+    });
     context('Organization validation', function () {
       beforeEach(function () {
         restoreAndStubStoredTransaction('foo', {
@@ -1400,7 +1440,7 @@ describe('auth0.WebAuth', function () {
         var expectedError = { error: 'some_error' };
         sinon
           .stub(WebAuth.prototype, 'validateToken')
-          .callsFake(function (token, nonce, callback) {
+          .callsFake(function (token, nonce, maxAge, callback) {
             return callback(expectedError);
           });
         var webAuth = new WebAuth({
@@ -3245,6 +3285,68 @@ describe('auth0.WebAuth', function () {
         }
       });
       webAuth.validateToken('token', 'nonce', function () { });
+    });
+
+    it('should fall back to the constructor maxAge when none is passed (legacy 3-arg signature)', function (done) {
+      var idTokenVerifierMock = function (opts) {
+        expect(opts.maxAge).to.be(500);
+        done();
+      };
+
+      var { default: ProxiedWebAuth } = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token',
+        maxAge: 500
+      });
+
+      webAuth.validateToken('token', 'nonce', function () { });
+    });
+
+    it('should use the per-transaction maxAge when provided', function (done) {
+      var idTokenVerifierMock = function (opts) {
+        expect(opts.maxAge).to.be(200);
+        done();
+      };
+
+      var { default: ProxiedWebAuth } = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token'
+      });
+
+      webAuth.validateToken('token', 'nonce', 200, function () { });
+    });
+
+    it('should prefer the per-transaction maxAge over the constructor maxAge', function (done) {
+      var idTokenVerifierMock = function (opts) {
+        expect(opts.maxAge).to.be(200);
+        done();
+      };
+
+      var { default: ProxiedWebAuth } = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token',
+        maxAge: 500
+      });
+
+      webAuth.validateToken('token', 'nonce', 200, function () { });
     });
   });
 

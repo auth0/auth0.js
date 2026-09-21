@@ -29,7 +29,8 @@ TransactionManager.prototype.process = function(options) {
     options.nonce,
     lastUsedConnection,
     responseTypeIncludesIdToken,
-    options.organization
+    options.organization,
+    options.maxAge
   );
 
   if (!options.state) {
@@ -49,7 +50,8 @@ TransactionManager.prototype.generateTransaction = function(
   nonce,
   lastUsedConnection,
   generateNonce,
-  organization
+  organization,
+  maxAge
 ) {
   state = state || random.randomString(this.keyLength);
   nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
@@ -67,6 +69,12 @@ TransactionManager.prototype.generateTransaction = function(
 
     if (organization) {
       transactionPayload.organization = organization;
+    }
+
+    // Persist maxAge so the id_token's `auth_time` claim can be validated on
+    // the callback, where the original request options are no longer available.
+    if (maxAge) {
+      transactionPayload.maxAge = maxAge;
     }
 
     this.storage.setItem(this.namespace + state, transactionPayload, {

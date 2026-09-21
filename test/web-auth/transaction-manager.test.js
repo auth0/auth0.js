@@ -279,7 +279,38 @@ context('TransactionManager', function() {
           lastUsedConnection: null,
           organization: 'org_123'
         })
-      })      
+      })
+      it('stores the maxAge when given', function () {
+        this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null,
+          null,
+          null,
+          200
+        );
+
+        expect(Storage.prototype.setItem.lastCall.args[1]).to.eql({
+          nonce: 'providedNonce',
+          appState: 'appState',
+          state: 'providedState',
+          lastUsedConnection: null,
+          maxAge: 200
+        });
+      });
+      it('does not store a maxAge key when maxAge is not given', function () {
+        this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null
+        );
+
+        expect(
+          Storage.prototype.setItem.lastCall.args[1].hasOwnProperty('maxAge')
+        ).to.be(false);
+      });
     });
   });
   context('getStoredTransaction', function() {
