@@ -560,6 +560,39 @@ describe('auth0.WebAuth', function () {
           }
         );
       });
+
+      it('passes a maxAge of 0 stored in the transaction to validateToken', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          maxAge: 0
+        });
+
+        sinon
+          .stub(WebAuth.prototype, 'validateToken')
+          .callsFake(function (token, nonce, maxAge, cb) {
+            expect(maxAge).to.be(0);
+            cb(null, { sub: 'user' });
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'brucke.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&id_token=token' },
+          function (err) {
+            if (err) {
+              return done(err);
+            }
+            done();
+          }
+        );
+      });
     });
     context('Organization validation', function () {
       beforeEach(function () {
@@ -1847,6 +1880,61 @@ describe('auth0.WebAuth', function () {
 
       expect(args.organization).to.eql('org_123');
       expect(args.invitation).to.eql('inv_123');
+    });
+    it('should pass the maxAge param to buildAuthorizeUrl from the constructor', function () {
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false,
+        maxAge: 500
+      });
+
+      sinon.spy(webAuth.client, 'buildAuthorizeUrl');
+
+      webAuth.authorize();
+
+      var args = webAuth.client.buildAuthorizeUrl.lastCall.args[0];
+
+      expect(args.maxAge).to.eql(500);
+    });
+    it('should forward the constructor maxAge as the max_age query param', function (done) {
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        nonce: '123',
+        _sendTelemetry: false,
+        maxAge: 500
+      });
+      sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
+        expect(url).to.contain('max_age=500');
+        windowHelper.redirect.restore();
+        done();
+      });
+
+      webAuth.authorize({ connection: 'foobar' });
+    });
+    it('should forward a per-call maxAge as the max_age query param', function (done) {
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        nonce: '123',
+        _sendTelemetry: false
+      });
+      sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
+        expect(url).to.contain('max_age=300');
+        windowHelper.redirect.restore();
+        done();
+      });
+
+      webAuth.authorize({ connection: 'foobar', maxAge: 300 });
     });
   });
 
@@ -3347,6 +3435,48 @@ describe('auth0.WebAuth', function () {
       });
 
       webAuth.validateToken('token', 'nonce', 200, function () { });
+    });
+
+    it('should use a per-transaction maxAge of 0 rather than falling back to the constructor maxAge', function (done) {
+      var idTokenVerifierMock = function (opts) {
+        expect(opts.maxAge).to.be(0);
+        done();
+      };
+
+      var { default: ProxiedWebAuth } = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token',
+        maxAge: 500
+      });
+
+      webAuth.validateToken('token', 'nonce', 0, function () { });
+    });
+
+    it('should fall back to a constructor maxAge of 0', function (done) {
+      var idTokenVerifierMock = function (opts) {
+        expect(opts.maxAge).to.be(0);
+        done();
+      };
+
+      var { default: ProxiedWebAuth } = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token',
+        maxAge: 0
+      });
+
+      webAuth.validateToken('token', 'nonce', function () { });
     });
   });
 

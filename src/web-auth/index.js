@@ -803,7 +803,8 @@ WebAuth.prototype.authorize = function (options) {
       '_intstate',
       'nonce',
       'organization',
-      'invitation'
+      'invitation',
+      'maxAge'
     ])
     .with(options);
 

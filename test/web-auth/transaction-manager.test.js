@@ -299,6 +299,25 @@ context('TransactionManager', function() {
           maxAge: 200
         });
       });
+      it('stores a maxAge of 0 (strict re-authentication)', function () {
+        this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null,
+          null,
+          null,
+          0
+        );
+
+        expect(Storage.prototype.setItem.lastCall.args[1]).to.eql({
+          nonce: 'providedNonce',
+          appState: 'appState',
+          state: 'providedState',
+          lastUsedConnection: null,
+          maxAge: 0
+        });
+      });
       it('does not store a maxAge key when maxAge is not given', function () {
         this.tm.generateTransaction(
           'appState',
