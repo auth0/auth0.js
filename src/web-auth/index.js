@@ -351,6 +351,9 @@ WebAuth.prototype.validateAuthenticationResponse = function (
   var transactionNonce =
     options.nonce || (transaction && transaction.nonce) || null;
 
+  var transactionMaxAge =
+    options.maxAge || (transaction && transaction.maxAge) || null;
+
   var transactionOrganization = transaction && transaction.organization;
   var appState = options.state || (transaction && transaction.appState) || null;
 
@@ -379,6 +382,7 @@ WebAuth.prototype.validateAuthenticationResponse = function (
   return this.validateToken(
     parsedHash.id_token,
     transactionNonce,
+    transactionMaxAge,
     function (validationError, payload) {
       if (!validationError) {
         // Verify the organization
@@ -482,15 +486,25 @@ function buildParseHashResponse(qsParams, appState, token) {
  * @private
  * @param {String} token
  * @param {String} nonce
+ * @param {Number} [maxAge] maximum authentication age (seconds) to validate the
+ *   `auth_time` claim against. Falls back to the value set on the constructor.
+ *   For backwards compatibility, this argument may be omitted and the callback
+ *   passed as the third argument instead.
  * @param {validateTokenCallback} cb
  */
-WebAuth.prototype.validateToken = function (token, nonce, cb) {
+WebAuth.prototype.validateToken = function (token, nonce, maxAge, cb) {
+  // Backwards-compatible signature: validateToken(token, nonce, cb)
+  if (typeof maxAge === 'function') {
+    cb = maxAge;
+    maxAge = undefined;
+  }
+
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     jwksURI: this.baseOptions.jwksURI,
     audience: this.baseOptions.clientID,
     leeway: this.baseOptions.leeway || 60,
-    maxAge: this.baseOptions.maxAge,
+    maxAge: maxAge != null ? maxAge : this.baseOptions.maxAge,
     __clock: this.baseOptions.__clock || defaultClock
   });
 
