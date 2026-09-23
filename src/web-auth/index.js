@@ -351,14 +351,8 @@ WebAuth.prototype.validateAuthenticationResponse = function (
   var transactionNonce =
     options.nonce || (transaction && transaction.nonce) || null;
 
-  // Explicit null checks (not `||`) so a strict `maxAge: 0` is preserved rather
-  // than treated as absent and dropped, which would skip `auth_time` validation.
   var transactionMaxAge =
-    options.maxAge != null
-      ? options.maxAge
-      : transaction && transaction.maxAge != null
-      ? transaction.maxAge
-      : null;
+    options.maxAge || (transaction && transaction.maxAge) || null;
 
   var transactionOrganization = transaction && transaction.organization;
   var appState = options.state || (transaction && transaction.appState) || null;
@@ -510,7 +504,7 @@ WebAuth.prototype.validateToken = function (token, nonce, maxAge, cb) {
     jwksURI: this.baseOptions.jwksURI,
     audience: this.baseOptions.clientID,
     leeway: this.baseOptions.leeway || 60,
-    maxAge: maxAge != null ? maxAge : this.baseOptions.maxAge,
+    maxAge: maxAge || this.baseOptions.maxAge,
     __clock: this.baseOptions.__clock || defaultClock
   });
 
@@ -809,8 +803,7 @@ WebAuth.prototype.authorize = function (options) {
       '_intstate',
       'nonce',
       'organization',
-      'invitation',
-      'maxAge'
+      'invitation'
     ])
     .with(options);
 

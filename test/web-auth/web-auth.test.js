@@ -561,7 +561,7 @@ describe('auth0.WebAuth', function () {
         );
       });
 
-      it('passes a maxAge of 0 stored in the transaction to validateToken', function (done) {
+      it('treats a maxAge of 0 stored in the transaction as unset (verifier ignores a falsy maxAge)', function (done) {
         restoreAndStubStoredTransaction('foo', {
           nonce: 'asfd',
           state: 'foo',
@@ -572,7 +572,7 @@ describe('auth0.WebAuth', function () {
         sinon
           .stub(WebAuth.prototype, 'validateToken')
           .callsFake(function (token, nonce, maxAge, cb) {
-            expect(maxAge).to.be(0);
+            expect(maxAge).to.be(null);
             cb(null, { sub: 'user' });
           });
 
@@ -1914,7 +1914,7 @@ describe('auth0.WebAuth', function () {
       expect(args.organization).to.eql('org_123');
       expect(args.invitation).to.eql('inv_123');
     });
-    it('should pass the maxAge param to buildAuthorizeUrl from the constructor', function () {
+    it('does not pass a constructor maxAge to buildAuthorizeUrl (constructor maxAge is validated client-side only)', function () {
       var webAuth = new WebAuth({
         domain: 'me.auth0.com',
         redirectUri: 'http://page.com/callback',
@@ -1932,9 +1932,9 @@ describe('auth0.WebAuth', function () {
 
       var args = webAuth.client.buildAuthorizeUrl.lastCall.args[0];
 
-      expect(args.maxAge).to.eql(500);
+      expect(args.hasOwnProperty('maxAge')).to.be(false);
     });
-    it('should forward the constructor maxAge as the max_age query param', function (done) {
+    it('does not forward a constructor maxAge as the max_age query param (constructor maxAge is validated client-side only)', function (done) {
       var webAuth = new WebAuth({
         domain: 'me.auth0.com',
         redirectUri: 'http://page.com/callback',
@@ -1945,7 +1945,7 @@ describe('auth0.WebAuth', function () {
         maxAge: 500
       });
       sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
-        expect(url).to.contain('max_age=500');
+        expect(url).to.not.contain('max_age');
         windowHelper.redirect.restore();
         done();
       });
@@ -1986,12 +1986,7 @@ describe('auth0.WebAuth', function () {
 
       webAuth.authorize({ connection: 'foobar', maxAge: 0 });
     });
-    // Documents a known, pre-existing limitation: `objectHelper.merge`'s `pick`
-    // uses a truthy check, so a constructor-level `maxAge: 0` is dropped and not
-    // forwarded to /authorize. A per-call `maxAge: 0` (tested above) still works,
-    // and the callback still validates `auth_time` via the `baseOptions.maxAge`
-    // fallback, so this is a consistency gap rather than a security bypass.
-    it('does not forward a constructor maxAge of 0 to buildAuthorizeUrl', function () {
+    it('does not forward a constructor maxAge of 0 to buildAuthorizeUrl (0 is treated as unset)', function () {
       var webAuth = new WebAuth({
         domain: 'me.auth0.com',
         redirectUri: 'http://page.com/callback',
@@ -2009,7 +2004,25 @@ describe('auth0.WebAuth', function () {
 
       var args = webAuth.client.buildAuthorizeUrl.lastCall.args[0];
 
-      expect(args.maxAge).to.be(undefined);
+      expect(args.hasOwnProperty('maxAge')).to.be(false);
+    });
+    it('does not forward a constructor maxAge of 0 as the max_age query param', function (done) {
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        nonce: '123',
+        _sendTelemetry: false,
+        maxAge: 0
+      });
+      sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
+        expect(url).to.not.contain('max_age');
+        windowHelper.redirect.restore();
+        done();
+      });
+
+      webAuth.authorize({ connection: 'foobar' });
     });
   });
 
@@ -3512,9 +3525,9 @@ describe('auth0.WebAuth', function () {
       webAuth.validateToken('token', 'nonce', 200, function () { });
     });
 
-    it('should use a per-transaction maxAge of 0 rather than falling back to the constructor maxAge', function (done) {
+    it('falls back to the constructor maxAge when the per-call maxAge is 0 (0 is treated as unset)', function (done) {
       var idTokenVerifierMock = function (opts) {
-        expect(opts.maxAge).to.be(0);
+        expect(opts.maxAge).to.be(500);
         done();
       };
 

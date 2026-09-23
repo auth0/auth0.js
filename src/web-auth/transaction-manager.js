@@ -71,10 +71,7 @@ TransactionManager.prototype.generateTransaction = function(
       transactionPayload.organization = organization;
     }
 
-    // Persist maxAge so the id_token's `auth_time` claim can be validated on
-    // the callback, where the original request options are no longer available.
-    // Use a null check (not truthiness) so a strict `maxAge: 0` is preserved.
-    if (maxAge != null) {
+    if (maxAge) {
       transactionPayload.maxAge = maxAge;
     }
 

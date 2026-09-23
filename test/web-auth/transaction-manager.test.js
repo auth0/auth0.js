@@ -321,7 +321,7 @@ context('TransactionManager', function() {
           maxAge: 200
         });
       });
-      it('stores a maxAge of 0 (strict re-authentication)', function () {
+      it('does not store a maxAge of 0 (0 is treated as unset — the verifier ignores a falsy maxAge)', function () {
         this.tm.generateTransaction(
           'appState',
           'providedState',
@@ -332,13 +332,9 @@ context('TransactionManager', function() {
           0
         );
 
-        expect(Storage.prototype.setItem.lastCall.args[1]).to.eql({
-          nonce: 'providedNonce',
-          appState: 'appState',
-          state: 'providedState',
-          lastUsedConnection: null,
-          maxAge: 0
-        });
+        expect(
+          Storage.prototype.setItem.lastCall.args[1].hasOwnProperty('maxAge')
+        ).to.be(false);
       });
       it('does not store a maxAge key when maxAge is not given', function () {
         this.tm.generateTransaction(
