@@ -593,6 +593,39 @@ describe('auth0.WebAuth', function () {
           }
         );
       });
+
+      it('prefers a per-call maxAge over the maxAge stored in the transaction', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          maxAge: 200
+        });
+
+        sinon
+          .stub(WebAuth.prototype, 'validateToken')
+          .callsFake(function (token, nonce, maxAge, cb) {
+            expect(maxAge).to.be(100);
+            cb(null, { sub: 'user' });
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'brucke.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&id_token=token', maxAge: 100 },
+          function (err) {
+            if (err) {
+              return done(err);
+            }
+            done();
+          }
+        );
+      });
     });
     context('Organization validation', function () {
       beforeEach(function () {
@@ -1935,6 +1968,48 @@ describe('auth0.WebAuth', function () {
       });
 
       webAuth.authorize({ connection: 'foobar', maxAge: 300 });
+    });
+    it('should forward a per-call maxAge of 0 as the max_age query param', function (done) {
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        nonce: '123',
+        _sendTelemetry: false
+      });
+      sinon.stub(windowHelper, 'redirect').callsFake(function (url) {
+        expect(url).to.contain('max_age=0');
+        windowHelper.redirect.restore();
+        done();
+      });
+
+      webAuth.authorize({ connection: 'foobar', maxAge: 0 });
+    });
+    // Documents a known, pre-existing limitation: `objectHelper.merge`'s `pick`
+    // uses a truthy check, so a constructor-level `maxAge: 0` is dropped and not
+    // forwarded to /authorize. A per-call `maxAge: 0` (tested above) still works,
+    // and the callback still validates `auth_time` via the `baseOptions.maxAge`
+    // fallback, so this is a consistency gap rather than a security bypass.
+    it('does not forward a constructor maxAge of 0 to buildAuthorizeUrl', function () {
+      var webAuth = new WebAuth({
+        domain: 'me.auth0.com',
+        redirectUri: 'http://page.com/callback',
+        clientID: '...',
+        responseType: 'id_token',
+        scope: 'openid name read:blog',
+        audience: 'urn:site:demo:blog',
+        _sendTelemetry: false,
+        maxAge: 0
+      });
+
+      sinon.spy(webAuth.client, 'buildAuthorizeUrl');
+
+      webAuth.authorize();
+
+      var args = webAuth.client.buildAuthorizeUrl.lastCall.args[0];
+
+      expect(args.maxAge).to.be(undefined);
     });
   });
 

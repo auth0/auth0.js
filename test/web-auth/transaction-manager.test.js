@@ -83,6 +83,28 @@ context('TransactionManager', function() {
         nonce: 'some-nonce'
       });
     });
+    it('forwards options.maxAge (including 0) to generateTransaction', function() {
+      TransactionManager.prototype.generateTransaction.restore();
+      sinon
+        .stub(TransactionManager.prototype, 'generateTransaction')
+        .callsFake(function(
+          appState,
+          state,
+          nonce,
+          lastUsedConnection,
+          generateNonce,
+          organization,
+          maxAge
+        ) {
+          expect(maxAge).to.be(0);
+          return {
+            state: state || 'randomState',
+            nonce: nonce || 'randomNonce',
+            lastUsedConnection: lastUsedConnection
+          };
+        });
+      this.tm.process({ responseType: 'code', state: 'some-state', maxAge: 0 });
+    });
   });
   context('generateTransaction', function() {
     beforeEach(function() {
