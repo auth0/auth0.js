@@ -351,10 +351,14 @@ WebAuth.prototype.validateAuthenticationResponse = function (
   var transactionNonce =
     options.nonce || (transaction && transaction.nonce) || null;
 
-  // `??` (not `||`) so a strict `maxAge: 0` is preserved rather than treated
-  // as absent and dropped, which would skip `auth_time` validation.
+  // Explicit null checks (not `||`) so a strict `maxAge: 0` is preserved rather
+  // than treated as absent and dropped, which would skip `auth_time` validation.
   var transactionMaxAge =
-    options.maxAge ?? (transaction && transaction.maxAge) ?? null;
+    options.maxAge != null
+      ? options.maxAge
+      : transaction && transaction.maxAge != null
+      ? transaction.maxAge
+      : null;
 
   var transactionOrganization = transaction && transaction.organization;
   var appState = options.state || (transaction && transaction.appState) || null;
