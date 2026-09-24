@@ -499,12 +499,17 @@ WebAuth.prototype.validateToken = function (token, nonce, maxAge, cb) {
     maxAge = undefined;
   }
 
+  var resolvedMaxAge = maxAge || this.baseOptions.maxAge;
+  if (resolvedMaxAge) {
+    resolvedMaxAge = Number(resolvedMaxAge);
+  }
+
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     jwksURI: this.baseOptions.jwksURI,
     audience: this.baseOptions.clientID,
     leeway: this.baseOptions.leeway || 60,
-    maxAge: maxAge || this.baseOptions.maxAge,
+    maxAge: resolvedMaxAge,
     __clock: this.baseOptions.__clock || defaultClock
   });
 
