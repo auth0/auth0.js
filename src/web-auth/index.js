@@ -537,6 +537,7 @@ WebAuth.prototype.validateToken = function (token, nonce, maxAge, cb) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response.
  * @param {String} [options.postMessageDataType] identifier data type to look for in postMessage event data, where events are initiated from silent callback urls, before accepting a message event is the event expected. A value of false means any postMessage event will trigger a callback.
  * @param {String} [options.postMessageOrigin] origin of redirectUri to expect postMessage response from.  Defaults to the origin of the receiving window. Only used if usePostMessage is truthy.
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
@@ -639,6 +640,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response.
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
  * @param {String} [options.organization] the id or name of an organization to log in to
  * @param {checkSessionCallback} cb
@@ -788,6 +790,7 @@ WebAuth.prototype.signup = function (options, cb) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`. Defaults to `openid profile email`.
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response.
  * @param {String} [options.organization] the id or name of an organization to log in to
  * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
  * @param {Object} [options.appState] any values that you want back on the authentication response
