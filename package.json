@@ -44,7 +44,7 @@
     "test:watch": "npm run test -- --watch --reporter min",
     "test:es-check:es5": "es-check es5 'dist/!(*.esm)*.js'",
     "test:es-check:es2015:module": "es-check es2015 'dist/auth0.min.esm.js' --module",
-    "ci:test": "nyc npm run test -- --forbid-only --reporter xunit --reporter-option output=junit/test-results.xml",
+    "ci:test": "nyc npm run test -- --forbid-only",
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix ./src",
     "publish:cdn": "ccu --trace",
