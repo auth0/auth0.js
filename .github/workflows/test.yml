@@ -65,8 +65,6 @@ jobs:
 
       - name: Run tests
         run: npm run ci:test
-        env:
-          MOCHA_FILE: junit/test-results.xml
 
       - name: Upload coverage
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # pin@7.1.1
