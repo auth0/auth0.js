@@ -83,6 +83,28 @@ context('TransactionManager', function() {
         nonce: 'some-nonce'
       });
     });
+    it('forwards options.max_age to generateTransaction when options.maxAge is not set', function() {
+      TransactionManager.prototype.generateTransaction.restore();
+      sinon
+        .stub(TransactionManager.prototype, 'generateTransaction')
+        .callsFake(function(
+          appState,
+          state,
+          nonce,
+          lastUsedConnection,
+          generateNonce,
+          organization,
+          maxAge
+        ) {
+          expect(maxAge).to.be(300);
+          return {
+            state: state || 'randomState',
+            nonce: nonce || 'randomNonce',
+            lastUsedConnection: lastUsedConnection
+          };
+        });
+      this.tm.process({ responseType: 'code', state: 'some-state', max_age: 300 });
+    });
     it('forwards options.maxAge (including 0) to generateTransaction', function() {
       TransactionManager.prototype.generateTransaction.restore();
       sinon
@@ -321,7 +343,7 @@ context('TransactionManager', function() {
           maxAge: 200
         });
       });
-      it('does not store a maxAge of 0 (0 is treated as unset — the verifier ignores a falsy maxAge)', function () {
+      it('stores a maxAge of 0', function () {
         this.tm.generateTransaction(
           'appState',
           'providedState',
@@ -332,9 +354,13 @@ context('TransactionManager', function() {
           0
         );
 
-        expect(
-          Storage.prototype.setItem.lastCall.args[1].hasOwnProperty('maxAge')
-        ).to.be(false);
+        expect(Storage.prototype.setItem.lastCall.args[1]).to.eql({
+          nonce: 'providedNonce',
+          appState: 'appState',
+          state: 'providedState',
+          lastUsedConnection: null,
+          maxAge: 0
+        });
       });
       it('does not store a maxAge key when maxAge is not given', function () {
         this.tm.generateTransaction(

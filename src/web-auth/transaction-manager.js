@@ -71,7 +71,7 @@ TransactionManager.prototype.generateTransaction = function(
       transactionPayload.organization = organization;
     }
 
-    if (maxAge) {
+    if (maxAge != null) {
       transactionPayload.maxAge = maxAge;
     }
 

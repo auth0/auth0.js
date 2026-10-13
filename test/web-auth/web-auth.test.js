@@ -627,6 +627,109 @@ describe('auth0.WebAuth', function () {
         );
       });
     });
+    context('auth_time enforcement through real idtoken-verifier', function () {
+      // clock = 1482933050, maxAge = 300, leeway = 60
+      // valid if: auth_time + 300 + 60 >= 1482933050  =>  auth_time >= 1482932690
+      var FRESH_ID_TOKEN =
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9' +
+        '.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIiwiYXV0aF90aW1lIjoxNDgyOTMzMDAwfQ' +
+        '.fakesig';
+      var OLD_ID_TOKEN =
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9' +
+        '.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIiwiYXV0aF90aW1lIjoxNDgyODQ2NjUwfQ' +
+        '.fakesig';
+      var NO_AUTH_TIME_ID_TOKEN =
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9' +
+        '.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0' +
+        '.fakesig';
+
+      beforeEach(function () {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          maxAge: 300
+        });
+        if (IdTokenVerifier.prototype.getRsaVerifier.restore) {
+          IdTokenVerifier.prototype.getRsaVerifier.restore();
+        }
+        if (IdTokenVerifier.prototype.validateAccessToken.restore) {
+          IdTokenVerifier.prototype.validateAccessToken.restore();
+        }
+        sinon
+          .stub(IdTokenVerifier.prototype, 'getRsaVerifier')
+          .callsFake(function (iss, kid, cb) {
+            cb(null, { verify: function () { return true; } });
+          });
+        sinon
+          .stub(IdTokenVerifier.prototype, 'validateAccessToken')
+          .callsFake(function (at, alg, atHash, cb) { cb(null); });
+      });
+
+      afterEach(function () {
+        if (IdTokenVerifier.prototype.getRsaVerifier.restore) {
+          IdTokenVerifier.prototype.getRsaVerifier.restore();
+        }
+        if (IdTokenVerifier.prototype.validateAccessToken.restore) {
+          IdTokenVerifier.prototype.validateAccessToken.restore();
+        }
+      });
+
+      it('accepts a token with a fresh auth_time', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token id_token',
+          __clock: function () { return new Date(1482933050000); }
+        });
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&access_token=testtoken&id_token=' + FRESH_ID_TOKEN },
+          function (err, result) {
+            expect(err).to.be(null);
+            expect(result.idTokenPayload.auth_time).to.be(1482933000);
+            done();
+          }
+        );
+      });
+
+      it('rejects a token with a stale auth_time', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token id_token',
+          __clock: function () { return new Date(1482933050000); }
+        });
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&access_token=testtoken&id_token=' + OLD_ID_TOKEN },
+          function (err) {
+            expect(err).not.to.be(null);
+            expect(err.errorDescription).to.contain('auth_time');
+            done();
+          }
+        );
+      });
+
+      it('rejects a token with no auth_time when maxAge is set', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token id_token',
+          __clock: function () { return new Date(1482933050000); }
+        });
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&access_token=testtoken&id_token=' + NO_AUTH_TIME_ID_TOKEN },
+          function (err) {
+            expect(err).not.to.be(null);
+            expect(err.errorDescription).to.contain('auth_time');
+            done();
+          }
+        );
+      });
+    });
+
     context('Organization validation', function () {
       beforeEach(function () {
         restoreAndStubStoredTransaction('foo', {
