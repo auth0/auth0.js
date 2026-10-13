@@ -351,10 +351,10 @@ WebAuth.prototype.validateAuthenticationResponse = function (
   var transactionNonce =
     options.nonce || (transaction && transaction.nonce) || null;
 
-  var transactionMaxAge =
-    (options.maxAge !== undefined ? options.maxAge : options.max_age) ||
-    (transaction && transaction.maxAge) ||
-    null;
+  var optionsMaxAge = options.maxAge !== undefined ? Number(options.maxAge) : (options.max_age !== undefined ? Number(options.max_age) : null);
+  var transactionMaxAge = (optionsMaxAge != null && !isNaN(optionsMaxAge))
+    ? optionsMaxAge
+    : (transaction && transaction.maxAge != null ? transaction.maxAge : null);
 
   var transactionOrganization = transaction && transaction.organization;
   var appState = options.state || (transaction && transaction.appState) || null;
@@ -503,14 +503,20 @@ WebAuth.prototype.validateToken = function (token, nonce, maxAge, cb) {
     maxAge = undefined;
   }
 
-  var resolvedMaxAge = (maxAge !== undefined ? Number(maxAge) : null) || this.baseOptions.maxAge;
+  var numericMaxAge = (maxAge !== undefined && maxAge !== null) ? Number(maxAge) : null;
+  var resolvedMaxAge = (numericMaxAge != null && !isNaN(numericMaxAge))
+    ? numericMaxAge
+    : this.baseOptions.maxAge;
+  // idtoken-verifier skips auth_time when maxAge is falsy; use 0.001 so a
+  // maxAge of 0 still requires auth_time to be present and within leeway.
+  var verifierMaxAge = resolvedMaxAge === 0 ? 0.001 : resolvedMaxAge;
 
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     jwksURI: this.baseOptions.jwksURI,
     audience: this.baseOptions.clientID,
     leeway: this.baseOptions.leeway || 60,
-    maxAge: resolvedMaxAge,
+    maxAge: verifierMaxAge,
     __clock: this.baseOptions.__clock || defaultClock
   });
 

@@ -561,7 +561,7 @@ describe('auth0.WebAuth', function () {
         );
       });
 
-      it('treats a maxAge of 0 stored in the transaction as unset (verifier ignores a falsy maxAge)', function (done) {
+      it('passes a maxAge of 0 stored in the transaction to validateToken', function (done) {
         restoreAndStubStoredTransaction('foo', {
           nonce: 'asfd',
           state: 'foo',
@@ -572,7 +572,7 @@ describe('auth0.WebAuth', function () {
         sinon
           .stub(WebAuth.prototype, 'validateToken')
           .callsFake(function (token, nonce, maxAge, cb) {
-            expect(maxAge).to.be(null);
+            expect(maxAge).to.be(0);
             cb(null, { sub: 'user' });
           });
 
@@ -3628,9 +3628,9 @@ describe('auth0.WebAuth', function () {
       webAuth.validateToken('token', 'nonce', 200, function () { });
     });
 
-    it('falls back to the constructor maxAge when the per-call maxAge is 0 (0 is treated as unset)', function (done) {
+    it('passes 0.001 to the verifier when per-call maxAge is 0 (enforces auth_time presence)', function (done) {
       var idTokenVerifierMock = function (opts) {
-        expect(opts.maxAge).to.be(500);
+        expect(opts.maxAge).to.be(0.001);
         done();
       };
 
@@ -3670,9 +3670,9 @@ describe('auth0.WebAuth', function () {
       webAuth.validateToken('token', 'nonce', '300', function () { });
     });
 
-    it('should fall back to a constructor maxAge of 0', function (done) {
+    it('passes 0.001 to the verifier when constructor maxAge is 0 (enforces auth_time presence)', function (done) {
       var idTokenVerifierMock = function (opts) {
-        expect(opts.maxAge).to.be(0);
+        expect(opts.maxAge).to.be(0.001);
         done();
       };
 
