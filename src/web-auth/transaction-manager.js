@@ -30,7 +30,7 @@ TransactionManager.prototype.process = function(options) {
     lastUsedConnection,
     responseTypeIncludesIdToken,
     options.organization,
-    options.maxAge
+    options.maxAge !== undefined ? options.maxAge : options.max_age
   );
 
   if (!options.state) {

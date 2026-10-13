@@ -3546,6 +3546,27 @@ describe('auth0.WebAuth', function () {
       webAuth.validateToken('token', 'nonce', 0, function () { });
     });
 
+    it('coerces a string maxAge to a number before passing to the verifier', function (done) {
+      var idTokenVerifierMock = function (opts) {
+        expect(opts.maxAge).to.be(300);
+        expect(typeof opts.maxAge).to.be('number');
+        done();
+      };
+
+      var { default: ProxiedWebAuth } = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token'
+      });
+
+      webAuth.validateToken('token', 'nonce', '300', function () { });
+    });
+
     it('should fall back to a constructor maxAge of 0', function (done) {
       var idTokenVerifierMock = function (opts) {
         expect(opts.maxAge).to.be(0);
