@@ -90,6 +90,7 @@ Popup.prototype.getPopupHandler = function(options, preload) {
  * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
  * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
+ * @param {Number} [options.maxAge] maximum authentication age in seconds to check the id_token's `auth_time` claim against. Use it when the SDK has no stored transaction for this login. If it is not given, the `maxAge` stored with the transaction is used. The snake_case `max_age` is accepted as well.
  * @see   {@link parseHash}
  * @memberof Popup.prototype
  */
@@ -150,6 +151,7 @@ Popup.prototype.callback = function(options) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). The snake_case `max_age` is accepted as well.
  * @param {String} [options.organization] the Id of an organization to log in to
  * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
  * @param {Boolean} [options.owp] determines if Auth0 should render the relay page or not and the caller is responsible of handling the response.
@@ -249,6 +251,7 @@ Popup.prototype.authorize = function(options, cb) {
  * @param {String} [options.responseType] type of the response used. It can be any of the values `code` and `token`
  * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`. The `query` value is only supported when `responseType` is `code`.
  * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). The snake_case `max_age` is accepted as well.
  * @param {credentialsCallback} cb
  * @memberof Popup.prototype
  */

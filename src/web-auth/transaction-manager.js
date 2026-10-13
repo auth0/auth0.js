@@ -2,6 +2,7 @@ import random from '../helper/random';
 import Storage from '../helper/storage';
 import windowHelper from '../helper/window';
 import * as times from '../helper/times';
+import maxAgeHelper from '../helper/max-age';
 
 var DEFAULT_NAMESPACE = 'com.auth0.auth.';
 
@@ -23,13 +24,19 @@ TransactionManager.prototype.process = function(options) {
   var responseTypeIncludesIdToken =
     options.responseType.indexOf('id_token') !== -1;
 
+  var maxAge = maxAgeHelper.normalise(options.maxAge);
+  if (maxAge === null) {
+    maxAge = maxAgeHelper.normalise(options.max_age);
+  }
+
   var transaction = this.generateTransaction(
     options.appState,
     options.state,
     options.nonce,
     lastUsedConnection,
     responseTypeIncludesIdToken,
-    options.organization
+    options.organization,
+    maxAge
   );
 
   if (!options.state) {
@@ -49,7 +56,8 @@ TransactionManager.prototype.generateTransaction = function(
   nonce,
   lastUsedConnection,
   generateNonce,
-  organization
+  organization,
+  maxAge
 ) {
   state = state || random.randomString(this.keyLength);
   nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
@@ -67,6 +75,11 @@ TransactionManager.prototype.generateTransaction = function(
 
     if (organization) {
       transactionPayload.organization = organization;
+    }
+
+    var normalisedMaxAge = maxAgeHelper.normalise(maxAge);
+    if (normalisedMaxAge !== null) {
+      transactionPayload.maxAge = normalisedMaxAge;
     }
 
     this.storage.setItem(this.namespace + state, transactionPayload, {
