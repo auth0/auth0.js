@@ -784,6 +784,7 @@ describe('auth0.WebAuth', function () {
     context('auth_time enforcement through real idtoken-verifier', function () {
       // clock = 1482933050, maxAge = 300, leeway = 60
       // valid if: auth_time + 300 + 60 >= 1482933050  =>  auth_time >= 1482932690
+      // maxAge=0 (stored as 0.001): valid if auth_time + 0.001 + 60 >= 1482933050  =>  auth_time >= 1482932989.999
       var FRESH_ID_TOKEN =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9' +
         '.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIiwiYXV0aF90aW1lIjoxNDgyOTMzMDAwfQ' +
@@ -795,6 +796,12 @@ describe('auth0.WebAuth', function () {
       var NO_AUTH_TIME_ID_TOKEN =
         'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9' +
         '.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIn0' +
+        '.fakesig';
+      // auth_time = 1482932989 = clock(1482933050) - 61s
+      // with maxAge=0 (0.001): auth_time + 0.001 + 60 = 1482933049.001 < 1482933050  =>  FAILS
+      var SIXTY_ONE_SECONDS_OLD_ID_TOKEN =
+        'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9' +
+        '.eyJpc3MiOiJodHRwczovL3dwdGVzdC5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NTVkNDhjNTdkNWIwYWQwMjIzYzQwOGQ3IiwiYXVkIjoiZ1lTTmxVNFlDNFYxWVBkcXE4elBRY3VwNnJKdzFNYnQiLCJleHAiOjE0ODI5NjkwMzEsImlhdCI6MTQ4MjkzMzAzMSwibm9uY2UiOiJhc2ZkIiwiYXV0aF90aW1lIjoxNDgyOTMyOTg5fQ' +
         '.fakesig';
 
       beforeEach(function () {
@@ -907,7 +914,7 @@ describe('auth0.WebAuth', function () {
         );
       });
 
-      it('rejects a stale token when transaction maxAge is 0 (0 enforces auth_time presence via 0.001 conversion)', function (done) {
+      it('rejects a token 61 seconds old when transaction maxAge is 0 (only leeway window of 60s allowed)', function (done) {
         restoreAndStubStoredTransaction('foo', {
           nonce: 'asfd',
           state: 'foo',
@@ -922,7 +929,7 @@ describe('auth0.WebAuth', function () {
           __clock: function () { return new Date(1482933050000); }
         });
         webAuth.parseHash(
-          { hash: '#state=foo&token_type=Bearer&access_token=testtoken&id_token=' + OLD_ID_TOKEN },
+          { hash: '#state=foo&token_type=Bearer&access_token=testtoken&id_token=' + SIXTY_ONE_SECONDS_OLD_ID_TOKEN },
           function (err) {
             expect(err).not.to.be(null);
             expect(err.errorDescription).to.contain('auth_time');
