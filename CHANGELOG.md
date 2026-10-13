@@ -1,5 +1,11 @@
 # Change Log
 
+## [v10.3.0](https://github.com/auth0/auth0.js/tree/v10.3.0) (2026-10-13)
+[Full Changelog](https://github.com/auth0/auth0.js/compare/v10.2.1...v10.3.0)
+
+**Fixed**
+- chore(deps): bump superagent from 10.3.0 to 10.4.1 [\#1721](https://github.com/auth0/auth0.js/pull/1721) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v10.2.1](https://github.com/auth0/auth0.js/tree/v10.2.1) (2026-08-06)
 [Full Changelog](https://github.com/auth0/auth0.js/compare/v10.2.0...v10.2.1)
 

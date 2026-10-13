@@ -487,6 +487,39 @@
 
         <tr>
             
+                <td class="name"><code>maxAge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the <code>max_age</code> parameter and used to validate the id_token's <code>auth_time</code> claim on the authentication response. A value of 0 enforces that <code>auth_time</code> is present and within the leeway window (default 60 seconds). The snake_case <code>max_age</code> is accepted as well.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>organization</code></td>
             
 
@@ -650,7 +683,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_popup.js.html">web-auth/popup.js</a>, <a href="web-auth_popup.js.html#line140">line 140</a>
+        <a href="web-auth_popup.js.html">web-auth/popup.js</a>, <a href="web-auth_popup.js.html#line141">line 141</a>
     </li></ul></dd>
     
 
@@ -872,6 +905,39 @@
             
 
             <td class="description last"><p>value originally sent in <code>nonce</code> parameter to <code>authorize</code> to prevent replay attacks</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxAge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>maximum authentication age in seconds to check the id_token's <code>auth_time</code> claim against. Use it when the SDK has no stored transaction for this login. If it is not given, the <code>maxAge</code> stored with the transaction is used. The snake_case <code>max_age</code> is accepted as well.</p></td>
         </tr>
 
     
@@ -1181,6 +1247,39 @@ you should use <code>authorize</code> or <code>login</code>.</p>
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>maxAge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the <code>max_age</code> parameter and used to validate the id_token's <code>auth_time</code> claim on the authentication response. A value of 0 enforces that <code>auth_time</code> is present and within the leeway window (default 60 seconds). The snake_case <code>max_age</code> is accepted as well.</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -1248,7 +1347,7 @@ you should use <code>authorize</code> or <code>login</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_popup.js.html">web-auth/popup.js</a>, <a href="web-auth_popup.js.html#line240">line 240</a>
+        <a href="web-auth_popup.js.html">web-auth/popup.js</a>, <a href="web-auth_popup.js.html#line242">line 242</a>
     </li></ul></dd>
     
 
@@ -1549,7 +1648,7 @@ you should use <code>authorize</code> or <code>login</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_popup.js.html">web-auth/popup.js</a>, <a href="web-auth_popup.js.html#line272">line 272</a>
+        <a href="web-auth_popup.js.html">web-auth/popup.js</a>, <a href="web-auth_popup.js.html#line275">line 275</a>
     </li></ul></dd>
     
 
@@ -1943,7 +2042,7 @@ you should use <code>authorize</code> or <code>signupAndAuthorize</code>.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_popup.js.html">web-auth/popup.js</a>, <a href="web-auth_popup.js.html#line307">line 307</a>
+        <a href="web-auth_popup.js.html">web-auth/popup.js</a>, <a href="web-auth_popup.js.html#line310">line 310</a>
     </li></ul></dd>
     
 
@@ -1995,7 +2094,7 @@ you should use <code>authorize</code> or <code>signupAndAuthorize</code>.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Aug 06 2026 10:04:15 GMT+0530 (India Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Oct 13 2026 23:00:43 GMT+0530 (India Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

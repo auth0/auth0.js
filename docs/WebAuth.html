@@ -415,7 +415,7 @@
 
             
 
-            <td class="description last"><p>maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server.</p></td>
+            <td class="description last"><p>maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. Used only for client-side <code>auth_time</code> validation on the callback; it is not sent to <code>/authorize</code>. Without a per-call <code>maxAge</code> on <code>authorize()</code>, the server will not include <code>auth_time</code> in the token, and every login will be rejected with an <code>auth_time</code> error. A constructor value of 0 is ignored.</p></td>
         </tr>
 
     
@@ -694,7 +694,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line47">line 47</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line48">line 48</a>
     </li></ul></dd>
     
 
@@ -801,7 +801,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line193">line 193</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line194">line 194</a>
     </li></ul></dd>
     
 
@@ -869,7 +869,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line190">line 190</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line191">line 191</a>
     </li></ul></dd>
     
 
@@ -1258,6 +1258,39 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
 
         <tr>
             
+                <td class="name"><code>maxAge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the <code>max_age</code> parameter and used to validate the id_token's <code>auth_time</code> claim on the authentication response. A value of 0 enforces that <code>auth_time</code> is present and within the leeway window (default 60 seconds). Because only the leeway window is allowed, a slow login (for example a slow consent screen) or a client clock that runs more than <code>leeway</code> seconds ahead can reject a valid login; raise <code>leeway</code> (maximum 300) if needed. The snake_case <code>max_age</code> is accepted as well.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>organization</code></td>
             
 
@@ -1398,7 +1431,7 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line751">line 751</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line788">line 788</a>
     </li></ul></dd>
     
 
@@ -1647,7 +1680,7 @@ After that, you'll have to use the <code>parseHash</code> function at the specif
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line679">line 679</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line716">line 716</a>
     </li></ul></dd>
     
 
@@ -1999,6 +2032,39 @@ Remember to add the URL where the authorization request originates from to the A
 
         <tr>
             
+                <td class="name"><code>maxAge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the <code>max_age</code> parameter and used to validate the id_token's <code>auth_time</code> claim on the authentication response. A value of 0 enforces that <code>auth_time</code> is present and within the leeway window (default 60 seconds). Because only the leeway window is allowed, a slow login (for example a slow consent screen) or a client clock that runs more than <code>leeway</code> seconds ahead can reject a valid login; raise <code>leeway</code> (maximum 300) if needed. The snake_case <code>max_age</code> is accepted as well. Note: this call uses <code>prompt=none</code>; if the session is stale the server returns <code>login_required</code> instead of prompting for a fresh login.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>timeout</code></td>
             
 
@@ -2137,7 +2203,7 @@ Remember to add the URL where the authorization request originates from to the A
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line588">line 588</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line624">line 624</a>
     </li></ul></dd>
     
 
@@ -2245,7 +2311,7 @@ function(err, authResult) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line969">line 969</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1008">line 1008</a>
     </li></ul></dd>
     
 
@@ -2333,7 +2399,7 @@ function(err, authResult) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line980">line 980</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1019">line 1019</a>
     </li></ul></dd>
     
 
@@ -2494,7 +2560,7 @@ function(err, authResult) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1205">line 1205</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1244">line 1244</a>
     </li></ul></dd>
     
 
@@ -2766,6 +2832,39 @@ After the redirect to <code>redirectUri</code>, use <code>parseHash</code> to re
 
         <tr>
             
+                <td class="name"><code>maxAge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the <code>max_age</code> parameter and used to validate the id_token's <code>auth_time</code> claim on the authentication response. A value of 0 enforces that <code>auth_time</code> is present and within the leeway window (default 60 seconds). The snake_case <code>max_age</code> is accepted as well.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>captcha</code></td>
             
 
@@ -2896,7 +2995,7 @@ After the redirect to <code>redirectUri</code>, use <code>parseHash</code> to re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line855">line 855</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line893">line 893</a>
     </li></ul></dd>
     
 
@@ -3184,7 +3283,7 @@ After the redirect to <code>redirectUri</code>, use <code>parseHash</code> to re
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line990">line 990</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1029">line 1029</a>
     </li></ul></dd>
     
 
@@ -3446,6 +3545,39 @@ Tokens signed with other algorithms will not be accepted.</p>
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>maxAge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>maximum authentication age in seconds to check the id_token's <code>auth_time</code> claim against. Use it when the SDK has no stored transaction for this login. If it is not given, the <code>maxAge</code> stored with the transaction is used. A value of 0 enforces that <code>auth_time</code> is present and within the leeway window (default 60 seconds). The snake_case <code>max_age</code> is accepted as well.</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -3513,7 +3645,7 @@ Tokens signed with other algorithms will not be accepted.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line205">line 205</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line206">line 206</a>
     </li></ul></dd>
     
 
@@ -3832,7 +3964,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line912">line 912</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line951">line 951</a>
     </li></ul></dd>
     
 
@@ -4247,7 +4379,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line694">line 694</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line731">line 731</a>
     </li></ul></dd>
     
 
@@ -4601,7 +4733,7 @@ This only works when 3rd party cookies are enabled in the browser. After the /co
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1015">line 1015</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1054">line 1054</a>
     </li></ul></dd>
     
 
@@ -5287,7 +5419,7 @@ This function can only be used in the context of a Classic Universal Login Page.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1087">line 1087</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1126">line 1126</a>
     </li></ul></dd>
     
 
@@ -5973,7 +6105,7 @@ This function can only be used in the context of a Classic Universal Login Page.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1174">line 1174</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1213">line 1213</a>
     </li></ul></dd>
     
 
@@ -6583,7 +6715,7 @@ This function can only be used in the context of a Classic Universal Login Page.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1145">line 1145</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1184">line 1184</a>
     </li></ul></dd>
     
 
@@ -7269,7 +7401,7 @@ This function can only be used in the context of a Classic Universal Login Page.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1114">line 1114</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line1153">line 1153</a>
     </li></ul></dd>
     
 
@@ -7671,6 +7803,39 @@ Watch out! If you're not using the hosted login page to do social logins, you ha
 
         <tr>
             
+                <td class="name"><code>maxAge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the <code>max_age</code> parameter and used to validate the id_token's <code>auth_time</code> claim on the authentication response. A value of 0 enforces that <code>auth_time</code> is present and within the leeway window (default 60 seconds). Because only the leeway window is allowed, a slow login (for example a slow consent screen) or a client clock that runs more than <code>leeway</code> seconds ahead can reject a valid login; raise <code>leeway</code> (maximum 300) if needed. The snake_case <code>max_age</code> is accepted as well. Note: this call uses <code>prompt=none</code>; if the session is stale the server returns <code>login_required</code> instead of prompting for a fresh login.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>postMessageDataType</code></td>
             
 
@@ -7875,7 +8040,7 @@ Watch out! If you're not using the hosted login page to do social logins, you ha
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line506">line 506</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line541">line 541</a>
     </li></ul></dd>
     
 
@@ -8361,7 +8526,7 @@ Watch out! If you're not using the hosted login page to do social logins, you ha
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line729">line 729</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line766">line 766</a>
     </li></ul></dd>
     
 
@@ -8624,7 +8789,7 @@ The login will be done using /oauth/token with password-realm grant type.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line813">line 813</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line851">line 851</a>
     </li></ul></dd>
     
 
@@ -8855,6 +9020,39 @@ Tokens signed with other algorithms will not be accepted.</p>
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>maxAge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>maximum authentication age in seconds to check the id_token's <code>auth_time</code> claim against. Use it when the SDK has no stored transaction for this login. If it is not given, the <code>maxAge</code> stored with the transaction is used. A value of 0 enforces that <code>auth_time</code> is present and within the leeway window (default 60 seconds). The snake_case <code>max_age</code> is accepted as well.</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -8945,7 +9143,7 @@ Tokens signed with other algorithms will not be accepted.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line306">line 306</a>
+        <a href="web-auth_index.js.html">web-auth/index.js</a>, <a href="web-auth_index.js.html#line308">line 308</a>
     </li></ul></dd>
     
 
@@ -8997,7 +9195,7 @@ Tokens signed with other algorithms will not be accepted.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Aug 06 2026 10:04:15 GMT+0530 (India Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Oct 13 2026 23:00:43 GMT+0530 (India Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
