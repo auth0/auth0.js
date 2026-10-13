@@ -5,6 +5,14 @@ import * as times from '../helper/times';
 
 var DEFAULT_NAMESPACE = 'com.auth0.auth.';
 
+function normaliseMaxAge(value) {
+  if (value === undefined || value === null) { return null; }
+  var n = Number(value);
+  if (isNaN(n)) { return null; }
+  if (n === 0 && typeof value !== 'number' && value !== '0') { return null; }
+  return n;
+}
+
 function TransactionManager(options) {
   var transaction = options.transaction || {};
   this.namespace = transaction.namespace || DEFAULT_NAMESPACE;
@@ -30,7 +38,7 @@ TransactionManager.prototype.process = function(options) {
     lastUsedConnection,
     responseTypeIncludesIdToken,
     options.organization,
-    options.maxAge !== undefined ? options.maxAge : options.max_age
+    options.maxAge != null ? options.maxAge : options.max_age
   );
 
   if (!options.state) {
@@ -71,8 +79,9 @@ TransactionManager.prototype.generateTransaction = function(
       transactionPayload.organization = organization;
     }
 
-    if (maxAge != null) {
-      transactionPayload.maxAge = maxAge;
+    var normalisedMaxAge = normaliseMaxAge(maxAge);
+    if (normalisedMaxAge !== null) {
+      transactionPayload.maxAge = normalisedMaxAge;
     }
 
     this.storage.setItem(this.namespace + state, transactionPayload, {

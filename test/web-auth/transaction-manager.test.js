@@ -83,6 +83,28 @@ context('TransactionManager', function() {
         nonce: 'some-nonce'
       });
     });
+    it('forwards options.max_age to generateTransaction when options.maxAge is null', function() {
+      TransactionManager.prototype.generateTransaction.restore();
+      sinon
+        .stub(TransactionManager.prototype, 'generateTransaction')
+        .callsFake(function(
+          appState,
+          state,
+          nonce,
+          lastUsedConnection,
+          generateNonce,
+          organization,
+          maxAge
+        ) {
+          expect(maxAge).to.be(300);
+          return {
+            state: state || 'randomState',
+            nonce: nonce || 'randomNonce',
+            lastUsedConnection: lastUsedConnection
+          };
+        });
+      this.tm.process({ responseType: 'code', state: 'some-state', maxAge: null, max_age: 300 });
+    });
     it('forwards options.max_age to generateTransaction when options.maxAge is not set', function() {
       TransactionManager.prototype.generateTransaction.restore();
       sinon
@@ -368,6 +390,51 @@ context('TransactionManager', function() {
           'providedState',
           'providedNonce',
           null
+        );
+
+        expect(
+          Storage.prototype.setItem.lastCall.args[1].hasOwnProperty('maxAge')
+        ).to.be(false);
+      });
+      it('does not store a maxAge key when maxAge is an empty string', function () {
+        this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null,
+          null,
+          null,
+          ''
+        );
+
+        expect(
+          Storage.prototype.setItem.lastCall.args[1].hasOwnProperty('maxAge')
+        ).to.be(false);
+      });
+      it('does not store a maxAge key when maxAge is boolean false', function () {
+        this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null,
+          null,
+          null,
+          false
+        );
+
+        expect(
+          Storage.prototype.setItem.lastCall.args[1].hasOwnProperty('maxAge')
+        ).to.be(false);
+      });
+      it('does not store a maxAge key when maxAge is NaN', function () {
+        this.tm.generateTransaction(
+          'appState',
+          'providedState',
+          'providedNonce',
+          null,
+          null,
+          null,
+          NaN
         );
 
         expect(

@@ -22,6 +22,17 @@ function defaultClock() {
   return new Date();
 }
 
+// Returns the numeric maxAge when value is a genuine number (or numeric string),
+// or null when the value is missing or not a real number (undefined, null, '',
+// false, [], NaN).  Keeps 0 only when the caller explicitly passed 0 or '0'.
+function normaliseMaxAge(value) {
+  if (value === undefined || value === null) { return null; }
+  var n = Number(value);
+  if (isNaN(n)) { return null; }
+  if (n === 0 && typeof value !== 'number' && value !== '0') { return null; }
+  return n;
+}
+
 /**
  * Handles all the browser's AuthN/AuthZ flows
  * @constructor
@@ -34,7 +45,7 @@ function defaultClock() {
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {Number} [options.leeway] number of seconds to account for clock skew when validating time-based claims in ID tokens. Defaults to 60 seconds.
- * @param {Number} [options.maxAge] maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. Used only for client-side `auth_time` validation on the callback — it is not sent to `/authorize`. Use a per-call `maxAge` on `authorize()` to enforce freshness via the server. A value of 0 is not enforced client-side.
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. Used only for client-side `auth_time` validation on the callback; it is not sent to `/authorize`. Without a per-call `maxAge` on `authorize()`, the server will not include `auth_time` in the token, and every login will be rejected with an `auth_time` error. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds).
  * @param {Number} [options.stateExpiration] number of minutes for the stored state to be kept. Defaults to 30 minutes.
  * @param {String} [options.organization] the id or name of an organization to log in to
  * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
@@ -351,10 +362,10 @@ WebAuth.prototype.validateAuthenticationResponse = function (
   var transactionNonce =
     options.nonce || (transaction && transaction.nonce) || null;
 
-  var optionsMaxAge = options.maxAge !== undefined ? Number(options.maxAge) : (options.max_age !== undefined ? Number(options.max_age) : null);
-  var transactionMaxAge = (optionsMaxAge != null && !isNaN(optionsMaxAge))
+  var optionsMaxAge = normaliseMaxAge(options.maxAge !== undefined ? options.maxAge : options.max_age);
+  var transactionMaxAge = optionsMaxAge !== null
     ? optionsMaxAge
-    : (transaction && transaction.maxAge != null ? transaction.maxAge : null);
+    : normaliseMaxAge(transaction && transaction.maxAge);
 
   var transactionOrganization = transaction && transaction.organization;
   var appState = options.state || (transaction && transaction.appState) || null;
@@ -491,8 +502,8 @@ function buildParseHashResponse(qsParams, appState, token) {
  * @param {Number} [maxAge] maximum authentication age (seconds) to validate the
  *   `auth_time` claim against. When provided, takes precedence over the
  *   constructor value. Falls back to the value set on the constructor.
- *   A value of 0 is not enforced client-side; the server is expected to handle
- *   it by requiring a fresh login. For backwards compatibility, this argument
+ *   A value of 0 enforces that `auth_time` is present and within the leeway
+ *   window (default 60 seconds). For backwards compatibility, this argument
  *   may be omitted and the callback passed as the third argument instead.
  * @param {validateTokenCallback} cb
  */
@@ -503,13 +514,13 @@ WebAuth.prototype.validateToken = function (token, nonce, maxAge, cb) {
     maxAge = undefined;
   }
 
-  var numericMaxAge = (maxAge !== undefined && maxAge !== null) ? Number(maxAge) : null;
-  var resolvedMaxAge = (numericMaxAge != null && !isNaN(numericMaxAge))
-    ? numericMaxAge
-    : this.baseOptions.maxAge;
-  // idtoken-verifier skips auth_time when maxAge is falsy; use 0.001 so a
-  // maxAge of 0 still requires auth_time to be present and within leeway.
-  var verifierMaxAge = resolvedMaxAge === 0 ? 0.001 : resolvedMaxAge;
+  var numericMaxAge = normaliseMaxAge(maxAge);
+  var resolvedMaxAge = numericMaxAge !== null ? numericMaxAge : this.baseOptions.maxAge;
+  // idtoken-verifier skips auth_time when maxAge is falsy; convert an
+  // explicitly requested 0 to 0.001 so the verifier enforces auth_time
+  // presence. Constructor maxAge:0 is NOT converted because the constructor
+  // value is never sent to /authorize, so the server returns no auth_time.
+  var verifierMaxAge = numericMaxAge === 0 ? 0.001 : resolvedMaxAge;
 
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
@@ -544,7 +555,7 @@ WebAuth.prototype.validateToken = function (token, nonce, maxAge, cb) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
- * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 is not enforced client-side.
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). Note: this call uses `prompt=none`; if the session is stale the server returns `login_required` instead of prompting for a fresh login.
  * @param {String} [options.postMessageDataType] identifier data type to look for in postMessage event data, where events are initiated from silent callback urls, before accepting a message event is the event expected. A value of false means any postMessage event will trigger a callback.
  * @param {String} [options.postMessageOrigin] origin of redirectUri to expect postMessage response from.  Defaults to the origin of the receiving window. Only used if usePostMessage is truthy.
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
@@ -647,7 +658,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
- * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 is not enforced client-side. Note: this call uses `prompt=none`; if the session is stale the server returns `login_required` instead of prompting for a fresh login.
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). Note: this call uses `prompt=none`; if the session is stale the server returns `login_required` instead of prompting for a fresh login.
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
  * @param {String} [options.organization] the id or name of an organization to log in to
  * @param {checkSessionCallback} cb
@@ -797,7 +808,7 @@ WebAuth.prototype.signup = function (options, cb) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`. Defaults to `openid profile email`.
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
- * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 is not enforced client-side. Note: this call uses `prompt=none`; if the session is stale the server returns `login_required` instead of prompting for a fresh login.
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds).
  * @param {String} [options.organization] the id or name of an organization to log in to
  * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
  * @param {Object} [options.appState] any values that you want back on the authentication response

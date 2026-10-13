@@ -626,6 +626,160 @@ describe('auth0.WebAuth', function () {
           }
         );
       });
+
+      it('uses options.max_age when options.maxAge is not set', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null
+        });
+
+        sinon
+          .stub(WebAuth.prototype, 'validateToken')
+          .callsFake(function (token, nonce, maxAge, cb) {
+            expect(maxAge).to.be(300);
+            cb(null, { sub: 'user' });
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'brucke.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&id_token=token', max_age: 300 },
+          function (err) {
+            if (err) { return done(err); }
+            done();
+          }
+        );
+      });
+
+      it('ignores falsy non-zero options.maxAge (null, false, empty string) and falls back to the transaction', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          maxAge: 300
+        });
+
+        sinon
+          .stub(WebAuth.prototype, 'validateToken')
+          .callsFake(function (token, nonce, maxAge, cb) {
+            expect(maxAge).to.be(300);
+            cb(null, { sub: 'user' });
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'brucke.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&id_token=token', maxAge: null },
+          function (err) {
+            if (err) { return done(err); }
+            done();
+          }
+        );
+      });
+
+      it('ignores a non-numeric per-call maxAge and falls back to the transaction', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          maxAge: 300
+        });
+
+        sinon
+          .stub(WebAuth.prototype, 'validateToken')
+          .callsFake(function (token, nonce, maxAge, cb) {
+            expect(maxAge).to.be(300);
+            cb(null, { sub: 'user' });
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'brucke.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&id_token=token', maxAge: 'abc' },
+          function (err) {
+            if (err) { return done(err); }
+            done();
+          }
+        );
+      });
+
+      it('ignores empty-string options.maxAge and falls back to the transaction', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          maxAge: 300
+        });
+
+        sinon
+          .stub(WebAuth.prototype, 'validateToken')
+          .callsFake(function (token, nonce, maxAge, cb) {
+            expect(maxAge).to.be(300);
+            cb(null, { sub: 'user' });
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'brucke.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&id_token=token', maxAge: '' },
+          function (err) {
+            if (err) { return done(err); }
+            done();
+          }
+        );
+      });
+
+      it('ignores boolean false options.maxAge and falls back to the transaction', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          maxAge: 300
+        });
+
+        sinon
+          .stub(WebAuth.prototype, 'validateToken')
+          .callsFake(function (token, nonce, maxAge, cb) {
+            expect(maxAge).to.be(300);
+            cb(null, { sub: 'user' });
+          });
+
+        var webAuth = new WebAuth({
+          domain: 'brucke.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&id_token=token', maxAge: false },
+          function (err) {
+            if (err) { return done(err); }
+            done();
+          }
+        );
+      });
     });
     context('auth_time enforcement through real idtoken-verifier', function () {
       // clock = 1482933050, maxAge = 300, leeway = 60
@@ -721,6 +875,101 @@ describe('auth0.WebAuth', function () {
         });
         webAuth.parseHash(
           { hash: '#state=foo&token_type=Bearer&access_token=testtoken&id_token=' + NO_AUTH_TIME_ID_TOKEN },
+          function (err) {
+            expect(err).not.to.be(null);
+            expect(err.errorDescription).to.contain('auth_time');
+            done();
+          }
+        );
+      });
+
+      it('accepts a fresh token when transaction maxAge is 0 (auth_time within leeway window)', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          maxAge: 0
+        });
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token id_token',
+          __clock: function () { return new Date(1482933050000); }
+        });
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&access_token=testtoken&id_token=' + FRESH_ID_TOKEN },
+          function (err, result) {
+            expect(err).to.be(null);
+            expect(result.idTokenPayload.auth_time).to.be(1482933000);
+            done();
+          }
+        );
+      });
+
+      it('rejects a stale token when transaction maxAge is 0 (0 enforces auth_time presence via 0.001 conversion)', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          maxAge: 0
+        });
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token id_token',
+          __clock: function () { return new Date(1482933050000); }
+        });
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&access_token=testtoken&id_token=' + OLD_ID_TOKEN },
+          function (err) {
+            expect(err).not.to.be(null);
+            expect(err.errorDescription).to.contain('auth_time');
+            done();
+          }
+        );
+      });
+
+      it('rejects a token with no auth_time when transaction maxAge is 0', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null,
+          maxAge: 0
+        });
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token id_token',
+          __clock: function () { return new Date(1482933050000); }
+        });
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&access_token=testtoken&id_token=' + NO_AUTH_TIME_ID_TOKEN },
+          function (err) {
+            expect(err).not.to.be(null);
+            expect(err.errorDescription).to.contain('auth_time');
+            done();
+          }
+        );
+      });
+
+      it('rejects a stale token when max_age is passed as a snake_case option (not in transaction)', function (done) {
+        restoreAndStubStoredTransaction('foo', {
+          nonce: 'asfd',
+          state: 'foo',
+          appState: null
+        });
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token id_token',
+          __clock: function () { return new Date(1482933050000); }
+        });
+        webAuth.parseHash(
+          { hash: '#state=foo&token_type=Bearer&access_token=testtoken&id_token=' + OLD_ID_TOKEN, max_age: 300 },
           function (err) {
             expect(err).not.to.be(null);
             expect(err.errorDescription).to.contain('auth_time');
@@ -3587,6 +3836,30 @@ describe('auth0.WebAuth', function () {
       webAuth.validateToken('token', 'nonce', function () { });
     });
 
+    it('calls the callback when invoked with the legacy 3-arg signature (token, nonce, cb)', function (done) {
+      var idTokenVerifierMock = function () {};
+      idTokenVerifierMock.prototype.verify = function (token, nonce, cb) {
+        cb(null, { sub: 'user' });
+      };
+
+      var { default: ProxiedWebAuth } = proxyquire('../../src/web-auth', {
+        'idtoken-verifier': idTokenVerifierMock
+      });
+
+      var webAuth = new ProxiedWebAuth({
+        domain: 'brucke.auth0.com',
+        redirectUri: 'http://example.com/callback',
+        clientID: 'k5u3o2fiAA8XweXEEX604KCwCjzjtMU6',
+        responseType: 'token id_token'
+      });
+
+      webAuth.validateToken('token', 'nonce', function (err, payload) {
+        expect(err).to.be(null);
+        expect(payload.sub).to.be('user');
+        done();
+      });
+    });
+
     it('should use the per-transaction maxAge when provided', function (done) {
       var idTokenVerifierMock = function (opts) {
         expect(opts.maxAge).to.be(200);
@@ -3670,9 +3943,9 @@ describe('auth0.WebAuth', function () {
       webAuth.validateToken('token', 'nonce', '300', function () { });
     });
 
-    it('passes 0.001 to the verifier when constructor maxAge is 0 (enforces auth_time presence)', function (done) {
+    it('does not convert constructor maxAge of 0 to 0.001 (server never sends auth_time for constructor-only maxAge)', function (done) {
       var idTokenVerifierMock = function (opts) {
-        expect(opts.maxAge).to.be(0.001);
+        expect(opts.maxAge).to.be(0);
         done();
       };
 
