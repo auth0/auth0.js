@@ -1,7 +1,7 @@
 /**
- * auth0-js v10.2.1
+ * auth0-js v10.3.0
  * Author: Auth0
- * Date: 2026-08-06
+ * Date: 2026-10-13
  * License: MIT
  */
 
@@ -2453,7 +2453,7 @@
 		        return false;
 		    }
 
-		    return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
+		    return !!(obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj));
 		};
 
 		var combine = function combine(a, b, arrayLimit, plainObjects, throwOnLimitExceeded) {
@@ -2462,8 +2462,15 @@
 		        if (throwOnLimitExceeded) {
 		            throw new RangeError('Array limit exceeded. Only ' + arrayLimit + ' element' + (arrayLimit === 1 ? '' : 's') + ' allowed in an array.');
 		        }
-		        var newIndex = getMaxIndex(a) + 1;
-		        a[newIndex] = b;
+		        // spread `b` one level, matching the `[].concat(a, b)` used below, so a
+		        // collection appended to an already-overflowed object is flattened
+		        // rather than nested under a single index
+		        var bValues = isArray(b) ? b : [b];
+		        var newIndex = getMaxIndex(a);
+		        for (var i = 0; i < bValues.length; ++i) {
+		            newIndex += 1;
+		            a[newIndex] = bValues[i];
+		        }
 		        setMaxIndex(a, newIndex);
 		        return a;
 		    }
@@ -2549,6 +2556,7 @@
 		    charsetSentinel: false,
 		    commaRoundTrip: false,
 		    delimiter: '&',
+		    depth: Infinity,
 		    encode: true,
 		    encodeDotInKeys: false,
 		    encoder: utils.encode,
@@ -2593,9 +2601,15 @@
 		    formatter,
 		    encodeValuesOnly,
 		    charset,
-		    sideChannel
+		    sideChannel,
+		    depth,
+		    currentDepth
 		) {
 		    var obj = object;
+
+		    if (currentDepth > depth) {
+		        throw new RangeError('Input depth exceeded depth option of ' + depth);
+		    }
 
 		    var tmpSc = sideChannel;
 		    var step = 0;
@@ -2616,9 +2630,9 @@
 		        }
 		    }
 
-		    if (typeof filter === 'function') {
-		        obj = filter(prefix, obj);
-		    } else if (obj instanceof Date) {
+		    obj = typeof filter === 'function' ? filter(prefix, obj) : obj;
+
+		    if (obj instanceof Date) {
 		        obj = serializeDate(obj);
 		    } else if (generateArrayPrefix === 'comma' && isArray(obj)) {
 		        obj = utils.maybeMap(obj, function (value) {
@@ -2671,7 +2685,7 @@
 
 		    var adjustedPrefix = commaRoundTrip && isArray(obj) && obj.length === 1 ? encodedPrefix + '[]' : encodedPrefix;
 
-		    if (allowEmptyArrays && isArray(obj) && obj.length === 0) {
+		    if (allowEmptyArrays && isArray(obj) && obj.length === 0 && Object.keys(obj).length === 0) {
 		        return adjustedPrefix + '[]';
 		    }
 
@@ -2711,7 +2725,9 @@
 		            formatter,
 		            encodeValuesOnly,
 		            charset,
-		            valueSideChannel
+		            valueSideChannel,
+		            depth,
+		            currentDepth + 1
 		        ));
 		    }
 
@@ -2778,6 +2794,7 @@
 		        charsetSentinel: typeof opts.charsetSentinel === 'boolean' ? opts.charsetSentinel : defaults.charsetSentinel,
 		        commaRoundTrip: !!opts.commaRoundTrip,
 		        delimiter: typeof opts.delimiter === 'undefined' ? defaults.delimiter : opts.delimiter,
+		        depth: typeof opts.depth === 'number' ? opts.depth : defaults.depth,
 		        encode: typeof opts.encode === 'boolean' ? opts.encode : defaults.encode,
 		        encodeDotInKeys: typeof opts.encodeDotInKeys === 'boolean' ? opts.encodeDotInKeys : defaults.encodeDotInKeys,
 		        encoder: typeof opts.encoder === 'function' ? opts.encoder : defaults.encoder,
@@ -2837,9 +2854,12 @@
 		        if (options.skipNulls && value === null) {
 		            continue;
 		        }
+
+		        var encodedKey = options.encodeDotInKeys ? String(key).replace(/\./g, '%2E') : String(key);
+
 		        pushToArray(keys, stringify(
 		            value,
-		            key,
+		            encodedKey,
 		            generateArrayPrefix,
 		            commaRoundTrip,
 		            options.allowEmptyArrays,
@@ -2855,7 +2875,9 @@
 		            options.formatter,
 		            options.encodeValuesOnly,
 		            options.charset,
-		            sideChannel
+		            sideChannel,
+		            options.depth,
+		            0
 		        ));
 		    }
 
@@ -2920,9 +2942,9 @@
 		    });
 		};
 
-		var parseArrayValue = function (val, options, currentArrayLength, isFlatArrayValue) {
+		var parseArrayValue = function (val, options, currentArrayLength) {
 		    if (val && typeof val === 'string' && options.comma && val.indexOf(',') > -1) {
-		        if (isFlatArrayValue && options.throwOnLimitExceeded) {
+		        if (options.throwOnLimitExceeded) {
 		            var commaCount = 0;
 		            var commaIndex = val.indexOf(',');
 		            while (commaIndex > -1) {
@@ -3009,8 +3031,7 @@
 		                    parseArrayValue(
 		                        part.slice(pos + 1),
 		                        options,
-		                        isArray(obj[key]) ? obj[key].length : 0,
-		                        part.indexOf('[]=') === -1
+		                        isArray(obj[key]) ? obj[key].length : 0
 		                    ),
 		                    function (encodedVal) {
 		                        return options.decoder(encodedVal, defaults.decoder, charset, 'value');
@@ -6135,7 +6156,7 @@
 	  if (hasRequiredVersion) return version$1;
 	  hasRequiredVersion = 1;
 	  version$1 = {
-	    raw: '10.2.1'
+	    raw: '10.3.0'
 	  };
 	  return version$1;
 	}
@@ -6944,6 +6965,20 @@
 	  return null;
 	};
 
+	// Returns the maxAge as a number, or null when no maxAge was requested.
+	// Only numbers and non blank numeric strings count. undefined, null, '', blank
+	// strings, booleans, arrays, objects, NaN and non numeric strings all mean "not set".
+	function normalise(value) {
+	  if (typeof value === 'string' ? value.trim() === '' : typeof value !== 'number') {
+	    return null;
+	  }
+	  var number = Number(value);
+	  return isNaN(number) ? null : number;
+	}
+	var maxAgeHelper = {
+	  normalise: normalise
+	};
+
 	function randomString(length) {
 	  // Handle invalid length
 	  if (!length || length <= 0) {
@@ -6994,7 +7029,11 @@
 	  }
 	  var lastUsedConnection = options.realm || options.connection;
 	  var responseTypeIncludesIdToken = options.responseType.indexOf('id_token') !== -1;
-	  var transaction = this.generateTransaction(options.appState, options.state, options.nonce, lastUsedConnection, responseTypeIncludesIdToken, options.organization);
+	  var maxAge = maxAgeHelper.normalise(options.maxAge);
+	  if (maxAge === null) {
+	    maxAge = maxAgeHelper.normalise(options.max_age);
+	  }
+	  var transaction = this.generateTransaction(options.appState, options.state, options.nonce, lastUsedConnection, responseTypeIncludesIdToken, options.organization, maxAge);
 	  if (!options.state) {
 	    options.state = transaction.state;
 	  }
@@ -7003,7 +7042,7 @@
 	  }
 	  return options;
 	};
-	TransactionManager.prototype.generateTransaction = function (appState, state, nonce, lastUsedConnection, generateNonce, organization) {
+	TransactionManager.prototype.generateTransaction = function (appState, state, nonce, lastUsedConnection, generateNonce, organization, maxAge) {
 	  state = state || random.randomString(this.keyLength);
 	  nonce = nonce || (generateNonce ? random.randomString(this.keyLength) : null);
 	  var isHostedLoginPage = windowHelper.getWindow().location.host === this.options.domain;
@@ -7016,6 +7055,10 @@
 	    };
 	    if (organization) {
 	      transactionPayload.organization = organization;
+	    }
+	    var normalisedMaxAge = maxAgeHelper.normalise(maxAge);
+	    if (normalisedMaxAge !== null) {
+	      transactionPayload.maxAge = normalisedMaxAge;
 	    }
 	    this.storage.setItem(this.namespace + state, transactionPayload, {
 	      expires: this.stateExpiration
@@ -7851,6 +7894,7 @@
 	 * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
 	 * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
 	 * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
+	 * @param {Number} [options.maxAge] maximum authentication age in seconds to check the id_token's `auth_time` claim against. Use it when the SDK has no stored transaction for this login. If it is not given, the `maxAge` stored with the transaction is used. The snake_case `max_age` is accepted as well.
 	 * @see   {@link parseHash}
 	 * @memberof Popup.prototype
 	 */
@@ -7901,6 +7945,7 @@
 	 * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
 	 * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
 	 * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+	 * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). The snake_case `max_age` is accepted as well.
 	 * @param {String} [options.organization] the Id of an organization to log in to
 	 * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
 	 * @param {Boolean} [options.owp] determines if Auth0 should render the relay page or not and the caller is responsible of handling the response.
@@ -7966,6 +8011,7 @@
 	 * @param {String} [options.responseType] type of the response used. It can be any of the values `code` and `token`
 	 * @param {String} [options.responseMode] how the AuthN response is encoded and redirected back to the client. Supported values are `query` and `fragment`. The `query` value is only supported when `responseType` is `code`.
 	 * @param {String} [options.scope] scopes to be requested during AuthN. e.g. `openid email`
+	 * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). The snake_case `max_age` is accepted as well.
 	 * @param {credentialsCallback} cb
 	 * @memberof Popup.prototype
 	 */
@@ -8662,7 +8708,7 @@
 	 * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
 	 * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
 	 * @param {Number} [options.leeway] number of seconds to account for clock skew when validating time-based claims in ID tokens. Defaults to 60 seconds.
-	 * @param {Number} [options.maxAge] maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server.
+	 * @param {Number} [options.maxAge] maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. Used only for client-side `auth_time` validation on the callback; it is not sent to `/authorize`. Without a per-call `maxAge` on `authorize()`, the server will not include `auth_time` in the token, and every login will be rejected with an `auth_time` error. A constructor value of 0 is ignored.
 	 * @param {Number} [options.stateExpiration] number of minutes for the stored state to be kept. Defaults to 30 minutes.
 	 * @param {String} [options.organization] the id or name of an organization to log in to
 	 * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
@@ -8840,6 +8886,7 @@
 	 * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
 	 * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
 	 * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `token`, `id_token`. For this specific method, we'll only use this value to check if the hash contains the tokens requested in the responseType.
+	 * @param {Number} [options.maxAge] maximum authentication age in seconds to check the id_token's `auth_time` claim against. Use it when the SDK has no stored transaction for this login. If it is not given, the `maxAge` stored with the transaction is used. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). The snake_case `max_age` is accepted as well.
 	 * @param {authorizeCallback} cb
 	 * @memberof WebAuth.prototype
 	 */
@@ -8888,6 +8935,7 @@
 	 * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
 	 * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
 	 * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
+	 * @param {Number} [options.maxAge] maximum authentication age in seconds to check the id_token's `auth_time` claim against. Use it when the SDK has no stored transaction for this login. If it is not given, the `maxAge` stored with the transaction is used. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). The snake_case `max_age` is accepted as well.
 	 * @param {Object} parsedHash an object that represents the parsed hash
 	 * @param {authorizeCallback} cb
 	 * @memberof WebAuth.prototype
@@ -8907,6 +8955,11 @@
 	    });
 	  }
 	  var transactionNonce = options.nonce || transaction && transaction.nonce || null;
+	  var optionsMaxAge = maxAgeHelper.normalise(options.maxAge);
+	  if (optionsMaxAge === null) {
+	    optionsMaxAge = maxAgeHelper.normalise(options.max_age);
+	  }
+	  var transactionMaxAge = optionsMaxAge !== null ? optionsMaxAge : maxAgeHelper.normalise(transaction && transaction.maxAge);
 	  var transactionOrganization = transaction && transaction.organization;
 	  var appState = options.state || transaction && transaction.appState || null;
 	  var callback = function callback(err, payload) {
@@ -8925,7 +8978,7 @@
 	  if (!parsedHash.id_token) {
 	    return callback(null, null);
 	  }
-	  return this.validateToken(parsedHash.id_token, transactionNonce, function (validationError, payload) {
+	  return this.validateToken(parsedHash.id_token, transactionNonce, transactionMaxAge, function (validationError, payload) {
 	    if (!validationError) {
 	      // Verify the organization
 	      if (transactionOrganization) {
@@ -8993,15 +9046,35 @@
 	 * @private
 	 * @param {String} token
 	 * @param {String} nonce
+	 * @param {Number} [maxAge] maximum authentication age (seconds) to validate the
+	 *   `auth_time` claim against. A number or a numeric string takes precedence
+	 *   over the constructor value. Anything else (`undefined`, `null`, `''`,
+	 *   booleans, arrays, `NaN`, non numeric strings) means not set, so the
+	 *   constructor value is used. A requested 0 enforces that `auth_time` is
+	 *   present and within the leeway window (default 60 seconds); a constructor 0
+	 *   is ignored. For backwards compatibility, this argument may be omitted and
+	 *   the callback passed as the third argument instead.
 	 * @param {validateTokenCallback} cb
 	 */
-	WebAuth.prototype.validateToken = function (token, nonce, cb) {
+	WebAuth.prototype.validateToken = function (token, nonce, maxAge, cb) {
+	  // Backwards-compatible signature: validateToken(token, nonce, cb)
+	  if (typeof maxAge === 'function') {
+	    cb = maxAge;
+	    maxAge = undefined;
+	  }
+	  var numericMaxAge = maxAgeHelper.normalise(maxAge);
+	  var resolvedMaxAge = numericMaxAge !== null ? numericMaxAge : this.baseOptions.maxAge;
+	  // idtoken-verifier skips auth_time when maxAge is falsy; convert an
+	  // explicitly requested 0 to 0.001 so the verifier enforces auth_time
+	  // presence. Constructor maxAge:0 is NOT converted because the constructor
+	  // value is never sent to /authorize, so the server returns no auth_time.
+	  var verifierMaxAge = numericMaxAge === 0 ? 0.001 : resolvedMaxAge;
 	  var verifier = new I({
 	    issuer: this.baseOptions.token_issuer,
 	    jwksURI: this.baseOptions.jwksURI,
 	    audience: this.baseOptions.clientID,
 	    leeway: this.baseOptions.leeway || 60,
-	    maxAge: this.baseOptions.maxAge,
+	    maxAge: verifierMaxAge,
 	    __clock: this.baseOptions.__clock || defaultClock
 	  });
 	  verifier.verify(token, nonce, function (err, payload) {
@@ -9027,6 +9100,7 @@
 	 * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
 	 * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
 	 * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+	 * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). Because only the leeway window is allowed, a slow login (for example a slow consent screen) or a client clock that runs more than `leeway` seconds ahead can reject a valid login; raise `leeway` (maximum 300) if needed. The snake_case `max_age` is accepted as well. Note: this call uses `prompt=none`; if the session is stale the server returns `login_required` instead of prompting for a fresh login.
 	 * @param {String} [options.postMessageDataType] identifier data type to look for in postMessage event data, where events are initiated from silent callback urls, before accepting a message event is the event expected. A value of false means any postMessage event will trigger a callback.
 	 * @param {String} [options.postMessageOrigin] origin of redirectUri to expect postMessage response from.  Defaults to the origin of the receiving window. Only used if usePostMessage is truthy.
 	 * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
@@ -9109,6 +9183,7 @@
 	 * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
 	 * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
 	 * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+	 * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). Because only the leeway window is allowed, a slow login (for example a slow consent screen) or a client clock that runs more than `leeway` seconds ahead can reject a valid login; raise `leeway` (maximum 300) if needed. The snake_case `max_age` is accepted as well. Note: this call uses `prompt=none`; if the session is stale the server returns `login_required` instead of prompting for a fresh login.
 	 * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
 	 * @param {String} [options.organization] the id or name of an organization to log in to
 	 * @param {checkSessionCallback} cb
@@ -9227,6 +9302,7 @@
 	 * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
 	 * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`. Defaults to `openid profile email`.
 	 * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+	 * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). Because only the leeway window is allowed, a slow login (for example a slow consent screen) or a client clock that runs more than `leeway` seconds ahead can reject a valid login; raise `leeway` (maximum 300) if needed. The snake_case `max_age` is accepted as well.
 	 * @param {String} [options.organization] the id or name of an organization to log in to
 	 * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
 	 * @param {Object} [options.appState] any values that you want back on the authentication response
@@ -9302,6 +9378,7 @@
 	 * @param {String} [options.email] Email (mutually exclusive with username)
 	 * @param {String} [options.password] Password
 	 * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
+	 * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). The snake_case `max_age` is accepted as well.
 	 * @param {String} [options.captcha] the attempted solution for the captcha, if one was presented
 	 * @param {onRedirectingCallback} [options.onRedirecting] Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
 	 * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.

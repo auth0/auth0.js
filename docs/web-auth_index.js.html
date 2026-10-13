@@ -36,6 +36,7 @@ import windowHelper from '../helper/window';
 import objectHelper from '../helper/object';
 import SSODataStorage from '../helper/ssodata';
 import responseHandler from '../helper/response-handler';
+import maxAgeHelper from '../helper/max-age';
 import TransactionManager from './transaction-manager';
 import Authentication from '../authentication';
 import Redirect from './redirect';
@@ -62,7 +63,7 @@ function defaultClock() {
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
  * @param {Number} [options.leeway] number of seconds to account for clock skew when validating time-based claims in ID tokens. Defaults to 60 seconds.
- * @param {Number} [options.maxAge] maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server.
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the last time the user was actively authenticated by the authorization server. Used only for client-side `auth_time` validation on the callback; it is not sent to `/authorize`. Without a per-call `maxAge` on `authorize()`, the server will not include `auth_time` in the token, and every login will be rejected with an `auth_time` error. A constructor value of 0 is ignored.
  * @param {Number} [options.stateExpiration] number of minutes for the stored state to be kept. Defaults to 30 minutes.
  * @param {String} [options.organization] the id or name of an organization to log in to
  * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
@@ -260,6 +261,7 @@ function WebAuth(options) {
  * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
  * @param {String} [options.responseType] type of the response used by OAuth 2.0 flow. It can be any space separated list of the values `token`, `id_token`. For this specific method, we'll only use this value to check if the hash contains the tokens requested in the responseType.
+ * @param {Number} [options.maxAge] maximum authentication age in seconds to check the id_token's `auth_time` claim against. Use it when the SDK has no stored transaction for this login. If it is not given, the `maxAge` stored with the transaction is used. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). The snake_case `max_age` is accepted as well.
  * @param {authorizeCallback} cb
  * @memberof WebAuth.prototype
  */
@@ -344,6 +346,7 @@ WebAuth.prototype.parseHash = function (options, cb) {
  * @param {String} options.hash the url hash. If not provided it will extract from window.location.hash
  * @param {String} [options.state] value originally sent in `state` parameter to {@link authorize} to mitigate XSRF
  * @param {String} [options.nonce] value originally sent in `nonce` parameter to {@link authorize} to prevent replay attacks
+ * @param {Number} [options.maxAge] maximum authentication age in seconds to check the id_token's `auth_time` claim against. Use it when the SDK has no stored transaction for this login. If it is not given, the `maxAge` stored with the transaction is used. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). The snake_case `max_age` is accepted as well.
  * @param {Object} parsedHash an object that represents the parsed hash
  * @param {authorizeCallback} cb
  * @memberof WebAuth.prototype
@@ -379,6 +382,15 @@ WebAuth.prototype.validateAuthenticationResponse = function (
   var transactionNonce =
     options.nonce || (transaction &amp;&amp; transaction.nonce) || null;
 
+  var optionsMaxAge = maxAgeHelper.normalise(options.maxAge);
+  if (optionsMaxAge === null) {
+    optionsMaxAge = maxAgeHelper.normalise(options.max_age);
+  }
+  var transactionMaxAge =
+    optionsMaxAge !== null
+      ? optionsMaxAge
+      : maxAgeHelper.normalise(transaction &amp;&amp; transaction.maxAge);
+
   var transactionOrganization = transaction &amp;&amp; transaction.organization;
   var appState = options.state || (transaction &amp;&amp; transaction.appState) || null;
 
@@ -407,6 +419,7 @@ WebAuth.prototype.validateAuthenticationResponse = function (
   return this.validateToken(
     parsedHash.id_token,
     transactionNonce,
+    transactionMaxAge,
     function (validationError, payload) {
       if (!validationError) {
         // Verify the organization
@@ -510,15 +523,37 @@ function buildParseHashResponse(qsParams, appState, token) {
  * @private
  * @param {String} token
  * @param {String} nonce
+ * @param {Number} [maxAge] maximum authentication age (seconds) to validate the
+ *   `auth_time` claim against. A number or a numeric string takes precedence
+ *   over the constructor value. Anything else (`undefined`, `null`, `''`,
+ *   booleans, arrays, `NaN`, non numeric strings) means not set, so the
+ *   constructor value is used. A requested 0 enforces that `auth_time` is
+ *   present and within the leeway window (default 60 seconds); a constructor 0
+ *   is ignored. For backwards compatibility, this argument may be omitted and
+ *   the callback passed as the third argument instead.
  * @param {validateTokenCallback} cb
  */
-WebAuth.prototype.validateToken = function (token, nonce, cb) {
+WebAuth.prototype.validateToken = function (token, nonce, maxAge, cb) {
+  // Backwards-compatible signature: validateToken(token, nonce, cb)
+  if (typeof maxAge === 'function') {
+    cb = maxAge;
+    maxAge = undefined;
+  }
+
+  var numericMaxAge = maxAgeHelper.normalise(maxAge);
+  var resolvedMaxAge = numericMaxAge !== null ? numericMaxAge : this.baseOptions.maxAge;
+  // idtoken-verifier skips auth_time when maxAge is falsy; convert an
+  // explicitly requested 0 to 0.001 so the verifier enforces auth_time
+  // presence. Constructor maxAge:0 is NOT converted because the constructor
+  // value is never sent to /authorize, so the server returns no auth_time.
+  var verifierMaxAge = numericMaxAge === 0 ? 0.001 : resolvedMaxAge;
+
   var verifier = new IdTokenVerifier({
     issuer: this.baseOptions.token_issuer,
     jwksURI: this.baseOptions.jwksURI,
     audience: this.baseOptions.clientID,
     leeway: this.baseOptions.leeway || 60,
-    maxAge: this.baseOptions.maxAge,
+    maxAge: verifierMaxAge,
     __clock: this.baseOptions.__clock || defaultClock
   });
 
@@ -546,6 +581,7 @@ WebAuth.prototype.validateToken = function (token, nonce, cb) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). Because only the leeway window is allowed, a slow login (for example a slow consent screen) or a client clock that runs more than `leeway` seconds ahead can reject a valid login; raise `leeway` (maximum 300) if needed. The snake_case `max_age` is accepted as well. Note: this call uses `prompt=none`; if the session is stale the server returns `login_required` instead of prompting for a fresh login.
  * @param {String} [options.postMessageDataType] identifier data type to look for in postMessage event data, where events are initiated from silent callback urls, before accepting a message event is the event expected. A value of false means any postMessage event will trigger a callback.
  * @param {String} [options.postMessageOrigin] origin of redirectUri to expect postMessage response from.  Defaults to the origin of the receiving window. Only used if usePostMessage is truthy.
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
@@ -648,6 +684,7 @@ WebAuth.prototype.renewAuth = function (options, cb) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). Because only the leeway window is allowed, a slow login (for example a slow consent screen) or a client clock that runs more than `leeway` seconds ahead can reject a valid login; raise `leeway` (maximum 300) if needed. The snake_case `max_age` is accepted as well. Note: this call uses `prompt=none`; if the session is stale the server returns `login_required` instead of prompting for a fresh login.
  * @param {String} [options.timeout] value in milliseconds used to timeout when the `/authorize` call is failing as part of the silent authentication with postmessage enabled due to a configuration.
  * @param {String} [options.organization] the id or name of an organization to log in to
  * @param {checkSessionCallback} cb
@@ -797,6 +834,7 @@ WebAuth.prototype.signup = function (options, cb) {
  * @param {String} [options.nonce] value used to mitigate replay attacks when using Implicit Grant. {@link https://auth0.com/docs/api-auth/tutorials/nonce}
  * @param {String} [options.scope] scopes to be requested during Auth. e.g. `openid email`. Defaults to `openid profile email`.
  * @param {String} [options.audience] identifier of the resource server who will consume the access token issued after Auth
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). Because only the leeway window is allowed, a slow login (for example a slow consent screen) or a client clock that runs more than `leeway` seconds ahead can reject a valid login; raise `leeway` (maximum 300) if needed. The snake_case `max_age` is accepted as well.
  * @param {String} [options.organization] the id or name of an organization to log in to
  * @param {String} [options.invitation] the ID of an invitation to accept. This is available from the user invitation URL that is given when participating in a user invitation flow
  * @param {Object} [options.appState] any values that you want back on the authentication response
@@ -895,6 +933,7 @@ WebAuth.prototype.signupAndAuthorize = function (options, cb) {
  * @param {String} [options.email] Email (mutually exclusive with username)
  * @param {String} [options.password] Password
  * @param {String} [options.realm] Realm used to authenticate the user, it can be a realm name or a database connection name
+ * @param {Number} [options.maxAge] maximum elapsed time in seconds since the user was last actively authenticated by the authorization server. Sent as the `max_age` parameter and used to validate the id_token's `auth_time` claim on the authentication response. A value of 0 enforces that `auth_time` is present and within the leeway window (default 60 seconds). The snake_case `max_age` is accepted as well.
  * @param {String} [options.captcha] the attempted solution for the captcha, if one was presented
  * @param {onRedirectingCallback} [options.onRedirecting] Hook function that is called before redirecting to /authorize, allowing you to handle custom code. You must call the `done` function to resume authentication.
  * @param {crossOriginLoginCallback} cb Callback function called only when an authentication error, like invalid username or password, occurs. For other types of errors, there will be a redirect to the `redirectUri`.
@@ -1262,7 +1301,7 @@ export default WebAuth;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Aug 06 2026 10:04:15 GMT+0530 (India Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Oct 13 2026 23:00:43 GMT+0530 (India Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
