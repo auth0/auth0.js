@@ -441,6 +441,35 @@ context('TransactionManager', function() {
           Storage.prototype.setItem.lastCall.args[1].hasOwnProperty('maxAge')
         ).to.be(false);
       });
+      [
+        ['maxAge is an empty string and max_age is 300', { maxAge: '', max_age: 300 }, 300],
+        ['maxAge is false and max_age is 300', { maxAge: false, max_age: 300 }, 300],
+        ['both maxAge and max_age are numbers', { maxAge: 100, max_age: 300 }, 100],
+        ['max_age is 0', { max_age: 0 }, 0],
+        ['max_age is the string "300"', { max_age: '300' }, 300],
+        ['neither value can be used', { maxAge: '', max_age: false }, undefined],
+        ['no maxAge is given', {}, undefined]
+      ].forEach(function (testCase) {
+        var expected = testCase[2];
+        it(
+          'process stores ' +
+            (expected === undefined ? 'no maxAge' : 'maxAge ' + expected) +
+            ' when ' +
+            testCase[0],
+          function () {
+            this.tm.process(
+              Object.assign({ responseType: 'code', state: 'some-state' }, testCase[1])
+            );
+
+            var stored = Storage.prototype.setItem.lastCall.args[1];
+            if (expected === undefined) {
+              expect(stored.hasOwnProperty('maxAge')).to.be(false);
+            } else {
+              expect(stored.maxAge).to.be(expected);
+            }
+          }
+        );
+      });
     });
   });
   context('getStoredTransaction', function() {

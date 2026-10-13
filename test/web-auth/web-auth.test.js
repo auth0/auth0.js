@@ -984,6 +984,83 @@ describe('auth0.WebAuth', function () {
           }
         );
       });
+
+      var ROUND5_HEADER = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlF6RTROMFpCTTBWRFF6RTJSVVUwTnpJMVF6WTFNelE0UVRrMU16QXdNRUk0UkRneE56RTRSZyJ9';
+
+      function tokenWithAuthTime(authTime) {
+        var body = Buffer.from(JSON.stringify({
+          iss: 'https://wptest.auth0.com/',
+          sub: 'auth0|55d48c57d5b0ad0223c408d7',
+          aud: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          exp: 1482969031,
+          iat: 1482933031,
+          nonce: 'asfd',
+          auth_time: authTime
+        })).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        return ROUND5_HEADER + '.' + body + '.fakesig';
+      }
+
+      function parseWith(idToken, extraOptions, cb) {
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token id_token',
+          __clock: function () { return new Date(1482933050000); }
+        });
+        webAuth.parseHash(
+          Object.assign(
+            { hash: '#state=foo&token_type=Bearer&access_token=testtoken&id_token=' + idToken },
+            extraOptions
+          ),
+          cb
+        );
+      }
+
+      function validateWith(maxAge, token, cb) {
+        var webAuth = new WebAuth({
+          domain: 'wptest.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: 'gYSNlU4YC4V1YPdqq8zPQcup6rJw1Mbt',
+          responseType: 'token id_token',
+          __clock: function () { return new Date(1482933050000); }
+        });
+        webAuth.validateToken(token, 'asfd', maxAge, cb);
+      }
+
+      it('accepts a fresh token when per-call options.maxAge is set and transaction has no maxAge', function (done) {
+        restoreAndStubStoredTransaction('foo', { nonce: 'asfd', state: 'foo', appState: null });
+        parseWith(tokenWithAuthTime(1482933000), { maxAge: 300 }, function (err) {
+          expect(err).to.be(null);
+          done();
+        });
+      });
+
+      it('rejects a stale token when per-call options.maxAge is set and transaction has no maxAge', function (done) {
+        restoreAndStubStoredTransaction('foo', { nonce: 'asfd', state: 'foo', appState: null });
+        parseWith(OLD_ID_TOKEN, { maxAge: 300 }, function (err) {
+          expect(err).not.to.be(null);
+          expect(err.errorDescription).to.contain('auth_time');
+          done();
+        });
+      });
+
+      [null, '', false, true, [], {}, 'NaN', 'abc'].forEach(function (badMaxAge) {
+        it('validateToken treats ' + JSON.stringify(badMaxAge) + ' as not-set - skips auth_time check', function (done) {
+          validateWith(badMaxAge, OLD_ID_TOKEN, function (err) {
+            expect(err).to.be(null);
+            done();
+          });
+        });
+      });
+
+      it('validateToken treats "0" (string) as 0 - enforces auth_time is present', function (done) {
+        validateWith('0', NO_AUTH_TIME_ID_TOKEN, function (err) {
+          expect(err).not.to.be(null);
+          expect(err.errorDescription).to.contain('auth_time');
+          done();
+        });
+      });
     });
 
     context('Organization validation', function () {

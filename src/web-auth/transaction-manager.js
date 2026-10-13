@@ -2,16 +2,9 @@ import random from '../helper/random';
 import Storage from '../helper/storage';
 import windowHelper from '../helper/window';
 import * as times from '../helper/times';
+import maxAgeHelper from '../helper/max-age';
 
 var DEFAULT_NAMESPACE = 'com.auth0.auth.';
-
-function normaliseMaxAge(value) {
-  if (value === undefined || value === null) { return null; }
-  var n = Number(value);
-  if (isNaN(n)) { return null; }
-  if (n === 0 && typeof value !== 'number' && value !== '0') { return null; }
-  return n;
-}
 
 function TransactionManager(options) {
   var transaction = options.transaction || {};
@@ -31,6 +24,11 @@ TransactionManager.prototype.process = function(options) {
   var responseTypeIncludesIdToken =
     options.responseType.indexOf('id_token') !== -1;
 
+  var maxAge = maxAgeHelper.normalise(options.maxAge);
+  if (maxAge === null) {
+    maxAge = maxAgeHelper.normalise(options.max_age);
+  }
+
   var transaction = this.generateTransaction(
     options.appState,
     options.state,
@@ -38,7 +36,7 @@ TransactionManager.prototype.process = function(options) {
     lastUsedConnection,
     responseTypeIncludesIdToken,
     options.organization,
-    options.maxAge != null ? options.maxAge : options.max_age
+    maxAge
   );
 
   if (!options.state) {
@@ -79,7 +77,7 @@ TransactionManager.prototype.generateTransaction = function(
       transactionPayload.organization = organization;
     }
 
-    var normalisedMaxAge = normaliseMaxAge(maxAge);
+    var normalisedMaxAge = maxAgeHelper.normalise(maxAge);
     if (normalisedMaxAge !== null) {
       transactionPayload.maxAge = normalisedMaxAge;
     }
