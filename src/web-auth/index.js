@@ -242,6 +242,7 @@ WebAuth.prototype.parseHash = function (options, cb) {
   var err;
   var transaction;
   var transactionState;
+  var shouldBypassStateChecking;
 
   if (!cb && typeof options === 'function') {
     cb = options;
@@ -268,7 +269,7 @@ WebAuth.prototype.parseHash = function (options, cb) {
     transaction = this.transactionManager.getStoredTransaction(parsedQs.state);
     transactionState = options.state || (transaction && transaction.state) || null;
 
-    var shouldBypassStateChecking =
+    shouldBypassStateChecking =
       !parsedQs.state &&
       !transactionState &&
       (options.__enableIdPInitiatedLogin || options.__enableImpersonation);
