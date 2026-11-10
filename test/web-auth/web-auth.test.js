@@ -1986,7 +1986,7 @@ describe('auth0.WebAuth', function () {
         );
       });
 
-      it('should preserve an OAuth error when no state is supplied or expected', function (done) {
+      it('should reject an error response when state is missing and none is expected', function (done) {
         var webAuth = new WebAuth({
           domain: 'mdocs_2.auth0.com',
           redirectUri: 'http://example.com/callback',
@@ -1999,8 +1999,8 @@ describe('auth0.WebAuth', function () {
             hash: '#error=access_denied&error_description=user_cancelled'
           },
           function (err) {
-            expect(err.error).to.equal('access_denied');
-            expect(err.errorDescription).to.equal('user_cancelled');
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
             done();
           }
         );
