@@ -265,14 +265,15 @@ WebAuth.prototype.parseHash = function (options, cb) {
       err.state = parsedQs.state;
     }
 
-    if (!parsedQs.state && !options.state) {
-      return cb(err);
-    }
-
     transaction = this.transactionManager.getStoredTransaction(parsedQs.state);
     transactionState = options.state || (transaction && transaction.state) || null;
 
-    if (transactionState !== parsedQs.state) {
+    var shouldBypassStateChecking =
+      !parsedQs.state &&
+      !transactionState &&
+      (options.__enableIdPInitiatedLogin || options.__enableImpersonation);
+
+    if (!shouldBypassStateChecking && transactionState !== parsedQs.state) {
       return cb({
         error: 'invalid_token',
         errorDescription: '`state` does not match.'
