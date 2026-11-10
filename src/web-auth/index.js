@@ -267,11 +267,20 @@ WebAuth.prototype.parseHash = function (options, cb) {
       return cb(err);
     }
 
-    return this.validateAuthenticationResponse(options, parsedQs, function (
-      stateError
-    ) {
-      return cb(stateError || err);
-    });
+    var transaction = this.transactionManager.getStoredTransaction(
+      parsedQs.state
+    );
+    var transactionState =
+      options.state || (transaction && transaction.state) || null;
+
+    if (transactionState !== parsedQs.state) {
+      return cb({
+        error: 'invalid_token',
+        errorDescription: '`state` does not match.'
+      });
+    }
+
+    return cb(err);
   }
 
   if (
