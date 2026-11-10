@@ -1924,10 +1924,11 @@ describe('auth0.WebAuth', function () {
         });
         restoreAndStubStoredTransaction('some_state', { state: 'some_state' });
 
-        webAuth.parseHash({
-  hash: '#error=the_error_code&error_description=the_error_description&state=some_state',
-  state: 'some_state'
-},
+        webAuth.parseHash(
+          {
+            hash: '#error=the_error_code&error_description=the_error_description&state=some_state',
+            state: 'some_state'
+          },
           function (err, data) {
             expect(err).to.eql({
               error: 'the_error_code',
@@ -1939,7 +1940,7 @@ describe('auth0.WebAuth', function () {
         );
       });
 
-            it('should return default error if it is not a validation error', function (done) {
+      it('should return default error if it is not a validation error', function (done) {
         var expectedError = { error: 'some_error' };
         sinon
           .stub(WebAuth.prototype, 'validateToken')
@@ -1953,7 +1954,7 @@ describe('auth0.WebAuth', function () {
           responseType: 'id_token'
         });
 
-        var data = webAuth.parseHash(
+        webAuth.parseHash(
           {
             hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
           },
@@ -1965,25 +1966,47 @@ describe('auth0.WebAuth', function () {
       });
 
       it('should reject an error response with mismatched state', function (done) {
-  var webAuth = new WebAuth({
-    domain: 'mdocs_2.auth0.com',
-    redirectUri: 'http://example.com/callback',
-    clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-    responseType: 'id_token'
-  });
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
 
-  webAuth.parseHash(
-    {
-      hash: '#error=the_error_code&error_description=the_error_description&state=foo',
-      state: 'expected_state'
-    },
-    function (err) {
-      expect(err.error).to.equal('invalid_token');
-      expect(err.errorDescription).to.equal('`state` does not match.');
-      done();
-    }
-  );
-});
+        webAuth.parseHash(
+          {
+            hash: '#error=the_error_code&error_description=the_error_description&state=foo',
+            state: 'expected_state'
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
+      it('should reject an error response when state is missing', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=the_error_code&error_description=the_error_description',
+            state: 'expected_state'
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
       describe('should throw invalid_hash error', function () {
         afterEach(function () {
           if (WebAuth.prototype.validateAuthenticationResponse.restore) {
