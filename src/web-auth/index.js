@@ -240,6 +240,8 @@ function WebAuth(options) {
 WebAuth.prototype.parseHash = function (options, cb) {
   var parsedQs;
   var err;
+  var transaction;
+  var transactionState;
 
   if (!cb && typeof options === 'function') {
     cb = options;
@@ -267,11 +269,8 @@ WebAuth.prototype.parseHash = function (options, cb) {
       return cb(err);
     }
 
-    var transaction = this.transactionManager.getStoredTransaction(
-      parsedQs.state
-    );
-    var transactionState =
-      options.state || (transaction && transaction.state) || null;
+    transaction = this.transactionManager.getStoredTransaction(parsedQs.state);
+    transactionState = options.state || (transaction && transaction.state) || null;
 
     if (transactionState !== parsedQs.state) {
       return cb({
