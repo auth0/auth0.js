@@ -1986,6 +1986,26 @@ describe('auth0.WebAuth', function () {
         );
       });
 
+      it('should preserve an OAuth error when no state is supplied or expected', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled'
+          },
+          function (err) {
+            expect(err.error).to.equal('access_denied');
+            expect(err.errorDescription).to.equal('user_cancelled');
+            done();
+          }
+        );
+      });
+
       it('should reject an error response when state is missing', function (done) {
         var webAuth = new WebAuth({
           domain: 'mdocs_2.auth0.com',
