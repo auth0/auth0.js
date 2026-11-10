@@ -1922,6 +1922,7 @@ describe('auth0.WebAuth', function () {
           clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
           responseType: 'token'
         });
+        restoreAndStubStoredTransaction('some_state', { state: 'some_state' });
 
         webAuth.parseHash({
   hash: '#error=the_error_code&error_description=the_error_description&state=some_state',
