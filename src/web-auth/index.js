@@ -256,14 +256,20 @@ WebAuth.prototype.parseHash = function (options, cb) {
 
   parsedQs = qs.parse(hashStr);
 
-  if (parsedQs.hasOwnProperty('error')) {
+    if (parsedQs.hasOwnProperty('error')) {
     err = error.buildResponse(parsedQs.error, parsedQs.error_description);
 
     if (parsedQs.state) {
       err.state = parsedQs.state;
     }
 
-    return cb(err);
+    return this.validateAuthenticationResponse(
+      options,
+      parsedQs,
+      function (stateError) {
+        return cb(stateError || err);
+      }
+    );
   }
 
   if (
