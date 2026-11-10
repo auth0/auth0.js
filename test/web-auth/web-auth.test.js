@@ -1964,25 +1964,25 @@ describe('auth0.WebAuth', function () {
       });
 
       it('should reject an error response with mismatched state', function (done) {
-        var webAuth = new WebAuth({
-          domain: 'mdocs_2.auth0.com',
-          redirectUri: 'http://example.com/callback',
-          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
-          responseType: 'id_token'
-        });
+  var webAuth = new WebAuth({
+    domain: 'mdocs_2.auth0.com',
+    redirectUri: 'http://example.com/callback',
+    clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+    responseType: 'id_token'
+  });
 
-        webAuth.parseHash(
-          {
-            hash: '#error=the_error_code&error_description=the_error_description&state=wrong_state',
-            state: 'expected_state'
-          },
-          function (err) {
-            expect(err.error).to.equal('invalid_token');
-            expect(err.errorDescription).to.equal('`state` does not match.');
-            done();
-          }
-        );
-      });
+  webAuth.parseHash(
+    {
+      hash: '#error=the_error_code&error_description=the_error_description&state=foo',
+      state: 'expected_state'
+    },
+    function (err) {
+      expect(err.error).to.equal('invalid_token');
+      expect(err.errorDescription).to.equal('`state` does not match.');
+      done();
+    }
+  );
+});
       describe('should throw invalid_hash error', function () {
         afterEach(function () {
           if (WebAuth.prototype.validateAuthenticationResponse.restore) {
