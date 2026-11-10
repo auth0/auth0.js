@@ -263,6 +263,10 @@ WebAuth.prototype.parseHash = function (options, cb) {
       err.state = parsedQs.state;
     }
 
+    if (!parsedQs.state && !options.state) {
+      return cb(err);
+    }
+
     return this.validateAuthenticationResponse(options, parsedQs, function (
       stateError
     ) {
