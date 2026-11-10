@@ -2007,6 +2007,8 @@ describe('auth0.WebAuth', function () {
       });
 
       it('should reject an error response when state is missing', function (done) {
+        restoreAndStubStoredTransaction(undefined, null);
+
         var webAuth = new WebAuth({
           domain: 'mdocs_2.auth0.com',
           redirectUri: 'http://example.com/callback',
