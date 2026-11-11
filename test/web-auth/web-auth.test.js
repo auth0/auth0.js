@@ -2029,6 +2029,107 @@ describe('auth0.WebAuth', function () {
         );
       });
 
+      it('should accept an error response when state matches the stored transaction without an explicit state option', function (done) {
+        restoreAndStubStoredTransaction('stored_state', {
+          state: 'stored_state'
+        });
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled&state=stored_state'
+          },
+          function (err) {
+            expect(err).to.eql({
+              error: 'access_denied',
+              errorDescription: 'user_cancelled',
+              state: 'stored_state'
+            });
+            done();
+          }
+        );
+      });
+
+      it('should reject an error response when the stored transaction state does not match', function (done) {
+        restoreAndStubStoredTransaction('untrusted_state', {
+          state: 'expected_state'
+        });
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled&state=untrusted_state'
+          },
+          function (err) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: '`state` does not match.'
+            });
+            done();
+          }
+        );
+      });
+
+      it('should allow an IdP-initiated error response when state is absent', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+        restoreAndStubStoredTransaction(undefined, null);
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled',
+            __enableIdPInitiatedLogin: true
+          },
+          function (err) {
+            expect(err).to.eql({
+              error: 'access_denied',
+              errorDescription: 'user_cancelled'
+            });
+            done();
+          }
+        );
+      });
+
+      it('should allow an impersonation error response when state is absent', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+        restoreAndStubStoredTransaction(undefined, null);
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled',
+            __enableImpersonation: true
+          },
+          function (err) {
+            expect(err).to.eql({
+              error: 'access_denied',
+              errorDescription: 'user_cancelled'
+            });
+            done();
+          }
+        );
+      });
+
       describe('should throw invalid_hash error', function () {
         afterEach(function () {
           if (WebAuth.prototype.validateAuthenticationResponse.restore) {
