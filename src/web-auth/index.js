@@ -266,7 +266,9 @@ WebAuth.prototype.parseHash = function (options, cb) {
       err.state = parsedQs.state;
     }
 
-    transaction = this.transactionManager.getStoredTransaction(parsedQs.state);
+    transaction = parsedQs.state
+      ? this.transactionManager.getStoredTransaction(parsedQs.state, false)
+      : null;
     transactionState = options.state || (transaction && transaction.state) || null;
 
     shouldBypassStateChecking =
@@ -279,6 +281,10 @@ WebAuth.prototype.parseHash = function (options, cb) {
         error: 'invalid_token',
         errorDescription: '`state` does not match.'
       });
+    }
+
+    if (parsedQs.state) {
+      this.transactionManager.clearTransaction(parsedQs.state);
     }
 
     return cb(err);
