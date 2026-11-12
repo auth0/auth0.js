@@ -2029,6 +2029,27 @@ describe('auth0.WebAuth', function () {
         );
       });
 
+      it('should reject an error response with empty state', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&state=',
+            state: 'expected_state'
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
       it('should accept an error response when state matches the stored transaction without an explicit state option', function (done) {
         restoreAndStubStoredTransaction('stored_state', {
           state: 'stored_state'
