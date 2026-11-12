@@ -2073,6 +2073,44 @@ describe('auth0.WebAuth', function () {
         );
       });
 
+      it('should reject a replayed OAuth error response after its transaction is cleared', function (done) {
+        restoreAndStubStoredTransaction('replayed_state', {
+          state: 'replayed_state'
+        });
+
+        var getStoredTransactionStub = TransactionManager.prototype.getStoredTransaction;
+        getStoredTransactionStub
+          .onFirstCall()
+          .returns({ state: 'replayed_state' })
+          .onSecondCall()
+          .returns(null);
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        var errorResponse = {
+          hash: '#error=access_denied&error_description=user_cancelled&state=replayed_state'
+        };
+
+        webAuth.parseHash(errorResponse, function (firstErr) {
+          expect(firstErr).to.eql({
+            error: 'access_denied',
+            errorDescription: 'user_cancelled',
+            state: 'replayed_state'
+          });
+
+          webAuth.parseHash(errorResponse, function (replayErr) {
+            expect(replayErr.error).to.equal('invalid_token');
+            expect(replayErr.errorDescription).to.equal('`state` does not match.');
+            done();
+          });
+        });
+      });
+
       it('should accept an error response when state matches the stored transaction without an explicit state option', function (done) {
         restoreAndStubStoredTransaction('stored_state', {
           state: 'stored_state'
