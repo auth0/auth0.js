@@ -2164,6 +2164,30 @@ describe('auth0.WebAuth', function () {
         );
       });
 
+      it('should reject an empty state in an IdP-initiated error response', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+        restoreAndStubStoredTransaction('', null);
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled&state=',
+            __enableIdPInitiatedLogin: true
+          },
+          function (err) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: '`state` does not match.'
+            });
+            done();
+          }
+        );
+      });
+
       it('should allow an IdP-initiated error response when state is absent', function (done) {
         var webAuth = new WebAuth({
           domain: 'mdocs_2.auth0.com',
