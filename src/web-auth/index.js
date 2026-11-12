@@ -272,7 +272,7 @@ WebAuth.prototype.parseHash = function (options, cb) {
     transactionState = options.state || (transaction && transaction.state) || null;
 
     shouldBypassStateChecking =
-      !parsedQs.state &&
+      !parsedQs.hasOwnProperty('state') &&
       !transactionState &&
       (options.__enableIdPInitiatedLogin || options.__enableImpersonation);
 
@@ -366,7 +366,9 @@ WebAuth.prototype.validateAuthenticationResponse = function (
   var transactionStateMatchesState = transactionState === state;
 
   var shouldBypassStateChecking =
-    !state && !transactionState && options.__enableIdPInitiatedLogin;
+    !parsedHash.hasOwnProperty('state') &&
+    !transactionState &&
+    options.__enableIdPInitiatedLogin;
 
   if (!shouldBypassStateChecking && !transactionStateMatchesState) {
     return cb({
