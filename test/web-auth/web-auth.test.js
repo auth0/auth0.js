@@ -2050,6 +2050,82 @@ describe('auth0.WebAuth', function () {
         );
       });
 
+      it('should reject an error response with duplicate state parameters', function (done) {
+        TransactionManager.prototype.getStoredTransaction.restore();
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .returns({ state: 'expected_state' });
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&state=expected_state&state=attacker_state'
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
+      it('should reject an error response with a nested state parameter', function (done) {
+        TransactionManager.prototype.getStoredTransaction.restore();
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .returns(null);
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&state[nested]=expected_state',
+            __enableIdPInitiatedLogin: true
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
+      it('should reject an IdP-initiated error response when a stored transaction has a different state', function (done) {
+        restoreAndStubStoredTransaction('attacker_state', {
+          state: 'expected_state'
+        });
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&state=attacker_state',
+            __enableIdPInitiatedLogin: true
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
       it('should reject an error response when the stored transaction has expired', function (done) {
         // An expired transaction is no longer available in storage.
         restoreAndStubStoredTransaction('expired_state', null);
