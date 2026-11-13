@@ -510,4 +510,74 @@ context('TransactionManager', function() {
       );
     });
   });
+
+  context('transaction storage integration', function() {
+    beforeEach(function() {
+      var values = {};
+      windowHelper.getWindow.callsFake(function() {
+        return {
+          location: { host: 'myapp.com', protocol: 'https:' },
+          localStorage: {
+            getItem: function(key) {
+              return Object.prototype.hasOwnProperty.call(values, key)
+                ? values[key]
+                : null;
+            },
+            setItem: function(key, value) {
+              values[key] = String(value);
+            },
+            removeItem: function(key) {
+              delete values[key];
+            }
+          }
+        };
+      });
+
+      this.storageBackedTm = new TransactionManager({
+        domain: 'myapp.auth0.com',
+        __tryLocalStorageFirst: true
+      });
+    });
+
+    it('persists a transaction through Storage and consumes it only once', function() {
+      var generated = this.storageBackedTm.generateTransaction(
+        'integration-app-state',
+        'integration-state',
+        'integration-nonce',
+        null,
+        true
+      );
+
+      expect(generated).to.be.eql({
+        state: 'integration-state',
+        nonce: 'integration-nonce'
+      });
+
+      var transaction = this.storageBackedTm.getStoredTransaction(
+        generated.state,
+        false
+      );
+      expect(transaction).to.be.eql({
+        nonce: 'integration-nonce',
+        appState: 'integration-app-state',
+        state: 'integration-state',
+        lastUsedConnection: null
+      });
+
+      var consumedTransaction = this.storageBackedTm.getStoredTransaction(
+        generated.state
+      );
+      expect(consumedTransaction).to.be.eql(transaction);
+      expect(
+        this.storageBackedTm.getStoredTransaction(generated.state)
+      ).to.be(null);
+    });
+
+    it('returns no transaction when the stored state key is absent', function() {
+      expect(
+        this.storageBackedTm.getStoredTransaction('unknown-integration-state')
+      ).to.be(null);
+    });
+  });
+
 });

@@ -93,11 +93,13 @@ TransactionManager.prototype.generateTransaction = function(
   };
 };
 
-TransactionManager.prototype.getStoredTransaction = function(state) {
+TransactionManager.prototype.getStoredTransaction = function(state, clear) {
   var transactionData;
 
   transactionData = this.storage.getItem(this.namespace + state);
-  this.clearTransaction(state);
+  if (clear !== false) {
+    this.clearTransaction(state);
+  }
   return transactionData;
 };
 
