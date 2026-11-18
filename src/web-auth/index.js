@@ -240,6 +240,9 @@ function WebAuth(options) {
 WebAuth.prototype.parseHash = function (options, cb) {
   var parsedQs;
   var err;
+  var transaction;
+  var transactionState;
+  var shouldBypassStateChecking;
 
   if (!cb && typeof options === 'function') {
     cb = options;
@@ -261,6 +264,27 @@ WebAuth.prototype.parseHash = function (options, cb) {
 
     if (parsedQs.state) {
       err.state = parsedQs.state;
+    }
+
+    transaction = parsedQs.state
+      ? this.transactionManager.getStoredTransaction(parsedQs.state, false)
+      : null;
+    transactionState = options.state || (transaction && transaction.state) || null;
+
+    shouldBypassStateChecking =
+      !parsedQs.hasOwnProperty('state') &&
+      !transactionState &&
+      (options.__enableIdPInitiatedLogin || options.__enableImpersonation);
+
+    if (!shouldBypassStateChecking && transactionState !== parsedQs.state) {
+      return cb({
+        error: 'invalid_token',
+        errorDescription: '`state` does not match.'
+      });
+    }
+
+    if (parsedQs.state) {
+      this.transactionManager.clearTransaction(parsedQs.state);
     }
 
     return cb(err);
@@ -342,7 +366,9 @@ WebAuth.prototype.validateAuthenticationResponse = function (
   var transactionStateMatchesState = transactionState === state;
 
   var shouldBypassStateChecking =
-    !state && !transactionState && options.__enableIdPInitiatedLogin;
+    !parsedHash.hasOwnProperty('state') &&
+    !transactionState &&
+    options.__enableIdPInitiatedLogin;
 
   if (!shouldBypassStateChecking && !transactionStateMatchesState) {
     return cb({

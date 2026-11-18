@@ -234,7 +234,8 @@ describe('auth0.plugins.cordova', function() {
         function(err, result) {
           expect(err).to.eql({
             error: 'some_error',
-            errorDescription: 'with a description'
+            errorDescription: 'with a description',
+            state: 'foo'
           });
           expect(result).to.be(undefined);
           expect(_this.events).to.eql({});
@@ -245,7 +246,7 @@ describe('auth0.plugins.cordova', function() {
 
       this.events.loadstart({
         url:
-          'https://wptest.auth0.com/mobile#error=some_error&error_description=with a description'
+          'https://wptest.auth0.com/mobile#error=some_error&error_description=with a description&state=foo'
       });
     });
 

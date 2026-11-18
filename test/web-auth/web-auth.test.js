@@ -1922,10 +1922,12 @@ describe('auth0.WebAuth', function () {
           clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
           responseType: 'token'
         });
+        restoreAndStubStoredTransaction('some_state', { state: 'some_state' });
 
         webAuth.parseHash(
           {
-            hash: '#error=the_error_code&error_description=the_error_description&state=some_state'
+            hash: '#error=the_error_code&error_description=the_error_description&state=some_state',
+            state: 'some_state'
           },
           function (err, data) {
             expect(err).to.eql({
@@ -1952,7 +1954,7 @@ describe('auth0.WebAuth', function () {
           responseType: 'id_token'
         });
 
-        var data = webAuth.parseHash(
+        webAuth.parseHash(
           {
             hash: '#state=foo&token_type=Bearer&id_token=0as98da09s8d_not_a_token'
           },
@@ -1962,6 +1964,378 @@ describe('auth0.WebAuth', function () {
           }
         );
       });
+
+      it('should reject an error response with mismatched state', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=the_error_code&error_description=the_error_description&state=foo',
+            state: 'expected_state'
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
+      it('should reject an error response when state is missing and none is expected', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled'
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
+      it('should reject an error response when state is missing', function (done) {
+        restoreAndStubStoredTransaction(undefined, null);
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=the_error_code&error_description=the_error_description',
+            state: 'expected_state'
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
+      it('should reject an error response with empty state', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&state=',
+            state: 'expected_state'
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
+      it('should reject an error response with duplicate state parameters', function (done) {
+        TransactionManager.prototype.getStoredTransaction.restore();
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .returns({ state: 'expected_state' });
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&state=expected_state&state=attacker_state'
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
+      it('should reject an error response with a nested state parameter', function (done) {
+        TransactionManager.prototype.getStoredTransaction.restore();
+        sinon
+          .stub(TransactionManager.prototype, 'getStoredTransaction')
+          .returns(null);
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&state[nested]=expected_state',
+            __enableIdPInitiatedLogin: true
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
+      it('should reject an IdP-initiated error response when a stored transaction has a different state', function (done) {
+        restoreAndStubStoredTransaction('attacker_state', {
+          state: 'expected_state'
+        });
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&state=attacker_state',
+            __enableIdPInitiatedLogin: true
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
+      it('should reject an error response when the stored transaction has expired', function (done) {
+        // An expired transaction is no longer available in storage.
+        restoreAndStubStoredTransaction('expired_state', null);
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=session_expired&state=expired_state'
+          },
+          function (err) {
+            expect(err.error).to.equal('invalid_token');
+            expect(err.errorDescription).to.equal('`state` does not match.');
+            done();
+          }
+        );
+      });
+
+      it('should reject a replayed OAuth error response after its transaction is cleared', function (done) {
+        restoreAndStubStoredTransaction('replayed_state', {
+          state: 'replayed_state'
+        });
+
+        var getStoredTransactionStub = TransactionManager.prototype.getStoredTransaction;
+        getStoredTransactionStub
+          .onFirstCall()
+          .returns({ state: 'replayed_state' })
+          .onSecondCall()
+          .returns(null);
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        var errorResponse = {
+          hash: '#error=access_denied&error_description=user_cancelled&state=replayed_state'
+        };
+
+        webAuth.parseHash(errorResponse, function (firstErr) {
+          expect(firstErr).to.eql({
+            error: 'access_denied',
+            errorDescription: 'user_cancelled',
+            state: 'replayed_state'
+          });
+
+          webAuth.parseHash(errorResponse, function (replayErr) {
+            expect(replayErr.error).to.equal('invalid_token');
+            expect(replayErr.errorDescription).to.equal('`state` does not match.');
+            done();
+          });
+        });
+      });
+
+      it('should accept an error response when state matches the stored transaction without an explicit state option', function (done) {
+        restoreAndStubStoredTransaction('stored_state', {
+          state: 'stored_state'
+        });
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled&state=stored_state'
+          },
+          function (err) {
+            expect(err).to.eql({
+              error: 'access_denied',
+              errorDescription: 'user_cancelled',
+              state: 'stored_state'
+            });
+            done();
+          }
+        );
+      });
+
+      it('should reject an error response when the stored transaction state does not match', function (done) {
+        restoreAndStubStoredTransaction('untrusted_state', {
+          state: 'expected_state'
+        });
+
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled&state=untrusted_state'
+          },
+          function (err) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: '`state` does not match.'
+            });
+            done();
+          }
+        );
+      });
+
+      it('should reject an empty state in an IdP-initiated error response', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+        restoreAndStubStoredTransaction('', null);
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled&state=',
+            __enableIdPInitiatedLogin: true
+          },
+          function (err) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: '`state` does not match.'
+            });
+            done();
+          }
+        );
+      });
+
+      it('should reject an empty state in an impersonation error response', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+        restoreAndStubStoredTransaction('', null);
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled&state=',
+            __enableImpersonation: true
+          },
+          function (err) {
+            expect(err).to.eql({
+              error: 'invalid_token',
+              errorDescription: '`state` does not match.'
+            });
+            done();
+          }
+        );
+      });
+
+      it('should allow an IdP-initiated error response when state is absent', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+        restoreAndStubStoredTransaction(undefined, null);
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled',
+            __enableIdPInitiatedLogin: true
+          },
+          function (err) {
+            expect(err).to.eql({
+              error: 'access_denied',
+              errorDescription: 'user_cancelled'
+            });
+            done();
+          }
+        );
+      });
+
+      it('should allow an impersonation error response when state is absent', function (done) {
+        var webAuth = new WebAuth({
+          domain: 'mdocs_2.auth0.com',
+          redirectUri: 'http://example.com/callback',
+          clientID: '0HP71GSd6PuoRYJ3DXKdiXCUUdGmBbup',
+          responseType: 'id_token'
+        });
+        restoreAndStubStoredTransaction(undefined, null);
+
+        webAuth.parseHash(
+          {
+            hash: '#error=access_denied&error_description=user_cancelled',
+            __enableImpersonation: true
+          },
+          function (err) {
+            expect(err).to.eql({
+              error: 'access_denied',
+              errorDescription: 'user_cancelled'
+            });
+            done();
+          }
+        );
+      });
+
       describe('should throw invalid_hash error', function () {
         afterEach(function () {
           if (WebAuth.prototype.validateAuthenticationResponse.restore) {
